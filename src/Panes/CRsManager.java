@@ -1628,7 +1628,7 @@ public class CRsManager extends JPanel {
 		}
 	}
 	
-	private void runScript(String folder) throws IOException {
+	public void runScript(String folder) throws IOException {
 		System.out.println("\nRunning script at: " + folder);
 		addLogLine("Running script at: " + folder);
 		
@@ -1674,7 +1674,7 @@ public class CRsManager extends JPanel {
 				// Configure build report battery capacity
 				try {
 					@SuppressWarnings("resource")
-					Scanner scanner = new Scanner(new File(folder + "\\build_report.pl"));
+					Scanner scanner = new Scanner(new File(folder + "\\build_report.pl")); 
 					String content = scanner.useDelimiter("\\Z").next();
 					content = content.replace("#bat_cap#", BaseWindow.getOptions().getAdvOptions().getBat_capNode().getChildText(sCurrentLine));
 					PrintWriter out = new PrintWriter(folder + "\\build_report.pl");

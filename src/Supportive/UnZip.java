@@ -152,8 +152,7 @@ public class UnZip implements Runnable{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
-				BaseWindow.getParser().updateCrList();
+								
 				BaseWindow.getCrsManager().updateAllDataUI();
 				if(dialog != null){
 					dialog.dispose();
@@ -288,7 +287,6 @@ public class UnZip implements Runnable{
 					e.printStackTrace();
 				}
 				
-				BaseWindow.getParser().updateCrList();
 				BaseWindow.getCrsManager().updateAllDataUI();
 				if(dialog != null){
 					dialog.dispose();

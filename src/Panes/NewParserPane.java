@@ -68,6 +68,8 @@ import Filters.Suspicious;
 import Filters.Tether;
 import Main.BatTracer;
 import Supportive.ColorPrinter;
+import javax.swing.JTabbedPane;
+import javax.swing.JSeparator;
 
 public class NewParserPane extends JPanel {
 	
@@ -84,33 +86,31 @@ public class NewParserPane extends JPanel {
 	String crPath, rootPath, result;
 	
 	JLabel lblTitle;
-	JLabel lblCrsInThis;
 	JTextPane textPane;
-	JTextField folder;
 	JRadioButton rdBtnTextAnal;
 	JRadioButton rdbtnNotepad;
-	JComboBox<String> crsList;
 	JButton btnSuspicious;
 	JButton btnHighconsumeApps;
 	JButton btnAlarmsOverhead;
 	JButton btnDiag;
 	JButton btnBug2go;
 	JButton btnTethering;
-	JButton btnViewSystem;
-	JButton btnViewKernel;
-	JButton btnViewRadio;
-	JButton btnViewBugreport;
-	JButton btnViewReportOutput;
-	JButton btnBTD;
 	JButton btnIssues;
 	JButton btnSummary;
-	private JButton btnOpenfolder;
 	private JButton btnNewButton;
-	private JButton button;
-	private JButton btnBack;
-	private JButton btnDel;
-	private JButton btnRefresh;
 	private UndoManager undoManager;
+	private JTabbedPane esquerda;
+	private JScrollPane filtersPane;
+	private JPanel panel;
+	private JSeparator separator;
+	private JButton btnCustom1;
+	private JButton btnCustom2;
+	private JButton btnCustom3;
+	private JButton btnCustom4;
+	private JButton btnCustom;
+	private JButton btnAdd;
+	private JButton btnRemove;
+	private FileTree fileTree;
 
 	/**
 	 * Create the panel.
@@ -121,508 +121,17 @@ public class NewParserPane extends JPanel {
 		
 		GridBagLayout layout = new GridBagLayout();
 		layout.columnWidths = new int[]{250, 600};
-		layout.rowHeights = new int[]{35, 35, 35, 86, 600};
-		layout.rowWeights = new double[]{1.0, 1.0, 1.0, 1.0, 1.0};
+		layout.rowHeights = new int[]{35, 40, 600};
+		layout.rowWeights = new double[]{1.0, 1.0, 1.0};
 		layout.columnWeights = new double[]{1.0, 1.0};
 		setLayout(layout);
-		
-		JScrollPane esquerda = new JScrollPane();
-		esquerda.setToolTipText("List of parser results");
-		esquerda.setFont(new Font("Consolas", Font.PLAIN, 12));
-		esquerda.setBorder(new LineBorder(UIManager.getColor("Button.light")));
-		esquerda.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		esquerda.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		esquerda.setPreferredSize(new Dimension(250, 600));
-		esquerda.setMinimumSize(new Dimension(150, 500));
-		esquerda.setMaximumSize(new Dimension(250, 32767));
 		JPanel topright = new JPanel();
 		topright.setPreferredSize(new Dimension(10, 30));
 		topright.setMaximumSize(new Dimension(32767, 31));
 		topright.setBorder(new LineBorder(UIManager.getColor("Button.light")));;
 		topright.setMinimumSize(new Dimension(35, 30));
 		
-		tree = new JTree();
-		tree.setToolTipText("List of parser results");
-		tree.setFont(new Font("Consolas", Font.PLAIN, 11));
-		tree.setModel(new DefaultTreeModel(
-			new DefaultMutableTreeNode("Complete Results:") {
-				private static final long serialVersionUID = 1L;
-			}
-		));
-		TreeModel = (DefaultTreeModel) tree.getModel();
-		RootNode = (DefaultMutableTreeNode) TreeModel.getRoot();
-		tree.addTreeSelectionListener(new TreeSelectionListener() {
-			@Override
-			public void valueChanged(TreeSelectionEvent arg0) {
-				nodeChangedAction();
-			}
-		});
-		tree.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent arg0) {
-				nodeChangedAction();
-			}
-		});
-		
-		JPanel directoryPane = new JPanel();
-		directoryPane.setPreferredSize(new Dimension(400, 30));
-		directoryPane.setMinimumSize(new Dimension(700, 30));
-		directoryPane.setMaximumSize(new Dimension(32767, 30));
-		directoryPane.setBorder(new LineBorder(UIManager.getColor("Button.light")));
-		GridBagConstraints gbc_directoryPane = new GridBagConstraints();
-		gbc_directoryPane.weighty = 1.0;
-		gbc_directoryPane.weightx = 1.0;
-		gbc_directoryPane.gridwidth = 2;
-		gbc_directoryPane.insets = new Insets(10, 10, 0, 10);
-		gbc_directoryPane.fill = GridBagConstraints.HORIZONTAL;
-		gbc_directoryPane.gridx = 0;
-		gbc_directoryPane.gridy = 0;
-		add(directoryPane, gbc_directoryPane);
-		directoryPane.setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
-		
-		button = new JButton("");
-		button.setToolTipText("Get selected folder on the dropbox and send the path to the CRs Path");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				char[] aux = getRootPath().toCharArray();
-				String path;
-				if(crsList.getItemAt(crsList.getSelectedIndex()) != null){
-					if(aux[aux.length-1] == '\\')
-						path = getRootPath() + crsList.getItemAt(crsList.getSelectedIndex());
-					else
-						path = getRootPath() + "\\" + crsList.getItemAt(crsList.getSelectedIndex());
-					setRootPath(path);
-				}
-			}
-		});
-		
-		btnBack = new JButton("");
-		btnBack.setToolTipText("Go one folder level back");
-		btnBack.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String[] aux = getRootPath().split("\\\\");
-				String newPath = "";
-				for(int i=0; i < aux.length-1; i++){
-					System.out.println(aux[i]);
-					newPath = newPath + aux[i] + "\\";
-				}
-				setRootPath(newPath);
-			}
-		});
-		btnBack.setMargin(new Insets(5, 4, 4, 4));
-		btnBack.setPreferredSize(new Dimension(25, 23));
-		btnBack.setMinimumSize(new Dimension(25, 23));
-		btnBack.setMaximumSize(new Dimension(25, 23));
-		btnBack.setIcon(new ImageIcon("Data\\pics\\left.png"));
-		directoryPane.add(btnBack);
-		button.setPreferredSize(new Dimension(23, 23));
-		button.setMinimumSize(new Dimension(23, 23));
-		button.setMaximumSize(new Dimension(23, 23));
-		button.setMargin(new Insets(5, 5, 2, 2));
-		button.setIcon(new ImageIcon("Data\\pics\\down-right-22.png"));
-		directoryPane.add(button);
-		
-		JLabel lblCrsFolder = new JLabel("CRs Path:");
-		lblCrsFolder.setAlignmentX(Component.CENTER_ALIGNMENT);
-		lblCrsFolder.setPreferredSize(new Dimension(70, 20));
-		lblCrsFolder.setMinimumSize(new Dimension(70, 20));
-		lblCrsFolder.setMaximumSize(new Dimension(70, 20));
-		lblCrsFolder.setFont(new Font("Tahoma", Font.BOLD, 12));
-		directoryPane.add(lblCrsFolder);
-		
-		folder = new JTextField();
-		folder.setToolTipText("Path used to search for CRs folders");
-		folder.setMargin(new Insets(2, 4, 2, 0));
-		folder.setMaximumSize(new Dimension(600, 20));
-		folder.setPreferredSize(new Dimension(600, 20));
-		folder.setMinimumSize(new Dimension(600, 20));
-		folder.setBorder(new LineBorder(Color.BLACK));
-		folder.setText("C:\\CRs");
-		directoryPane.add(folder);
-		
 		ButtonGroup editorSelector = new ButtonGroup();
-		
-		JPanel parserPane = new JPanel();
-		parserPane.setBorder(new LineBorder(UIManager.getColor("Button.light")));
-		parserPane.setBackground(UIManager.getColor("Button.background"));
-		parserPane.setMaximumSize(new Dimension(32767, 30));
-		parserPane.setMinimumSize(new Dimension(10, 30));
-		parserPane.setPreferredSize(new Dimension(10, 30));
-		GridBagConstraints gbc_parserPane = new GridBagConstraints();
-		gbc_parserPane.weighty = 1.0;
-		gbc_parserPane.weightx = 1.0;
-		gbc_parserPane.gridwidth = 2;
-		gbc_parserPane.insets = new Insets(0, 10, 0, 10);
-		gbc_parserPane.fill = GridBagConstraints.HORIZONTAL;
-		gbc_parserPane.gridx = 0;
-		gbc_parserPane.gridy = 1;
-		add(parserPane, gbc_parserPane);
-		parserPane.setLayout(new FlowLayout(FlowLayout.CENTER, 3, 1));
-		
-		btnDel = new JButton("Del");
-		btnDel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				delFolder( folder.getText() + "\\" + crsList.getItemAt(crsList.getSelectedIndex()) );
-				updateCrList();
-			}
-		});
-		
-		btnRefresh = new JButton("");
-		btnRefresh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				updateCrList();
-			}
-		});
-		btnRefresh.setPreferredSize(new Dimension(25, 23));
-		btnRefresh.setMinimumSize(new Dimension(25, 23));
-		btnRefresh.setMaximumSize(new Dimension(25, 23));
-		btnRefresh.setIcon(new ImageIcon("Data\\pics\\Refresh-24.png"));
-		btnRefresh.setMargin(new Insets(2, 2, 2, 2));
-		btnRefresh.setForeground(Color.RED);
-		btnRefresh.setFont(new Font("Tahoma", Font.BOLD, 10));
-		parserPane.add(btnRefresh);
-		btnDel.setFont(new Font("Tahoma", Font.BOLD, 10));
-		btnDel.setForeground(Color.RED);
-		btnDel.setMargin(new Insets(2, 2, 2, 2));
-		parserPane.add(btnDel);
-		
-		lblCrsInThis = new JLabel("CRs in this folder:");
-		parserPane.add(lblCrsInThis);
-		
-		crsList = new JComboBox<String>();
-		crsList.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent ie) {
-				if(crsList.getSelectedIndex() != ie.getID())
-				{
-					crPath = folder.getText().replace("\\", "\\\\").concat("\\\\") + crsList.getItemAt(crsList.getSelectedIndex()) + "\\";
-					System.out.println("Parsed path: " + crPath);
-					clearTree();
-					textPane.setText("");
-					lblTitle.setText("Run a parser or select a result on the left");
-					result = "";
-				}
-			}
-		});
-		crsList.setPreferredSize(new Dimension(190, 20));
-		crsList.setMinimumSize(new Dimension(180, 20));
-		parserPane.add(crsList);
-		
-		
-		btnSummary = new JButton("Summary");
-		btnSummary.setToolTipText("Summarize the current drain overall status");
-		btnSummary.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(findNode("Summary") == null) {
-					btnSummary.setEnabled(false);
-					Thread susp = new Thread() {
-					    public void run() {
-							try {
-								System.out.println("Normal thread running");
-								crsList.setEnabled(false);
-								Normal.makeLog(crPath);
-								addSummary();
-								btnSummary.setEnabled(true);
-								result = (result
-										+ "\n\n\n================== Battery Discharge Summary ====================\n" + Normal
-										.getResult());
-								crsList.setEnabled(true);
-	
-								System.out.println("Normal thread finished");
-							} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("Normal thread error");
-								btnSummary.setEnabled(true);
-								crsList.setEnabled(true);
-							}
-					    }  
-					};
-					susp.start();
-				}
-			}
-		});
-		parserPane.add(btnSummary);
-		
-		
-		btnIssues = new JButton("General Issues");
-		btnIssues.setToolTipText("Shows issues as kernel wakelocks and high current drain level");
-		btnIssues.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(findNode("General Issues") == null) {
-					btnIssues.setEnabled(false);
-					Thread susp = new Thread() {
-					    public void run() {
-							try {
-								System.out.println("General thread running");
-	
-								crsList.setEnabled(false);
-								Issue.makelog(crPath, BaseWindow);
-								addIssues();
-								btnIssues.setEnabled(true);
-								result = (result
-										+ "\n\n\n==================== General Issues ======================\n" + Issue
-										.getResult());
-								crsList.setEnabled(true);
-	
-								System.out.println("General thread finished");
-							} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("General thread error");
-								btnIssues.setEnabled(true);
-								crsList.setEnabled(true);
-							}
-					    }
-					};
-					susp.start();
-				}
-			}
-		});
-		parserPane.add(btnIssues);
-		
-		
-		btnSuspicious = new JButton("Suspicious");
-		btnSuspicious.setToolTipText("Shows suspicioues wakelocks");
-		btnSuspicious.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(findNode("Suspicious") == null) {
-					btnSuspicious.setEnabled(false);
-					Thread susp = new Thread() {
-					    public void run() {
-							try {
-								System.out.println("Suspicius thread running");
-	
-								crsList.setEnabled(false);
-								Suspicious.makelog(crPath, BaseWindow);
-								addIssues();
-								if (Suspicious.getWakeLocks().size() != 0)
-									for (int i = 0; i < Suspicious.getWakeLocks().size(); i++) {
-										addWakeLocksNode(
-												Suspicious.getWakeLocks().get(i).getProcess()+ " - "+ 
-												Suspicious.getWakeLocks().get(i).getTag() + " - " +
-												Suspicious.getWakeLocks().get(i).getDuration());
-									}
-								else{
-									addWakeLocksNode("No suspicious found");
-								}
-								btnSuspicious.setEnabled(true);
-								result = (
-										result + "\n\n\n======================== Wake locks ========================\n"
-										+ Suspicious.getResult());
-								crsList.setEnabled(true);
-	
-								System.out.println("Suspicius thread finished");
-							} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("Suspicius thread error");
-								btnSuspicious.setEnabled(true);
-								crsList.setEnabled(true);
-							}
-					    }  
-					};
-					susp.start();
-				}
-			}
-		});
-		parserPane.add(btnSuspicious);
-		
-		btnHighconsumeApps = new JButton("HighConsume Apps");
-		btnHighconsumeApps.setToolTipText("Shows the most frequent processes and their CPU consumption");
-		btnHighconsumeApps.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(findNode("High Consume") == null) {
-					btnHighconsumeApps.setEnabled(false);
-					Thread susp = new Thread() {
-					    public void run() {
-					    	try{
-						        System.out.println("High consume thread running");
-		
-						        crsList.setEnabled(false);
-						        Consume.makelog(crPath);
-								for (int i = 0; i < Consume.getHCList().size(); i++) {
-									addConsumeNode(Consume.getHCList().get(i).getProcess());
-								}
-								if(Consume.getHCList().size() == 0)
-									addConsumeNode("Nothing found in logs");
-								btnHighconsumeApps.setEnabled(true);
-								result = (result + "\n\n\n======================= High consume =======================\n" + Consume.getResult());
-								crsList.setEnabled(true);
-								
-								System.out.println("High consume thread finished");
-					    	} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("High consume thread error");
-								btnHighconsumeApps.setEnabled(true);
-								crsList.setEnabled(true);
-							}
-					    }  
-					};
-					susp.start();
-				}
-			}
-		});
-		parserPane.add(btnHighconsumeApps);
-		
-		btnAlarmsOverhead = new JButton("Alarms Overhead");
-		btnAlarmsOverhead.setToolTipText("Shows processes that wake up AP more frequently");
-		btnAlarmsOverhead.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(findNode("Alarms Overhead") == null) {
-					btnAlarmsOverhead.setEnabled(false);
-					Thread susp = new Thread() {
-					    public void run() {
-					    	try {
-						        System.out.println("Alarms thread running");
-		
-						        crsList.setEnabled(false);
-						        Alarm.makelog(crPath, BaseWindow);
-								for (int i = 0; i < Alarm.getListSize(); i++) {
-									addAlarms(Alarm.getList().get(i).getProcess());
-								}
-								if(Alarm.getListSize() == 0)
-								addAlarms("Nothing found in the logs");
-								
-								btnAlarmsOverhead.setEnabled(true);
-								result = (result + "\n\n\n======================= Alarms Resume =======================\n" + Alarm.getResult());
-								crsList.setEnabled(true);
-								
-								System.out.println("Alarms thread finished");
-					    	} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("Alarms thread error");
-								btnAlarmsOverhead.setEnabled(true);
-								crsList.setEnabled(true);
-							}
-					    }  
-					};
-					susp.start();
-				}
-			}
-		});
-		parserPane.add(btnAlarmsOverhead);
-		
-		btnDiag = new JButton("Diag");
-		btnDiag.setToolTipText("Shows info about DIAG_WS wakelock");
-		btnDiag.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(findNode("Diag") == null) {
-					btnDiag.setEnabled(false);
-					Thread susp = new Thread() {
-					    public void run() {
-					    	try {
-						        System.out.println("Diag thread running");
-		
-						        crsList.setEnabled(false);
-						        String SDiag = Diag.makelog(crPath, BaseWindow);
-								if(SDiag.split("\n").length > 2)
-									addDiag("Diag Wake Lock");
-								else
-									addDiag("Not a Diag issue");
-								btnDiag.setEnabled(true);
-								result = (result + "\n\n\n======================= Diag Wake locks =======================\n" + Diag.getResult());
-								crsList.setEnabled(true);
-								
-								System.out.println("Diag thread finished");
-					    	} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("Diag thread error");
-								btnDiag.setEnabled(true);
-								crsList.setEnabled(true);
-							}
-					    }  
-					};
-					susp.start();
-				} else {
-					btnDiag.setEnabled(false);
-					Thread susp = new Thread() {
-					    public void run() {
-					    	try {
-						        System.out.println("Diag thread running");
-		
-						        crsList.setEnabled(false);
-						        Diag.makelog(crPath, BaseWindow);
-								btnDiag.setEnabled(true);
-								//result = (result + "\n\n\n======================= Diag Wake locks =======================\n" + Diag.getResult());
-								crsList.setEnabled(true);
-								
-								System.out.println("Diag thread finished");
-					    	} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("Diag thread error");
-								btnDiag.setEnabled(true);
-								crsList.setEnabled(true);
-							}
-					    }  
-					};
-					susp.start();
-				}
-			}
-		});
-		parserPane.add(btnDiag);
-		
-		btnBug2go = new JButton("Bug2Go");
-		btnBug2go.setToolTipText("Shows info about Bug2Go process and uploads");
-		btnBug2go.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(findNode("Bug2Go") == null) {
-					btnBug2go.setEnabled(false);
-					Thread susp = new Thread() {
-					    public void run() {
-					    	try {
-						        System.out.println("Bug2go thread running");
-		
-						        crsList.setEnabled(false);
-						        B2G.makelog(crPath);
-								addBug2go("Bug2Go Info");
-								btnBug2go.setEnabled(true);
-								result = (result + "\n\n\n========================= Bug2Go =========================\n" + B2G.getResult());
-								crsList.setEnabled(true);
-								
-								System.out.println("Bug2go thread finished");
-					    	} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("Bug2go thread error");
-								btnBug2go.setEnabled(true);
-								crsList.setEnabled(true);
-							}
-					    }  
-					};
-					susp.start();
-				}
-			}
-		});
-		parserPane.add(btnBug2go);
-		
-		btnTethering = new JButton("Tethering");
-		btnTethering.setToolTipText("Shows info about Tethering usage");
-		btnTethering.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(findNode("Tethering") == null) {
-					btnTethering.setEnabled(false);
-					Thread susp = new Thread() {
-					    public void run() {
-					    	try {
-						        System.out.println("Tethering thread running");
-		
-						        crsList.setEnabled(false);
-						        Tether.makeLog(crPath, BaseWindow);
-								addTether("Tethering Info");
-								btnTethering.setEnabled(true);
-								result = (result + "\n\n\n======================== Wifi Tether =========================\n" + Tether.getResult());
-								crsList.setEnabled(true);
-								
-								System.out.println("Tethering thread finished");
-					    	} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("Tethering thread error");
-								btnTethering.setEnabled(true);
-								crsList.setEnabled(true);
-							}
-					    }  
-					};
-					susp.start();
-				}
-			}
-		});
-		parserPane.add(btnTethering);
 		
 		JPanel LogsPane = new JPanel();
 		LogsPane.setBorder(new LineBorder(UIManager.getColor("Button.light")));
@@ -639,24 +148,8 @@ public class NewParserPane extends JPanel {
 		gbc_LogsPane.insets = new Insets(0, 10, 5, 10);
 		gbc_LogsPane.fill = GridBagConstraints.HORIZONTAL;
 		gbc_LogsPane.gridx = 0;
-		gbc_LogsPane.gridy = 2;
+		gbc_LogsPane.gridy = 0;
 		add(LogsPane, gbc_LogsPane);
-		
-		JButton btnViewMain = new JButton("View Main");
-		btnViewMain.setToolTipText("Open logcat main log");
-		btnViewMain.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					if(rdBtnTextAnal.isSelected())
-						Runtime.getRuntime().exec(new String[] {"Data\\complements\\TextAnalysisTool.exe ", crPath + "\\aplogcat-main.txt"});
-					else
-						Runtime.getRuntime().exec(new String[] {"C:\\Program Files (x86)\\Notepad++\\notepad++.exe ", crPath + "\\aplogcat-main.txt"});
-			    } catch (IOException e) {
-			        e.printStackTrace();
-			        System.out.println("Error opening file");
-			    }
-			}
-		});
 		
 		rdBtnTextAnal = new JRadioButton("TextAnalysis");
 		rdBtnTextAnal.setToolTipText("Use TextAnalysis tool as default text editor");
@@ -668,157 +161,6 @@ public class NewParserPane extends JPanel {
 		rdbtnNotepad.setToolTipText("Use Notepad++ as default text editor");
 		LogsPane.add(rdbtnNotepad);
 		editorSelector.add(rdbtnNotepad);
-		LogsPane.add(btnViewMain);
-		
-		btnViewSystem = new JButton("View System");
-		btnViewSystem.setToolTipText("Open logcat system log");
-		btnViewSystem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					if(rdBtnTextAnal.isSelected())
-						Runtime.getRuntime().exec(new String[] {"Data\\complements\\TextAnalysisTool.exe ", crPath + "\\aplogcat-system.txt"});
-					else
-						Runtime.getRuntime().exec(new String[] {"C:\\Program Files (x86)\\Notepad++\\notepad++.exe ", crPath + "\\aplogcat-system.txt"});
-			    } catch (IOException e) {
-			        e.printStackTrace();
-			        System.out.println("Error opening file");
-			    }
-			}
-		});
-		LogsPane.add(btnViewSystem);
-		
-		btnViewKernel = new JButton("View Kernel");
-		btnViewKernel.setToolTipText("Open logcat kernel log");
-		btnViewKernel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					if(rdBtnTextAnal.isSelected())
-						Runtime.getRuntime().exec(new String[] {"Data\\complements\\TextAnalysisTool.exe ", crPath + "\\aplogcat-kernel.txt"});
-					else
-						Runtime.getRuntime().exec(new String[] {"C:\\Program Files (x86)\\Notepad++\\notepad++.exe ", crPath + "\\aplogcat-kernel.txt"});
-			    } catch (IOException e) {
-			        e.printStackTrace();
-			        System.out.println("Error opening file");
-			    }
-			}
-		});
-		LogsPane.add(btnViewKernel);
-		
-		btnViewRadio = new JButton("View Radio");
-		btnViewRadio.setToolTipText("Open logcat radio log");
-		btnViewRadio.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					if(rdBtnTextAnal.isSelected())
-						Runtime.getRuntime().exec(new String[] {"Data\\complements\\TextAnalysisTool.exe ", crPath + "\\aplogcat-radio.txt"});
-					else
-						Runtime.getRuntime().exec(new String[] {"C:\\Program Files (x86)\\Notepad++\\notepad++.exe ", crPath + "\\aplogcat-radio.txt"});
-			    } catch (IOException e) {
-			        e.printStackTrace();
-			        System.out.println("Error opening file");
-			    }
-			}
-		});
-		LogsPane.add(btnViewRadio);
-		
-		btnViewBugreport = new JButton("View Bugreport");
-		btnViewBugreport.setToolTipText("Open logcat bugreport log");
-		btnViewBugreport.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					File folder = new File(crPath);
-					File[] listOfFiles = folder.listFiles();
-
-					// Look for the file
-					for (int i = 0; i < listOfFiles.length; i++) {
-						if (listOfFiles[i].isFile()) {
-							String file = listOfFiles[i].getName();
-							if ( file.toLowerCase().endsWith(".txt") && file.contains("bugreport") ) {
-								if(rdBtnTextAnal.isSelected())
-									Runtime.getRuntime().exec(new String[] {"Data\\complements\\TextAnalysisTool.exe ", crPath + "\\" + file});
-								else
-									Runtime.getRuntime().exec(new String[] {"C:\\Program Files (x86)\\Notepad++\\notepad++.exe ", crPath + "\\" + file});
-								break;
-							}
-						}
-					}
-			    } catch (IOException e) {
-			        e.printStackTrace();
-			        System.out.println("Error opening file");
-			    }
-			}
-		});
-		LogsPane.add(btnViewBugreport);
-		
-		btnViewReportOutput = new JButton("Report Output");
-		btnViewReportOutput.setToolTipText("Open report output log");
-		btnViewReportOutput.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					if(rdBtnTextAnal.isSelected())
-						Runtime.getRuntime().exec(new String[] {"Data\\complements\\TextAnalysisTool.exe ", crPath + "\\report-output_v1.5.txt"});
-					else
-						Runtime.getRuntime().exec(new String[] {"C:\\Program Files (x86)\\Notepad++\\notepad++.exe ", crPath + "\\report-output_v1.5.txt"});
-			    } catch (IOException e) {
-			        e.printStackTrace();
-			        System.out.println("Error opening file");
-			    }
-			}
-		});
-		LogsPane.add(btnViewReportOutput);
-		
-		btnBTD = new JButton("Open BTD");
-		btnBTD.setToolTipText("Open BTD graphic");
-		btnBTD.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					File folder = new File(crPath);
-					File[] listOfFiles = folder.listFiles();
-					String file = null;
-					// Look for the file
-					for (int i = 0; i < listOfFiles.length; i++) {
-						if (listOfFiles[i].isFile()) {
-							if ( listOfFiles[i].getName().toLowerCase().endsWith(".btd") ) {
-								file = listOfFiles[i].getName();
-							}
-						}
-					}
-					Runtime.getRuntime().exec(new String[] {"C:\\Program Files (x86)\\BTDashboard\\BTDashboardv2.7.exe ", crPath + "\\" + file});
-			    } catch (IOException e) {
-			        e.printStackTrace();
-			        System.out.println("Error opening file");
-			    }
-			}
-		});
-		LogsPane.add(btnBTD);
-		
-		btnOpenfolder = new JButton("Open Folder");
-		btnOpenfolder.setToolTipText("Open CR folder");
-		btnOpenfolder.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					String aux = (String) crsList.getSelectedItem();
-					if(aux != null && !aux.equals(""))
-							Desktop.getDesktop().open(new File(crPath));
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.out.println("Error opening folder");
-				}
-			}
-		});
-		LogsPane.add(btnOpenfolder);
-		esquerda.setViewportView(tree);
-		
-		
-		GridBagConstraints gbC = new GridBagConstraints();
-		gbC.weighty = 3.0;
-		gbC.weightx = 1.0;
-		gbC.insets = new Insets(2, 10, 10, 10);
-		gbC.fill = GridBagConstraints.BOTH;
-		gbC.gridx = 0;
-		gbC.gridy = 3;
-		gbC.gridheight = 2;
-		add(esquerda, gbC);
 		
 		
 		GridBagLayout tr = new GridBagLayout();
@@ -830,9 +172,9 @@ public class NewParserPane extends JPanel {
 		g1.fill = GridBagConstraints.HORIZONTAL;
 		g1.weightx = 20.0;
 		g1.weighty = 1.0;
-		g1.insets = new Insets(1, 10, 1, 10);
+		g1.insets = new Insets(5, 10, 5, 10);
 		g1.gridx = 1;
-		g1.gridy = 3;
+		g1.gridy = 1;
 		add(topright, g1);
 		lblTitle = new JLabel("Select a result folder on the left panel");
 		lblTitle.setMaximumSize(new Dimension(2000, 31));
@@ -875,6 +217,560 @@ public class NewParserPane extends JPanel {
 		scrollPane.setPreferredSize(new Dimension(500, 500));
 		scrollPane.setMinimumSize(new Dimension(400, 400));
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		
+		esquerda = new JTabbedPane(JTabbedPane.TOP);
+		esquerda.setPreferredSize(new Dimension(250, 600));
+		GridBagConstraints gbc_esquerda = new GridBagConstraints();
+		gbc_esquerda.gridheight = 2;
+		gbc_esquerda.insets = new Insets(5, 10, 10, 5);
+		gbc_esquerda.fill = GridBagConstraints.BOTH;
+		gbc_esquerda.gridx = 0;
+		gbc_esquerda.gridy = 1;
+		add(esquerda, gbc_esquerda);
+		
+
+		fileTree = new FileTree(BaseWindow);
+		esquerda.addTab("FileTree", null, fileTree, null);
+		
+		
+		
+		
+		
+		filtersPane = new JScrollPane();
+		filtersPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		filtersPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		esquerda.addTab("Filters", null, filtersPane, null);
+		
+		panel = new JPanel();
+		panel.setBackground(Color.WHITE);
+		filtersPane.setViewportView(panel);
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[]{100, 100, 0};
+		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel.setLayout(gbl_panel);
+		
+		
+		btnSummary = new JButton("Summary");
+		btnSummary.setMaximumSize(new Dimension(200, 23));
+		btnSummary.setMinimumSize(new Dimension(150, 23));
+		btnSummary.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnSummary = new GridBagConstraints();
+		gbc_btnSummary.gridwidth = 2;
+		gbc_btnSummary.insets = new Insets(5, 0, 5, 0);
+		gbc_btnSummary.gridx = 0;
+		gbc_btnSummary.gridy = 0;
+		panel.add(btnSummary, gbc_btnSummary);
+		btnSummary.setToolTipText("Summarize the current drain overall status");
+		
+		
+		btnIssues = new JButton("General Issues");
+		btnIssues.setMaximumSize(new Dimension(200, 23));
+		btnIssues.setMinimumSize(new Dimension(150, 23));
+		btnIssues.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnIssues = new GridBagConstraints();
+		gbc_btnIssues.gridwidth = 2;
+		gbc_btnIssues.insets = new Insets(0, 0, 5, 0);
+		gbc_btnIssues.gridx = 0;
+		gbc_btnIssues.gridy = 1;
+		panel.add(btnIssues, gbc_btnIssues);
+		btnIssues.setToolTipText("Shows issues as kernel wakelocks and high current drain level");
+		
+		
+		btnSuspicious = new JButton("Suspicious");
+		btnSuspicious.setMaximumSize(new Dimension(200, 23));
+		btnSuspicious.setMinimumSize(new Dimension(150, 23));
+		btnSuspicious.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnSuspicious = new GridBagConstraints();
+		gbc_btnSuspicious.gridwidth = 2;
+		gbc_btnSuspicious.insets = new Insets(0, 0, 5, 0);
+		gbc_btnSuspicious.gridx = 0;
+		gbc_btnSuspicious.gridy = 2;
+		panel.add(btnSuspicious, gbc_btnSuspicious);
+		btnSuspicious.setToolTipText("Shows suspicioues wakelocks");
+		
+		btnHighconsumeApps = new JButton("HighConsume Apps");
+		btnHighconsumeApps.setMaximumSize(new Dimension(200, 23));
+		btnHighconsumeApps.setMinimumSize(new Dimension(150, 23));
+		btnHighconsumeApps.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnHighconsumeApps = new GridBagConstraints();
+		gbc_btnHighconsumeApps.gridwidth = 2;
+		gbc_btnHighconsumeApps.insets = new Insets(0, 0, 5, 0);
+		gbc_btnHighconsumeApps.gridx = 0;
+		gbc_btnHighconsumeApps.gridy = 3;
+		panel.add(btnHighconsumeApps, gbc_btnHighconsumeApps);
+		btnHighconsumeApps.setToolTipText("Shows the most frequent processes and their CPU consumption");
+		
+		btnAlarmsOverhead = new JButton("Alarms Overhead");
+		btnAlarmsOverhead.setMaximumSize(new Dimension(200, 23));
+		btnAlarmsOverhead.setMinimumSize(new Dimension(150, 23));
+		btnAlarmsOverhead.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnAlarmsOverhead = new GridBagConstraints();
+		gbc_btnAlarmsOverhead.gridwidth = 2;
+		gbc_btnAlarmsOverhead.insets = new Insets(0, 0, 5, 0);
+		gbc_btnAlarmsOverhead.gridx = 0;
+		gbc_btnAlarmsOverhead.gridy = 4;
+		panel.add(btnAlarmsOverhead, gbc_btnAlarmsOverhead);
+		btnAlarmsOverhead.setToolTipText("Shows processes that wake up AP more frequently");
+		
+		btnDiag = new JButton("Diag");
+		btnDiag.setMaximumSize(new Dimension(200, 23));
+		btnDiag.setMinimumSize(new Dimension(150, 23));
+		btnDiag.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnDiag = new GridBagConstraints();
+		gbc_btnDiag.gridwidth = 2;
+		gbc_btnDiag.insets = new Insets(0, 0, 5, 0);
+		gbc_btnDiag.gridx = 0;
+		gbc_btnDiag.gridy = 5;
+		panel.add(btnDiag, gbc_btnDiag);
+		btnDiag.setToolTipText("Shows info about DIAG_WS wakelock");
+		
+		btnBug2go = new JButton("Bug2Go");
+		btnBug2go.setMaximumSize(new Dimension(200, 23));
+		btnBug2go.setMinimumSize(new Dimension(150, 23));
+		btnBug2go.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnBug2go = new GridBagConstraints();
+		gbc_btnBug2go.gridwidth = 2;
+		gbc_btnBug2go.insets = new Insets(0, 0, 5, 0);
+		gbc_btnBug2go.gridx = 0;
+		gbc_btnBug2go.gridy = 6;
+		panel.add(btnBug2go, gbc_btnBug2go);
+		btnBug2go.setToolTipText("Shows info about Bug2Go process and uploads");
+		
+		btnTethering = new JButton("Tethering");
+		btnTethering.setMaximumSize(new Dimension(200, 23));
+		btnTethering.setMinimumSize(new Dimension(150, 23));
+		btnTethering.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnTethering = new GridBagConstraints();
+		gbc_btnTethering.gridwidth = 2;
+		gbc_btnTethering.insets = new Insets(0, 0, 5, 0);
+		gbc_btnTethering.gridx = 0;
+		gbc_btnTethering.gridy = 7;
+		panel.add(btnTethering, gbc_btnTethering);
+		btnTethering.setToolTipText("Shows info about Tethering usage");
+		
+		separator = new JSeparator();
+		separator.setForeground(Color.DARK_GRAY);
+		separator.setBackground(Color.BLACK);
+		GridBagConstraints gbc_separator = new GridBagConstraints();
+		gbc_separator.insets = new Insets(0, 0, 5, 0);
+		gbc_separator.fill = GridBagConstraints.HORIZONTAL;
+		gbc_separator.gridwidth = 2;
+		gbc_separator.gridx = 0;
+		gbc_separator.gridy = 8;
+		panel.add(separator, gbc_separator);
+		
+		btnCustom1 = new JButton("Custom 1");
+		btnCustom1.setVisible(false);
+		btnCustom1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+		
+		btnAdd = new JButton("Add");
+		btnAdd.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnAdd.setForeground(new Color(34, 139, 34));
+		btnAdd.setMaximumSize(new Dimension(70, 23));
+		btnAdd.setMinimumSize(new Dimension(65, 23));
+		btnAdd.setPreferredSize(new Dimension(70, 23));
+		GridBagConstraints gbc_btnAdd = new GridBagConstraints();
+		gbc_btnAdd.anchor = GridBagConstraints.EAST;
+		gbc_btnAdd.insets = new Insets(0, 0, 5, 5);
+		gbc_btnAdd.gridx = 0;
+		gbc_btnAdd.gridy = 9;
+		panel.add(btnAdd, gbc_btnAdd);
+		
+		btnRemove = new JButton("Remove");
+		btnRemove.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnRemove.setForeground(new Color(220, 20, 60));
+		btnRemove.setMaximumSize(new Dimension(70, 23));
+		btnRemove.setMinimumSize(new Dimension(65, 23));
+		btnRemove.setMargin(new Insets(2, 5, 2, 5));
+		btnRemove.setPreferredSize(new Dimension(70, 23));
+		GridBagConstraints gbc_btnRemove = new GridBagConstraints();
+		gbc_btnRemove.anchor = GridBagConstraints.WEST;
+		gbc_btnRemove.insets = new Insets(0, 5, 5, 0);
+		gbc_btnRemove.gridx = 1;
+		gbc_btnRemove.gridy = 9;
+		panel.add(btnRemove, gbc_btnRemove);
+		btnCustom1.setMaximumSize(new Dimension(200, 23));
+		btnCustom1.setMinimumSize(new Dimension(150, 23));
+		btnCustom1.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnCustom1 = new GridBagConstraints();
+		gbc_btnCustom1.insets = new Insets(0, 0, 5, 0);
+		gbc_btnCustom1.gridwidth = 2;
+		gbc_btnCustom1.gridx = 0;
+		gbc_btnCustom1.gridy = 10;
+		panel.add(btnCustom1, gbc_btnCustom1);
+		
+		btnCustom2 = new JButton("Custom2");
+		btnCustom2.setVisible(false);
+		btnCustom2.setMaximumSize(new Dimension(200, 23));
+		btnCustom2.setMinimumSize(new Dimension(150, 23));
+		btnCustom2.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnCustom2 = new GridBagConstraints();
+		gbc_btnCustom2.insets = new Insets(0, 0, 5, 0);
+		gbc_btnCustom2.gridwidth = 2;
+		gbc_btnCustom2.gridx = 0;
+		gbc_btnCustom2.gridy = 11;
+		panel.add(btnCustom2, gbc_btnCustom2);
+		
+		btnCustom3 = new JButton("Custom 3");
+		btnCustom3.setVisible(false);
+		btnCustom3.setMaximumSize(new Dimension(200, 23));
+		btnCustom3.setMinimumSize(new Dimension(150, 23));
+		btnCustom3.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnCustom3 = new GridBagConstraints();
+		gbc_btnCustom3.insets = new Insets(0, 0, 5, 0);
+		gbc_btnCustom3.gridwidth = 2;
+		gbc_btnCustom3.gridx = 0;
+		gbc_btnCustom3.gridy = 12;
+		panel.add(btnCustom3, gbc_btnCustom3);
+		
+		btnCustom4 = new JButton("Custom 4");
+		btnCustom4.setVisible(false);
+		btnCustom4.setMaximumSize(new Dimension(200, 23));
+		btnCustom4.setMinimumSize(new Dimension(150, 23));
+		btnCustom4.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnCustom4 = new GridBagConstraints();
+		gbc_btnCustom4.insets = new Insets(0, 0, 5, 0);
+		gbc_btnCustom4.gridwidth = 2;
+		gbc_btnCustom4.gridx = 0;
+		gbc_btnCustom4.gridy = 13;
+		panel.add(btnCustom4, gbc_btnCustom4);
+		
+		btnCustom = new JButton("Custom 5");
+		btnCustom.setVisible(false);
+		btnCustom.setMaximumSize(new Dimension(200, 23));
+		btnCustom.setMinimumSize(new Dimension(150, 23));
+		btnCustom.setPreferredSize(new Dimension(150, 23));
+		GridBagConstraints gbc_btnCustom = new GridBagConstraints();
+		gbc_btnCustom.gridwidth = 2;
+		gbc_btnCustom.gridx = 0;
+		gbc_btnCustom.gridy = 14;
+		panel.add(btnCustom, gbc_btnCustom);
+		
+		JScrollPane resultsPane = new JScrollPane();
+		esquerda.addTab("Results", null, resultsPane, null);
+		resultsPane.setToolTipText("List of parser results");
+		resultsPane.setFont(new Font("Consolas", Font.PLAIN, 12));
+		resultsPane.setBorder(new LineBorder(UIManager.getColor("Button.light")));
+		resultsPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		resultsPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		resultsPane.setPreferredSize(new Dimension(250, 600));
+		resultsPane.setMinimumSize(new Dimension(150, 500));
+		resultsPane.setMaximumSize(new Dimension(250, 32767));
+		
+		tree = new JTree();
+		tree.setToolTipText("List of parser results");
+		tree.setFont(new Font("Consolas", Font.PLAIN, 11));
+		tree.setModel(new DefaultTreeModel(
+			new DefaultMutableTreeNode("Complete Results:") {
+				private static final long serialVersionUID = 1L;
+			}
+		));
+		TreeModel = (DefaultTreeModel) tree.getModel();
+		RootNode = (DefaultMutableTreeNode) TreeModel.getRoot();
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent arg0) {
+				nodeChangedAction();
+			}
+		});
+		tree.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				nodeChangedAction();
+			}
+		});
+		resultsPane.setViewportView(tree);
+		
+
+		
+		btnTethering.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(findNode("Tethering") == null) {
+					btnTethering.setEnabled(false);
+					Thread susp = new Thread() {
+					    public void run() {
+					    	try {
+						        System.out.println("Tethering thread running");
+		
+						        
+						        Tether.makeLog(crPath, BaseWindow);
+								addTether("Tethering Info");
+								btnTethering.setEnabled(true);
+								result = (result + "\n\n\n======================== Wifi Tether =========================\n" + Tether.getResult());
+								
+								
+								System.out.println("Tethering thread finished");
+					    	} catch (Exception e) {
+								e.printStackTrace();
+								System.out.println("Tethering thread error");
+								btnTethering.setEnabled(true);
+								
+							}
+					    }  
+					};
+					susp.start();
+				}
+			}
+		});
+		btnBug2go.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(findNode("Bug2Go") == null) {
+					btnBug2go.setEnabled(false);
+					Thread susp = new Thread() {
+					    public void run() {
+					    	try {
+						        System.out.println("Bug2go thread running");
+		
+						        
+						        B2G.makelog(crPath);
+								addBug2go("Bug2Go Info");
+								btnBug2go.setEnabled(true);
+								result = (result + "\n\n\n========================= Bug2Go =========================\n" + B2G.getResult());
+								
+								
+								System.out.println("Bug2go thread finished");
+					    	} catch (Exception e) {
+								e.printStackTrace();
+								System.out.println("Bug2go thread error");
+								btnBug2go.setEnabled(true);
+								
+							}
+					    }  
+					};
+					susp.start();
+				}
+			}
+		});
+		btnDiag.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(findNode("Diag") == null) {
+					btnDiag.setEnabled(false);
+					Thread susp = new Thread() {
+					    public void run() {
+					    	try {
+						        System.out.println("Diag thread running");
+		
+						        
+						        String SDiag = Diag.makelog(crPath, BaseWindow);
+								if(SDiag.split("\n").length > 2)
+									addDiag("Diag Wake Lock");
+								else
+									addDiag("Not a Diag issue");
+								btnDiag.setEnabled(true);
+								result = (result + "\n\n\n======================= Diag Wake locks =======================\n" + Diag.getResult());
+								
+								
+								System.out.println("Diag thread finished");
+					    	} catch (Exception e) {
+								e.printStackTrace();
+								System.out.println("Diag thread error");
+								btnDiag.setEnabled(true);
+								
+							}
+					    }  
+					};
+					susp.start();
+				} else {
+					btnDiag.setEnabled(false);
+					Thread susp = new Thread() {
+					    public void run() {
+					    	try {
+						        System.out.println("Diag thread running");
+		
+						        
+						        Diag.makelog(crPath, BaseWindow);
+								btnDiag.setEnabled(true);
+								//result = (result + "\n\n\n======================= Diag Wake locks =======================\n" + Diag.getResult());
+								
+								
+								System.out.println("Diag thread finished");
+					    	} catch (Exception e) {
+								e.printStackTrace();
+								System.out.println("Diag thread error");
+								btnDiag.setEnabled(true);
+								
+							}
+					    }  
+					};
+					susp.start();
+				}
+			}
+		});
+		btnAlarmsOverhead.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(findNode("Alarms Overhead") == null) {
+					btnAlarmsOverhead.setEnabled(false);
+					Thread susp = new Thread() {
+					    public void run() {
+					    	try {
+						        System.out.println("Alarms thread running");
+		
+						        
+						        Alarm.makelog(crPath, BaseWindow);
+								for (int i = 0; i < Alarm.getListSize(); i++) {
+									addAlarms(Alarm.getList().get(i).getProcess());
+								}
+								if(Alarm.getListSize() == 0)
+								addAlarms("Nothing found in the logs");
+								
+								btnAlarmsOverhead.setEnabled(true);
+								result = (result + "\n\n\n======================= Alarms Resume =======================\n" + Alarm.getResult());
+								
+								
+								System.out.println("Alarms thread finished");
+					    	} catch (Exception e) {
+								e.printStackTrace();
+								System.out.println("Alarms thread error");
+								btnAlarmsOverhead.setEnabled(true);
+								
+							}
+					    }  
+					};
+					susp.start();
+				}
+			}
+		});
+		btnHighconsumeApps.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(findNode("High Consume") == null) {
+					btnHighconsumeApps.setEnabled(false);
+					Thread susp = new Thread() {
+					    public void run() {
+					    	try{
+						        System.out.println("High consume thread running");
+		
+						        
+						        Consume.makelog(crPath);
+								for (int i = 0; i < Consume.getHCList().size(); i++) {
+									addConsumeNode(Consume.getHCList().get(i).getProcess());
+								}
+								if(Consume.getHCList().size() == 0)
+									addConsumeNode("Nothing found in logs");
+								btnHighconsumeApps.setEnabled(true);
+								result = (result + "\n\n\n======================= High consume =======================\n" + Consume.getResult());
+								
+								
+								System.out.println("High consume thread finished");
+					    	} catch (Exception e) {
+								e.printStackTrace();
+								System.out.println("High consume thread error");
+								btnHighconsumeApps.setEnabled(true);
+								
+							}
+					    }  
+					};
+					susp.start();
+				}
+			}
+		});
+		btnSuspicious.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(findNode("Suspicious") == null) {
+					btnSuspicious.setEnabled(false);
+					Thread susp = new Thread() {
+					    public void run() {
+							try {
+								System.out.println("Suspicius thread running");
+	
+								
+								Suspicious.makelog(crPath, BaseWindow);
+								addIssues();
+								if (Suspicious.getWakeLocks().size() != 0)
+									for (int i = 0; i < Suspicious.getWakeLocks().size(); i++) {
+										addWakeLocksNode(
+												Suspicious.getWakeLocks().get(i).getProcess()+ " - "+ 
+												Suspicious.getWakeLocks().get(i).getTag() + " - " +
+												Suspicious.getWakeLocks().get(i).getDuration());
+									}
+								else{
+									addWakeLocksNode("No suspicious found");
+								}
+								btnSuspicious.setEnabled(true);
+								result = (
+										result + "\n\n\n======================== Wake locks ========================\n"
+										+ Suspicious.getResult());
+								
+	
+								System.out.println("Suspicius thread finished");
+							} catch (Exception e) {
+								e.printStackTrace();
+								System.out.println("Suspicius thread error");
+								btnSuspicious.setEnabled(true);
+								
+							}
+					    }  
+					};
+					susp.start();
+				}
+			}
+		});
+		btnIssues.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(findNode("General Issues") == null) {
+					btnIssues.setEnabled(false);
+					Thread susp = new Thread() {
+					    public void run() {
+							try {
+								System.out.println("General thread running");
+	
+								
+								Issue.makelog(crPath, BaseWindow);
+								addIssues();
+								btnIssues.setEnabled(true);
+								result = (result
+										+ "\n\n\n==================== General Issues ======================\n" + Issue
+										.getResult());
+								
+	
+								System.out.println("General thread finished");
+							} catch (Exception e) {
+								e.printStackTrace();
+								System.out.println("General thread error");
+								btnIssues.setEnabled(true);
+								
+							}
+					    }
+					};
+					susp.start();
+				}
+			}
+		});
+		btnSummary.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(findNode("Summary") == null) {
+					btnSummary.setEnabled(false);
+					Thread susp = new Thread() {
+					    public void run() {
+							try {
+								System.out.println("Normal thread running");
+								
+								Normal.makeLog(crPath);
+								addSummary();
+								btnSummary.setEnabled(true);
+								result = (result
+										+ "\n\n\n================== Battery Discharge Summary ====================\n" + Normal
+										.getResult());
+								
+	
+								System.out.println("Normal thread finished");
+							} catch (Exception e) {
+								e.printStackTrace();
+								System.out.println("Normal thread error");
+								btnSummary.setEnabled(true);
+								
+							}
+					    }  
+					};
+					susp.start();
+				}
+			}
+		});
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.anchor = GridBagConstraints.NORTHWEST;
 		gbc_scrollPane.insets = new Insets(2, 10, 10, 10);
@@ -882,13 +778,13 @@ public class NewParserPane extends JPanel {
 		gbc_scrollPane.weightx = 15.0;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 1;
-		gbc_scrollPane.gridy = 4;
+		gbc_scrollPane.gridy = 2;
 		add(scrollPane, gbc_scrollPane);
 		
 		textPane = new JTextPane();
 		textPane.setToolTipText("Result of the selected parser item on the left");
 		textPane.setContentType("text/plain");
-		textPane.setMargin(new Insets(7,7,7,7));
+		textPane.setMargin(new Insets(7, 2, 7, 2));
 		textPane.setForeground(new Color(0, 0, 0));
 		textPane.setFont(new Font("Consolas", Font.PLAIN, 11));
 		textPane.setText("");
@@ -923,71 +819,10 @@ public class NewParserPane extends JPanel {
 			}
 		});
 		scrollPane.setViewportView(textPane);
-		
-		folder.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent arg0) {
-				rootPath = folder.getText().replace("\\", "\\\\").concat("\\\\");
-				clearTree();
-				result = "";
-				crsList.removeAllItems();
-				File actualPath = new File(rootPath);
-				File[] listOfFiles = actualPath.listFiles();
-				if(actualPath.isDirectory()){
-					//List files
-					for (int i = 0; i < listOfFiles.length; i++) {
-						if (listOfFiles[i].isDirectory()) {
-							crsList.addItem(listOfFiles[i].getName());
-						}
-					}
-				}
-				textPane.setText("");
-				lblTitle.setText("Run a parser or select a result on the left");
-				crsList.updateUI();
-			}
-			
-			@Override
-			public void insertUpdate(DocumentEvent arg0) {
-				rootPath = folder.getText().replace("\\", "\\\\").concat("\\\\");
-				clearTree();
-				result = "";
-				System.out.println("Parsed path: " + rootPath);
-				crsList.removeAllItems();
-				File actualPath = new File(rootPath);
-				File[] listOfFiles = actualPath.listFiles();
-				if(actualPath.isDirectory()){
-					//List files
-					for (int i = 0; i < listOfFiles.length; i++) {
-						if (listOfFiles[i].isDirectory()) {
-							crsList.addItem(listOfFiles[i].getName());
-						}
-					}
-				}
-				textPane.setText("");
-				lblTitle.setText("Run a parser or select a result on the left");
-				crsList.updateUI();
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent arg0) {}
-		});
-		rootPath = folder.getText().replace("\\", "\\\\").concat("\\\\");
 		clearTree();
 		result = "";
-		crsList.removeAllItems();
-		File actualPath = new File(rootPath);
-		File[] listOfFiles = actualPath.listFiles();
-		if(actualPath.isDirectory()){
-			//List files
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if (listOfFiles[i].isDirectory()) {
-					crsList.addItem(listOfFiles[i].getName());
-				}
-			}
-		}
 		textPane.setText("");
 		lblTitle.setText("Run a parser or select a result on the left");
-		crsList.updateUI();
 		loadPaneData();
 	}
 
@@ -1144,20 +979,6 @@ public class NewParserPane extends JPanel {
 		RootNode.removeAllChildren();
 		TreeModel.reload();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -1390,27 +1211,6 @@ public class NewParserPane extends JPanel {
 	}
 	
 	
-	public void updateCrList() {
-		crsList.removeAllItems();
-		File actualPath = new File(rootPath);
-		File[] listOfFiles = actualPath.listFiles();
-		if(actualPath.isDirectory()){
-			//List files
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if (listOfFiles[i].isDirectory()) {
-					crsList.addItem(listOfFiles[i].getName());
-				}
-			}
-		}
-		//textPane.setText("");
-		lblTitle.setText("Run a parser or select a result on the left");
-		crsList.updateUI();
-	}
-	
-	
-	
-	
-	
 	/**
 	 * Supportive functions
 	 */
@@ -1427,13 +1227,19 @@ public class NewParserPane extends JPanel {
 	}
 	
 	public String getRootPath() {
-		return folder.getText();
+		
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getFileTree().getLastSelectedPathComponent();
+		File file = (File) node.getUserObject();
+		
+		if (!file.isDirectory()) {
+			node = (DefaultMutableTreeNode) node.getParent();
+			file = (File) node.getUserObject();
+		}
+		
+		return file.getAbsolutePath();
+
 	}
 	
-	public void setRootPath(String path) {
-		rootPath = path.replace("\\", "\\\\");
-		folder.setText(path);
-	}
 
 	public void setResultsText(String text){
 		textPane.setText(text);
@@ -1442,18 +1248,6 @@ public class NewParserPane extends JPanel {
 	
 	public JRadioButton getNotepad(){
 		return rdbtnNotepad;
-	}
-	
-	private void delFolder(String folder){
-		File file = new File(folder);
-		try {
-			if(file.isDirectory()){
-				System.out.println("Deleting " + folder);
-				FileUtils.deleteDirectory(file);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public void savePaneData(){
@@ -1477,7 +1271,8 @@ public class NewParserPane extends JPanel {
 			Element optionPaneNode = satNode.getChild("parser_pane"); 
 			for(Element e : optionPaneNode.getChildren()){
 				if(e.getName().equals("path")){
-					e.setText(folder.getText());
+					//salvar o último caminho selecionado na árvore
+					e.setText(getRootPath());
 					
 				} else if(e.getName().equals("editor")){
 					if(rdBtnTextAnal.isSelected())
@@ -1521,7 +1316,8 @@ public class NewParserPane extends JPanel {
 			for(Element e : crs_jira_paneNode.getChildren()){
 				if(e.getName().equals("path")){
 					crPath = (e.getValue());
-					folder.setText(crPath);
+					//selecionar na JTree o último arquivo que estava selecionado
+					//folder.setText(getRootPath());
 					
 				} else if(e.getName().equals("editor")){
 					if(e.getValue().equals("0"))
@@ -1537,5 +1333,20 @@ public class NewParserPane extends JPanel {
 			e.printStackTrace();
 		}
 	}
+
+
+
+
+
+
+	public String getCrPath() {
+		return crPath;
+	}
+
+	public void setCrPath(String crPath) {
+		this.crPath = crPath;
+	}
+	
+	
 	
 }
