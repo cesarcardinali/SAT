@@ -86,7 +86,7 @@ public class FileTree extends JPanel{
 
             //When user clicks on the folder, the files from that folder will be loaded
             public void valueChanged(TreeSelectionEvent e) {
-                
+                BaseWindow.getParser().RootNode.removeAllChildren(); //reseting the result tree            
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
                 
                 if (node!=null){
@@ -111,6 +111,11 @@ public class FileTree extends JPanel{
                       // because we'll be called from the
                       // event dispatch thread
                         fileTree.updateUI();
+                        BaseWindow.getParser().tree.updateUI(); //updating the result tree
+                        BaseWindow.getParser().tree.clearSelection();//clearing the selections on result tree
+                        BaseWindow.getParser().textPane.setText(""); //reset the text pane
+                        BaseWindow.getParser().result = ""; //reset the result for the filters
+                        BaseWindow.getParser().lblTitle.setText("Run a parser or select a result on the left"); //reset the text in the title
                     }
                 });
             }
