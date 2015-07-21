@@ -226,7 +226,6 @@ public class FileTree extends JPanel{
         fileTree.expandRow(1);
         fileTree.setRootVisible(false);
         fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-        fileTree.setToggleClickCount(1);
         
         scrollPaneTree = new JScrollPane(fileTree); 
         scrollPaneTree.setPreferredSize(new Dimension(1080, 780));
