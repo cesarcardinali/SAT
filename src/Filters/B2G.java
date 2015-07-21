@@ -13,6 +13,20 @@ import java.io.PrintWriter;
 public class B2G {
 
 	static String result;
+	private static boolean edited = false;
+	
+	
+	public static boolean isEdited() {
+		
+		return edited;
+		
+	}
+	
+	public static void setEdited(boolean value) {
+		
+		edited = value;	
+		
+	}
 	
 	
 	public static void main(String[] args) {
@@ -136,8 +150,6 @@ public class B2G {
 				result = bug2goData;
 			else
 				result = "- No B2G evidences were found in text logs";
-				
-			//System.out.println(result);
 			try {
 				br.close();
 			} catch (IOException e) {
@@ -168,4 +180,8 @@ public class B2G {
 		return result;
 	}
 
+	public static void updateResult(String editedResult) {
+		result = editedResult;			
+	}
+	
 }

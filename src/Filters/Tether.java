@@ -193,7 +193,12 @@ public class Tether {
 	}
 
 	public static String getResult() {
+		System.out.println(result);
 		return result;
 	}
 
+	public static void updateResult(String editedResult) {
+		result = editedResult;		
+	}
+	
 }

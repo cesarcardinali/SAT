@@ -299,4 +299,9 @@ public class Suspicious {
 	static public String getResult(){
 		return result;
 	}
+
+	public static void updateResult(String editedResult) {
+		result = editedResult;		
+	}
+
 }

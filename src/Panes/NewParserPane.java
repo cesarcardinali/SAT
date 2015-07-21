@@ -1,8 +1,6 @@
 package Panes;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -16,8 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -25,22 +21,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.UndoableEditEvent;
@@ -50,7 +43,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.UndoManager;
 
-import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -68,8 +60,6 @@ import Filters.Suspicious;
 import Filters.Tether;
 import Main.BatTracer;
 import Supportive.ColorPrinter;
-import javax.swing.JTabbedPane;
-import javax.swing.JSeparator;
 
 public class NewParserPane extends JPanel {
 	
@@ -520,6 +510,9 @@ public class NewParserPane extends JPanel {
 		});
 		btnBug2go.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
+				B2G.setEdited(false);
+				
 				if(findNode("Bug2Go") == null) {
 					btnBug2go.setEnabled(false);
 					Thread susp = new Thread() {
@@ -800,7 +793,11 @@ public class NewParserPane extends JPanel {
 		textPane.addKeyListener(new KeyListener() {
 
 			@Override
-			public void keyReleased(KeyEvent arg0) {}
+			public void keyReleased(KeyEvent arg0) {
+				
+				saveTextChanges(tree.getLastSelectedPathComponent(), textPane.getText());
+				
+			}
 
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
@@ -1004,7 +1001,7 @@ public class NewParserPane extends JPanel {
 			if(node.getParent().toString().contains("High Consume")){
 				if(node.toString().contains("On Colors")){
 					lblTitle.setText("High Consume Apps:");
-					ColorPrinter.colorsApps(textPane, Consume.getResult());
+					ColorPrinter.colorsApps(textPane, Consume.getResult().replaceAll("\t\t\t*", ""));
 					textPane.setCaretPosition(0);
 					return;
 				} else {
@@ -1112,9 +1109,9 @@ public class NewParserPane extends JPanel {
 			
 			
 			//B2G tree configuration
-			if(node.toString().contains("Bug2Go")){
+			if(node.toString().contains("Bug2Go") || node.getParent().toString().contains("Bug2Go")){
 				lblTitle.setText("Bug2Go Summary:");
-				if (B2G.getResult().contains("No B2G evidences were found in text logs")) {
+				if (B2G.getResult().contains("No B2G evidences were found in text logs") || B2G.isEdited()) {
 					textPane.setText(B2G.getResult()
 							.replace("\\n", "\n"));
 					textPane.setCaretPosition(0);
@@ -1129,25 +1126,6 @@ public class NewParserPane extends JPanel {
 				
 				return;
 			}
-			
-			if(node.getParent().toString().contains("Bug2Go")){
-				lblTitle.setText("Bug2Go Summary:");
-				
-				if (B2G.getResult().contains("No B2G evidences were found in text logs")) {
-					textPane.setText(B2G.getResult()
-							.replace("\\n", "\n"));
-					textPane.setCaretPosition(0);
-				}
-				
-				else {
-					textPane.setText(BaseWindow.getOptions().getTextB2g()
-							.replaceAll("#log#", B2G.getResult())
-							.replace("\\n", "\n"));
-					textPane.setCaretPosition(0);
-				}
-				
-				return;
-			}				
 			
 			
 			//Tether tree configuration
@@ -1335,8 +1313,39 @@ public class NewParserPane extends JPanel {
 	}
 
 
-
-
+	// Save textPane text user edited
+	private void saveTextChanges(Object node, String text) {
+						
+		String selectedNode = node.toString().toLowerCase();
+		String selectedNodeParent = ((DefaultMutableTreeNode) node).getParent().toString().toLowerCase();
+		
+		if ((selectedNode.contains("colors") && selectedNodeParent.contains("alarms ")) || selectedNode.contains("alarms "))
+			Alarm.updateResult(text);
+		
+		if ((selectedNode.contains("colors") && selectedNodeParent.contains(" consum")) || selectedNode.contains(" consum"))
+			Consume.updateResult(text);
+		
+		if (selectedNode.contains("diag ") || selectedNodeParent.contains("diag "))
+			Diag.updateResult(text);
+		
+		if (selectedNode.contains("suspicious"))
+			Suspicious.updateResult(text);
+		
+		if (selectedNode.contains("tether") || selectedNodeParent.contains("tether"))
+			Tether.updateResult(text);
+		
+		if (selectedNode.contains("summary") || selectedNodeParent.contains("summary"))
+			Normal.updateResult(text);
+		
+		if (selectedNode.contains(" issues") || selectedNodeParent.contains(" issues"))
+			Issue.updateResult(text);
+		
+		if (selectedNode.contains("bug2go") || selectedNodeParent.contains("bug2go")) {
+			B2G.updateResult(text);
+			B2G.setEdited(true);
+		}
+		
+	} // end saveTextChanges()
 
 
 	public String getCrPath() {

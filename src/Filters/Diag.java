@@ -222,4 +222,8 @@ public class Diag {
 		return result;
 	}
 
+	public static void updateResult(String editedResult) {
+		result = editedResult;		
+	}
+	
 }

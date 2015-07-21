@@ -178,4 +178,8 @@ public class Normal {
 		return result;
 	}
 
+	public static void updateResult(String editedResult) {
+		result = editedResult;		
+	}
+	
 }

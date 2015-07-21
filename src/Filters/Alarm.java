@@ -192,4 +192,8 @@ public class Alarm {
 	public static String getResult() {
 		return result;
 	}
+	
+	public static void updateResult(String editedResult) {
+		result = editedResult;		
+	}
 }

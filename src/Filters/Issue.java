@@ -206,4 +206,8 @@ public class Issue {
 		return result;
 	}
 
+	public static void updateResult(String editedResult) {
+		result = editedResult;		
+	}
+	
 }
