@@ -48,6 +48,7 @@ import Filters.Suspicious;
 import Filters.Tether;
 import Main.BatTracer;
 
+import Supportive.NonWrappingTextPane;
 
 public class NewParserPane extends JPanel {
 	
@@ -187,7 +188,9 @@ public class NewParserPane extends JPanel {
 		add(scrollPane, gbc_scrollPane);
 		
 		
-		textPane = new JTextPane();
+
+/**/	textPane = new NonWrappingTextPane();
+		
 		textPane.setToolTipText("Result of the selected parser item on the left");
 		textPane.setContentType("text/plain");
 		textPane.setMargin(new Insets(7, 2, 7, 2));
