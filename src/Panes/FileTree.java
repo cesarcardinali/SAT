@@ -193,28 +193,10 @@ public class FileTree extends JPanel{
             public void keyPressed(KeyEvent event) {
                 if(event.getKeyCode() == KeyEvent.VK_DELETE){
                 	
-                	if (fileTree.getSelectionPaths() != null){
-                		
-                		TreePath paths[] = fileTree.getSelectionPaths();
-                		
-                		for (TreePath p : paths){                	
-                			DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
-                            deleteFile((File)node.getUserObject());
-                            //if file is removed, node needs to be removed
-                            node.removeFromParent();
-                		}
-                	}
-  
+                	deleteFilesSelected(); 
                     
-                }
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                      // Here, we can safely update the GUI
-                      // because we'll be called from the
-                      // event dispatch thread
-                        fileTree.updateUI();
-                    }
-                });
+                } // end if
+               
             }
         });
 
@@ -508,24 +490,40 @@ public class FileTree extends JPanel{
     
     //Delete the files selected 
 	public void deleteFilesSelected() {
-		// TODO Auto-generated method stub
-		TreePath paths[] = fileTree.getSelectionPaths();
 		
-		for (TreePath p : paths){                	
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
-            deleteFile((File)node.getUserObject());
-            //if file is removed, node needs to be removed
-            node.removeFromParent();
-            
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                  // Here, we can safely update the GUI
-                  // because we'll be called from the
-                  // event dispatch thread
-                    fileTree.updateUI();
-                }
-            });
-		}
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+
+				try {
+					TreePath paths[] = fileTree.getSelectionPaths();
+					
+					for (TreePath p : paths){                	
+						DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
+			            deleteFile((File)node.getUserObject());
+			            //if file is removed, node needs to be removed
+			            node.removeFromParent();
+			            
+			            SwingUtilities.invokeLater(new Runnable() {
+			                public void run() {
+			                  // Here, we can safely update the GUI
+			                  // because we'll be called from the
+			                  // event dispatch thread
+			                    fileTree.updateUI();
+			                }
+			            });
+					} // end for
+				} catch(Exception e){
+					
+					e.printStackTrace();
+					System.out.println("Error while deleting file(s)");
+					
+				}
+				
+			} // end run
+		}).start();
+		
 	}
     		
     		
