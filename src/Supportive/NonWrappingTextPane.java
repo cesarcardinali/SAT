@@ -13,6 +13,7 @@ import javax.swing.JTextPane;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.text.StyledDocument;
 
+@SuppressWarnings("serial")
 public class NonWrappingTextPane extends JTextPane {
 	
 	private boolean wrapText = false;

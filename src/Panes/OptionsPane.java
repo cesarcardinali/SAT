@@ -32,8 +32,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import Main.BatTracer;
-import javax.swing.border.LineBorder;
-import javax.swing.UIManager;
 import javax.swing.JRadioButton;
 import java.awt.FlowLayout;
 import javax.swing.JCheckBox;

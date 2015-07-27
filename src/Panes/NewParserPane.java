@@ -23,7 +23,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.UndoManager;
 
@@ -48,11 +47,7 @@ import Supportive.NonWrappingTextPane;
 
 public class NewParserPane extends JPanel {
 	
-
 	private static final long serialVersionUID = 1L;
-	
-	static DefaultTreeModel treeModel;
-	DefaultMutableTreeNode rootNode;
 	
 	BatTracer BaseWindow;
 	String crPath, result;
@@ -210,116 +205,6 @@ public class NewParserPane extends JPanel {
 		loadPaneData();
 	}
 
-
-	
-	
-	
-	
-	//Node functions
-	public void addConsumeNode(String node){
-		DefaultMutableTreeNode HCNode = findNode("High Consume");
-		if(HCNode == null){
-			System.out.println("Could not find node");
-		}
-		DefaultMutableTreeNode HCitem = new DefaultMutableTreeNode(node);
-		HCitem.add(new DefaultMutableTreeNode("Screen ON"));
-		HCitem.add(new DefaultMutableTreeNode("Screen OFF"));
-		HCitem.add(new DefaultMutableTreeNode("Full Log"));
-		HCitem.add(new DefaultMutableTreeNode("On Colors"));
-		HCNode.insert(HCitem, HCNode.getChildCount());
-		treeModel.reload();
-	}
-	
-	public void addWakeLocksNode(String node){
-		DefaultMutableTreeNode WLNode = findNode("Suspicious Wake Locks");
-		if(WLNode == null){
-			System.out.println("Could not find node");
-		}
-		DefaultMutableTreeNode WLitem = new DefaultMutableTreeNode(node);
-		WLitem.add(new DefaultMutableTreeNode("Formatted"));
-		WLNode.insert(WLitem, WLNode.getChildCount());
-		treeModel.reload();
-	}
-	
-	public void addIssues(){
-		DefaultMutableTreeNode INode = findNode("General Issues");
-		if(INode == null){
-			System.out.println("Could not find node");
-			INode = findNode("General Issues");
-			DefaultMutableTreeNode Iitem = new DefaultMutableTreeNode("");
-			INode.insert(Iitem, 0);
-			treeModel.reload();
-		}
-	}
-	
-	public void addBug2go(String node){
-		DefaultMutableTreeNode BGNode = findNode("Bug2Go");
-		if(BGNode == null){
-			System.out.println("Could not find node");
-		}
-		BGNode.insert(new DefaultMutableTreeNode(""), BGNode.getChildCount());
-		treeModel.reload();
-	}
-	
-	public void addTether(String node){
-		DefaultMutableTreeNode TNode = findNode("Tether");
-		if(TNode == null){
-			System.out.println("Could not find node");
-		}
-		if (Tether.getResult().contains("No tethering evidences were found in text logs"))
-			TNode.insert(new DefaultMutableTreeNode("No tethering activity found"), TNode.getChildCount());
-		else
-			TNode.insert(new DefaultMutableTreeNode("Log result"), TNode.getChildCount());
-		
-		treeModel.reload();
-	}
-	
-	public void addDiag(String node){
-		DefaultMutableTreeNode TNode = findNode("Diag");
-		if(TNode == null){
-			System.out.println("Could not find node");
-		}
-		TNode.insert(new DefaultMutableTreeNode(""), TNode.getChildCount());
-		treeModel.reload();
-	}
-	
-	public void addAlarms(String node){
-		DefaultMutableTreeNode ANode = findNode("Alarms");
-		if(ANode == null){
-			System.out.println("Could not find node");
-		}
-		DefaultMutableTreeNode Aitem = new DefaultMutableTreeNode(node);
-		if(!node.contains("Nothing") && !(ANode.getUserObject().toString()).contains("Error"))
-			Aitem.add(new DefaultMutableTreeNode("On Colors"));
-		ANode.insert(Aitem, ANode.getChildCount());
-	}
-	
-	public void addSummary(){
-		DefaultMutableTreeNode TNode = findNode("Discharge Summary");
-		if(TNode == null){
-			System.out.println("Could not find node");
-		}
-		TNode.insert(new DefaultMutableTreeNode(""), TNode.getChildCount());
-		treeModel.reload();
-	}
-	
-	public DefaultMutableTreeNode findNode(String Node){
-		int Length = rootNode.getChildCount();
-		for(int i=0; i < Length; i++)
-		{
-			if(rootNode.getChildAt(i).toString().contains(Node)){
-				return (DefaultMutableTreeNode) rootNode.getChildAt(i);
-			}
-			//textPane.setText(textPane.getText() + "\n" + rootNode.getChildAt(i));
-		}	
-		return null;
-	}
-	
-	public int findNodeIndex(DefaultMutableTreeNode Node){
-		System.out.println(rootNode.getIndex(Node));
-		return rootNode.getIndex(Node);
-	}
-	
 	
 	
 	
