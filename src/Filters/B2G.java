@@ -13,8 +13,9 @@ import Main.BatTracer;
 public class B2G {
 
 	
-	static String result;
+	private static String result;
 	private static boolean edited = false;
+	private static boolean enabled = true;
 	
 	
 	public static String makelog(String path, BatTracer BaseWindow) {
@@ -157,5 +158,12 @@ public class B2G {
 	public static void setEdited(boolean value) {
 		edited = value;	
 	}
+
+	public static boolean isEnabled(){
+		return enabled;
+	}
 	
+	public static void setEnabled(boolean onoff){
+		enabled = onoff;
+	}
 }

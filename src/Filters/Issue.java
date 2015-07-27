@@ -14,6 +14,7 @@ import Main.BatTracer;
 public class Issue {
 	
 	static String result;
+	private static boolean enabled = true;
 	
 	public static String makelog(String path, BatTracer BaseWindow) {
 		BufferedReader br = null;
@@ -184,6 +185,14 @@ public class Issue {
 
 	public static void updateResult(String editedResult) {
 		result = editedResult;		
+	}
+
+	public static boolean isEnabled(){
+		return enabled;
+	}
+	
+	public static void setEnabled(boolean onoff){
+		enabled = onoff;
 	}
 	
 }

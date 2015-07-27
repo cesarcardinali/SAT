@@ -16,6 +16,7 @@ import Filters.Normal;
 import Filters.Suspicious;
 import Filters.Tether;
 import Main.BatTracer;
+import Objects.CustomFilterItem;
 import Supportive.ColorPrinter;
 import Supportive.LabelTreeNodeRenderer;
 
@@ -38,14 +39,7 @@ public class FiltersResultsTree extends JTree {
 		// Setting up initial tree (needs to change for when custom filters enabled)
 		rootNode.setUserObject("Filters and Results");
 		rootNode.removeAllChildren();
-		rootNode.add(new DefaultMutableTreeNode("Alarms"));
-		rootNode.add(new DefaultMutableTreeNode("Bug2Go"));
-		rootNode.add(new DefaultMutableTreeNode("Diag"));
-		rootNode.add(new DefaultMutableTreeNode("WakeLocks"));
-		rootNode.add(new DefaultMutableTreeNode("High Consumption"));
-		rootNode.add(new DefaultMutableTreeNode("Summary"));
-		rootNode.add(new DefaultMutableTreeNode("Suspicious"));
-		rootNode.add(new DefaultMutableTreeNode("Tethering"));
+		initializeTree();
 		
 		// Configuring rows UI
 		setCellRenderer(new LabelTreeNodeRenderer());
@@ -68,7 +62,7 @@ public class FiltersResultsTree extends JTree {
 							break;
 							
 						case 1: // Leaf filter selected
-								if(selectedNode.toString().toLowerCase().contains("alarms")){
+								if(selectedNode.toString().contains("Alarms")){
 									if(selectedNode.getChildCount() == 0){
 										new Thread(new Runnable() {
 											@Override
@@ -81,7 +75,7 @@ public class FiltersResultsTree extends JTree {
 										BaseWindow.getParser().setResultsText(Alarm.getResult());
 									}
 									
-								} else if(selectedNode.toString().toLowerCase().contains("bug2go")){
+								} else if(selectedNode.toString().contains("Bug2Go")){
 									if(selectedNode.getChildCount() == 0){
 										new Thread(new Runnable() {
 											@Override
@@ -90,11 +84,11 @@ public class FiltersResultsTree extends JTree {
 											}
 										}).start();
 									}  else {
-										BaseWindow.getParser().setTitle("Bug2go:");
+										BaseWindow.getParser().setTitle("Bug2Go:");
 										BaseWindow.getParser().setResultsText(B2G.getResult());
 									}
 									
-								} else if(selectedNode.toString().toLowerCase().contains("diag")){
+								} else if(selectedNode.toString().contains("Diag")){
 									if(selectedNode.getChildCount() == 0){
 										new Thread(new Runnable() {
 											@Override
@@ -107,7 +101,7 @@ public class FiltersResultsTree extends JTree {
 										BaseWindow.getParser().setResultsText(Diag.getResult());
 									}
 									
-								} else if(selectedNode.toString().toLowerCase().contains("wakelocks")){
+								} else if(selectedNode.toString().contains("WakeLocks")){
 									if(selectedNode.getChildCount() == 0){
 										new Thread(new Runnable() {
 											@Override
@@ -120,7 +114,7 @@ public class FiltersResultsTree extends JTree {
 										BaseWindow.getParser().setResultsText(Issue.getResult());
 									}
 									
-								} else if(selectedNode.toString().toLowerCase().contains("consumption")){
+								} else if(selectedNode.toString().contains("High Consumption")){
 									if(selectedNode.getChildCount() == 0){
 										new Thread(new Runnable() {
 											@Override
@@ -133,7 +127,7 @@ public class FiltersResultsTree extends JTree {
 										BaseWindow.getParser().setResultsText(Consume.getResult());
 									}
 									
-								} else if(selectedNode.toString().toLowerCase().contains("summary")){
+								} else if(selectedNode.toString().contains("Summary")){
 									if(selectedNode.getChildCount() == 0){
 										new Thread(new Runnable() {
 											@Override
@@ -146,7 +140,7 @@ public class FiltersResultsTree extends JTree {
 										BaseWindow.getParser().setResultsText(Normal.getResult());
 									}
 									
-								} else if(selectedNode.toString().toLowerCase().contains("suspicious")){
+								} else if(selectedNode.toString().contains("Suspicious")){
 									if(selectedNode.getChildCount() == 0){
 										new Thread(new Runnable() {
 											@Override
@@ -159,7 +153,7 @@ public class FiltersResultsTree extends JTree {
 										BaseWindow.getParser().setResultsText(Suspicious.getResult());
 									}
 									
-								} else if(selectedNode.toString().toLowerCase().contains("tethering")){
+								} else if(selectedNode.toString().contains("Tethering")){
 									if(selectedNode.getChildCount() == 0){
 										new Thread(new Runnable() {
 											@Override
@@ -173,13 +167,27 @@ public class FiltersResultsTree extends JTree {
 									}
 									
 								} else {
-									// If needed, do something here
+									int index = BaseWindow.getCustomFiltersList().indexOf(selectedNode.toString().replace(" - Done", "").replace(" - Error", ""));
+									if(index >= 0){
+										if(selectedNode.getChildCount() == 0){
+											System.out.println("3");
+											new Thread(new Runnable() {
+												@Override
+												public void run() {
+													customThread(selectedNode);
+												}
+											}).start();
+										}  else {
+											BaseWindow.getParser().setTitle(BaseWindow.getCustomFiltersList().get(index).getName());
+											BaseWindow.getParser().setResultsText(BaseWindow.getCustomFiltersList().get(index).getResult());
+										}
+									}
 								}
 							break;
 							
 						case 2: // A filter child selected
 							DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) selectedNode.getParent();
-							if(selectedNode.getParent().toString().contains("Alarm")){
+							if(parentNode.toString().contains("Alarm")){
 								BaseWindow.getParser().setTitle("Alarms:");
 								if(parentNode.toString().contains("Error")) {
 									BaseWindow.getParser().setResultsText(Alarm.getResult());
@@ -201,7 +209,7 @@ public class FiltersResultsTree extends JTree {
 									}
 								}
 								
-							} else if(selectedNode.getParent().toString().contains("Bug2Go")){
+							} else if(parentNode.toString().contains("Bug2Go")){
 								BaseWindow.getParser().setTitle("Bug2go:");
 								if(parentNode.toString().contains("Error")) {
 									BaseWindow.getParser().setResultsText(B2G.getResult());
@@ -209,7 +217,7 @@ public class FiltersResultsTree extends JTree {
 									BaseWindow.getParser().setResultsText(B2G.getResult());
 								}
 								
-							} else if(selectedNode.getParent().toString().contains("Diag")){
+							} else if(parentNode.toString().contains("Diag")){
 								BaseWindow.getParser().setTitle("Diag:");
 								if(parentNode.toString().contains("Error")) {
 									BaseWindow.getParser().setResultsText(Diag.getResult());
@@ -217,7 +225,7 @@ public class FiltersResultsTree extends JTree {
 									BaseWindow.getParser().setResultsText(Diag.getResult());
 								}
 								
-							} else if(selectedNode.getParent().toString().contains("WakeLocks")){
+							} else if(parentNode.toString().contains("WakeLocks")){
 								BaseWindow.getParser().setTitle("WakeLocks:");
 								if(parentNode.toString().contains("Error")) {
 									BaseWindow.getParser().setResultsText(Issue.getResult());
@@ -225,7 +233,7 @@ public class FiltersResultsTree extends JTree {
 									BaseWindow.getParser().setResultsText(Issue.getResult());
 								}
 								
-							} else if(selectedNode.getParent().toString().contains("High Consumption")){
+							} else if(parentNode.toString().contains("High Consumption")){
 								BaseWindow.getParser().setTitle("Apps Consumption:");
 								if(parentNode.toString().contains("Error")) {
 									BaseWindow.getParser().setResultsText(Consume.getResult());
@@ -240,7 +248,7 @@ public class FiltersResultsTree extends JTree {
 									}
 								}
 								
-							} else if(selectedNode.getParent().toString().contains("Summary")){
+							} else if(parentNode.toString().contains("Summary")){
 								BaseWindow.getParser().setTitle("Summary:");
 								if(parentNode.toString().contains("Error")) {
 									BaseWindow.getParser().setResultsText(Normal.getResult());
@@ -248,7 +256,7 @@ public class FiltersResultsTree extends JTree {
 									BaseWindow.getParser().setResultsText(Normal.getResult());
 								}
 								
-							} else if(selectedNode.getParent().toString().contains("Suspicious")){
+							} else if(parentNode.toString().contains("Suspicious")){
 								BaseWindow.getParser().setTitle("Suspicious:");
 								if(parentNode.toString().contains("Error")) {
 									BaseWindow.getParser().setResultsText(Suspicious.getResult());
@@ -258,7 +266,7 @@ public class FiltersResultsTree extends JTree {
 									BaseWindow.getParser().setResultsText(Suspicious.getWakeLocks().get(nodeIndex).toString());
 								}
 								
-							} else if(selectedNode.getParent().toString().contains("Tethering")){
+							} else if(parentNode.toString().contains("Tethering")){
 								BaseWindow.getParser().setTitle("Tethering:");
 								if(parentNode.toString().contains("Error")) {
 									BaseWindow.getParser().setResultsText(Tether.getResult());
@@ -266,6 +274,12 @@ public class FiltersResultsTree extends JTree {
 									BaseWindow.getParser().setResultsText(Tether.getResult());
 								}
 								
+							} else {
+								int index = BaseWindow.getCustomFiltersList().indexOf(parentNode.toString().replace(" - Done", "").replace(" - Error", ""));
+								if(index >= 0){
+									BaseWindow.getParser().setTitle(BaseWindow.getCustomFiltersList().get(index).getName());
+									BaseWindow.getParser().setResultsText(BaseWindow.getCustomFiltersList().get(index).getResult());
+								}
 							}
 							break;
 							
@@ -413,6 +427,24 @@ public class FiltersResultsTree extends JTree {
 		SNode.insert(new DefaultMutableTreeNode(node), 0);
 	}
 
+	public void addCustomResult(String node, String res){
+		DefaultMutableTreeNode Node = findNode(node);
+		if(Node == null){
+			System.out.println("Could not find node. Adding new one.");
+			Node = new DefaultMutableTreeNode(node);
+			Node.add(new DefaultMutableTreeNode(res));
+		}
+		Node.add(new DefaultMutableTreeNode(res));
+	}
+	
+	public void addCustomNode(String node){
+		DefaultMutableTreeNode Node = findNode(node);
+		if(Node == null){
+			System.out.println("Could not find node. Adding new one.");
+			Node = new DefaultMutableTreeNode(node);
+			rootNode.add(Node);
+		}
+	}
 	
 	// Filter threads
 	public void alarmThread(DefaultMutableTreeNode selectedNode){
@@ -805,6 +837,62 @@ public class FiltersResultsTree extends JTree {
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
+	
+	public void customThread(DefaultMutableTreeNode selectedNode){
+		String result;
+		String nodeName = selectedNode.toString();
+		System.out.println(nodeName + " thread running");
+		
+		String x = (String) selectedNode.getUserObject();
+		x = (nodeName + " - Running");
+		selectedNode.setUserObject(x);
+		updateResultTreeUI();
+		
+		int index = BaseWindow.getCustomFiltersList().indexOf(nodeName);
+		if(index >= 0){
+			result = BaseWindow.getCustomFiltersList().get(index).runFilter(BaseWindow.getParser().getCrPath());
+			
+			if(result.contains(" log missing")){
+				x = (nodeName + " - Error");
+				selectedNode.setUserObject(x);
+				addCustomResult(nodeName, "Logs not found");
+				updateResultTreeUI();
+				System.out.println(nodeName + " thread error");
+				
+			} else if(result.contains("SAT IOException")){
+				x = (nodeName + " - Error");
+				selectedNode.setUserObject(x);
+				addCustomResult(nodeName, "IOException");
+				updateResultTreeUI();
+				System.out.println(nodeName + " thread error");
+				
+			} else if(result.contains("Not a directory")){
+				x = (nodeName + " - Error");
+				selectedNode.setUserObject(x);
+				addCustomResult(nodeName, "No directory selected");
+				updateResultTreeUI();
+				System.out.println(nodeName + " thread error");
+				
+			} else {
+				addCustomResult(nodeName, "Result");
+				
+				result = result + BaseWindow.getCustomFiltersList().get(index).getHeader() + "\n";
+				BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n========================= Tethering =========================\n" + result);
+				
+				x = (nodeName + " - Done");
+				selectedNode.setUserObject(x);
+				updateResultTreeUI();
+				System.out.println(nodeName + "thread finished");
+			}
+			//expandPath(new TreePath(selectedNode.getPath()));
+		} else {
+			x = (nodeName + " - Error");
+			selectedNode.setUserObject(x);
+			addCustomResult(nodeName, "Filter does not exists");
+			updateResultTreeUI();
+			System.out.println(nodeName + " thread error");
+		}
+	}
 
 
 	// Tree supportive methods
@@ -826,18 +914,8 @@ public class FiltersResultsTree extends JTree {
 	
 	public void clearTree(){
 		rootNode.removeAllChildren();
-		rootNode.add(new DefaultMutableTreeNode("Alarms"));
-		rootNode.add(new DefaultMutableTreeNode("Bug2Go"));
-		rootNode.add(new DefaultMutableTreeNode("Diag"));
-		rootNode.add(new DefaultMutableTreeNode("WakeLocks"));
-		rootNode.add(new DefaultMutableTreeNode("High Consumption"));
-		rootNode.add(new DefaultMutableTreeNode("Summary"));
-		rootNode.add(new DefaultMutableTreeNode("Suspicious"));
-		rootNode.add(new DefaultMutableTreeNode("Tethering"));
-		updateResultTreeUI();
+		initializeTree();
 	}
-	
-	
 	
 	public void updateResultTreeUI(){
 		SwingUtilities.invokeLater(new Runnable() {
@@ -845,6 +923,61 @@ public class FiltersResultsTree extends JTree {
                 updateUI();
               }
           });
+	}
+	
+	public void initializeTree(){
+		if(Alarm.isEnabled()){
+			rootNode.add(new DefaultMutableTreeNode("Alarms"));
+		}
+		if(B2G.isEnabled()){
+			rootNode.add(new DefaultMutableTreeNode("Bug2Go"));
+		}
+		if(Diag.isEnabled()){
+			rootNode.add(new DefaultMutableTreeNode("Diag"));
+		}
+		if(Issue.isEnabled()){
+			rootNode.add(new DefaultMutableTreeNode("WakeLocks"));
+		}
+		if(Consume.isEnabled()){
+			rootNode.add(new DefaultMutableTreeNode("High Consumption"));
+		}
+		if(Normal.isEnabled()){
+			rootNode.add(new DefaultMutableTreeNode("Summary"));
+		}
+		if(Suspicious.isEnabled()){
+			rootNode.add(new DefaultMutableTreeNode("Suspicious"));
+		}
+		if(Tether.isEnabled()){
+			rootNode.add(new DefaultMutableTreeNode("Tethering"));
+		}
+		
+		for(CustomFilterItem item : BaseWindow.getCustomFiltersList()){
+			rootNode.add(new DefaultMutableTreeNode(item.getName()));
+		}
+		
+		updateResultTreeUI();
+	}
+	
+	public void addCustomFilters(String name){
+		/*for(CustomFilterItem item : BaseWindow.getCustomFiltersList()){
+			if(findNode(item.getName()) == null){
+				rootNode.add(new DefaultMutableTreeNode(item.getName()));
+				updateResultTreeUI();
+			}
+		}*/
+		rootNode.add(new DefaultMutableTreeNode(name));
+		updateResultTreeUI();
+	}
+	
+	public void removeCustomNode(String name){
+		for(int i=0; i < rootNode.getChildCount(); i++){
+			System.out.println("No: " + rootNode.getChildAt(i).toString());
+			if(rootNode.getChildAt(i).toString().replace(" - Done", "").replace(" - Error", "").replace(" - Running", "").equals(name)){
+				System.out.println("achou");
+				rootNode.remove(i);
+				updateResultTreeUI();
+			}
+		}
 	}
 	
 }

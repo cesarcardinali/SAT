@@ -32,8 +32,10 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import Objects.CustomFiltersList;
 import Objects.crItem;
 import Panes.CRsManager;
+import Panes.CustomFilters;
 import Panes.NewParserPane;
 import Panes.OptionsPane;
 
@@ -51,13 +53,19 @@ public class BatTracer extends JFrame{
 	private CRsManager crsManager;
 	private ArrayList<crItem> crsList;
 	private static BatTracer Main;
-	private String rootPath;
 	private File logFile;
 	private BufferedWriter logWriter;
 	private Semaphore unzipSemaphore;
-	
+	private static final String configLocation = "Data/cfgs/system_cfg.xml";
+	private String toolFile;
+	private String toolName;
+	private String toolVersion;
+	private String updaterFile;
+	private String contentFolder;
 	private String updateFolder1;
 	private String updateFolder2;
+	private CustomFiltersList customFiltersList;
+	private CustomFilters customFiltersPane;
 	PrintStream out;
 	int init = 0;
 
@@ -89,9 +97,14 @@ public class BatTracer extends JFrame{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
+		// Loading configurations
+		loadInitialData();
+		
+		
 		//Initializing window
-		setIconImage(Toolkit.getDefaultToolkit().getImage("Data\\pics\\icon.png"));
-		setTitle("Search Analysis Tool  v1.0");
+		setIconImage(Toolkit.getDefaultToolkit().getImage(contentFolder + "/pics/icon.png"));
+		setTitle(toolName + " " + toolVersion);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double width = screenSize.getWidth();
@@ -99,29 +112,15 @@ public class BatTracer extends JFrame{
 		setBounds((int)(width/3), 0, (int)(width/1.5), (int)height-40);
 		setVisible(true);
 		
-		try {
-			out = new PrintStream(new FileOutputStream("Data\\Logs\\system-log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt"));
-			//System.setOut(out);
-		} catch (FileNotFoundException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		
-		//Global variables
-		rootPath = new File("").getAbsolutePath() + File.separator;
-		System.out.println(rootPath);
-		
-		logFile = new File("Data\\Logs\\log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt");
+		logFile = new File(contentFolder + "/Logs/log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt");
 		try {
 			logWriter = new BufferedWriter(new FileWriter(logFile));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
 		
-		unzipSemaphore = new Semaphore(1, true);
-
-
 		//Set UI theme
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -130,10 +129,13 @@ public class BatTracer extends JFrame{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
 		
-		// Initializing TabPane and Tabs
+		// Initializing Variables and Panes
+		unzipSemaphore = new Semaphore(1, true);
+		customFiltersList = new CustomFiltersList();
+		customFiltersPane = new CustomFilters(this);
+		customFiltersPane.loadFilters();
 		Parser = new NewParserPane(this);
 		Options = new OptionsPane(this);
 		crsManager = new CRsManager(this);
@@ -157,10 +159,6 @@ public class BatTracer extends JFrame{
 		getContentPane().add(tabbedPane);
 		
 		
-		// Loading configurations
-		loadInitialData();
-		
-		
 		//Initializing other variables
 		crsList = new ArrayList<crItem>();
 		
@@ -173,7 +171,7 @@ public class BatTracer extends JFrame{
 				while(run == 0){
 					try {
 						//Abre o arquivo XML
-						File xmlFile = new File("Data/cfgs/system_cfg.xml");
+						File xmlFile = new File(configLocation);
 						
 						//Cria o builder da estrutura XML
 						SAXBuilder builder = new SAXBuilder();
@@ -181,13 +179,13 @@ public class BatTracer extends JFrame{
 						//Cria documento formatado de acordo com a lib XML
 						Document document = (Document) builder.build(xmlFile);
 						
-						//Pega o nó raiz do XML
+						//Pega o nï¿½ raiz do XML
 						Element satNode = document.getRootElement();
 						
-						//Gera lista de filhos do nó root
+						//Gera lista de filhos do nï¿½ root
 						//List<Element> satElements = satNode.getChildren();
 						
-						//Pega o nó referente ao option pane
+						//Pega o nï¿½ referente ao option pane
 						Element optionPaneNode = satNode.getChild("configs"); 
 						for(Element e : optionPaneNode.getChildren()){
 							if(e.getName().equals("update_path1")){
@@ -262,7 +260,7 @@ public class BatTracer extends JFrame{
 	private void loadInitialData() {
 		try{
 			//Abre o arquivo XML
-			File xmlFile = new File("Data/cfgs/system_cfg.xml");
+			File xmlFile = new File(configLocation);
 			
 			//Cria o builder da estrutura XML
 			SAXBuilder builder = new SAXBuilder();
@@ -270,21 +268,48 @@ public class BatTracer extends JFrame{
 			//Cria documento formatado de acordo com a lib XML
 			Document document = (Document) builder.build(xmlFile);
 	
-			//Pega o nó raiz do XML
+			//Pega o nï¿½ raiz do XML
 			Element satNode = document.getRootElement();
 			
-			//Pega o nó referente ao option pane
+			//Pega o nï¿½ referente ao option pane
 			Element crs_jira_paneNode = satNode.getChild("configs");
 			for(Element e : crs_jira_paneNode.getChildren()){
-				if(e.getName().equals("update_path1")){
+				if(e.getName().equals("tool_file")){
+					toolFile = (e.getValue());
+					
+				} else if(e.getName().equals("tool_name")){
+					toolName = (e.getValue());
+					
+				} else if(e.getName().equals("version")){
+					toolVersion = (e.getValue());
+					
+				} else if(e.getName().equals("content_folder")){
+					contentFolder = (e.getValue());
+					
+				} else if(e.getName().equals("updater")){
+					updaterFile = (e.getValue());
+					
+				} else if(e.getName().equals("update_path1")){
 					updateFolder1 = (e.getValue());
 					
 				} else if(e.getName().equals("update_path2")){
 					updateFolder2 = (e.getValue());
 					
+				} else if(e.getName().equals("debug_mode")){
+					if( e.getValue().equals("true"))
+						try {
+							out = new PrintStream(new FileOutputStream(contentFolder + "/Logs/system-log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt"));
+							System.setOut(out);
+						} catch (FileNotFoundException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
 				}
 			}
-			
+						
+			System.out.println("Configs: " + configLocation);
+			System.out.println("Content Folder: " + contentFolder);
+			System.out.println("Tool File: " + toolFile + "\nTool Name: " + toolName + "\nTool Version: " + toolVersion + "\nUpdate File: " + updaterFile);
 			System.out.println("Update path1: " + updateFolder1 + "\nUpdate path2: " + updateFolder2);
 			System.out.println("Options Loaded");
 		
@@ -337,16 +362,34 @@ public class BatTracer extends JFrame{
 	public JTabbedPane getTabbedPane(){
 		return tabbedPane;
 	}
+	
 	public ArrayList<crItem> getCrsList() {
 		return crsList;
 	}
+	
 	public void setCrsList(ArrayList<crItem> crsList) {
 		this.crsList = crsList;
 	}
+	
 	public Semaphore getUnzipSemaphore() {
 		return unzipSemaphore;
 	}
 	
+	public CustomFiltersList getCustomFiltersList() {
+		return customFiltersList;
+	}
+	
+	public CustomFilters getCustomFiltersPane() {
+		return customFiltersPane;
+	}
+	
+	public void setCustomFiltersList(CustomFiltersList customFiltersList) {
+		this.customFiltersList = customFiltersList;
+	}
+	
+	public void setCustomFiltersPane(CustomFilters customFiltersPane) {
+		this.customFiltersPane = customFiltersPane;
+	}
 	
 	
 	public static void copyScript(File source, File dest)
@@ -361,10 +404,10 @@ public class BatTracer extends JFrame{
 		File f2;
 		long dateRemote, dateLocal;
 		
-		f1 = new File(updateFolder1 + "\\BatteryTool.jar");
+		f1 = new File(updateFolder1 + toolFile);
 		System.out.println("Remote file: " + f1.getAbsolutePath());
 		System.out.println("Remote: " + f1.lastModified());
-		f2 = new File("BatteryTool.jar");
+		f2 = new File(toolFile);
 		System.out.println("Local file: " + f2.getAbsolutePath());
 		System.out.println("Local: " + f2.lastModified());
 		dateRemote = f1.lastModified();
@@ -373,14 +416,14 @@ public class BatTracer extends JFrame{
 		if(dateLocal < dateRemote && dateLocal != 0){
 			Object[] options = new Object[]{ "Yes", "No" };
 			int n = JOptionPane.showOptionDialog(null,
-					"Uma nova versão foi encontrada. Voce desaja atualizar agora?",
+					"Uma nova versï¿½o foi encontrada. Voce desaja atualizar agora?",
 					"New version available", JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE, null, options,
 					options[1]);
 			if(n == 0) {
 				try {
 					System.out.println("Updating the Updater first, from: " + updateFolder1);
-					FileUtils.copyFile(new File(updateFolder1 + "\\Updater.jar"), new File("Updater.jar"));
+					FileUtils.copyFile(new File(updateFolder1 + "/" + updaterFile), new File(updaterFile));
 				} catch (IOException e) {
 					System.out.println("Updating the Updater failed");
 					e.printStackTrace();
@@ -388,7 +431,7 @@ public class BatTracer extends JFrame{
 				System.out.println("Updating");
 				try {
 					System.out.println("path: " + new File("").getAbsolutePath());
-					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar Updater.jar");
+					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar " + updaterFile);
 					builder.start();
 				} catch (IOException e2) {
 					e2.printStackTrace();

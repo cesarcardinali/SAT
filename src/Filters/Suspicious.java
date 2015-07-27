@@ -17,7 +17,8 @@ import Objects.wakelockItem;
 public class Suspicious {
 	
 	static String result;
-	static WackLock_List suspiciousWakelocks; 
+	static WackLock_List suspiciousWakelocks;
+	private static boolean enabled = true;
 
 	public static String makelog(String path, BatTracer BaseWindow) {
 		
@@ -291,6 +292,14 @@ public class Suspicious {
 
 	public static void updateResult(String editedResult) {
 		result = editedResult;		
+	}
+
+	public static boolean isEnabled(){
+		return enabled;
+	}
+	
+	public static void setEnabled(boolean onoff){
+		enabled = onoff;
 	}
 
 }

@@ -21,6 +21,7 @@ public class Consume {
 	static String result;
 	static int totalOccurrences;
 	static BatTracer BaseWindow;
+	private static boolean enabled = true;
 
 	/*
 	System.out.println("Mes:\t\t" + matcher.group(1));
@@ -232,6 +233,14 @@ public class Consume {
 
 	public static void updateResult(String editedResult) {
 		result = editedResult;		
+	}
+
+	public static boolean isEnabled(){
+		return enabled;
+	}
+	
+	public static void setEnabled(boolean onoff){
+		enabled = onoff;
 	}
 	
 }

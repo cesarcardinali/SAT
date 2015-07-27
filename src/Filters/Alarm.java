@@ -23,6 +23,7 @@ public class Alarm {
 	static Alarms_List alarmList;
 	static String result;
 	static BufferedReader reader;
+	static boolean enabled = true;
 
 	
 	public static String makelog(String path, BatTracer BaseWindow) {
@@ -180,5 +181,13 @@ public class Alarm {
 	
 	public static void updateResult(String editedResult) {
 		result = editedResult;		
+	}
+	
+	public static boolean isEnabled(){
+		return enabled;
+	}
+	
+	public static void setEnabled(boolean onoff){
+		enabled = onoff;
 	}
 }

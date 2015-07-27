@@ -109,9 +109,6 @@ public class NewParserPane extends JPanel {
 		gbc_lblTitle.gridx = 0;
 		topright.add(lblTitle, gbc_lblTitle);
 		
-		
-		
-		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setToolTipText("Result of the selected parser item on the left");
 		scrollPane.setFont(new Font("Consolas", Font.PLAIN, 12));
@@ -132,8 +129,7 @@ public class NewParserPane extends JPanel {
 		gbc_esquerda.gridx = 0;
 		gbc_esquerda.gridy = 0;
 		add(esquerda, gbc_esquerda);
-		
-		
+
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.anchor = GridBagConstraints.NORTHWEST;
 		gbc_scrollPane.insets = new Insets(2, 10, 10, 10);
@@ -144,10 +140,7 @@ public class NewParserPane extends JPanel {
 		gbc_scrollPane.gridy = 1;
 		add(scrollPane, gbc_scrollPane);
 		
-		
-
 		textPane = new NonWrappingTextPane();
-		
 		textPane.setToolTipText("Result of the selected parser item on the left");
 		textPane.setContentType("text/plain");
 		textPane.setMargin(new Insets(7, 2, 7, 2));
@@ -155,29 +148,25 @@ public class NewParserPane extends JPanel {
 		textPane.setFont(new Font("Consolas", Font.PLAIN, 11));
 		textPane.setText("");
 		undoManager = new UndoManager();
-		textPane.getDocument().addUndoableEditListener(
-				new UndoableEditListener() {
-
-					@Override
-					public void undoableEditHappened(UndoableEditEvent e) {
-						undoManager.addEdit(e.getEdit());
-					}
-				});
+		textPane.getDocument().addUndoableEditListener(new UndoableEditListener() {
+			@Override
+			public void undoableEditHappened(UndoableEditEvent e) {
+				undoManager.addEdit(e.getEdit());
+			}
+		});
 		textPane.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				
 				saveTextChanges(filtersResultsTree.getLastSelectedPathComponent(), textPane.getText());
-				
 			}
 
 			@Override
-			public void keyTyped(KeyEvent arg0) {}
+			public void keyTyped(KeyEvent arg0) {
+			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if ((e.getKeyCode() == KeyEvent.VK_Z)
-						&& ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+				if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
 					// textPane.setText("woot!");
 					try {
 						undoManager.undo();
@@ -188,7 +177,6 @@ public class NewParserPane extends JPanel {
 			}
 		});
 		scrollPane.setViewportView(textPane);
-		
 		
 		fileTree = new FileTree(BaseWindow);
 		esquerda.addTab("FileTree", null, fileTree, null);
@@ -204,7 +192,7 @@ public class NewParserPane extends JPanel {
 		lblTitle.setText("Run a parser or select a result on the left");
 		loadPaneData();
 	}
-
+	
 	
 	
 	

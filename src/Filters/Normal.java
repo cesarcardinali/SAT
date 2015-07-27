@@ -14,6 +14,7 @@ public class Normal {
 	
 	static String result;
 	static BatTracer BaseWindow;
+	private static boolean enabled = true;
 	
 
 	public static String makeLog(String path, BatTracer parent){
@@ -168,6 +169,14 @@ public class Normal {
 
 	public static void updateResult(String editedResult) {
 		result = editedResult;		
+	}
+
+	public static boolean isEnabled(){
+		return enabled;
+	}
+	
+	public static void setEnabled(boolean onoff){
+		enabled = onoff;
 	}
 	
 }

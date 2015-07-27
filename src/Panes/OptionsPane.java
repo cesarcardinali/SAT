@@ -7,6 +7,7 @@ import java.awt.Insets;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.Component;
+
 import javax.swing.SwingConstants;
 import java.awt.Font;
 import javax.swing.JSeparator;
@@ -32,14 +33,14 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import Main.BatTracer;
+
 import javax.swing.JRadioButton;
 import java.awt.FlowLayout;
 import javax.swing.JCheckBox;
 
+@SuppressWarnings("serial")
 public class OptionsPane extends JPanel {
 
-
-	private static final long serialVersionUID = 5718418491045067512L;
 	private JTextField textConsumeOn;
 	private JTextField textConsumeOff;
 	private JTextField textConsumeFull;
@@ -63,7 +64,7 @@ public class OptionsPane extends JPanel {
 	 */
 	public OptionsPane(BatTracer parent) {
 		setMinimumSize(new Dimension(800, 600));
-		BaseWindow= parent; 
+		BaseWindow= parent;
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {918};
@@ -73,6 +74,7 @@ public class OptionsPane extends JPanel {
 		setLayout(gridBagLayout);
 		
 		JPanel commentsPanel = new JPanel();
+		commentsPanel.setBorder(null);
 		GridBagConstraints gbc_commentsPanel = new GridBagConstraints();
 		gbc_commentsPanel.insets = new Insets(0, 0, 5, 0);
 		gbc_commentsPanel.anchor = GridBagConstraints.NORTH;
@@ -82,9 +84,9 @@ public class OptionsPane extends JPanel {
 		add(commentsPanel, gbc_commentsPanel);
 		GridBagLayout gbl_commentsPanel = new GridBagLayout();
 		gbl_commentsPanel.columnWidths = new int[] {100, 450, 30};
-		gbl_commentsPanel.rowHeights = new int[]{0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0};
+		gbl_commentsPanel.rowHeights = new int[]{0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0};
 		gbl_commentsPanel.columnWeights = new double[]{1.0, 1.0, 0.0};
-		gbl_commentsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_commentsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		commentsPanel.setLayout(gbl_commentsPanel);
 		
 		JLabel label_14 = new JLabel("Options:");
@@ -210,8 +212,8 @@ public class OptionsPane extends JPanel {
 		JSeparator separator_8 = new JSeparator();
 		separator_8.setPreferredSize(new Dimension(500, 1));
 		separator_8.setMinimumSize(new Dimension(3, 2));
-		separator_8.setForeground(Color.DARK_GRAY);
-		separator_8.setBackground(Color.DARK_GRAY);
+		separator_8.setForeground(Color.LIGHT_GRAY);
+		separator_8.setBackground(Color.WHITE);
 		GridBagConstraints gbc_separator_8 = new GridBagConstraints();
 		gbc_separator_8.fill = GridBagConstraints.HORIZONTAL;
 		gbc_separator_8.gridwidth = 2;
@@ -317,8 +319,8 @@ public class OptionsPane extends JPanel {
 		
 		JSeparator separator = new JSeparator();
 		separator.setMinimumSize(new Dimension(3, 2));
-		separator.setBackground(Color.DARK_GRAY);
-		separator.setForeground(Color.DARK_GRAY);
+		separator.setBackground(Color.WHITE);
+		separator.setForeground(Color.LIGHT_GRAY);
 		separator.setPreferredSize(new Dimension(500, 1));
 		GridBagConstraints gbc_separator = new GridBagConstraints();
 		gbc_separator.insets = new Insets(0, 12, 5, 5);
@@ -399,8 +401,8 @@ public class OptionsPane extends JPanel {
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setPreferredSize(new Dimension(500, 1));
 		separator_1.setMinimumSize(new Dimension(3, 2));
-		separator_1.setForeground(Color.DARK_GRAY);
-		separator_1.setBackground(Color.DARK_GRAY);
+		separator_1.setForeground(Color.LIGHT_GRAY);
+		separator_1.setBackground(Color.WHITE);
 		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
 		gbc_separator_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_separator_1.gridwidth = 2;
@@ -452,8 +454,8 @@ public class OptionsPane extends JPanel {
 		JSeparator separator_4 = new JSeparator();
 		separator_4.setPreferredSize(new Dimension(500, 1));
 		separator_4.setMinimumSize(new Dimension(3, 2));
-		separator_4.setForeground(Color.DARK_GRAY);
-		separator_4.setBackground(Color.DARK_GRAY);
+		separator_4.setForeground(Color.LIGHT_GRAY);
+		separator_4.setBackground(Color.WHITE);
 		GridBagConstraints gbc_separator_4 = new GridBagConstraints();
 		gbc_separator_4.fill = GridBagConstraints.HORIZONTAL;
 		gbc_separator_4.gridwidth = 2;
@@ -506,8 +508,8 @@ public class OptionsPane extends JPanel {
 		JSeparator separator_5 = new JSeparator();
 		separator_5.setPreferredSize(new Dimension(500, 1));
 		separator_5.setMinimumSize(new Dimension(3, 2));
-		separator_5.setForeground(Color.DARK_GRAY);
-		separator_5.setBackground(Color.DARK_GRAY);
+		separator_5.setForeground(Color.LIGHT_GRAY);
+		separator_5.setBackground(Color.WHITE);
 		GridBagConstraints gbc_separator_5 = new GridBagConstraints();
 		gbc_separator_5.fill = GridBagConstraints.HORIZONTAL;
 		gbc_separator_5.gridwidth = 2;
@@ -559,8 +561,8 @@ public class OptionsPane extends JPanel {
 		JSeparator separator_6 = new JSeparator();
 		separator_6.setPreferredSize(new Dimension(500, 1));
 		separator_6.setMinimumSize(new Dimension(3, 2));
-		separator_6.setForeground(Color.DARK_GRAY);
-		separator_6.setBackground(Color.DARK_GRAY);
+		separator_6.setForeground(Color.LIGHT_GRAY);
+		separator_6.setBackground(Color.WHITE);
 		GridBagConstraints gbc_separator_6 = new GridBagConstraints();
 		gbc_separator_6.fill = GridBagConstraints.HORIZONTAL;
 		gbc_separator_6.gridwidth = 2;
@@ -609,18 +611,30 @@ public class OptionsPane extends JPanel {
 		gbc_button_9.gridy = 26;
 		commentsPanel.add(button_9, gbc_button_9);
 		
-		JSeparator separator_7 = new JSeparator();
-		separator_7.setPreferredSize(new Dimension(500, 1));
-		separator_7.setMinimumSize(new Dimension(3, 2));
-		separator_7.setForeground(Color.DARK_GRAY);
-		separator_7.setBackground(Color.DARK_GRAY);
-		GridBagConstraints gbc_separator_7 = new GridBagConstraints();
-		gbc_separator_7.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_7.gridwidth = 2;
-		gbc_separator_7.insets = new Insets(0, 12, 5, 5);
-		gbc_separator_7.gridx = 0;
-		gbc_separator_7.gridy = 27;
-		commentsPanel.add(separator_7, gbc_separator_7);
+		JPanel panel = new JPanel();
+		panel.setBorder(null);
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 5, 5);
+		gbc_panel.gridwidth = 2;
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 27;
+		commentsPanel.add(panel, gbc_panel);
+		
+		JButton btnSalvar = new JButton("Save");
+		btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					setComments();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JDOMException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		panel.add(btnSalvar);
 		
 		JLabel lblParserOptions = new JLabel("Parser interface options:");
 		lblParserOptions.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -701,46 +715,40 @@ public class OptionsPane extends JPanel {
 		gbc_chkTextWrap.gridy = 31;
 		commentsPanel.add(chkTextWrap, gbc_chkTextWrap);
 		
-		JPanel panel = new JPanel();
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.insets = new Insets(0, 0, 0, 5);
-		gbc_panel.gridwidth = 2;
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 32;
-		commentsPanel.add(panel, gbc_panel);
+		JLabel lblCustomfilters = new JLabel("More options:");
+		lblCustomfilters.setPreferredSize(new Dimension(55, 23));
+		lblCustomfilters.setMinimumSize(new Dimension(55, 23));
+		lblCustomfilters.setHorizontalAlignment(SwingConstants.RIGHT);
+		GridBagConstraints gbc_lblCustomfilters = new GridBagConstraints();
+		gbc_lblCustomfilters.anchor = GridBagConstraints.EAST;
+		gbc_lblCustomfilters.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblCustomfilters.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCustomfilters.gridx = 0;
+		gbc_lblCustomfilters.gridy = 32;
+		commentsPanel.add(lblCustomfilters, gbc_lblCustomfilters);
 		
-		JButton btnSalvar = new JButton("Salvar");
-		btnSalvar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					setComments();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (JDOMException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		JPanel morePane = new JPanel();
+		FlowLayout flowLayout_1 = (FlowLayout) morePane.getLayout();
+		flowLayout_1.setVgap(1);
+		flowLayout_1.setAlignment(FlowLayout.LEFT);
+		GridBagConstraints gbc_morePane = new GridBagConstraints();
+		gbc_morePane.insets = new Insets(0, 0, 5, 5);
+		gbc_morePane.fill = GridBagConstraints.BOTH;
+		gbc_morePane.gridx = 1;
+		gbc_morePane.gridy = 32;
+		commentsPanel.add(morePane, gbc_morePane);
+		
+		JButton btnManageFilters = new JButton("Manage Filters");
+		btnManageFilters.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BaseWindow.getCustomFiltersPane().open();
 			}
 		});
+		morePane.add(btnManageFilters);
 		
-		JButton btnLoad = new JButton("Load");
-		btnLoad.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					getComments();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JDOMException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-		
-		advOptions = new AdvancedOptionsPane(BaseWindow);
-		JButton btnAdvanced = new JButton("Advanced...");
+		JButton btnAdvanced = new JButton("Advanced");
+		btnAdvanced.setPreferredSize(new Dimension(103, 23));
+		morePane.add(btnAdvanced);
 		btnAdvanced.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				advOptions.setLocation(BaseWindow.getLocation().x+200, BaseWindow.getLocation().y + 200);
@@ -748,18 +756,8 @@ public class OptionsPane extends JPanel {
 			}
 		});
 		btnAdvanced.setToolTipText("Click to see advanced options");
-		panel.add(btnAdvanced);
-		panel.add(btnLoad);
-		panel.add(btnSalvar);
 		
-		JPanel panel_1 = new JPanel();
-		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
-		gbc_panel_1.weighty = 1.0;
-		gbc_panel_1.weightx = 1.0;
-		gbc_panel_1.fill = GridBagConstraints.BOTH;
-		gbc_panel_1.gridx = 0;
-		gbc_panel_1.gridy = 2;
-		add(panel_1, gbc_panel_1);
+		advOptions = new AdvancedOptionsPane(BaseWindow);
 		
 		try {
 			getComments();
@@ -991,9 +989,11 @@ public class OptionsPane extends JPanel {
 	protected JRadioButton getRdbtnNotepad() {
 		return rdbtnNotepad;
 	}
+	
 	protected JCheckBox getChkTextWrap() {
 		return chkTextWrap;
 	}
+	
 	protected JRadioButton getRdbtnTAnalisys() {
 		return rdbtnTAnalisys;
 	}
