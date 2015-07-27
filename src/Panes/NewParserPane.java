@@ -2,7 +2,6 @@ package Panes;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,13 +12,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -62,9 +58,7 @@ public class NewParserPane extends JPanel {
 	String crPath, result;
 	
 	JLabel lblTitle;
-	JTextPane textPane;
-	JRadioButton rdBtnTextAnal;
-	JRadioButton rdbtnNotepad;
+	NonWrappingTextPane textPane;
 	private UndoManager undoManager;
 	private JTabbedPane esquerda;
 	private FileTree fileTree;
@@ -80,47 +74,15 @@ public class NewParserPane extends JPanel {
 		
 		GridBagLayout layout = new GridBagLayout();
 		layout.columnWidths = new int[]{250, 600};
-		layout.rowHeights = new int[]{35, 40, 600};
-		layout.rowWeights = new double[]{1.0, 1.0, 1.0};
+		layout.rowHeights = new int[]{40, 600};
+		layout.rowWeights = new double[]{1.0, 1.0};
 		layout.columnWeights = new double[]{1.0, 1.0};
 		setLayout(layout);
 		JPanel topright = new JPanel();
 		topright.setPreferredSize(new Dimension(10, 30));
 		topright.setMaximumSize(new Dimension(32767, 31));
 		topright.setBorder(new LineBorder(UIManager.getColor("Button.light")));;
-		topright.setMinimumSize(new Dimension(35, 30));
-		
-		ButtonGroup editorSelector = new ButtonGroup();
-		
-		JPanel LogsPane = new JPanel();
-		LogsPane.setBorder(new LineBorder(UIManager.getColor("Button.light")));
-		LogsPane.setMaximumSize(new Dimension(32767, 30));
-		LogsPane.setPreferredSize(new Dimension(10, 30));
-		LogsPane.setMinimumSize(new Dimension(10, 30));
-		FlowLayout fl_LogsPane = (FlowLayout) LogsPane.getLayout();
-		fl_LogsPane.setHgap(3);
-		fl_LogsPane.setVgap(1);
-		GridBagConstraints gbc_LogsPane = new GridBagConstraints();
-		gbc_LogsPane.weighty = 1.0;
-		gbc_LogsPane.weightx = 1.0;
-		gbc_LogsPane.gridwidth = 2;
-		gbc_LogsPane.insets = new Insets(0, 10, 5, 10);
-		gbc_LogsPane.fill = GridBagConstraints.HORIZONTAL;
-		gbc_LogsPane.gridx = 0;
-		gbc_LogsPane.gridy = 0;
-		add(LogsPane, gbc_LogsPane);
-		
-		rdBtnTextAnal = new JRadioButton("TextAnalysis");
-		rdBtnTextAnal.setToolTipText("Use TextAnalysis tool as default text editor");
-		LogsPane.add(rdBtnTextAnal);
-		rdBtnTextAnal.setSelected(true);
-		editorSelector.add(rdBtnTextAnal);
-		
-		rdbtnNotepad = new JRadioButton("Notepad++");
-		rdbtnNotepad.setToolTipText("Use Notepad++ as default text editor");
-		LogsPane.add(rdbtnNotepad);
-		editorSelector.add(rdbtnNotepad);
-		
+		topright.setMinimumSize(new Dimension(35, 30));		
 		
 		GridBagLayout tr = new GridBagLayout();
 		tr.rowWeights = new double[]{0.0};
@@ -133,7 +95,7 @@ public class NewParserPane extends JPanel {
 		g1.weighty = 1.0;
 		g1.insets = new Insets(5, 10, 5, 10);
 		g1.gridx = 1;
-		g1.gridy = 1;
+		g1.gridy = 0;
 		add(topright, g1);
 		lblTitle = new JLabel("Select a result folder on the left panel");
 		lblTitle.setMaximumSize(new Dimension(2000, 31));
@@ -173,7 +135,7 @@ public class NewParserPane extends JPanel {
 		gbc_esquerda.insets = new Insets(5, 10, 10, 5);
 		gbc_esquerda.fill = GridBagConstraints.BOTH;
 		gbc_esquerda.gridx = 0;
-		gbc_esquerda.gridy = 1;
+		gbc_esquerda.gridy = 0;
 		add(esquerda, gbc_esquerda);
 		
 		
@@ -184,12 +146,12 @@ public class NewParserPane extends JPanel {
 		gbc_scrollPane.weightx = 15.0;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 1;
-		gbc_scrollPane.gridy = 2;
+		gbc_scrollPane.gridy = 1;
 		add(scrollPane, gbc_scrollPane);
 		
 		
 
-/**/	textPane = new NonWrappingTextPane();
+		textPane = new NonWrappingTextPane();
 		
 		textPane.setToolTipText("Result of the selected parser item on the left");
 		textPane.setContentType("text/plain");
@@ -389,11 +351,6 @@ public class NewParserPane extends JPanel {
 					//salvar o último caminho selecionado na árvore
 					e.setText(getRootPath());
 					
-				} else if(e.getName().equals("editor")){
-					if(rdBtnTextAnal.isSelected())
-						e.setText("0");
-					else
-						e.setText("1");
 				}
 			}
 			
@@ -434,12 +391,6 @@ public class NewParserPane extends JPanel {
 					crPath = (e.getValue());
 					//selecionar na JTree o último arquivo que estava selecionado
 					//folder.setText(getRootPath());
-					
-				} else if(e.getName().equals("editor")){
-					if(e.getValue().equals("0"))
-						rdBtnTextAnal.setSelected(true);
-					else
-						rdbtnNotepad.setSelected(true);
 					
 				}
 			}
@@ -533,11 +484,7 @@ public class NewParserPane extends JPanel {
 		lblTitle.setText(text);
 	}
 	
-	public JRadioButton getNotepad(){
-		return rdbtnNotepad;
-	}
-	
-	public JTextPane getTextPane(){
+	public NonWrappingTextPane getTextPane(){
 		return textPane;
 	}
 	

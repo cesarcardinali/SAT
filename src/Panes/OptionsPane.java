@@ -12,8 +12,12 @@ import java.awt.Font;
 import javax.swing.JSeparator;
 import java.awt.Dimension;
 import java.awt.Color;
+
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +32,11 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import Main.BatTracer;
+import javax.swing.border.LineBorder;
+import javax.swing.UIManager;
+import javax.swing.JRadioButton;
+import java.awt.FlowLayout;
+import javax.swing.JCheckBox;
 
 public class OptionsPane extends JPanel {
 
@@ -47,6 +56,9 @@ public class OptionsPane extends JPanel {
 	private JTextField textSuspiciousHeader;
 	private AdvancedOptionsPane advOptions;
 	private BatTracer BaseWindow;
+	private JRadioButton rdbtnNotepad;
+	private JCheckBox chkTextWrap;
+	private JRadioButton rdbtnTAnalisys;
 
 	/**
 	 * Create the panel.
@@ -57,9 +69,9 @@ public class OptionsPane extends JPanel {
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {918};
-		gridBagLayout.rowHeights = new int[] {669, 0};
+		gridBagLayout.rowHeights = new int[] {669, 0, 0};
 		gridBagLayout.columnWeights = new double[]{1.0};
-		gridBagLayout.rowWeights = new double[]{0.0, 1.0};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0};
 		setLayout(gridBagLayout);
 		
 		JPanel commentsPanel = new JPanel();
@@ -71,16 +83,16 @@ public class OptionsPane extends JPanel {
 		gbc_commentsPanel.gridy = 0;
 		add(commentsPanel, gbc_commentsPanel);
 		GridBagLayout gbl_commentsPanel = new GridBagLayout();
-		gbl_commentsPanel.columnWidths = new int[] {50, 0, 450, 0};
-		gbl_commentsPanel.rowHeights = new int[]{0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0};
-		gbl_commentsPanel.columnWeights = new double[]{1.0, 0.0, 1.0, 0.0};
-		gbl_commentsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_commentsPanel.columnWidths = new int[] {100, 450, 30};
+		gbl_commentsPanel.rowHeights = new int[]{0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0};
+		gbl_commentsPanel.columnWeights = new double[]{1.0, 1.0, 0.0};
+		gbl_commentsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		commentsPanel.setLayout(gbl_commentsPanel);
 		
 		JLabel label_14 = new JLabel("Options:");
 		label_14.setFont(new Font("Tahoma", Font.BOLD, 24));
 		GridBagConstraints gbc_label_14 = new GridBagConstraints();
-		gbc_label_14.gridwidth = 4;
+		gbc_label_14.gridwidth = 3;
 		gbc_label_14.insets = new Insets(10, 10, 10, 10);
 		gbc_label_14.gridx = 0;
 		gbc_label_14.gridy = 0;
@@ -92,7 +104,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_lblCommentsPersonalization = new GridBagConstraints();
 		gbc_lblCommentsPersonalization.fill = GridBagConstraints.HORIZONTAL;
 		gbc_lblCommentsPersonalization.anchor = GridBagConstraints.WEST;
-		gbc_lblCommentsPersonalization.gridwidth = 3;
+		gbc_lblCommentsPersonalization.gridwidth = 2;
 		gbc_lblCommentsPersonalization.insets = new Insets(5, 5, 5, 5);
 		gbc_lblCommentsPersonalization.gridx = 0;
 		gbc_lblCommentsPersonalization.gridy = 1;
@@ -105,7 +117,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_lblHighConsumeApps = new GridBagConstraints();
 		gbc_lblHighConsumeApps.fill = GridBagConstraints.HORIZONTAL;
 		gbc_lblHighConsumeApps.anchor = GridBagConstraints.WEST;
-		gbc_lblHighConsumeApps.gridwidth = 3;
+		gbc_lblHighConsumeApps.gridwidth = 2;
 		gbc_lblHighConsumeApps.insets = new Insets(10, 25, 5, 5);
 		gbc_lblHighConsumeApps.gridx = 0;
 		gbc_lblHighConsumeApps.gridy = 2;
@@ -128,7 +140,7 @@ public class OptionsPane extends JPanel {
 		gbc_textConsumeFull.weightx = 3.0;
 		gbc_textConsumeFull.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textConsumeFull.insets = new Insets(0, 0, 5, 7);
-		gbc_textConsumeFull.gridx = 2;
+		gbc_textConsumeFull.gridx = 1;
 		gbc_textConsumeFull.gridy = 3;
 		commentsPanel.add(textConsumeFull, gbc_textConsumeFull);
 		textConsumeFull.setColumns(1000);
@@ -137,7 +149,7 @@ public class OptionsPane extends JPanel {
 		button.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button = new GridBagConstraints();
 		gbc_button.insets = new Insets(0, 0, 5, 0);
-		gbc_button.gridx = 3;
+		gbc_button.gridx = 2;
 		gbc_button.gridy = 3;
 		commentsPanel.add(button, gbc_button);
 		
@@ -156,7 +168,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textConsumeOff = new GridBagConstraints();
 		gbc_textConsumeOff.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textConsumeOff.insets = new Insets(0, 0, 5, 7);
-		gbc_textConsumeOff.gridx = 2;
+		gbc_textConsumeOff.gridx = 1;
 		gbc_textConsumeOff.gridy = 4;
 		commentsPanel.add(textConsumeOff, gbc_textConsumeOff);
 		textConsumeOff.setColumns(200);
@@ -165,7 +177,7 @@ public class OptionsPane extends JPanel {
 		button_1.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_1 = new GridBagConstraints();
 		gbc_button_1.insets = new Insets(0, 0, 5, 0);
-		gbc_button_1.gridx = 3;
+		gbc_button_1.gridx = 2;
 		gbc_button_1.gridy = 4;
 		commentsPanel.add(button_1, gbc_button_1);
 		
@@ -184,7 +196,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textConsumeOn = new GridBagConstraints();
 		gbc_textConsumeOn.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textConsumeOn.insets = new Insets(0, 0, 5, 7);
-		gbc_textConsumeOn.gridx = 2;
+		gbc_textConsumeOn.gridx = 1;
 		gbc_textConsumeOn.gridy = 5;
 		commentsPanel.add(textConsumeOn, gbc_textConsumeOn);
 		textConsumeOn.setColumns(200);
@@ -193,7 +205,7 @@ public class OptionsPane extends JPanel {
 		button_2.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_2 = new GridBagConstraints();
 		gbc_button_2.insets = new Insets(0, 0, 5, 0);
-		gbc_button_2.gridx = 3;
+		gbc_button_2.gridx = 2;
 		gbc_button_2.gridy = 5;
 		commentsPanel.add(button_2, gbc_button_2);
 		
@@ -204,7 +216,7 @@ public class OptionsPane extends JPanel {
 		separator_8.setBackground(Color.DARK_GRAY);
 		GridBagConstraints gbc_separator_8 = new GridBagConstraints();
 		gbc_separator_8.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_8.gridwidth = 3;
+		gbc_separator_8.gridwidth = 2;
 		gbc_separator_8.insets = new Insets(0, 12, 5, 5);
 		gbc_separator_8.gridx = 0;
 		gbc_separator_8.gridy = 6;
@@ -215,7 +227,7 @@ public class OptionsPane extends JPanel {
 		label_15.setFont(new Font("Tahoma", Font.ITALIC, 14));
 		GridBagConstraints gbc_label_15 = new GridBagConstraints();
 		gbc_label_15.fill = GridBagConstraints.HORIZONTAL;
-		gbc_label_15.gridwidth = 3;
+		gbc_label_15.gridwidth = 2;
 		gbc_label_15.insets = new Insets(0, 25, 5, 5);
 		gbc_label_15.gridx = 0;
 		gbc_label_15.gridy = 7;
@@ -237,7 +249,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textHighCurrent = new GridBagConstraints();
 		gbc_textHighCurrent.insets = new Insets(0, 0, 5, 7);
 		gbc_textHighCurrent.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textHighCurrent.gridx = 2;
+		gbc_textHighCurrent.gridx = 1;
 		gbc_textHighCurrent.gridy = 8;
 		commentsPanel.add(textHighCurrent, gbc_textHighCurrent);
 		
@@ -245,7 +257,7 @@ public class OptionsPane extends JPanel {
 		button_4.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_4 = new GridBagConstraints();
 		gbc_button_4.insets = new Insets(0, 0, 5, 0);
-		gbc_button_4.gridx = 3;
+		gbc_button_4.gridx = 2;
 		gbc_button_4.gridy = 8;
 		commentsPanel.add(button_4, gbc_button_4);
 		
@@ -265,7 +277,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textKernelWake = new GridBagConstraints();
 		gbc_textKernelWake.insets = new Insets(0, 0, 5, 7);
 		gbc_textKernelWake.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textKernelWake.gridx = 2;
+		gbc_textKernelWake.gridx = 1;
 		gbc_textKernelWake.gridy = 9;
 		commentsPanel.add(textKernelWake, gbc_textKernelWake);
 		
@@ -273,7 +285,7 @@ public class OptionsPane extends JPanel {
 		button_5.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_5 = new GridBagConstraints();
 		gbc_button_5.insets = new Insets(0, 0, 5, 0);
-		gbc_button_5.gridx = 3;
+		gbc_button_5.gridx = 2;
 		gbc_button_5.gridy = 9;
 		commentsPanel.add(button_5, gbc_button_5);
 		
@@ -293,7 +305,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textJavaWake = new GridBagConstraints();
 		gbc_textJavaWake.insets = new Insets(0, 0, 5, 7);
 		gbc_textJavaWake.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textJavaWake.gridx = 2;
+		gbc_textJavaWake.gridx = 1;
 		gbc_textJavaWake.gridy = 10;
 		commentsPanel.add(textJavaWake, gbc_textJavaWake);
 		
@@ -301,7 +313,7 @@ public class OptionsPane extends JPanel {
 		button_10.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_10 = new GridBagConstraints();
 		gbc_button_10.insets = new Insets(0, 0, 5, 0);
-		gbc_button_10.gridx = 3;
+		gbc_button_10.gridx = 2;
 		gbc_button_10.gridy = 10;
 		commentsPanel.add(button_10, gbc_button_10);
 		
@@ -312,7 +324,7 @@ public class OptionsPane extends JPanel {
 		separator.setPreferredSize(new Dimension(500, 1));
 		GridBagConstraints gbc_separator = new GridBagConstraints();
 		gbc_separator.insets = new Insets(0, 12, 5, 5);
-		gbc_separator.gridwidth = 3;
+		gbc_separator.gridwidth = 2;
 		gbc_separator.fill = GridBagConstraints.HORIZONTAL;
 		gbc_separator.gridx = 0;
 		gbc_separator.gridy = 11;
@@ -323,7 +335,7 @@ public class OptionsPane extends JPanel {
 		label.setFont(new Font("Tahoma", Font.ITALIC, 14));
 		GridBagConstraints gbc_label = new GridBagConstraints();
 		gbc_label.fill = GridBagConstraints.HORIZONTAL;
-		gbc_label.gridwidth = 3;
+		gbc_label.gridwidth = 2;
 		gbc_label.anchor = GridBagConstraints.WEST;
 		gbc_label.insets = new Insets(0, 25, 5, 5);
 		gbc_label.gridx = 0;
@@ -346,7 +358,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textSuspiciousHeader = new GridBagConstraints();
 		gbc_textSuspiciousHeader.insets = new Insets(0, 0, 5, 5);
 		gbc_textSuspiciousHeader.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textSuspiciousHeader.gridx = 2;
+		gbc_textSuspiciousHeader.gridx = 1;
 		gbc_textSuspiciousHeader.gridy = 13;
 		commentsPanel.add(textSuspiciousHeader, gbc_textSuspiciousHeader);
 		
@@ -354,7 +366,7 @@ public class OptionsPane extends JPanel {
 		button_3.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_3 = new GridBagConstraints();
 		gbc_button_3.insets = new Insets(0, 0, 5, 0);
-		gbc_button_3.gridx = 3;
+		gbc_button_3.gridx = 2;
 		gbc_button_3.gridy = 13;
 		commentsPanel.add(button_3, gbc_button_3);
 		
@@ -374,7 +386,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textSuspicious = new GridBagConstraints();
 		gbc_textSuspicious.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textSuspicious.insets = new Insets(0, 0, 5, 7);
-		gbc_textSuspicious.gridx = 2;
+		gbc_textSuspicious.gridx = 1;
 		gbc_textSuspicious.gridy = 14;
 		commentsPanel.add(textSuspicious, gbc_textSuspicious);
 		
@@ -382,7 +394,7 @@ public class OptionsPane extends JPanel {
 		button_11.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_11 = new GridBagConstraints();
 		gbc_button_11.insets = new Insets(0, 0, 5, 0);
-		gbc_button_11.gridx = 3;
+		gbc_button_11.gridx = 2;
 		gbc_button_11.gridy = 14;
 		commentsPanel.add(button_11, gbc_button_11);
 		
@@ -393,7 +405,7 @@ public class OptionsPane extends JPanel {
 		separator_1.setBackground(Color.DARK_GRAY);
 		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
 		gbc_separator_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_1.gridwidth = 3;
+		gbc_separator_1.gridwidth = 2;
 		gbc_separator_1.insets = new Insets(0, 12, 5, 5);
 		gbc_separator_1.gridx = 0;
 		gbc_separator_1.gridy = 15;
@@ -405,7 +417,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_label_6 = new GridBagConstraints();
 		gbc_label_6.fill = GridBagConstraints.HORIZONTAL;
 		gbc_label_6.anchor = GridBagConstraints.WEST;
-		gbc_label_6.gridwidth = 3;
+		gbc_label_6.gridwidth = 2;
 		gbc_label_6.insets = new Insets(0, 25, 5, 5);
 		gbc_label_6.gridx = 0;
 		gbc_label_6.gridy = 16;
@@ -427,7 +439,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textAlarms = new GridBagConstraints();
 		gbc_textAlarms.insets = new Insets(0, 0, 5, 7);
 		gbc_textAlarms.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textAlarms.gridx = 2;
+		gbc_textAlarms.gridx = 1;
 		gbc_textAlarms.gridy = 17;
 		commentsPanel.add(textAlarms, gbc_textAlarms);
 		
@@ -435,7 +447,7 @@ public class OptionsPane extends JPanel {
 		button_6.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_6 = new GridBagConstraints();
 		gbc_button_6.insets = new Insets(0, 0, 5, 0);
-		gbc_button_6.gridx = 3;
+		gbc_button_6.gridx = 2;
 		gbc_button_6.gridy = 17;
 		commentsPanel.add(button_6, gbc_button_6);
 		
@@ -446,7 +458,7 @@ public class OptionsPane extends JPanel {
 		separator_4.setBackground(Color.DARK_GRAY);
 		GridBagConstraints gbc_separator_4 = new GridBagConstraints();
 		gbc_separator_4.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_4.gridwidth = 3;
+		gbc_separator_4.gridwidth = 2;
 		gbc_separator_4.insets = new Insets(0, 12, 5, 5);
 		gbc_separator_4.gridx = 0;
 		gbc_separator_4.gridy = 18;
@@ -458,7 +470,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_label_8 = new GridBagConstraints();
 		gbc_label_8.fill = GridBagConstraints.HORIZONTAL;
 		gbc_label_8.anchor = GridBagConstraints.WEST;
-		gbc_label_8.gridwidth = 3;
+		gbc_label_8.gridwidth = 2;
 		gbc_label_8.insets = new Insets(0, 25, 5, 5);
 		gbc_label_8.gridx = 0;
 		gbc_label_8.gridy = 19;
@@ -480,7 +492,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textB2g = new GridBagConstraints();
 		gbc_textB2g.insets = new Insets(0, 0, 5, 7);
 		gbc_textB2g.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textB2g.gridx = 2;
+		gbc_textB2g.gridx = 1;
 		gbc_textB2g.gridy = 20;
 		commentsPanel.add(textB2g, gbc_textB2g);
 		
@@ -489,7 +501,7 @@ public class OptionsPane extends JPanel {
 		button_7.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_7 = new GridBagConstraints();
 		gbc_button_7.insets = new Insets(0, 0, 5, 0);
-		gbc_button_7.gridx = 3;
+		gbc_button_7.gridx = 2;
 		gbc_button_7.gridy = 20;
 		commentsPanel.add(button_7, gbc_button_7);
 		
@@ -500,7 +512,7 @@ public class OptionsPane extends JPanel {
 		separator_5.setBackground(Color.DARK_GRAY);
 		GridBagConstraints gbc_separator_5 = new GridBagConstraints();
 		gbc_separator_5.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_5.gridwidth = 3;
+		gbc_separator_5.gridwidth = 2;
 		gbc_separator_5.insets = new Insets(0, 12, 5, 5);
 		gbc_separator_5.gridx = 0;
 		gbc_separator_5.gridy = 21;
@@ -512,7 +524,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_label_10 = new GridBagConstraints();
 		gbc_label_10.fill = GridBagConstraints.HORIZONTAL;
 		gbc_label_10.anchor = GridBagConstraints.WEST;
-		gbc_label_10.gridwidth = 3;
+		gbc_label_10.gridwidth = 2;
 		gbc_label_10.insets = new Insets(0, 25, 5, 5);
 		gbc_label_10.gridx = 0;
 		gbc_label_10.gridy = 22;
@@ -534,7 +546,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textTether = new GridBagConstraints();
 		gbc_textTether.insets = new Insets(0, 0, 5, 7);
 		gbc_textTether.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textTether.gridx = 2;
+		gbc_textTether.gridx = 1;
 		gbc_textTether.gridy = 23;
 		commentsPanel.add(textTether, gbc_textTether);
 		
@@ -542,7 +554,7 @@ public class OptionsPane extends JPanel {
 		button_8.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_8 = new GridBagConstraints();
 		gbc_button_8.insets = new Insets(0, 0, 5, 0);
-		gbc_button_8.gridx = 3;
+		gbc_button_8.gridx = 2;
 		gbc_button_8.gridy = 23;
 		commentsPanel.add(button_8, gbc_button_8);
 		
@@ -553,7 +565,7 @@ public class OptionsPane extends JPanel {
 		separator_6.setBackground(Color.DARK_GRAY);
 		GridBagConstraints gbc_separator_6 = new GridBagConstraints();
 		gbc_separator_6.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_6.gridwidth = 3;
+		gbc_separator_6.gridwidth = 2;
 		gbc_separator_6.insets = new Insets(0, 12, 5, 5);
 		gbc_separator_6.gridx = 0;
 		gbc_separator_6.gridy = 24;
@@ -565,7 +577,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_label_12 = new GridBagConstraints();
 		gbc_label_12.fill = GridBagConstraints.HORIZONTAL;
 		gbc_label_12.anchor = GridBagConstraints.WEST;
-		gbc_label_12.gridwidth = 3;
+		gbc_label_12.gridwidth = 2;
 		gbc_label_12.insets = new Insets(0, 25, 5, 5);
 		gbc_label_12.gridx = 0;
 		gbc_label_12.gridy = 25;
@@ -587,7 +599,7 @@ public class OptionsPane extends JPanel {
 		GridBagConstraints gbc_textDiag = new GridBagConstraints();
 		gbc_textDiag.insets = new Insets(0, 0, 5, 7);
 		gbc_textDiag.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textDiag.gridx = 2;
+		gbc_textDiag.gridx = 1;
 		gbc_textDiag.gridy = 26;
 		commentsPanel.add(textDiag, gbc_textDiag);
 		
@@ -595,7 +607,7 @@ public class OptionsPane extends JPanel {
 		button_9.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_9 = new GridBagConstraints();
 		gbc_button_9.insets = new Insets(0, 0, 5, 0);
-		gbc_button_9.gridx = 3;
+		gbc_button_9.gridx = 2;
 		gbc_button_9.gridy = 26;
 		commentsPanel.add(button_9, gbc_button_9);
 		
@@ -606,19 +618,98 @@ public class OptionsPane extends JPanel {
 		separator_7.setBackground(Color.DARK_GRAY);
 		GridBagConstraints gbc_separator_7 = new GridBagConstraints();
 		gbc_separator_7.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_7.gridwidth = 3;
+		gbc_separator_7.gridwidth = 2;
 		gbc_separator_7.insets = new Insets(0, 12, 5, 5);
 		gbc_separator_7.gridx = 0;
 		gbc_separator_7.gridy = 27;
 		commentsPanel.add(separator_7, gbc_separator_7);
 		
+		JLabel lblParserOptions = new JLabel("Parser interface options:");
+		lblParserOptions.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblParserOptions.setAlignmentX(0.5f);
+		GridBagConstraints gbc_lblParserOptions = new GridBagConstraints();
+		gbc_lblParserOptions.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblParserOptions.anchor = GridBagConstraints.WEST;
+		gbc_lblParserOptions.gridwidth = 2;
+		gbc_lblParserOptions.insets = new Insets(5, 5, 5, 5);
+		gbc_lblParserOptions.gridx = 0;
+		gbc_lblParserOptions.gridy = 29;
+		commentsPanel.add(lblParserOptions, gbc_lblParserOptions);
+		
+		JLabel lblTextEditor = new JLabel("Text editor:");
+		GridBagConstraints gbc_lblTextEditor = new GridBagConstraints();
+		gbc_lblTextEditor.fill = GridBagConstraints.VERTICAL;
+		gbc_lblTextEditor.anchor = GridBagConstraints.EAST;
+		gbc_lblTextEditor.insets = new Insets(0, 0, 5, 5);
+		gbc_lblTextEditor.gridx = 0;
+		gbc_lblTextEditor.gridy = 30;
+		commentsPanel.add(lblTextEditor, gbc_lblTextEditor);
+		
+		JPanel panel_2 = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
+		flowLayout.setVgap(1);
+		flowLayout.setHgap(1);
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		panel_2.setPreferredSize(new Dimension(10, 25));
+		panel_2.setMinimumSize(new Dimension(10, 25));
+		panel_2.setMaximumSize(new Dimension(32767, 30));
+		panel_2.setBorder(null);
+		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
+		gbc_panel_2.insets = new Insets(0, 0, 5, 5);
+		gbc_panel_2.fill = GridBagConstraints.BOTH;
+		gbc_panel_2.gridx = 1;
+		gbc_panel_2.gridy = 30;
+		commentsPanel.add(panel_2, gbc_panel_2);
+		
+		rdbtnTAnalisys = new JRadioButton("TextAnalysis");
+		rdbtnTAnalisys.setToolTipText("Use TextAnalysis tool as default text editor");
+		rdbtnTAnalisys.setSelected(true);
+		panel_2.add(rdbtnTAnalisys);
+		
+		rdbtnNotepad = new JRadioButton("Notepad++");
+		rdbtnNotepad.setToolTipText("Use Notepad++ as default text editor");
+		panel_2.add(rdbtnNotepad);
+		
+		ButtonGroup editorSelector = new ButtonGroup();
+		editorSelector.add(rdbtnTAnalisys);
+		editorSelector.add(rdbtnNotepad);
+		
+		JLabel lblWordWrap = new JLabel("Word Wrap:");
+		lblWordWrap.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblWordWrap.setMinimumSize(new Dimension(55, 23));
+		lblWordWrap.setPreferredSize(new Dimension(55, 23));
+		GridBagConstraints gbc_lblWordWrap = new GridBagConstraints();
+		gbc_lblWordWrap.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblWordWrap.anchor = GridBagConstraints.EAST;
+		gbc_lblWordWrap.insets = new Insets(0, 0, 5, 5);
+		gbc_lblWordWrap.gridx = 0;
+		gbc_lblWordWrap.gridy = 31;
+		commentsPanel.add(lblWordWrap, gbc_lblWordWrap);
+		
+		chkTextWrap = new JCheckBox("");
+		chkTextWrap.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				if (arg0.getStateChange() == ItemEvent.SELECTED)
+					BaseWindow.getParser().getTextPane().setWrapText(true);
+				else
+					BaseWindow.getParser().getTextPane().setWrapText(false);
+			}
+		});
+		GridBagConstraints gbc_chkTextWrap = new GridBagConstraints();
+		gbc_chkTextWrap.anchor = GridBagConstraints.WEST;
+		gbc_chkTextWrap.insets = new Insets(0, 0, 5, 5);
+		gbc_chkTextWrap.gridx = 1;
+		gbc_chkTextWrap.gridy = 31;
+		commentsPanel.add(chkTextWrap, gbc_chkTextWrap);
+		
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.insets = new Insets(0, 0, 0, 5);
-		gbc_panel.gridwidth = 3;
+		gbc_panel.gridwidth = 2;
 		gbc_panel.fill = GridBagConstraints.BOTH;
 		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 28;
+		gbc_panel.gridy = 32;
 		commentsPanel.add(panel, gbc_panel);
 		
 		JButton btnSalvar = new JButton("Salvar");
@@ -669,7 +760,7 @@ public class OptionsPane extends JPanel {
 		gbc_panel_1.weightx = 1.0;
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
 		gbc_panel_1.gridx = 0;
-		gbc_panel_1.gridy = 1;
+		gbc_panel_1.gridy = 2;
 		add(panel_1, gbc_panel_1);
 		
 		try {
@@ -740,6 +831,18 @@ public class OptionsPane extends JPanel {
 			} else if(e.getName().equals("diag")){
 				textDiag.setText(e.getValue());
 				
+			} else if(e.getName().equals("editor")){
+				if(e.getValue().equals("0"))
+					rdbtnTAnalisys.setSelected(true);
+				else
+					rdbtnNotepad.setSelected(true);
+				
+			} else if(e.getName().equals("wwrap")){
+				if(e.getValue().equals("0"))
+					chkTextWrap.setSelected(false);
+				else
+					chkTextWrap.setSelected(true);
+				
 			}
 		}
 		System.out.println("Options Loaded");
@@ -800,6 +903,18 @@ public class OptionsPane extends JPanel {
 				
 			} else if(e.getName().equals("diag")){
 				e.setText(textDiag.getText());
+				
+			} else if(e.getName().equals("editor")){
+				if(rdbtnNotepad.isSelected())
+					e.setText("1");
+				else
+					e.setText("0");
+				
+			} else if(e.getName().equals("wwrap")){
+				if(chkTextWrap.isSelected())
+					e.setText("1");
+				else
+					e.setText("0");
 				
 			}
 		}
@@ -873,5 +988,15 @@ public class OptionsPane extends JPanel {
 	
 	public AdvancedOptionsPane getAdvOptions() {
 		return advOptions;
+	}
+	
+	protected JRadioButton getRdbtnNotepad() {
+		return rdbtnNotepad;
+	}
+	protected JCheckBox getChkTextWrap() {
+		return chkTextWrap;
+	}
+	protected JRadioButton getRdbtnTAnalisys() {
+		return rdbtnTAnalisys;
 	}
 }
