@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -39,7 +40,6 @@ import java.awt.event.MouseEvent;
 
 
 
-@SuppressWarnings("serial")
 public class FileTree extends JPanel{
     
     private JTree fileTree; 
@@ -72,8 +72,7 @@ public class FileTree extends JPanel{
         }
         
         
-        fileTree = new JTree(root);
-        fileTree.setRowHeight(20);
+        fileTree = new JTree(root);    
         
         //Select the first child of the root node
         fileTree.setSelectionPath(new TreePath(root.getFirstChild()));
@@ -84,14 +83,13 @@ public class FileTree extends JPanel{
 
             //When user clicks on the folder, the files from that folder will be loaded
             public void valueChanged(TreeSelectionEvent e) {
-                //BaseWindow.getParser().RootNode.removeAllChildren(); //reseting the result tree            
+                //BaseWindow.getParser().rootNode.removeAllChildren(); //reseting the result tree            
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
                 
                 if (node!=null){
                     File file = (File) node.getUserObject();   
                     BaseWindow.getParser().setCrPath(file.getAbsolutePath()+"\\");
-                    System.out.println("----------" + BaseWindow.getParser().getCrPath());
-                    if (file.isDirectory() && file.listFiles().length > 0){
+                    if (file.isDirectory() && file.listFiles().length > 0){                    	
                         initializeNode(node);
                     }
                 }
@@ -109,8 +107,8 @@ public class FileTree extends JPanel{
                       // Here, we can safely update the GUI
                       // because we'll be called from the
                       // event dispatch thread
-                        fileTree.updateUI();
-                        BaseWindow.getParser().getFiltersResultsTree().clearTree();//clearing the selections on result tree
+                        fileTree.updateUI();                 
+                        BaseWindow.getParser().getFiltersResultsTree().clearTree();
                         BaseWindow.getParser().textPane.setText(""); //reset the text pane
                         BaseWindow.getParser().result = ""; //reset the result for the filters
                         BaseWindow.getParser().lblTitle.setText("Run a parser or select a result on the left"); //reset the text in the title
@@ -191,12 +189,9 @@ public class FileTree extends JPanel{
         //Key listener
         fileTree.addKeyListener(new KeyAdapter (){
             public void keyPressed(KeyEvent event) {
-                if(event.getKeyCode() == KeyEvent.VK_DELETE){
-                	
-                	deleteFilesSelected(); 
-                    
-                } // end if
-               
+                if(event.getKeyCode() == KeyEvent.VK_DELETE){              	
+                	deleteFilesSelected();  
+                }
             }
         });
 
@@ -450,11 +445,14 @@ public class FileTree extends JPanel{
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
+							int count = 0;
 							for (TreePath p : fileTree.getSelectionPaths()){
+								ProgressDialog dialog = new ProgressDialog(BaseWindow.getFrame(), fileTree.getSelectionPaths().length);
 								DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
 					    		File file = (File) node.getUserObject();
 					    		try {
 									BaseWindow.getCrsManager().runScript(file.getAbsolutePath());
+									dialog.updateDialogView(++count);
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();			
@@ -488,43 +486,43 @@ public class FileTree extends JPanel{
     }
      
     
-    //Delete the files selected 
-	public void deleteFilesSelected() {
-		
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
+  //Delete the files selected 
+  	public void deleteFilesSelected() {
+  		
+  		new Thread(new Runnable() {
+  			
+  			@Override
+  			public void run() {
 
-				try {
-					TreePath paths[] = fileTree.getSelectionPaths();
-					
-					for (TreePath p : paths){                	
-						DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
-			            deleteFile((File)node.getUserObject());
-			            //if file is removed, node needs to be removed
-			            node.removeFromParent();
-			            
-			            SwingUtilities.invokeLater(new Runnable() {
-			                public void run() {
-			                  // Here, we can safely update the GUI
-			                  // because we'll be called from the
-			                  // event dispatch thread
-			                    fileTree.updateUI();
-			                }
-			            });
-					} // end for
-				} catch(Exception e){
-					
-					e.printStackTrace();
-					System.out.println("Error while deleting file(s)");
-					
-				}
-				
-			} // end run
-		}).start();
-		
-	}
+  				try {
+  					TreePath paths[] = fileTree.getSelectionPaths();
+  					
+  					for (TreePath p : paths){                	
+  						DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
+  			            deleteFile((File)node.getUserObject());
+  			            //if file is removed, node needs to be removed
+  			            node.removeFromParent();
+  			            
+  			            SwingUtilities.invokeLater(new Runnable() {
+  			                public void run() {
+  			                  // Here, we can safely update the GUI
+  			                  // because we'll be called from the
+  			                  // event dispatch thread
+  			                    fileTree.updateUI();
+  			                }
+  			            });
+  					} // end for
+  				} catch(Exception e){
+  					
+  					e.printStackTrace();
+  					System.out.println("Error while deleting file(s)");
+  					
+  				}
+  				
+  			} // end run
+  		}).start();
+  		
+  	}
     		
     		
     //check the extension of the files selected
@@ -579,6 +577,8 @@ public class FileTree extends JPanel{
 		    	File newFile;
 		        DefaultMutableTreeNode node;
 		        TreePath[] paths = fileTree.getSelectionPaths();
+		        ProgressDialog dialog = new ProgressDialog(BaseWindow.getFrame(), paths.length);
+		        int length = 0;
 		        
 		        for (TreePath p : paths){
 		        	node = (DefaultMutableTreeNode) p.getLastPathComponent();
@@ -587,7 +587,6 @@ public class FileTree extends JPanel{
 		    		UnZip.unZipIt(file.getAbsolutePath(), file.getAbsolutePath().substring(0, file.getAbsolutePath().length()-28));
 		    		newFile = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length()-28));
 		    		System.out.println(newFile);
-		    		
 		    		if (newFile != null) {
 		    			node.add(new DefaultMutableTreeNode(newFile));
 		    			if (run){
@@ -600,6 +599,7 @@ public class FileTree extends JPanel{
 		    			}	
 		    		}
 		    		fileTree.updateUI();
+		    		dialog.updateDialogView(++length);		    		
 		        }
 			}
 		});
