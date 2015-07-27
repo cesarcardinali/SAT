@@ -11,6 +11,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 public class FileTreeNodeRenderer extends DefaultTreeCellRenderer{
 	
+
+	private static final long serialVersionUID = 6608252004318979840L;
 	private FileSystemView fileSystemView;
 	JLabel nodeLabel;
 	

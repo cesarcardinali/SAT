@@ -1,50 +1,28 @@
 package Filters;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.swing.JOptionPane;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import com.google.common.base.Throwables;
+
 import Main.BatTracer;
+
 
 public class Diag {
 	
 	
 	static String result;
-	
-
-	public static void main(String[] args) {
-		try {
-			String res = makelog("TestDataCRs", new BatTracer());
-			PrintWriter out;
-			out = new PrintWriter("_Diag.txt");
-			out.print(res);
-			out.close();
-			StringSelection stringSelection = new StringSelection(res);
-			Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clpbrd.setContents(stringSelection, null);
-			System.out.println(res);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		System.exit(0);
-	}
-	
 	
 	
 	public static String makelog(String path, BatTracer BaseWindow) {
@@ -53,25 +31,26 @@ public class Diag {
 		Pattern pattern;
 		Matcher matcher;
 		
-		
 		diagAllKernel="";
 		diagMs = "";
 		product="";
 		duration = 0;
 		diagDuration = 0;
 		
-		
 		BufferedReader reader = null;
 		result = "";
 		
-		
 		try {
 			// File seek and load configuration
-			String file_report = null;
+			String file_report = "";
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
-
 			
+			if(!folder.isDirectory()){
+				result = "Not a directory";
+				return result;
+			}
+
 			// Look for the file
 			for (int i = 0; i < listOfFiles.length; i++) {
 				//System.out.println(folder.listFiles()[i]);
@@ -84,19 +63,16 @@ public class Diag {
 				}
 			}
 			
-			
-			// Try to open file
-			if (file_report != null){
+			try {
 				System.out.println("Log file: " + file_report);
 				reader = new BufferedReader(new FileReader(file_report));
-			}
-			else{
-				result = "File not found";
-				JOptionPane.showMessageDialog(null, "Bugreport could not be located at " + folder.getName());
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 				return result;
 			}
-
 			
+
 			//Find DIAG_WS data
 			while ((line = reader.readLine()) != null) {
 				//find product name
@@ -162,20 +138,14 @@ public class Diag {
 			}
 			reader.close();
 			
-			
 			/*System.out.println("Produto:\t\t" + product);
 			System.out.println("Duracao da CR:\t\t" + duration);
 			System.out.println("Duracao do Diag:\t" + diagDuration);
 			System.out.println("All Kernel:\t\t" + diagAllKernel);
 			System.out.println("General mode:\t\t" + diagMs);*/
 			
-			
 			//prepare the final comment:
 			if(!diagAllKernel.equals("") || !diagMs.equals("")){
-				/*result = "*DIAG wakelock:*\n{panel}\n";
-				result = result + diagMs + "\n";
-				result = result + diagAllKernel + "\n";*/
-				
 				result = BaseWindow.getOptions().getTextDiag()
 						.replace("#log#", diagMs + "\n" + diagAllKernel + "\n")
 						.replace("\\n", "\n");
@@ -199,19 +169,19 @@ public class Diag {
 			} else {
 				result = "No diag issue could be found in the logs";
 			}
-
-			
 		}  catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			return result;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			result = "IOException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			return result;
 		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
+			result = "JDOMException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			return result;
 		}
-		
 		
 		return result;
 	}

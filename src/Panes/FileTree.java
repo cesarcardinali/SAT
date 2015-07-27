@@ -2,13 +2,9 @@ package Panes;
 
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
-
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -43,6 +39,7 @@ import java.awt.event.MouseEvent;
 
 
 
+@SuppressWarnings("serial")
 public class FileTree extends JPanel{
     
     private JTree fileTree; 
@@ -75,7 +72,8 @@ public class FileTree extends JPanel{
         }
         
         
-        fileTree = new JTree(root);    
+        fileTree = new JTree(root);
+        fileTree.setRowHeight(20);
         
         //Select the first child of the root node
         fileTree.setSelectionPath(new TreePath(root.getFirstChild()));
@@ -86,13 +84,14 @@ public class FileTree extends JPanel{
 
             //When user clicks on the folder, the files from that folder will be loaded
             public void valueChanged(TreeSelectionEvent e) {
-                BaseWindow.getParser().RootNode.removeAllChildren(); //reseting the result tree            
+                //BaseWindow.getParser().RootNode.removeAllChildren(); //reseting the result tree            
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
                 
                 if (node!=null){
                     File file = (File) node.getUserObject();   
                     BaseWindow.getParser().setCrPath(file.getAbsolutePath()+"\\");
-                    if (file.isDirectory() && file.listFiles().length > 0){                    	
+                    System.out.println("----------" + BaseWindow.getParser().getCrPath());
+                    if (file.isDirectory() && file.listFiles().length > 0){
                         initializeNode(node);
                     }
                 }
@@ -111,8 +110,7 @@ public class FileTree extends JPanel{
                       // because we'll be called from the
                       // event dispatch thread
                         fileTree.updateUI();
-                        BaseWindow.getParser().tree.updateUI(); //updating the result tree
-                        BaseWindow.getParser().tree.clearSelection();//clearing the selections on result tree
+                        BaseWindow.getParser().getFiltersResultsTree().clearTree();//clearing the selections on result tree
                         BaseWindow.getParser().textPane.setText(""); //reset the text pane
                         BaseWindow.getParser().result = ""; //reset the result for the filters
                         BaseWindow.getParser().lblTitle.setText("Run a parser or select a result on the left"); //reset the text in the title

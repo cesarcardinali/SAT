@@ -5,11 +5,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Throwables;
+
+import Main.BatTracer;
 import Objects.HighConsume_List;
 import Objects.highConsumeItem;
 
@@ -18,6 +20,7 @@ public class Consume {
 	static HighConsume_List hcList;
 	static String result;
 	static int totalOccurrences;
+	static BatTracer BaseWindow;
 
 	/*
 	System.out.println("Mes:\t\t" + matcher.group(1));
@@ -30,32 +33,15 @@ public class Consume {
 	System.out.println("Process:\t" + matcher.group(8));
 	*/
 	
-	public Consume() {
-		
-	}
 
-	
-	public static void main(String[] args) {
-		PrintWriter out;
-		try {
-			out = new PrintWriter("_High_Comsumption.txt");
-			out.print(makelog("."));
-			out.close();
-			//System.out.println(result);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
-
-	public static String makelog(String path) {
+	public static String makelog(String path, BatTracer parent) {
 		result = "- *The following processes are consuming too much CPU and draining battery:*\n";
 		totalOccurrences = 0;
+		
+		//File reader
+		BufferedReader reader = null;
 
 		try {
-			//File reader
-			BufferedReader reader = null;
-			
 			// List of Apps with high consume
 			hcList = new HighConsume_List();
 			
@@ -81,11 +67,15 @@ public class Consume {
 			// Patch and Find configuration
 			String file = "";
 			
-			
-			
 			// Find log file
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
+			
+			if(!folder.isDirectory()){
+				result = "Not a directory";
+				return result;
+			}
+			
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if ( listOfFiles[i].isFile() && ( listOfFiles[i].getName().toLowerCase().endsWith(".txt") && listOfFiles[i].getName().contains("main") ) )
 				{
@@ -96,12 +86,8 @@ public class Consume {
 				}
 			}
 
-			if (file.equals(""))
-			{
-				System.out.print(System.getProperty("user.dir"));
-				System.out.println("Log de sistema nao encontrado");
-				result = "Log de sistema nao encontrado\n";
-				return "Log de sistema nao encontrado\n";
+			if(file.equals("")){
+				throw new FileNotFoundException();
 			}
 			else
 			{
@@ -175,7 +161,7 @@ public class Consume {
 			
 			System.out.println("Parser terminated.\n\n");
 			try {
-				if(reader !=null)
+				if(reader != null)
 					reader.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -212,10 +198,23 @@ public class Consume {
 			//System.out.println("Apps detected: " + hcList.size());
 			System.out.println("Apps high: " + hcitems + " - " + hcList.size());
 		
-		} catch (Exception e) {
+		} catch (FileNotFoundException e) {
+			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
-		} finally {
+			return result;
 			
+		} catch (IOException e) {
+			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
+			e.printStackTrace();
+			return result;
+			
+		} finally {
+			try {
+				if(reader != null)
+					reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		//System.out.println(result);

@@ -1,16 +1,14 @@
 package Filters;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.google.common.base.Throwables;
 
 import Main.BatTracer;
 import Objects.WackLock_List;
@@ -20,40 +18,30 @@ public class Suspicious {
 	
 	static String result;
 	static WackLock_List suspiciousWakelocks; 
-	
-	public static void main(String[] args) {
-		PrintWriter out;
-		try {
-			out = new PrintWriter("_Suspicious.txt");
-			String result = ("");
-			StringSelection stringSelection = new StringSelection(result);
-			Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clpbrd.setContents(stringSelection, null);
-			out.print(result);
-			out.close();
-			System.out.println(result);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
 
 	public static String makelog(String path, BatTracer BaseWindow) {
 		
-// ---- Variaveis necessárias -----
+// ---- Variaveis -----
 		BufferedReader br = null;
 		result = "";
 		
 		
-		try { // Método de validação inicial para funcionalidade da classe.
+		try {
 
 // -------- Inicialização das variáveis -------- 
-			String file_report = null;
-			String sCurrentLine;
+			String file_report = "";
+			String sCurrentLine = "";
 			
 			suspiciousWakelocks = new WackLock_List();
 
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
+			
+// -------- Testar se o "file" é um diretório --------
+			if(!folder.isDirectory()){
+				result = "Not a directory";
+				return result;
+			}
 			
 // -------- Listagem dos arquivos contidos na pasta -------- 
 			for (int i = 0; i < listOfFiles.length; i++) {
@@ -71,13 +59,10 @@ public class Suspicious {
 			}
 
 // -------- Verifica se o arquivo necessário existe --------  
-			if (file_report != null){
+			if (file_report.equals(""))
+				throw new FileNotFoundException();
+			else
 				br = new BufferedReader(new FileReader(file_report));
-			}
-			else {
-				System.out.println("Log de sistema nao encontrado");
-				return "Log de sistema nao encontrado";
-			}
 
 // -------- Busca por wake locks --------
 			while ((sCurrentLine = br.readLine()) != null) {
@@ -192,7 +177,7 @@ public class Suspicious {
 								aux.close();
 							}
 						}
-					// ----- Busca pelo nome do processo no BTD -----
+				// ----- Busca pelo nome do processo no BTD -----
 						else 
 						{
 							for (int i = 0; i < listOfFiles.length; i++) {
@@ -251,7 +236,6 @@ public class Suspicious {
 			}
 			
 			// ----- Geracao de resultados -----
-			
 			result = result + Issue.makelog(path, BaseWindow) + "\n\n";
 			if(suspiciousWakelocks.size() > 0)
 			{
@@ -271,16 +255,19 @@ public class Suspicious {
 				result = "- No detailed wake locks evidences were found in text logs";
 			}
 
-		} catch (IOException e) {
+		} catch (FileNotFoundException e) {
+			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
-			try {
-				br.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
+			return result;
+			
+		} catch (IOException e) {
+			result = "IOException\n" + Throwables.getStackTraceAsString(e);
+			e.printStackTrace();
+			return result;
+			
 		} finally {
 			try {
-				if(br!=null)
+				if(br != null)
 					br.close();
 			} catch (IOException ex) {
 				ex.printStackTrace();
@@ -292,6 +279,8 @@ public class Suspicious {
 	
 	
 	
+	
+	// Getters and Setters
 	static public WackLock_List getWakeLocks(){
 		return suspiciousWakelocks;
 	}

@@ -1,15 +1,13 @@
 package Filters;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.regex.Pattern;
+
+import com.google.common.base.Throwables;
 
 import Main.BatTracer;
 
@@ -17,28 +15,9 @@ public class Issue {
 	
 	static String result;
 	
-	public static void main(String[] args) {
-		try {
-			String res = ("");
-			StringSelection stringSelection = new StringSelection(res);
-			Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clpbrd.setContents(stringSelection, null);
-			PrintWriter out;
-			out = new PrintWriter("_Issue.txt");
-			out.write(res);
-			out.close();
-			System.out.println(res);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		System.exit(0);
-	}
-	
-	
 	public static String makelog(String path, BatTracer BaseWindow) {
 		BufferedReader br = null;
-		result = "Error";
+		result = "";
 		
 		try {
 			// Output text configuration
@@ -56,9 +35,14 @@ public class Issue {
 			boolean hc = false;
 			
 			// File seek and load configuration
-			String file_report = null;
+			String file_report = "";
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
+			
+			if(!folder.isDirectory()){
+				result = "Not a directory";
+				return result;
+			}
 
 			// Look for the file
 			for (int i = 0; i < listOfFiles.length; i++) {
@@ -75,15 +59,11 @@ public class Issue {
 				}
 			}
 			
-			// Try to open file
-			if (file_report != null)
-				br = new BufferedReader(new FileReader(file_report));
-			else{
-				result = "Arquivo nao encontrado";
-				return "Arquivo nao encontrado";
+			if(file_report.equals("")){
+				throw new FileNotFoundException();
 			}
+			br = new BufferedReader(new FileReader(file_report));
 
-			
 			// Parse file
 			while ((sCurrentLine = br.readLine()) != null) {
 				
@@ -136,7 +116,6 @@ public class Issue {
 						screenOffData = "";
 					else
 						screenOffData = screenOffData + "{panel}\n";
-					
 				}
 				
 				if (sCurrentLine.contains("Java wakelocks held")) {
@@ -161,13 +140,8 @@ public class Issue {
 				}
 			}
 			
-			try {
-				if(br!=null)
-					br.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-			
+			if(br != null)
+				br.close();
 			
 			// Building results:
 			result = "Issues seen in this CR:\n\n";
@@ -181,14 +155,16 @@ public class Issue {
 				result = result + javaWakelock + javaWakelockData + "\n\n";
 			}
 			
-
-		} catch (IOException e) {
+		} catch (FileNotFoundException e){
+			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
-			try {
-				br.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
+			return result;
+			
+		} catch (IOException e) {
+			result = "IOException\n" + Throwables.getStackTraceAsString(e);
+			e.printStackTrace();
+			return result;
+			
 		} finally {
 			try {
 				if(br!=null)

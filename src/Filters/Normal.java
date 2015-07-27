@@ -1,38 +1,25 @@
 package Filters;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+
+import com.google.common.base.Throwables;
+
+import Main.BatTracer;
 
 public class Normal {
 	
-	static String result = "";
-
-	public static void main(String[] args) {
-		try {
-			String res = makeLog(".");
-			StringSelection stringSelection = new StringSelection(res);
-			Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clpbrd.setContents(stringSelection, null);
-			PrintWriter out;
-			out = new PrintWriter("_Normal.txt");
-			out.print(res);
-			out.close();
-			System.out.println(res);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+	static String result;
+	static BatTracer BaseWindow;
 	
 
-	public static String makeLog(String path){
+	public static String makeLog(String path, BatTracer parent){
 		BufferedReader br = null;
+		BaseWindow = parent;
+		result = "";
 		
 		try {
 			String bugReport = "*Bugreport usage info:*";
@@ -48,6 +35,11 @@ public class Normal {
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 
+			if(!folder.isDirectory()){
+				result = "Not a directory";
+				return result;
+			}
+			
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (listOfFiles[i].isFile()) {
 					String files = listOfFiles[i].getName();
@@ -62,22 +54,15 @@ public class Normal {
 				}
 			}
 			
-			
 			// Try to open file
-			if(!str_report.equals("")){
-				br = new BufferedReader(new FileReader(str_report));
+			if(str_report.equals("")){
+				throw new FileNotFoundException();
 			}
-			else{
-				result = "Arquivo nao encontrado";
-				System.out.print(System.getProperty("user.dir"));
-				return "Arquivo nao encontrado";
-			}
-			
+			br = new BufferedReader(new FileReader(str_report));
 			
 			String sCurrentLine;
 			String secondaryData1 = "";
 			String secondaryData2 = "";
-			
 			
 			while ((sCurrentLine = br.readLine()) != null) {
 				if (sCurrentLine.contains("Statistics since last unplugged:"))
@@ -154,13 +139,16 @@ public class Normal {
 			result = result + "\n- No current drain issues found in this CR.\n\n??Closed as normal use??";
 			
 			//System.out.println(result);
-		} catch (IOException e) {
+		} catch (FileNotFoundException e) {
+			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
-			try {
-				br.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
+			return result;
+			
+		} catch (IOException e) {
+			result = "IOException\n" + Throwables.getStackTraceAsString(e);
+			e.printStackTrace();
+			return result;
+			
 		} finally {
 			try {
 				if(br!=null)

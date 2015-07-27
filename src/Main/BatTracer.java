@@ -51,15 +51,11 @@ public class BatTracer extends JFrame{
 	private CRsManager crsManager;
 	private ArrayList<crItem> crsList;
 	private static BatTracer Main;
+	private String rootPath;
 	private File logFile;
 	private BufferedWriter logWriter;
 	private Semaphore unzipSemaphore;
-	private static final String configLocation = "Data/cfgs/system_cfg.xml";
-	private String toolFile;
-	private String toolName;
-	private String toolVersion;
-	private String updaterFile;
-	private String contentFolder;
+	
 	private String updateFolder1;
 	private String updateFolder2;
 	PrintStream out;
@@ -93,14 +89,9 @@ public class BatTracer extends JFrame{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
-		// Loading configurations
-		loadInitialData();
-		
-		
 		//Initializing window
-		setIconImage(Toolkit.getDefaultToolkit().getImage(contentFolder + "/pics/icon.png"));
-		setTitle(toolName + " " + toolVersion);
+		setIconImage(Toolkit.getDefaultToolkit().getImage("Data\\pics\\icon.png"));
+		setTitle("Search Analysis Tool  v1.0");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double width = screenSize.getWidth();
@@ -108,10 +99,19 @@ public class BatTracer extends JFrame{
 		setBounds((int)(width/3), 0, (int)(width/1.5), (int)height-40);
 		setVisible(true);
 		
-
+		try {
+			out = new PrintStream(new FileOutputStream("Data\\Logs\\system-log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt"));
+			//System.setOut(out);
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		
+		//Global variables
+		rootPath = new File("").getAbsolutePath() + File.separator;
+		System.out.println(rootPath);
 		
-		logFile = new File(contentFolder + "/Logs/log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt");
+		logFile = new File("Data\\Logs\\log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt");
 		try {
 			logWriter = new BufferedWriter(new FileWriter(logFile));
 		} catch (IOException e1) {
@@ -157,7 +157,8 @@ public class BatTracer extends JFrame{
 		getContentPane().add(tabbedPane);
 		
 		
-
+		// Loading configurations
+		loadInitialData();
 		
 		
 		//Initializing other variables
@@ -172,7 +173,7 @@ public class BatTracer extends JFrame{
 				while(run == 0){
 					try {
 						//Abre o arquivo XML
-						File xmlFile = new File(configLocation);
+						File xmlFile = new File("Data/cfgs/system_cfg.xml");
 						
 						//Cria o builder da estrutura XML
 						SAXBuilder builder = new SAXBuilder();
@@ -261,7 +262,7 @@ public class BatTracer extends JFrame{
 	private void loadInitialData() {
 		try{
 			//Abre o arquivo XML
-			File xmlFile = new File(configLocation);
+			File xmlFile = new File("Data/cfgs/system_cfg.xml");
 			
 			//Cria o builder da estrutura XML
 			SAXBuilder builder = new SAXBuilder();
@@ -275,42 +276,15 @@ public class BatTracer extends JFrame{
 			//Pega o nó referente ao option pane
 			Element crs_jira_paneNode = satNode.getChild("configs");
 			for(Element e : crs_jira_paneNode.getChildren()){
-				if(e.getName().equals("tool_file")){
-					toolFile = (e.getValue());
-					
-				} else if(e.getName().equals("tool_name")){
-					toolName = (e.getValue());
-					
-				} else if(e.getName().equals("version")){
-					toolVersion = (e.getValue());
-					
-				} else if(e.getName().equals("content_folder")){
-					contentFolder = (e.getValue());
-					
-				} else if(e.getName().equals("updater")){
-					updaterFile = (e.getValue());
-					
-				} else if(e.getName().equals("update_path1")){
+				if(e.getName().equals("update_path1")){
 					updateFolder1 = (e.getValue());
 					
 				} else if(e.getName().equals("update_path2")){
 					updateFolder2 = (e.getValue());
 					
-				} else if(e.getName().equals("debug_mode")){
-					if( e.getValue().equals("true"))
-						try {
-							out = new PrintStream(new FileOutputStream(contentFolder + "/Logs/system-log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt"));
-							System.setOut(out);
-						} catch (FileNotFoundException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}
 				}
 			}
-						
-			System.out.println("Configs: " + configLocation);
-			System.out.println("Content Folder: " + contentFolder);
-			System.out.println("Tool File: " + toolFile + "\nTool Name: " + toolName + "\nTool Version: " + toolVersion + "\nUpdate File: " + updaterFile);
+			
 			System.out.println("Update path1: " + updateFolder1 + "\nUpdate path2: " + updateFolder2);
 			System.out.println("Options Loaded");
 		
@@ -387,10 +361,10 @@ public class BatTracer extends JFrame{
 		File f2;
 		long dateRemote, dateLocal;
 		
-		f1 = new File(updateFolder1 + toolFile);
+		f1 = new File(updateFolder1 + "\\BatteryTool.jar");
 		System.out.println("Remote file: " + f1.getAbsolutePath());
 		System.out.println("Remote: " + f1.lastModified());
-		f2 = new File(toolFile);
+		f2 = new File("BatteryTool.jar");
 		System.out.println("Local file: " + f2.getAbsolutePath());
 		System.out.println("Local: " + f2.lastModified());
 		dateRemote = f1.lastModified();
@@ -406,7 +380,7 @@ public class BatTracer extends JFrame{
 			if(n == 0) {
 				try {
 					System.out.println("Updating the Updater first, from: " + updateFolder1);
-					FileUtils.copyFile(new File(updateFolder1 + "/" + updaterFile), new File(updaterFile));
+					FileUtils.copyFile(new File(updateFolder1 + "\\Updater.jar"), new File("Updater.jar"));
 				} catch (IOException e) {
 					System.out.println("Updating the Updater failed");
 					e.printStackTrace();
@@ -414,7 +388,7 @@ public class BatTracer extends JFrame{
 				System.out.println("Updating");
 				try {
 					System.out.println("path: " + new File("").getAbsolutePath());
-					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar " + updaterFile);
+					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar Updater.jar");
 					builder.start();
 				} catch (IOException e2) {
 					e2.printStackTrace();

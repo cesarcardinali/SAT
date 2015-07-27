@@ -1,60 +1,44 @@
 package Filters;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+
+import com.google.common.base.Throwables;
 
 import Main.BatTracer;
 
 public class Tether {
 	
 	static String result;
-	
-	public static void main(String[] args) {
-		try {
-			String res = "";//makeLog(".");
-			StringSelection stringSelection = new StringSelection(res);
-			Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clpbrd.setContents(stringSelection, null);
-			PrintWriter out;
-			out = new PrintWriter("_Tethering.txt");
-			out.print(res);
-			out.close();
-			System.out.println(result);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		System.exit(0);
-	}
 
 	public static String makeLog(String path, BatTracer BaseWindow) {
 		BufferedReader br = null;
 		result = "";
 
 		try {
-
 			String wifitether = BaseWindow.getOptions().getTextTether();
 			String wifitetherData1 = "";
 			String wifitetherData2 = "";
 			String sCurrentLine;
 			
 			// File seek and load configuration
-			String file_report = null;
+			String file_report = "";
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 
+			if(!folder.isDirectory()){
+				result = "Not a directory";
+				return result;
+			}
+			
 			// Look for the file
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (listOfFiles[i].isFile()) {
 					String files = listOfFiles[i].getName();
-					System.out.println(listOfFiles[i].getName());
+					//System.out.println(listOfFiles[i].getName());
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
 							&& (files.contains("system"))) {
 						if(path.equals("."))
@@ -65,28 +49,31 @@ public class Tether {
 					}
 				}
 			}
+			
 			// Try to open file
-			if (file_report != null)
+			if (file_report.equals("")) {
+				result = "system not found";
+			}
+			else {
 				br = new BufferedReader(new FileReader(file_report));
-			else{
-				result = "Log nao encontrado";
-			}
-
-			while ((sCurrentLine = br.readLine()) != null) {
-				if (sCurrentLine.contains("WiFi Tethered already")) {
-					wifitetherData1 = wifitetherData1 + sCurrentLine + "\n";
+	
+				while ((sCurrentLine = br.readLine()) != null) {
+					if (sCurrentLine.contains("WiFi Tethered already")) {
+						wifitetherData1 = wifitetherData1 + sCurrentLine + "\n";
+					}
 				}
+				//System.out.println(wifitetherData1);
+				
+				if(br != null)
+					br.close();
 			}
-			System.out.println(wifitetherData1);
 			
-			if(br!=null)
-				br.close();
-			
-			// Look for the file
+			// Look for a file
+			file_report = "";
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (listOfFiles[i].isFile()) {
 					String files = listOfFiles[i].getName();
-					System.out.println(listOfFiles[i].getName());
+					//System.out.println(listOfFiles[i].getName());
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
 							&& (files.contains("main"))) {
 						if(path.equals("."))
@@ -97,13 +84,14 @@ public class Tether {
 					}
 				}
 			}
+			
 			// Try to open file
-			if (file_report != null)
+			if (file_report.equals("") && result.equals("system not found"))
+				throw new FileNotFoundException();
+			else
 				br = new BufferedReader(new FileReader(file_report));
-			else {
-				result = "sem arquivo";
-				return "Arquivo nao encontrado";
-			}
+			
+			result = "";
 
 			String startTether = "", stopTether = "";
 			while ((sCurrentLine = br.readLine()) != null) {
@@ -111,14 +99,14 @@ public class Tether {
 					wifitetherData2 = wifitetherData2 + sCurrentLine + "\n";
 				}
 				else if (sCurrentLine.toLowerCase().contains("starting tether")){
-					System.out.println(sCurrentLine);
+					//System.out.println(sCurrentLine);
 					if(!startTether.equals(""))
 						startTether = startTether + "\n" + sCurrentLine;
 					else
 						startTether = sCurrentLine;
 				}
 				else if (sCurrentLine.toLowerCase().contains("stopping tether")){
-					System.out.println(sCurrentLine);
+					//System.out.println(sCurrentLine);
 					if(!stopTether.equals(""))
 						stopTether = stopTether + "\n" + sCurrentLine;
 					else
@@ -126,7 +114,7 @@ public class Tether {
 				}
 			}
 			
-			System.out.println("\n\n\n" + startTether + "\n" + stopTether);
+			//System.out.println("\n\n\n" + startTether + "\n" + stopTether);
 			result = wifitether;
 			
 			if(!startTether.equals("") || !stopTether.equals("")){
@@ -173,17 +161,21 @@ public class Tether {
 			
 			//System.out.println(result);
 
-		} catch (IOException e) {
+		} catch (FileNotFoundException e) {
+			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
-			try {
-				br.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
+			return result;
+			
+		} catch (IOException e) {
+			result = "IOException\n" + Throwables.getStackTraceAsString(e);
+			e.printStackTrace();
+			return result;
+			
 		} finally {
 			try {
-				if(br!=null)
+				if(br != null)
 					br.close();
+				return result;
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
@@ -193,7 +185,7 @@ public class Tether {
 	}
 
 	public static String getResult() {
-		System.out.println(result);
+		//System.out.println(result);
 		return result;
 	}
 
