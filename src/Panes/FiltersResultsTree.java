@@ -1,6 +1,7 @@
 package Panes;
 
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -25,7 +26,6 @@ public class FiltersResultsTree extends JTree {
 	private BatTracer BaseWindow;
 	private DefaultTreeModel treeModel;
 	private DefaultMutableTreeNode rootNode;
-	private DefaultMutableTreeNode selectedNode;
 
 	// Tree definition
 	public FiltersResultsTree(BatTracer parent) {
@@ -55,7 +55,7 @@ public class FiltersResultsTree extends JTree {
 		addTreeSelectionListener(new TreeSelectionListener() {
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
-				selectedNode = (DefaultMutableTreeNode) getLastSelectedPathComponent();
+				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) getLastSelectedPathComponent();
 				
 				if(selectedNode != null){
 					switch (selectedNode.getLevel()){
@@ -315,7 +315,7 @@ public class FiltersResultsTree extends JTree {
 		});
 		
 		// Reloading tree architecture on the UI
-		treeModel.reload();
+		updateResultTreeUI();
 	}
 	
 	
@@ -418,7 +418,7 @@ public class FiltersResultsTree extends JTree {
 		String x = (String) selectedNode.getUserObject();
 		x = ("Alarms - Running");
 		selectedNode.setUserObject(x);
-		treeModel.reload(findNode("Alarms"));
+		updateResultTreeUI();
 		
 		alarmResult = Alarm.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
 		
@@ -426,25 +426,25 @@ public class FiltersResultsTree extends JTree {
 			x = ("Alarms - Error");
 			selectedNode.setUserObject(x);
 			addAlarms("System log not found");
-			treeModel.reload(findNode("Alarms"));
+			updateResultTreeUI();
 			
 		} else if(alarmResult.contains("IOException")){
 			x = ("Alarms - Error");
 			selectedNode.setUserObject(x);
 			addAlarms("IOException");
-			treeModel.reload(findNode("Alarms"));
+			updateResultTreeUI();
 			
 		} else if(alarmResult.contains("Error")){
 			x = ("Alarms - Error");
 			selectedNode.setUserObject(x);
 			addAlarms("IOException");
-			treeModel.reload(findNode("Alarms"));
+			updateResultTreeUI();
 			
 		} else if(alarmResult.contains("Not a directory")){
 			x = ("Alarms - Error");
 			selectedNode.setUserObject(x);
 			addAlarms("No directory selected");
-			treeModel.reload(findNode("Alarms"));
+			updateResultTreeUI();
 			
 		} else {
 			if(Alarm.getListSize() == 0)
@@ -463,7 +463,7 @@ public class FiltersResultsTree extends JTree {
 		}
 		
 		System.out.println("Alarms thread finished");
-		treeModel.reload(findNode("Alarms"));
+		updateResultTreeUI();
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
 	
@@ -474,7 +474,7 @@ public class FiltersResultsTree extends JTree {
 		String x = (String) selectedNode.getUserObject();
 		x = ("Bug2Go - Running");
 		selectedNode.setUserObject(x);
-		treeModel.reload(findNode("Bug2Go"));
+		updateResultTreeUI();
 		
 		b2gResult = B2G.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
 		
@@ -482,21 +482,21 @@ public class FiltersResultsTree extends JTree {
 			x = ("Bug2Go - Error");
 			selectedNode.setUserObject(x);
 			addBug2go("Logs not found");
-			treeModel.reload(findNode("Bug2Go"));
+			updateResultTreeUI();
 			System.out.println("Bug2go thread error");
 			
 		} else if(b2gResult.contains("IOException")){
 			x = ("Bug2Go - Error");
 			selectedNode.setUserObject(x);
 			addBug2go("IOException");
-			treeModel.reload(findNode("Bug2Go"));
+			updateResultTreeUI();
 			System.out.println("Bug2go thread error");
 			
 		} else if(b2gResult.contains("Not a directory")){
 			x = ("Bug2Go - Error");
 			selectedNode.setUserObject(x);
 			addBug2go("No directory selected");
-			treeModel.reload(findNode("Bug2Go"));
+			updateResultTreeUI();
 			System.out.println("Bug2go thread error");
 			
 		} else {
@@ -506,7 +506,7 @@ public class FiltersResultsTree extends JTree {
 			
 			x = ("Bug2Go - Done");
 			selectedNode.setUserObject(x);
-			treeModel.reload(findNode("Bug2Go"));
+			updateResultTreeUI();
 			System.out.println("Bug2go thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
@@ -519,7 +519,7 @@ public class FiltersResultsTree extends JTree {
 		String x = (String) selectedNode.getUserObject();
 		x = ("Diag - Running");
 		selectedNode.setUserObject(x);
-		treeModel.reload(findNode("Diag"));
+		updateResultTreeUI();
 		
 		diagResult = Diag.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
 		
@@ -527,28 +527,28 @@ public class FiltersResultsTree extends JTree {
 			x = ("Diag - Error");
 			selectedNode.setUserObject(x);
 			addDiag("Logs not found");
-			treeModel.reload(findNode("Diag"));
+			updateResultTreeUI();
 			System.out.println("Diag thread error");
 			
 		} else if(diagResult.contains("IOException")){
 			x = ("Diag - Error");
 			selectedNode.setUserObject(x);
 			addDiag("IOException");
-			treeModel.reload(findNode("Diag"));
+			updateResultTreeUI();
 			System.out.println("Diag thread error");
 			
 		} else if(diagResult.contains("JDOMException")){
 			x = ("Diag - Error");
 			selectedNode.setUserObject(x);
 			addDiag("JDOM Error");
-			treeModel.reload(findNode("Diag"));
+			updateResultTreeUI();
 			System.out.println("Diag thread error");
 			
 		} else if(diagResult.contains("Not a directory")){
 			x = ("Diag - Error");
 			selectedNode.setUserObject(x);
 			addDiag("No directory selected");
-			treeModel.reload(findNode("Diag"));
+			updateResultTreeUI();
 			System.out.println("Diag thread error");
 			
 		} else {
@@ -558,7 +558,7 @@ public class FiltersResultsTree extends JTree {
 			
 			x = ("Diag - Done");
 			selectedNode.setUserObject(x);
-			treeModel.reload(findNode("Diag"));
+			updateResultTreeUI();
 			System.out.println("Diag thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
@@ -571,7 +571,7 @@ public class FiltersResultsTree extends JTree {
 		String x = (String) selectedNode.getUserObject();
 		x = ("WakeLocks - Running");
 		selectedNode.setUserObject(x);
-		treeModel.reload(findNode("Wakelocks"));
+		updateResultTreeUI();
 		
 		wakelocksResult = Issue.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
 		
@@ -579,21 +579,21 @@ public class FiltersResultsTree extends JTree {
 			x = ("WakeLocks - Error");
 			selectedNode.setUserObject(x);
 			addIssues("Logs not found");
-			treeModel.reload(findNode("WakeLocks"));
+			updateResultTreeUI();
 			System.out.println("Wakelocks thread error");
 			
 		} else if(wakelocksResult.contains("IOException")){
 			x = ("WakeLocks - Error");
 			selectedNode.setUserObject(x);
 			addIssues("IOException");
-			treeModel.reload(findNode("WakeLocks"));
+			updateResultTreeUI();
 			System.out.println("Wakelocks thread error");
 			
 		} else if(wakelocksResult.contains("Not a directory")){
 			x = ("WakeLocks - Error");
 			selectedNode.setUserObject(x);
 			addIssues("No directory selected");
-			treeModel.reload(findNode("WakeLocks"));
+			updateResultTreeUI();
 			System.out.println("Wakelocks thread error");
 			
 		} else {
@@ -603,7 +603,7 @@ public class FiltersResultsTree extends JTree {
 			
 			x = ("WakeLocks - Done");
 			selectedNode.setUserObject(x);
-			treeModel.reload(findNode("WakeLocks"));
+			updateResultTreeUI();
 			System.out.println("Wakelocks thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
@@ -616,7 +616,7 @@ public class FiltersResultsTree extends JTree {
 		String x = (String) selectedNode.getUserObject();
 		x = ("High Consumption - Running");
 		selectedNode.setUserObject(x);
-		treeModel.reload(findNode("High Consumption"));
+		updateResultTreeUI();
 		
 		consumptionResult = Consume.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
 		
@@ -624,21 +624,21 @@ public class FiltersResultsTree extends JTree {
 			x = ("High Consumption - Error");
 			selectedNode.setUserObject(x);
 			addConsumeNode("Logs not found");
-			treeModel.reload(findNode("High Consumption"));
+			updateResultTreeUI();
 			System.out.println("Consumption thread error");
 			
 		} else if(consumptionResult.contains("IOException")){
 			x = ("High Consumption - Error");
 			selectedNode.setUserObject(x);
 			addConsumeNode("IOException");
-			treeModel.reload(findNode("High Consumption"));
+			updateResultTreeUI();
 			System.out.println("Consumption thread error");
 			
 		} else if(consumptionResult.contains("Not a directory")){
 			x = ("High Consumption - Error");
 			selectedNode.setUserObject(x);
 			addConsumeNode("No directory selected");
-			treeModel.reload(findNode("High Consumption"));
+			updateResultTreeUI();
 			System.out.println("Consumption thread error");
 			
 		} else {
@@ -652,7 +652,7 @@ public class FiltersResultsTree extends JTree {
 			
 			x = ("High Consumption - Done");
 			selectedNode.setUserObject(x);
-			treeModel.reload(findNode("High Consumption"));
+			updateResultTreeUI();
 			System.out.println("Consumption thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
@@ -665,7 +665,7 @@ public class FiltersResultsTree extends JTree {
 		String x = (String) selectedNode.getUserObject();
 		x = ("Summary - Running");
 		selectedNode.setUserObject(x);
-		treeModel.reload(findNode("Summary"));
+		updateResultTreeUI();
 		
 		summaryResult = Normal.makeLog(BaseWindow.getParser().getCrPath(), BaseWindow);
 		
@@ -673,21 +673,21 @@ public class FiltersResultsTree extends JTree {
 			x = ("Summary - Error");
 			selectedNode.setUserObject(x);
 			addSummary("Logs not found");
-			treeModel.reload(findNode("Summary"));
+			updateResultTreeUI();
 			System.out.println("Summary thread error");
 			
 		} else if(summaryResult.contains("IOException")){
 			x = ("Summary - Error");
 			selectedNode.setUserObject(x);
 			addSummary("IOException");
-			treeModel.reload(findNode("Summary"));
+			updateResultTreeUI();
 			System.out.println("Summary thread error");
 			
 		} else if(summaryResult.contains("Not a directory")){
 			x = ("Summary - Error");
 			selectedNode.setUserObject(x);
 			addSummary("No directory selected");
-			treeModel.reload(findNode("Summary"));
+			updateResultTreeUI();
 			System.out.println("Summary thread error");
 			
 		} else {
@@ -697,7 +697,7 @@ public class FiltersResultsTree extends JTree {
 			
 			x = ("Summary - Done");
 			selectedNode.setUserObject(x);
-			treeModel.reload(findNode("Summary"));
+			updateResultTreeUI();
 			System.out.println("Summary thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
@@ -710,7 +710,7 @@ public class FiltersResultsTree extends JTree {
 		String x = (String) selectedNode.getUserObject();
 		x = ("Suspicious - Running");
 		selectedNode.setUserObject(x);
-		treeModel.reload(findNode("Suspicious"));
+		updateResultTreeUI();
 		
 		suspiciousResult = Suspicious.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
 		
@@ -718,21 +718,21 @@ public class FiltersResultsTree extends JTree {
 			x = ("Suspicious - Error");
 			selectedNode.setUserObject(x);
 			addWakeLocksNode("Logs not found");
-			treeModel.reload(findNode("Suspicious"));
+			updateResultTreeUI();
 			System.out.println("Suspicious thread error");
 			
 		} else if(suspiciousResult.contains("IOException")){
 			x = ("Suspicious - Error");
 			selectedNode.setUserObject(x);
 			addWakeLocksNode("IOException");
-			treeModel.reload(findNode("Suspicious"));
+			updateResultTreeUI();
 			System.out.println("Suspicious thread error");
 			
 		} else if(suspiciousResult.contains("Not a directory")){
 			x = ("Suspicious - Error");
 			selectedNode.setUserObject(x);
 			addWakeLocksNode("No directory selected");
-			treeModel.reload(findNode("Suspicious"));
+			updateResultTreeUI();
 			System.out.println("Suspicious thread error");
 			
 		} else {
@@ -751,7 +751,7 @@ public class FiltersResultsTree extends JTree {
 			
 			x = ("Suspicious - Done");
 			selectedNode.setUserObject(x);
-			treeModel.reload(findNode("Suspicious"));
+			updateResultTreeUI();
 			System.out.println("Suspicious thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
@@ -764,7 +764,7 @@ public class FiltersResultsTree extends JTree {
 		String x = (String) selectedNode.getUserObject();
 		x = ("Tethering - Running");
 		selectedNode.setUserObject(x);
-		treeModel.reload(findNode("Tethering"));
+		updateResultTreeUI();
 		
 		tetherResult = Tether.makeLog(BaseWindow.getParser().getCrPath(), BaseWindow);
 		
@@ -772,21 +772,21 @@ public class FiltersResultsTree extends JTree {
 			x = ("Tethering - Error");
 			selectedNode.setUserObject(x);
 			addTether("Logs not found");
-			treeModel.reload(findNode("Tethering"));
+			updateResultTreeUI();
 			System.out.println("Tethering thread error");
 			
 		} else if(tetherResult.contains("IOException")){
 			x = ("Tethering - Error");
 			selectedNode.setUserObject(x);
 			addTether("IOException");
-			treeModel.reload(findNode("Tethering"));
+			updateResultTreeUI();
 			System.out.println("Tethering thread error");
 			
 		} else if(tetherResult.contains("Not a directory")){
 			x = ("Tethering - Error");
 			selectedNode.setUserObject(x);
 			addTether("No directory selected");
-			treeModel.reload(findNode("Tethering"));
+			updateResultTreeUI();
 			System.out.println("Tethering thread error");
 			
 		} else {
@@ -796,7 +796,7 @@ public class FiltersResultsTree extends JTree {
 			
 			x = ("Tethering - Done");
 			selectedNode.setUserObject(x);
-			treeModel.reload(findNode("Tethering"));
+			updateResultTreeUI();
 			System.out.println("Tethering thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
@@ -830,7 +830,17 @@ public class FiltersResultsTree extends JTree {
 		rootNode.add(new DefaultMutableTreeNode("Summary"));
 		rootNode.add(new DefaultMutableTreeNode("Suspicious"));
 		rootNode.add(new DefaultMutableTreeNode("Tethering"));
-		treeModel.reload();
+		updateResultTreeUI();
+	}
+	
+	
+	
+	public void updateResultTreeUI(){
+		SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                updateUI();
+              }
+          });
 	}
 	
 }
