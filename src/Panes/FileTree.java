@@ -39,7 +39,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
-
+@SuppressWarnings("serial")
 public class FileTree extends JPanel{
     
     private JTree fileTree; 
@@ -47,6 +47,7 @@ public class FileTree extends JPanel{
     private DefaultMutableTreeNode root; 
     private FileSystemView fileSystemView;
     private BatTracer BaseWindow;
+    private String lastDirectory;
     
     //File Tree constructor. It will initialize the file tree
     public FileTree(BatTracer batTracer){
@@ -71,6 +72,7 @@ public class FileTree extends JPanel{
             root.add(newNode);
         }
         
+        lastDirectory = "";
         
         fileTree = new JTree(root);    
         
@@ -85,13 +87,24 @@ public class FileTree extends JPanel{
             public void valueChanged(TreeSelectionEvent e) {
                 //BaseWindow.getParser().rootNode.removeAllChildren(); //reseting the result tree            
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-                
+                System.out.println("-------------" + node.toString());
                 if (node!=null){
-                    File file = (File) node.getUserObject();   
-                    BaseWindow.getParser().setCrPath(file.getAbsolutePath()+"\\");
-                    if (file.isDirectory() && file.listFiles().length > 0){                    	
-                        initializeNode(node);
-                    }
+                    File file = (File) node.getUserObject();
+                    
+                    if (file.isDirectory()){
+                    	if(file.listFiles().length > 0)
+                        	initializeNode(node);
+                    	if(isCrNode(node)){
+                    		if(!lastDirectory.equals(node.toString())) {
+                    		lastDirectory = node.toString();
+                    		BaseWindow.getParser().setCrPath(file.getAbsolutePath()+"\\");
+	                        BaseWindow.getParser().getFiltersResultsTree().clearTree();
+	                        BaseWindow.getParser().textPane.setText(""); //reset the text pane
+	                        BaseWindow.getParser().result = ""; //reset the result for the filters
+	                        BaseWindow.getParser().lblTitle.setText("Run a parser or select a result on the left"); //reset the text in the title
+                    		}
+	                    }
+                	}
                 }
                 
                 
@@ -107,11 +120,7 @@ public class FileTree extends JPanel{
                       // Here, we can safely update the GUI
                       // because we'll be called from the
                       // event dispatch thread
-                        fileTree.updateUI();                 
-                        BaseWindow.getParser().getFiltersResultsTree().clearTree();
-                        BaseWindow.getParser().textPane.setText(""); //reset the text pane
-                        BaseWindow.getParser().result = ""; //reset the result for the filters
-                        BaseWindow.getParser().lblTitle.setText("Run a parser or select a result on the left"); //reset the text in the title
+                        fileTree.updateUI();
                     }
                 });
             }
@@ -609,6 +618,37 @@ public class FileTree extends JPanel{
 
 	public JTree getFileTree() {
 		return fileTree;
+	}
+	
+	public boolean isCrNode(DefaultMutableTreeNode node){
+		DefaultMutableTreeNode Node = node;
+		File aux = (File)Node.getUserObject();
+		int Length;
+		
+		if(aux.isDirectory()) {
+			Length = Node.getChildCount();
+			for(int i = 0; i < Length; i++)
+			{
+				if(Node.getChildAt(i).toString().toLowerCase().contains("report_info") 
+						|| Node.getChildAt(i).toString().toLowerCase().contains(".btd")
+						|| Node.getChildAt(i).toString().toLowerCase().contains("entry.txt")){
+					return true;
+				}
+			}
+			return false;
+		} else {
+			Node = (DefaultMutableTreeNode) Node.getParent();
+			Length = Node.getChildCount();
+			for(int i = 0; i < Length; i++)
+			{
+				if(Node.getChildAt(i).toString().toLowerCase().contains("report_info") 
+						|| Node.getChildAt(i).toString().toLowerCase().contains(".btd")
+						|| Node.getChildAt(i).toString().toLowerCase().contains("entry.txt")){
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
 }
