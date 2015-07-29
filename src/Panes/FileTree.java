@@ -11,7 +11,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeExpansionEvent;
@@ -37,6 +36,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 
 
 @SuppressWarnings("serial")
@@ -107,8 +107,6 @@ public class FileTree extends JPanel{
                 	}
                 }
                 
-                
-                
                 //Calling updateUI causes the tree's UI to be uninstalled and then a new one installed. The developer 
                 //is calling this method in the middle of events being dispatched, some of which go to the UI. Because 
                 //the events are already being dispatched, they will still go to the uninstalled UI which no longer has 
@@ -175,21 +173,8 @@ public class FileTree extends JPanel{
                 		fileTree.setSelectionPath(fileTree.getPathForLocation(event.getX(), event.getY()));     
 	                    //DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 	                    //File file = (File) node.getUserObject();	                    
-                	}
-                	
-                	               		
-                    //if the it's a txt file, show the popup to select the text editor
-                    if (checkFileExtension(fileTree.getSelectionPaths()).equals("txt"))
-            			createAndShowTextEditorPopup(event.getX(), event.getY());
-            		
-            		else if (checkFileExtension(fileTree.getSelectionPaths()).equals("7z") || checkFileExtension(fileTree.getSelectionPaths()).equals("zip"))
-            			//CREATE THE UNZIP FUNCTION - USE CESAR'S CODE
-            			createAndShowUnzipPopup(event.getX(), event.getY());
-            		
-            		else
-            			//SUGGEST TO DO NOTHING OR CREATE A POPUP DO DELETE FILES 
-            			createAndShowOpenDeletePopup(event.getX(), event.getY());
-                	             	
+                	}               	               	
+                	getPopup (event.getX(), event.getY());             	
                 }                
             }     
         });
@@ -242,170 +227,14 @@ public class FileTree extends JPanel{
     }
     
     
-    //Create a popup menu to choose the text editor if the file extension is txt
-    public JPopupMenu createAndShowTextEditorPopup(int posX, int posY){
-        
-        JPopupMenu popup = new JPopupMenu();
-        JMenu openWith = new JMenu ("Open with");
-        JMenuItem item1 = new JMenuItem("Text Analysis Tool");
-        JMenuItem item2 = new JMenuItem("Notepad++");
-        JMenuItem delete = new JMenuItem("Delete");
-        
-        
-        
-        //Get the file selected and open with TextAnalysisTool
-        item1.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent arg0) {
-                
-                File file;
-                DefaultMutableTreeNode node;
-                TreePath[] paths = fileTree.getSelectionPaths();
-        		
-            	for (int i = 0; i < paths.length; i++){   		
-            	    node = (DefaultMutableTreeNode) paths[i].getLastPathComponent();
-            		file = (File) node.getUserObject();
-            		try {
-                        Runtime.getRuntime().exec(new String[] {"Data\\complements\\TextAnalysisTool.exe ", file.getAbsolutePath()});
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } 	
-            	}     
-            }    
-        });
-        
-        //Get the file selected and open with Notepad++
-        item2.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent arg0) {
-                
-            	File file;
-                DefaultMutableTreeNode node;
-                TreePath[] paths = fileTree.getSelectionPaths();
-        		
-            	for (int i = 0; i < paths.length; i++){   		
-            	    node = (DefaultMutableTreeNode) paths[i].getLastPathComponent();
-            		file = (File) node.getUserObject();
-            		try {
-                        Runtime.getRuntime().exec(new String[] {"C:\\Program Files (x86)\\Notepad++\\notepad++.exe ", file.getAbsolutePath()});
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } 	
-            	}      
-            }    
-        });
-        
-        
-        
-        delete.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				// TODO Auto-generated method stub
-				deleteFilesSelected();
-				
-			}
-        	
-        });
-        
-        //Get the icons for the executable programs
-        item1.setIcon(fileSystemView.getSystemIcon(new File ("Data\\complements\\TextAnalysisTool.exe")));
-        item2.setIcon(fileSystemView.getSystemIcon(new File ("C:\\Program Files (x86)\\Notepad++\\notepad++.exe")));
-        delete.setIcon(new ImageIcon("Data\\pics\\rbin.jpg"));
-        
-        popup.add(openWith);
-        openWith.add(item1);
-        openWith.add(item2);
-        popup.add(delete);
-        
-        popup.show(fileTree, posX, posY);
-        
-        return popup;
-        
-    }
-
-    
-    //Create a popup menu to chose: unzip files, unzip and run build-report, open zip files, delete zip files
-    public JPopupMenu createAndShowUnzipPopup(int posX, int posY){
+    //Creates the popup menu
+    public JPopupMenu getPopup (int posX, int posY){
+    	
     	JPopupMenu popup = new JPopupMenu();
-        JMenuItem item1 = new JMenuItem("Unzip");
-        JMenuItem item2 = new JMenuItem("Unzip and run build-report");
-        JMenuItem delete = new JMenuItem("Delete");
-        JMenuItem open = new JMenuItem("Open");
-                
-        //Get the files selected and unzip them
-        item1.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent arg0) {     
-            	unZipFiles(false);
-            }    
-        });
-        
-        //Get the files selected, unzip them and run the build-report
-        item2.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent arg0) {
-            	unZipFiles(true);
-            }    
-        });
-        
-        delete.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				// TODO Auto-generated method stub
-				deleteFilesSelected();
-				
-			}
-        	
-        });
-        
-        open.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				// TODO Auto-generated method stub
-				TreePath paths[] = fileTree.getSelectionPaths();
-				
-				for (TreePath p : paths){                	
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
-					try {
-						Desktop.getDesktop().open((File)node.getUserObject());
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}		            
-				}
-			}
-    		
-    	});
-
-        //Get the icon for the unzip program - CHANGE TO GET THE RIGHT ICON	
-        
-        item1.setIcon(new ImageIcon("Data\\pics\\zip-512.png"));
-        item2.setIcon(fileSystemView.getSystemIcon(new File ("Data\\scripts\\build_report.pl")));
-        delete.setIcon(new ImageIcon("Data\\pics\\rbin.jpg"));
-    	
-        popup.add(open);
-        popup.add(new JSeparator());
-    	popup.add(item1);
-        popup.add(item2);
-        popup.add(new JSeparator());
-        popup.add(delete);
-        
-        popup.show(fileTree, posX, posY);
-        
-        return popup;
-    }
-    
-    
-    //Create a popup menu to chose to open or delete a file/folder. If only folders were selected,
-    //the popup will also have an option to run the build-report script
-    public JPopupMenu createAndShowOpenDeletePopup(int posX, int posY){
-    	JPopupMenu deletePopup = new JPopupMenu();
-    	
-    	JMenuItem delete = new JMenuItem("Delete");
     	JMenuItem open = new JMenuItem("Open");
-    	
-    	open.addActionListener(new ActionListener(){
+        JMenuItem delete = new JMenuItem("Delete");
+
+        open.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -438,7 +267,7 @@ public class FileTree extends JPanel{
     	});
     	
     	delete.setIcon(new ImageIcon("Data\\pics\\rbin.jpg"));
-    	deletePopup.add(open);
+    	popup.add(open);
     	
     	if (isSelectedNodesFolder(fileTree.getSelectionPaths())){
     		JMenuItem runScript = new JMenuItem("Run build-report");
@@ -476,15 +305,103 @@ public class FileTree extends JPanel{
     		});
     		
     		runScript.setIcon(fileSystemView.getSystemIcon(new File ("Data\\scripts\\build_report.pl")));
-    		deletePopup.add(runScript);
+    		popup.add(runScript);
     	}
     	
-    	deletePopup.add(delete);			
-    	deletePopup.show(fileTree, posX, posY);
-    	return deletePopup;
+
+    	//if the it's a txt file, show the popup to select the text editor
+        if (checkFileExtension(fileTree.getSelectionPaths()).equals("txt")){
+        	
+        	JMenu openWith = new JMenu ("Open with");
+            JMenuItem textTool = new JMenuItem("Text Analysis Tool");
+            JMenuItem notepad = new JMenuItem("Notepad++");
+            
+            //Get the file selected and open with TextAnalysisTool
+            textTool.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent arg0) {
+                    
+                    File file;
+                    DefaultMutableTreeNode node;
+                    TreePath[] paths = fileTree.getSelectionPaths();
+            		
+                	for (int i = 0; i < paths.length; i++){   		
+                	    node = (DefaultMutableTreeNode) paths[i].getLastPathComponent();
+                		file = (File) node.getUserObject();
+                		try {
+                            Runtime.getRuntime().exec(new String[] {"Data\\complements\\TextAnalysisTool.exe ", file.getAbsolutePath()});
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } 	
+                	}     
+                }    
+            });
+            
+            //Get the file selected and open with Notepad++
+            notepad.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent arg0) {
+                    
+                	File file;
+                    DefaultMutableTreeNode node;
+                    TreePath[] paths = fileTree.getSelectionPaths();
+            		
+                	for (int i = 0; i < paths.length; i++){   		
+                	    node = (DefaultMutableTreeNode) paths[i].getLastPathComponent();
+                		file = (File) node.getUserObject();
+                		try {
+                            Runtime.getRuntime().exec(new String[] {"C:\\Program Files (x86)\\Notepad++\\notepad++.exe ", file.getAbsolutePath()});
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } 	
+                	}      
+                }    
+            });
+            
+            //Get the icons for the executable programs
+            textTool.setIcon(fileSystemView.getSystemIcon(new File ("Data\\complements\\TextAnalysisTool.exe")));
+            notepad.setIcon(fileSystemView.getSystemIcon(new File ("C:\\Program Files (x86)\\Notepad++\\notepad++.exe")));
+            
+            popup.add(openWith);
+            openWith.add(textTool);
+            openWith.add(notepad);
+
+        }
+
+		else if (checkFileExtension(fileTree.getSelectionPaths()).equals("7z") || checkFileExtension(fileTree.getSelectionPaths()).equals("zip")){
+			JMenuItem unzip = new JMenuItem("Unzip");
+	        JMenuItem unzipRun = new JMenuItem("Unzip and run build-report");
+	        
+	        //Get the files selected and unzip them
+	        unzip.addActionListener(new ActionListener(){
+	            public void actionPerformed(ActionEvent arg0) {     
+	            	unZipFiles(false);
+	            }    
+	        });
+	        
+	        //Get the files selected, unzip them and run the build-report
+	        unzipRun.addActionListener(new ActionListener(){
+	            public void actionPerformed(ActionEvent arg0) {
+	            	unZipFiles(true);
+	            }    
+	        });
+	        
+	        unzip.setIcon(new ImageIcon("Data\\pics\\zip-512.png"));
+	        unzipRun.setIcon(fileSystemView.getSystemIcon(new File ("Data\\scripts\\build_report.pl")));
+	        
+	        popup.add(unzip);
+	        popup.add(unzipRun);
+		}
+        
+        popup.add(delete);
+			               
+        popup.show(fileTree, posX, posY);
+        
+        return popup;
+        
     }
     
-    
+  
     //Delete the file  
     public void deleteFile(File file){
         
@@ -495,7 +412,7 @@ public class FileTree extends JPanel{
     }
      
     
-  //Delete the files selected 
+    //Delete the files selected 
   	public void deleteFilesSelected() {
   		
   		new Thread(new Runnable() {
