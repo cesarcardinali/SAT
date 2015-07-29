@@ -1,12 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<SAT>
-  <configs>
-    <tool_name>BatteryTool</tool_name>
-    <tool_file>BatteryTool.jar</tool_file>
-    <content_folder>Data</content_folder>
-    <usr_config>/cfgs/user_cfg.xml</usr_config>
-    <pwd_config>/cfgs/pass.ini</pwd_config>
-    <update_path1 />
-    <update_path2 />
-  </configs>
-</SAT>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <SAT>
+   <configs>
+-    <tool_name>BatteryTool</tool_name>
++    <tool_name>Search Analysis Tool</tool_name>
++    <version>v1.0</version>
+     <tool_file>BatteryTool.jar</tool_file>
++    <updater>Updater.jar</updater>
+     <content_folder>Data</content_folder>
++    <pics_folder>/pics</pics_folder>
++    <logs_folder>/Logs</logs_folder>
+     <usr_config>/cfgs/user_cfg.xml</usr_config>
+     <pwd_config>/cfgs/pass.ini</pwd_config>
+     <update_path1>S:/Rio_Itu/SAT/</update_path1>
+     <update_path2>S:/Rio_Itu/Temporário/Cesar/</update_path2>
++    <debug_mode>true</debug_mode>
+   </configs>
+ </SAT>
