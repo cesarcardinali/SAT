@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 public class ColorPrinter {
@@ -164,7 +165,12 @@ public class ColorPrinter {
 		System.out.println("Done");
 	}
 	
-	
+	public static void resetPanelStyle(JTextPane pane) {
+		
+		Style defaultStyle = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
+		pane.setCharacterAttributes(defaultStyle, true);
+		
+	}
 	
 	
 	

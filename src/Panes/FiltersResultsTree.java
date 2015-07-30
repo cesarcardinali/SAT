@@ -58,6 +58,10 @@ public class FiltersResultsTree extends JTree {
 				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) getLastSelectedPathComponent();
 				
 				if(selectedNode != null){
+					
+					if(!selectedNode.toString().contains("On Colors"))						
+						ColorPrinter.resetPanelStyle(BaseWindow.getParser().getTextPane());
+					
 					switch (selectedNode.getLevel()){
 						case 0: // Root selected
 							BaseWindow.getParser().showAllResults();
