@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -72,7 +73,7 @@ public class FileTree extends JPanel{
 
         lastDirectory = "";
         
-        fileTree = new JTree(root);    
+        fileTree = new JTree(root);
         
         //Select the first child of the root node
         fileTree.setSelectionPath(new TreePath(root.getFirstChild()));
@@ -230,6 +231,7 @@ public class FileTree extends JPanel{
     	JPopupMenu popup = new JPopupMenu();
     	JMenuItem open = new JMenuItem("Open");
         JMenuItem delete = new JMenuItem("Delete");
+        JMenuItem rename = new JMenuItem("Rename");
 
         open.addActionListener(new ActionListener(){
 
@@ -263,8 +265,66 @@ public class FileTree extends JPanel{
     		
     	});
     	
+    	rename.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+
+				TreePath paths[] = fileTree.getSelectionPaths();
+				
+				if (paths.length > 1) {
+					
+					JOptionPane.showMessageDialog(null, "Can't rename more than one file", "Can't rename", JOptionPane.ERROR_MESSAGE);
+				
+				} else {
+					
+					File oldName = new File(fileTree.getLastSelectedPathComponent().toString());
+					
+					// C:\dir1\dir2\dir3\oldName --> C:\dir1\dir2\dir3
+					String newNameParentDirs = oldName.getParent();
+					String extension = "";
+					
+					if (oldName.getName().contains("."))
+						extension = oldName.getName().split("\\.")[1];	// aaaa.zip --> zip
+					//else
+						// Selected item doesn't have an extension
+					
+					// Asking user for a new name
+					String newNameString = JOptionPane.showInputDialog(null, "Insert a new name for "
+							+ "the file:", "New name", JOptionPane.PLAIN_MESSAGE);
+					
+					if (newNameString != null){ // newNameString == null --> user cancelled dialog
+						
+						File newName = new File(newNameParentDirs + "\\" + newNameString + "." + extension);
+						
+						try {
+							
+							if (!oldName.renameTo(newName)) // renameTo returns true if successful
+								JOptionPane.showMessageDialog(null, "Could not rename.\nThis action may not be"
+										+ " allowed for this file/folder.", "Couldn't rename", JOptionPane.WARNING_MESSAGE);
+							
+							DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+							DefaultMutableTreeNode selectedNodeParent = (DefaultMutableTreeNode) selectedNode.getParent();
+							fileTree.setSelectionPath(new TreePath(selectedNodeParent));
+							
+						} catch(Exception e){
+							
+							JOptionPane.showMessageDialog(null, "An error occurred while renaming file", "Error", JOptionPane.ERROR_MESSAGE);
+							
+						}
+						
+					} // end if
+					
+				} // end else
+	
+			} // end actionPerformed
+    		
+    	});
+    	
     	delete.setIcon(new ImageIcon("Data\\pics\\rbin.jpg"));
+    	rename.setIcon(new ImageIcon("Data\\pics\\rename.png"));
     	popup.add(open);
+    	popup.add(rename);
     	
     	
     	if (fileTree.getSelectionPaths().length == 1 && isSelectedNodesFolder(fileTree.getSelectionPaths())){
