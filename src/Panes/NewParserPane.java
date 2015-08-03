@@ -44,6 +44,7 @@ import Filters.Tether;
 import Main.BatTracer;
 
 import Supportive.NonWrappingTextPane;
+import javax.swing.JSplitPane;
 
 public class NewParserPane extends JPanel {
 	
@@ -55,9 +56,8 @@ public class NewParserPane extends JPanel {
 	JLabel lblTitle;
 	NonWrappingTextPane textPane;
 	private UndoManager undoManager;
-	private JTabbedPane esquerda;
+	private JSplitPane splitPane;
 	private FileTree fileTree;
-	private JScrollPane filtersResultsTab;
 	private FiltersResultsTree filtersResultsTree;
 
 	/**
@@ -69,7 +69,7 @@ public class NewParserPane extends JPanel {
 		
 		GridBagLayout layout = new GridBagLayout();
 		layout.columnWidths = new int[]{250, 600};
-		layout.rowHeights = new int[]{40, 600};
+		layout.rowHeights = new int[]{40, 300};
 		layout.rowWeights = new double[]{1.0, 1.0};
 		layout.columnWeights = new double[]{1.0, 1.0};
 		setLayout(layout);
@@ -120,18 +120,23 @@ public class NewParserPane extends JPanel {
 		scrollPane.setMinimumSize(new Dimension(400, 400));
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		
-		esquerda = new JTabbedPane(JTabbedPane.TOP);
-		esquerda.setPreferredSize(new Dimension(250, 600));
-		GridBagConstraints gbc_esquerda = new GridBagConstraints();
-		gbc_esquerda.gridheight = 2;
-		gbc_esquerda.insets = new Insets(5, 10, 10, 5);
-		gbc_esquerda.fill = GridBagConstraints.BOTH;
-		gbc_esquerda.gridx = 0;
-		gbc_esquerda.gridy = 0;
-		add(esquerda, gbc_esquerda);
+		splitPane = new JSplitPane();
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		fileTree = new FileTree(BaseWindow);
+		splitPane.setRightComponent(fileTree);
+		JScrollPane scrollFiltersResults = new JScrollPane();
+		filtersResultsTree = new FiltersResultsTree(BaseWindow);
+		scrollFiltersResults.setViewportView(filtersResultsTree);
+		scrollFiltersResults.setMinimumSize(new Dimension(200, 150));
+		splitPane.setLeftComponent(scrollFiltersResults);
+		GridBagConstraints gbc_splitPane = new GridBagConstraints();
+		gbc_splitPane.insets = new Insets(0, 0, 0, 5);
+		gbc_splitPane.fill = GridBagConstraints.BOTH;
+		gbc_splitPane.gridx = 0;
+		gbc_splitPane.gridy = 1;
+		add(splitPane, gbc_splitPane);
 
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.anchor = GridBagConstraints.NORTHWEST;
 		gbc_scrollPane.insets = new Insets(2, 10, 10, 10);
 		gbc_scrollPane.weighty = 22.0;
 		gbc_scrollPane.weightx = 15.0;
@@ -177,15 +182,6 @@ public class NewParserPane extends JPanel {
 			}
 		});
 		scrollPane.setViewportView(textPane);
-		
-		fileTree = new FileTree(BaseWindow);
-		esquerda.addTab("FileTree", null, fileTree, null);
-		
-		filtersResultsTab = new JScrollPane();
-		esquerda.addTab("Filters and Results", null, filtersResultsTab, null);
-		
-		filtersResultsTree= new FiltersResultsTree(BaseWindow);
-		filtersResultsTab.setViewportView(filtersResultsTree);
 		
 		result = "";
 		textPane.setText("");

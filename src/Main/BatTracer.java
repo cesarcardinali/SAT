@@ -110,6 +110,7 @@ public class BatTracer extends JFrame{
 		double width = screenSize.getWidth();
 		double height = screenSize.getHeight();
 		setBounds((int)(width/3), 0, (int)(width/1.5), (int)height-40);
+		setMinimumSize(new Dimension(600, 600));
 		setVisible(true);
 		
 		logFile = new File(contentFolder + "/Logs/log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt");
