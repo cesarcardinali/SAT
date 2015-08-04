@@ -15,7 +15,6 @@ import java.io.IOException;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -261,6 +260,8 @@ public class NewParserPane extends JPanel {
 					//selecionar na JTree o último arquivo que estava selecionado
 					//folder.setText(getRootPath());
 					
+				} else if(e.getName().equals("tree_breakdown")){
+					filtersResultsTree.setToggleClickCount(Integer.parseInt(e.getValue()));
 				}
 			}
 			System.out.println("Options Loaded");

@@ -58,6 +58,8 @@ public class OptionsPane extends JPanel {
 	private JRadioButton rdbtnNotepad;
 	private JCheckBox chkTextWrap;
 	private JRadioButton rdbtnTAnalisys;
+	private JRadioButton rdbtnDouble;
+	private JRadioButton rdbtnSingleclick;
 
 	/**
 	 * Create the panel.
@@ -68,9 +70,9 @@ public class OptionsPane extends JPanel {
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {918};
-		gridBagLayout.rowHeights = new int[] {669, 0, 0};
+		gridBagLayout.rowHeights = new int[] {669, 1};
 		gridBagLayout.columnWeights = new double[]{1.0};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0};
+		gridBagLayout.rowWeights = new double[]{0.0, 1.0};
 		setLayout(gridBagLayout);
 		
 		JPanel commentsPanel = new JPanel();
@@ -83,10 +85,10 @@ public class OptionsPane extends JPanel {
 		gbc_commentsPanel.gridy = 0;
 		add(commentsPanel, gbc_commentsPanel);
 		GridBagLayout gbl_commentsPanel = new GridBagLayout();
-		gbl_commentsPanel.columnWidths = new int[] {100, 450, 30};
-		gbl_commentsPanel.rowHeights = new int[]{0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0};
-		gbl_commentsPanel.columnWeights = new double[]{1.0, 1.0, 0.0};
-		gbl_commentsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_commentsPanel.columnWidths = new int[] {150, 450, 30};
+		gbl_commentsPanel.rowHeights = new int[]{0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_commentsPanel.columnWeights = new double[]{0.0, 1.0, 0.0};
+		gbl_commentsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		commentsPanel.setLayout(gbl_commentsPanel);
 		
 		JLabel label_14 = new JLabel("Options:");
@@ -622,6 +624,7 @@ public class OptionsPane extends JPanel {
 		commentsPanel.add(panel, gbc_panel);
 		
 		JButton btnSalvar = new JButton("Save");
+		btnSalvar.setToolTipText("Save comment headers");
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -636,25 +639,26 @@ public class OptionsPane extends JPanel {
 		});
 		panel.add(btnSalvar);
 		
-		JLabel lblParserOptions = new JLabel("Parser interface options:");
+		JLabel lblParserOptions = new JLabel("Parser options:");
 		lblParserOptions.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblParserOptions.setAlignmentX(0.5f);
 		GridBagConstraints gbc_lblParserOptions = new GridBagConstraints();
 		gbc_lblParserOptions.fill = GridBagConstraints.HORIZONTAL;
 		gbc_lblParserOptions.anchor = GridBagConstraints.WEST;
 		gbc_lblParserOptions.gridwidth = 2;
-		gbc_lblParserOptions.insets = new Insets(5, 5, 5, 5);
+		gbc_lblParserOptions.insets = new Insets(15, 5, 5, 5);
 		gbc_lblParserOptions.gridx = 0;
-		gbc_lblParserOptions.gridy = 29;
+		gbc_lblParserOptions.gridy = 28;
 		commentsPanel.add(lblParserOptions, gbc_lblParserOptions);
 		
 		JLabel lblTextEditor = new JLabel("Text editor:");
+		lblTextEditor.setToolTipText("Select default text editor");
 		GridBagConstraints gbc_lblTextEditor = new GridBagConstraints();
 		gbc_lblTextEditor.fill = GridBagConstraints.VERTICAL;
 		gbc_lblTextEditor.anchor = GridBagConstraints.EAST;
 		gbc_lblTextEditor.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTextEditor.gridx = 0;
-		gbc_lblTextEditor.gridy = 30;
+		gbc_lblTextEditor.gridy = 29;
 		commentsPanel.add(lblTextEditor, gbc_lblTextEditor);
 		
 		JPanel panel_2 = new JPanel();
@@ -670,7 +674,7 @@ public class OptionsPane extends JPanel {
 		gbc_panel_2.insets = new Insets(0, 0, 5, 5);
 		gbc_panel_2.fill = GridBagConstraints.BOTH;
 		gbc_panel_2.gridx = 1;
-		gbc_panel_2.gridy = 30;
+		gbc_panel_2.gridy = 29;
 		commentsPanel.add(panel_2, gbc_panel_2);
 		
 		rdbtnTAnalisys = new JRadioButton("TextAnalysis");
@@ -687,15 +691,15 @@ public class OptionsPane extends JPanel {
 		editorSelector.add(rdbtnNotepad);
 		
 		JLabel lblWordWrap = new JLabel("Word Wrap:");
+		lblWordWrap.setToolTipText("Word wrap on/off");
 		lblWordWrap.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblWordWrap.setMinimumSize(new Dimension(55, 23));
 		lblWordWrap.setPreferredSize(new Dimension(55, 23));
 		GridBagConstraints gbc_lblWordWrap = new GridBagConstraints();
 		gbc_lblWordWrap.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblWordWrap.anchor = GridBagConstraints.EAST;
 		gbc_lblWordWrap.insets = new Insets(0, 0, 5, 5);
 		gbc_lblWordWrap.gridx = 0;
-		gbc_lblWordWrap.gridy = 31;
+		gbc_lblWordWrap.gridy = 30;
 		commentsPanel.add(lblWordWrap, gbc_lblWordWrap);
 		
 		chkTextWrap = new JCheckBox("");
@@ -712,17 +716,64 @@ public class OptionsPane extends JPanel {
 		gbc_chkTextWrap.anchor = GridBagConstraints.WEST;
 		gbc_chkTextWrap.insets = new Insets(0, 0, 5, 5);
 		gbc_chkTextWrap.gridx = 1;
-		gbc_chkTextWrap.gridy = 31;
+		gbc_chkTextWrap.gridy = 30;
 		commentsPanel.add(chkTextWrap, gbc_chkTextWrap);
 		
+		JLabel lblTreeBreakdown = new JLabel("Tree Breakdown:");
+		lblTreeBreakdown.setToolTipText("Changes affect just Filters/Results tree");
+		GridBagConstraints gbc_lblTreeBreakdown = new GridBagConstraints();
+		gbc_lblTreeBreakdown.anchor = GridBagConstraints.EAST;
+		gbc_lblTreeBreakdown.insets = new Insets(0, 0, 5, 5);
+		gbc_lblTreeBreakdown.gridx = 0;
+		gbc_lblTreeBreakdown.gridy = 31;
+		commentsPanel.add(lblTreeBreakdown, gbc_lblTreeBreakdown);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setPreferredSize(new Dimension(10, 25));
+		panel_1.setMinimumSize(new Dimension(10, 25));
+		FlowLayout flowLayout_2 = (FlowLayout) panel_1.getLayout();
+		flowLayout_2.setVgap(1);
+		flowLayout_2.setHgap(1);
+		flowLayout_2.setAlignment(FlowLayout.LEFT);
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.insets = new Insets(0, 0, 5, 5);
+		gbc_panel_1.fill = GridBagConstraints.BOTH;
+		gbc_panel_1.gridx = 1;
+		gbc_panel_1.gridy = 31;
+		commentsPanel.add(panel_1, gbc_panel_1);
+		
+		rdbtnDouble = new JRadioButton("DoubleClick");
+		rdbtnDouble.setSelected(true);
+		rdbtnDouble.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				BaseWindow.getParser().getFiltersResultsTree().setToggleClickCount(2);
+			}
+		});
+		panel_1.add(rdbtnDouble);
+		
+		rdbtnSingleclick = new JRadioButton("SingleClick");
+		rdbtnSingleclick.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				BaseWindow.getParser().getFiltersResultsTree().setToggleClickCount(1);
+			}
+		});
+		panel_1.add(rdbtnSingleclick);
+		
+		ButtonGroup breakdownSelector = new ButtonGroup();
+		breakdownSelector.add(rdbtnDouble);
+		breakdownSelector.add(rdbtnSingleclick);
+		
 		JLabel lblCustomfilters = new JLabel("More options:");
+		lblCustomfilters.setToolTipText("More options for parser pane");
 		lblCustomfilters.setPreferredSize(new Dimension(55, 23));
 		lblCustomfilters.setMinimumSize(new Dimension(55, 23));
 		lblCustomfilters.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_lblCustomfilters = new GridBagConstraints();
 		gbc_lblCustomfilters.anchor = GridBagConstraints.EAST;
 		gbc_lblCustomfilters.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblCustomfilters.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCustomfilters.insets = new Insets(0, 0, 0, 5);
 		gbc_lblCustomfilters.gridx = 0;
 		gbc_lblCustomfilters.gridy = 32;
 		commentsPanel.add(lblCustomfilters, gbc_lblCustomfilters);
@@ -732,7 +783,7 @@ public class OptionsPane extends JPanel {
 		flowLayout_1.setVgap(1);
 		flowLayout_1.setAlignment(FlowLayout.LEFT);
 		GridBagConstraints gbc_morePane = new GridBagConstraints();
-		gbc_morePane.insets = new Insets(0, 0, 5, 5);
+		gbc_morePane.insets = new Insets(0, 0, 0, 5);
 		gbc_morePane.fill = GridBagConstraints.BOTH;
 		gbc_morePane.gridx = 1;
 		gbc_morePane.gridy = 32;
@@ -761,6 +812,7 @@ public class OptionsPane extends JPanel {
 		
 		try {
 			getComments();
+			loadDataPane();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -827,17 +879,51 @@ public class OptionsPane extends JPanel {
 			} else if(e.getName().equals("diag")){
 				textDiag.setText(e.getValue());
 				
-			} else if(e.getName().equals("editor")){
-				if(e.getValue().equals("0"))
-					rdbtnTAnalisys.setSelected(true);
-				else
-					rdbtnNotepad.setSelected(true);
+			}
+		}
+		System.out.println("Options Loaded");
+		
+	}
+	
+	public void loadDataPane() throws IOException, JDOMException{
+		//Abre o arquivo XML
+		File xmlFile = new File("Data/cfgs/user_cfg.xml");
+		
+		//Cria o builder da estrutura XML
+		SAXBuilder builder = new SAXBuilder();
+		
+		//Cria documento formatado de acordo com a lib XML
+		Document document = (Document) builder.build(xmlFile);
+
+		//Pega o nó raiz do XML
+		Element satNode = document.getRootElement();
+		
+		//Gera lista de filhos do nó root
+		//List<Element> satElements = satNode.getChildren();
+		
+		//Pega o nó referente ao option pane
+		Element optionPaneNode = satNode.getChild("option_pane"); 
+		for(Element e : optionPaneNode.getChildren()){
+			if(e.getName().equals("tree_breakdown")){
+				if(e.getValue().equals("1")){
+					rdbtnSingleclick.setSelected(true);
+					BaseWindow.getParser().getFiltersResultsTree().setToggleClickCount(1);
+				} else {
+					BaseWindow.getParser().getFiltersResultsTree().setToggleClickCount(2);
+					rdbtnDouble.setSelected(true);
+				}
 				
 			} else if(e.getName().equals("wwrap")){
 				if(e.getValue().equals("0"))
 					chkTextWrap.setSelected(false);
 				else
 					chkTextWrap.setSelected(true);
+				
+			} else if(e.getName().equals("editor")){
+				if(e.getValue().equals("0"))
+					rdbtnTAnalisys.setSelected(true);
+				else
+					rdbtnNotepad.setSelected(true);
 				
 			}
 		}
@@ -900,7 +986,38 @@ public class OptionsPane extends JPanel {
 			} else if(e.getName().equals("diag")){
 				e.setText(textDiag.getText());
 				
-			} else if(e.getName().equals("editor")){
+			}
+		}
+		
+		//JDOM document is ready now, lets write it to file now
+        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+        //output xml to console for debugging
+        //xmlOutputter.output(doc, System.out);
+        xmlOutputter.output(document, new FileOutputStream(xmlFile));
+        
+		System.out.println("Options Saved");
+	}
+	
+	public void savePaneData() throws JDOMException, IOException{
+		//Abre o arquivo XML
+		File xmlFile = new File("Data/cfgs/user_cfg.xml");
+		
+		//Cria o builder da estrutura XML
+		SAXBuilder builder = new SAXBuilder();
+		
+		//Cria documento formatado de acordo com a lib XML
+		Document document = (Document) builder.build(xmlFile);
+		
+		//Pega o nó raiz do XML
+		Element satNode = document.getRootElement();
+		
+		//Gera lista de filhos do nó root
+		//List<Element> satElements = satNode.getChildren();
+		
+		//Pega o nó referente ao option pane
+		Element optionPaneNode = satNode.getChild("option_pane"); 
+		for(Element e : optionPaneNode.getChildren()){
+			if(e.getName().equals("editor")){
 				if(rdbtnNotepad.isSelected())
 					e.setText("1");
 				else
@@ -911,6 +1028,12 @@ public class OptionsPane extends JPanel {
 					e.setText("1");
 				else
 					e.setText("0");
+				
+			} else if(e.getName().equals("tree_breakdown")){
+				if(rdbtnSingleclick.isSelected())
+					e.setText("1");
+				else
+					e.setText("2");
 				
 			}
 		}

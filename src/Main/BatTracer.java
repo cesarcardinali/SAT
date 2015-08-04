@@ -206,6 +206,7 @@ public class BatTracer extends JFrame{
 						
 						crsManager.saveUserData();
 						Parser.savePaneData();
+						Options.savePaneData();
 						
 						System.out.println("All data saved");
 						
