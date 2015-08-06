@@ -25,6 +25,10 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 import Main.BatTracer;
 import Supportive.UnZip;
@@ -48,6 +52,7 @@ public class FileTree extends JPanel{
     private FileSystemView fileSystemView;
     private BatTracer BaseWindow;
     private String lastDirectory;
+    private String rootFolderPath;
     
     //File Tree constructor. It will initialize the file tree
     public FileTree(BatTracer batTracer){
@@ -60,18 +65,11 @@ public class FileTree extends JPanel{
         root = new DefaultMutableTreeNode();
         fileSystemView = FileSystemView.getFileSystemView();
         
-        //initialize the file tree based on the system roots 
-        for (File file : fileSystemView.getRoots()){
-            DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(file);
-            if (file.isDirectory()){
-                for (File f : file.listFiles()){
-                    DefaultMutableTreeNode node = new DefaultMutableTreeNode (f); 
-                    newNode.add(node);
-                }
-            }
-            root.add(newNode);
-        }
+        //initializing rootFolderPath variable
+        initRootFolder();
         
+        buildTree();
+
         lastDirectory = "";
         
         fileTree = new JTree(root);    
@@ -87,7 +85,6 @@ public class FileTree extends JPanel{
             public void valueChanged(TreeSelectionEvent e) {
                 //BaseWindow.getParser().rootNode.removeAllChildren(); //reseting the result tree            
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-                System.out.println("-------------" + node.toString());
                 if (node!=null){
                     File file = (File) node.getUserObject();
                     
@@ -268,6 +265,63 @@ public class FileTree extends JPanel{
     	
     	delete.setIcon(new ImageIcon("Data\\pics\\rbin.jpg"));
     	popup.add(open);
+    	
+    	
+    	if (fileTree.getSelectionPaths().length == 1 && isSelectedNodesFolder(fileTree.getSelectionPaths())){
+    		JMenu rootFolder = new JMenu ("Root");
+    		JMenuItem root = new JMenuItem("Set as root");
+            JMenuItem rootParent = new JMenuItem("Set parent as root");
+            JMenuItem reset = new JMenuItem("Reset root folder");
+            
+    		root.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent(); 
+					File file = (File) node.getUserObject();
+					rootFolderPath = file.getAbsolutePath();
+					buildTree();
+				}
+    			
+    		});
+    		  		
+    		rootParent.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent(); 
+					File file = (File) node.getUserObject();
+					file = file.getParentFile();
+					if (file!=null)
+						rootFolderPath = file.getAbsolutePath();
+					else
+						rootFolderPath = "";
+					buildTree();
+				}
+    			
+    		});
+    		
+    		reset.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					rootFolderPath = "";
+					System.out.println(rootFolderPath);
+					buildTree();
+				}
+    			
+    		});
+    		
+    		rootFolder.add(root);
+    		rootFolder.add(rootParent);
+    		rootFolder.add(reset);
+    		
+    		popup.add(rootFolder);
+    	}
+    	
     	
     	if (isSelectedNodesFolder(fileTree.getSelectionPaths())){
     		JMenuItem runScript = new JMenuItem("Run build-report");
@@ -566,6 +620,89 @@ public class FileTree extends JPanel{
 			}
 			return false;
 		}
+	}
+	
+	
+	// Initialize the variable rootFolderPath
+	public void initRootFolder(){
+		try{
+			//Abre o arquivo XML
+			File xmlFile = new File("Data/cfgs/user_cfg.xml");
+			
+			//Cria o builder da estrutura XML
+			SAXBuilder builder = new SAXBuilder();
+			
+			//Cria documento formatado de acordo com a lib XML
+			Document document = (Document) builder.build(xmlFile);
+	
+			//Pega o nó raiz do XML
+			Element satNode = document.getRootElement();
+			
+			//Gera lista de filhos do nó root
+			//List<Element> satElements = satNode.getChildren();
+			
+			//Pega o nó referente ao option pane
+			Element crs_jira_paneNode = satNode.getChild("parser_pane");
+			for(Element e : crs_jira_paneNode.getChildren()){
+				if(e.getName().equals("path")){
+					rootFolderPath = (e.getValue());
+					//selecionar na JTree o último arquivo que estava selecionado
+					//folder.setText(getRootPath());
+					
+				}
+			}
+			System.out.println("Options Loaded");
+		
+		} catch (IOException | JDOMException e){
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	public void buildTree(){
+        
+        File rootFolder = new File(rootFolderPath.replace("\\", "\\\\"));
+
+        //Initialize the file tree based on the folder root predefined if it exists
+        if (rootFolder.exists()){
+	        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(rootFolder); 
+	        for (File file : rootFolder.listFiles()){           
+	            DefaultMutableTreeNode node = new DefaultMutableTreeNode (file); 
+	            newNode.add(node);
+	        }
+	        root.removeAllChildren();
+	        root.add(newNode);
+        }
+        else {
+        	//initialize the file tree based on the system roots 
+            for (File file : fileSystemView.getRoots()){
+                DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(file);
+                if (file.isDirectory()){
+                    for (File f : file.listFiles()){
+                        DefaultMutableTreeNode node = new DefaultMutableTreeNode (f); 
+                        newNode.add(node);
+                    }
+                }
+                root.removeAllChildren();
+                root.add(newNode);
+            }
+        }
+               
+        SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                  // Here, we can safely update the GUI
+                  // because we'll be called from the
+                  // event dispatch thread  
+                  fileTree.updateUI(); 
+                  fileTree.expandRow(0); 
+              }
+        });
+	}
+
+
+	public String getRootFolderPath() {
+		return rootFolderPath;
 	}
 
 }

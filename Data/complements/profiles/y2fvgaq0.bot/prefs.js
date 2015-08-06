@@ -24,7 +24,7 @@ user_pref("browser.cache.disk.capacity", 358400);
 user_pref("browser.cache.disk.smart_size.first_run", false);
 user_pref("browser.cache.disk.smart_size.use_old_max", false);
 user_pref("browser.cache.frecency_experiment", 1);
-user_pref("browser.download.dir", "C:\\Users\\cesar.cardinali\\Documents\\Eld\\Bateria\\Logs\\Lynx");
+user_pref("browser.download.dir", "C:\\Users\\cesar.cardinali\\Documents\\Eld\\Bateria\\Logs\\Bounce");
 user_pref("browser.download.folderList", 2);
 user_pref("browser.download.importedFromSqlite", true);
 user_pref("browser.download.panel.shown", true);

@@ -578,7 +578,6 @@ public class CRsManager extends JPanel {
 		textPath.setBorder(new LineBorder(SystemColor.activeCaption));
 		textPath.setMinimumSize(new Dimension(130, 20));
 		textPath.setPreferredSize(new Dimension(150, 20));
-		textPath.setText(BaseWindow.getParser().getRootPath().replace("\\\\", "\\"));
 		
 		JSeparator separator_1 = new JSeparator();
 		GridBagConstraints gbc_separator_1 = new GridBagConstraints();

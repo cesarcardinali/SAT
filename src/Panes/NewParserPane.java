@@ -216,8 +216,8 @@ public class NewParserPane extends JPanel {
 			Element optionPaneNode = satNode.getChild("parser_pane"); 
 			for(Element e : optionPaneNode.getChildren()){
 				if(e.getName().equals("path")){
-					//salvar o último caminho selecionado na árvore
-					e.setText(getRootPath());
+					//salvar a root folder usada para criar a file tree
+					e.setText(fileTree.getRootFolderPath());
 					
 				}
 			}
@@ -331,19 +331,6 @@ public class NewParserPane extends JPanel {
 		return result;
 	}
 	
-	public String getRootPath() {
-		
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getFileTree().getLastSelectedPathComponent();
-		File file = (File) node.getUserObject();
-		
-		if (!file.isDirectory()) {
-			node = (DefaultMutableTreeNode) node.getParent();
-			file = (File) node.getUserObject();
-		}
-		
-		return file.getAbsolutePath();
-
-	}
 	
 	public void setResultsText(String text){
 		textPane.setText(text);

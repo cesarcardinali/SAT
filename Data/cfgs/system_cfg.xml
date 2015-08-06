@@ -2,7 +2,7 @@
 <SAT>
   <configs>
     <tool_name>Search Analysis Tool</tool_name>
-    <version>v1.0</version>
+    <version>v2.0 alpha</version>
     <tool_file>BatteryTool.jar</tool_file>
     <updater>Updater.jar</updater>
     <content_folder>Data</content_folder>
