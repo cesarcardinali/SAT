@@ -338,8 +338,8 @@ public class FileTree extends JPanel{
 						public void run() {
 							// TODO Auto-generated method stub
 							int count = 0;
-							for (TreePath p : fileTree.getSelectionPaths()){
-								ProgressDialog dialog = new ProgressDialog(BaseWindow.getFrame(), fileTree.getSelectionPaths().length);
+							ProgressDialog dialog = new ProgressDialog(BaseWindow.getFrame(), fileTree.getSelectionPaths().length);
+							for (TreePath p : fileTree.getSelectionPaths()){								
 								DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
 					    		File file = (File) node.getUserObject();
 					    		try {

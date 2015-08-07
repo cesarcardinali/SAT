@@ -62,7 +62,7 @@ public class ProgressDialog extends JDialog{
 		panel.setLayout(null);
 		message.setFont(new Font("Tahoma", Font.BOLD, 15));
 		message.setBounds(71, 22, 303, 23);
-		filesToProcess.setBounds(41, 68, 116, 23);
+		filesToProcess.setBounds(41, 68, 150, 23);
 		filesDone.setBounds(41, 92, 118, 23);	
 	}
 	
