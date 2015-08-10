@@ -1,5 +1,6 @@
 package panes;
 
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -8,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,6 +35,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import supportive.NonWrappingTextPane;
+
 import filters.Alarm;
 import filters.B2G;
 import filters.Consume;
@@ -41,19 +44,27 @@ import filters.Issue;
 import filters.Normal;
 import filters.Suspicious;
 import filters.Tether;
-import main.SAT;
 
 import javax.swing.JSplitPane;
 
-public class NewParserPane extends JPanel {
+
+/**
+ * @author cesarc
+ *
+ */
+/**
+ * @author cesarc
+ *
+ */
+public class ParserPane extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	SAT BaseWindow;
-	String crPath, result;
+	private String crPath;
+	private String result;
 	
-	JLabel lblTitle;
-	NonWrappingTextPane textPane;
+	private JLabel lblTitle;
+	private NonWrappingTextPane textPane;
 	private UndoManager undoManager;
 	private JSplitPane splitPane;
 	private FileTree fileTree;
@@ -62,8 +73,7 @@ public class NewParserPane extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public NewParserPane(SAT Parent) {
-		BaseWindow = Parent;
+	public ParserPane() {
 		setMinimumSize(new Dimension(800, 600));
 		
 		GridBagLayout layout = new GridBagLayout();
@@ -121,10 +131,10 @@ public class NewParserPane extends JPanel {
 		
 		splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		fileTree = new FileTree(BaseWindow);
+		fileTree = new FileTree();
 		splitPane.setRightComponent(fileTree);
 		JScrollPane scrollFiltersResults = new JScrollPane();
-		filtersResultsTree = new FiltersResultsTree(BaseWindow);
+		filtersResultsTree = new FiltersResultsTree();
 		scrollFiltersResults.setViewportView(filtersResultsTree);
 		scrollFiltersResults.setMinimumSize(new Dimension(200, 150));
 		splitPane.setLeftComponent(scrollFiltersResults);
@@ -191,10 +201,10 @@ public class NewParserPane extends JPanel {
 	
 	
 	
+	// Supportive methods
 	/**
-	 * Supportive methods
+	 *  Save pane data
 	 */
-	// Save pane data
 	public void savePaneData(){
 		try{
 			//Abre o arquivo XML
@@ -234,7 +244,9 @@ public class NewParserPane extends JPanel {
 		}
 	}
 	
-	// Load pane data
+	/**
+	 * 
+	 */
 	private void loadPaneData(){
 		try{
 			//Abre o arquivo XML
@@ -271,9 +283,12 @@ public class NewParserPane extends JPanel {
 		}
 	}
 
-	// Save textPane text user edited
+	/**
+	 *  Save textPane text user edited
+	 * @param node
+	 * @param text
+	 */
 	private void saveTextChanges(Object node, String text) {
-						
 		String selectedNode = node.toString().toLowerCase();
 		String selectedNodeParent = ((DefaultMutableTreeNode) node).getParent().toString().toLowerCase();
 		
@@ -302,8 +317,17 @@ public class NewParserPane extends JPanel {
 			B2G.updateResult(text);
 			B2G.setEdited(true);
 		}
-		
-	} // end saveTextChanges()
+	}
+	
+	/**
+	 * Reset pane UI to initial state
+	 */
+	public void clearPane(){
+		filtersResultsTree.clearTree();
+		textPane.setText(""); 	//reset the text pane
+		result = ""; 			//reset the result for the filters
+		lblTitle.setText("Run a parser or select a result on the left");	//reset the text in the title
+	}
 
 
 	// Getters and Setters
@@ -331,7 +355,6 @@ public class NewParserPane extends JPanel {
 		return result;
 	}
 	
-	
 	public void setResultsText(String text){
 		textPane.setText(text);
 		textPane.setCaretPosition(0);
@@ -344,5 +367,4 @@ public class NewParserPane extends JPanel {
 	public NonWrappingTextPane getTextPane(){
 		return textPane;
 	}
-	
 }

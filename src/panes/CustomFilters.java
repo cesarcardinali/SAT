@@ -2,27 +2,32 @@ package panes;
 
 
 import javax.swing.JDialog;
-
-import java.awt.GridBagLayout;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JComboBox;
+import javax.swing.SwingConstants;
+import javax.swing.JButton;
+import javax.swing.ImageIcon;
+import javax.swing.JTextField;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JCheckBox;
 
+import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.Color;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import java.util.List;
-
-import javax.swing.JComboBox;
-
-import java.awt.Dimension;
-import java.awt.Font;
-
-import javax.swing.SwingConstants;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -31,20 +36,11 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import javax.swing.JTextField;
-import javax.swing.JPanel;
+import core.SharedObjs;
 
-import javax.swing.JCheckBox;
-
-import main.SAT;
 import objects.CustomFilterItem;
-import objects.CustomFiltersList;
+import objects.CustomFiltersList;;
 
-import javax.swing.JTabbedPane;
-import java.awt.FlowLayout;
-import java.awt.Color;
 
 public class CustomFilters extends JDialog {
 	
@@ -52,7 +48,6 @@ public class CustomFilters extends JDialog {
 	private JTextField txtName;
 	private JTextField txtRegex;
 	private JTextField txtHeader;
-	private SAT BaseWindow;
 	private JCheckBox chckbxRadio;
 	private JCheckBox chckbxSystem;
 	private JCheckBox chckbxBugreport;
@@ -114,9 +109,8 @@ public class CustomFilters extends JDialog {
 	
 
 	// Create the dialog.
-	public CustomFilters(SAT parent) {
+	public CustomFilters() {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		BaseWindow = parent;
 		
 		setVisible(false);
 		setTitle("filters Manager");
@@ -164,7 +158,7 @@ public class CustomFilters extends JDialog {
 		comboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				filtersList = BaseWindow.getCustomFiltersList();
+				filtersList = SharedObjs.customFiltersList;
 				String aux = (String) comboBox.getSelectedItem();
 				
 				for(CustomFilterItem item : filtersList){
@@ -197,12 +191,12 @@ public class CustomFilters extends JDialog {
 		btnDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(comboBox.getSelectedIndex() >= 0){
-					filtersList = BaseWindow.getCustomFiltersList();
+					filtersList = SharedObjs.customFiltersList;
 					CustomFilterItem aux = null;
 					for(CustomFilterItem item : filtersList){
 						if(comboBox.getSelectedItem().equals(item.getName())){
 							aux = item;
-							BaseWindow.getParser().getFiltersResultsTree().removeCustomNode(item.getName());
+							SharedObjs.parserPane.getFiltersResultsTree().removeCustomNode(item.getName());
 							break;
 						}
 					}
@@ -228,32 +222,32 @@ public class CustomFilters extends JDialog {
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!txtName.getText().equals("") && Character.isDigit(txtName.getText().toCharArray()[0])){
-					JOptionPane.showMessageDialog(BaseWindow.getCustomFiltersPane(), "The filter name cannot begin with a digit nor be empty.");
+					JOptionPane.showMessageDialog(SharedObjs.customFiltersPane, "The filter name cannot begin with a digit nor be empty.");
 					
 				} else if(!txtName.getText().equals("")){
-					CustomFilterItem auxItem = new CustomFilterItem(BaseWindow, chckbxPublic.isSelected() ? " " : BaseWindow.getCrsManager().getTextUsername().getText(),
+					CustomFilterItem auxItem = new CustomFilterItem(SharedObjs.satFrame, chckbxPublic.isSelected() ? " " : SharedObjs.crsManagerPane.getTextUsername().getText(),
 							txtName.getText(), txtRegex.getText(), txtHeader.getText(), chckbxMain.isSelected(),
 							chckbxSystem.isSelected(), chckbxKernel.isSelected(), chckbxRadio.isSelected(),
 							chckbxBugreport.isSelected(), chckbxRoutput.isSelected(),
 							chckbxShared.isSelected(), chckbxPublic.isSelected());
 					
-					filtersList = BaseWindow.getCustomFiltersList();
+					filtersList = SharedObjs.customFiltersList;
 					int index = filtersList.indexOf(auxItem.getName());
 					
 					if(index >= 0){
-						int answ = JOptionPane.showConfirmDialog(BaseWindow.getCustomFiltersPane(), "There is another filter using this name.\nDo you want to overwrite this filter?.");
+						int answ = JOptionPane.showConfirmDialog(SharedObjs.customFiltersPane, "There is another filter using this name.\nDo you want to overwrite this filter?.");
 						if (answ == 0) {
 							filtersList.remove(index);
 							filtersList.add(auxItem);
 						}
 					} else {
-						BaseWindow.getCustomFiltersList().add(auxItem);
+						SharedObjs.customFiltersList.add(auxItem);
 						comboBox.insertItemAt(txtName.getText(), comboBox.getItemCount());
-						BaseWindow.getParser().getFiltersResultsTree().addCustomFilters(txtName.getText());
+						SharedObjs.parserPane.getFiltersResultsTree().addCustomFilters(txtName.getText());
 					}
 					clearfields();
 				} else {
-					JOptionPane.showMessageDialog(BaseWindow.getCustomFiltersPane(), "The filter name can not be empty.");
+					JOptionPane.showMessageDialog(SharedObjs.customFiltersPane, "The filter name can not be empty.");
 				}
 				
 			}
@@ -750,7 +744,7 @@ public class CustomFilters extends JDialog {
 		try{
 			File xmlFile = new File("Data/cfgs/user_cfg.xml");
 			
-			filtersList = BaseWindow.getCustomFiltersList();
+			filtersList = SharedObjs.customFiltersList;
 			
 			SAXBuilder builder = new SAXBuilder();
 			
@@ -765,7 +759,7 @@ public class CustomFilters extends JDialog {
 			if(!filtersElements.isEmpty()){
 				for(Element filter : filtersElements){
 					filtersList.add(new CustomFilterItem(
-							BaseWindow, filter.getChildText("owner"), filter.getName().replace("_", " "), filter.getChildText("regex"), filter.getChildText("header"), 
+							SharedObjs.satFrame, filter.getChildText("owner"), filter.getName().replace("_", " "), filter.getChildText("regex"), filter.getChildText("header"), 
 							Boolean.parseBoolean(filter.getChildText("main")), Boolean.parseBoolean(filter.getChildText("system")),
 							Boolean.parseBoolean(filter.getChildText("kernel")), Boolean.parseBoolean(filter.getChildText("radio")),
 							Boolean.parseBoolean(filter.getChildText("bugreport")), Boolean.parseBoolean(filter.getChildText("routput")),
@@ -784,7 +778,7 @@ public class CustomFilters extends JDialog {
 		try{
 			File xmlFile = new File("Data/cfgs/user_cfg.xml");
 			
-			filtersList = BaseWindow.getCustomFiltersList();
+			filtersList = SharedObjs.customFiltersList;
 			
 			SAXBuilder builder = new SAXBuilder();
 			
@@ -829,7 +823,7 @@ public class CustomFilters extends JDialog {
 		clearfields();
 		loadFilters();
 		
-		setLocationRelativeTo(BaseWindow);
+		setLocationRelativeTo(SharedObjs.satFrame);
 		setVisible(true);
 	}
 	

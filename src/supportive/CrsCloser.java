@@ -1,28 +1,26 @@
 package supportive;
 
+
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
-import main.SAT;
+import core.Logger;
+import core.SharedObjs;
+
 
 public class CrsCloser implements Runnable {
 
-	static SAT BaseWindow;	
-	
-	
-	public CrsCloser(SAT parent){
-		BaseWindow = parent;
-	}
-	
+	static final String TAG = "CrsCloser";
 	
 	/*
 	 * closeDiagCrs
@@ -30,7 +28,7 @@ public class CrsCloser implements Runnable {
 	public static void closeDiagCrs(){
 		
 		Object[] options = { "It's OK. Go!", "Cancel, I need to check" };
-		int n = JOptionPane.showOptionDialog(BaseWindow.getCrsManager(),
+		int n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
 				"Please, make sure that your username and password are set correctly at \"CRs and Jira\" tab. Otherwise, cancel this window and " +
 						"check your login data.",
 				"Warning",
@@ -39,7 +37,7 @@ public class CrsCloser implements Runnable {
 				options[1]);
 		
 		System.out.println("Resposta: " + n);
-		BaseWindow.logWrite("Resposta: " + n);
+		Logger.log(TAG, "Resposta: " + n);
 		
 		if(n == 0){
 			try{
@@ -50,18 +48,19 @@ public class CrsCloser implements Runnable {
 				
 				//Configuring Firefox
 				System.out.println("Generating Firefox profile");
-				BaseWindow.logWrite("Generating Firefox profile");
+				Logger.log(TAG, "Generating Firefox profile");
+				
 				profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
 				driver = new FirefoxDriver(profile);
-				user = BaseWindow.getCrsManager().getUserData()[0];
-				pass = BaseWindow.getCrsManager().getUserData()[1];
+				user = SharedObjs.crsManagerPane.getUserData()[0];
+				pass = SharedObjs.crsManagerPane.getUserData()[1];
 		
 				// Open up a browser
 				System.out.println("Starting browser");
 				driver.navigate().to("http://google.com");
 				
 				
-				for (String s : BaseWindow.getCrsManager().getTextDownload().getText().split("\n")) {
+				for (String s : SharedObjs.crsManagerPane.getTextDownload().getText().split("\n")) {
 					if(s.length() < 4)
 						continue;
 					

@@ -1,18 +1,23 @@
 package filters;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
 
 import com.google.common.base.Throwables;
 
-import main.SAT;
+import core.SharedObjs;
+
 import objects.WackLock_List;
 import objects.WakelockItem;
+
 
 public class Suspicious {
 	
@@ -20,7 +25,7 @@ public class Suspicious {
 	static WackLock_List suspiciousWakelocks;
 	private static boolean enabled = true;
 
-	public static String makelog(String path, SAT BaseWindow) {
+	public static String makelog(String path) {
 		
 // ---- Variaveis -----
 		BufferedReader br = null;
@@ -237,13 +242,13 @@ public class Suspicious {
 			}
 			
 			// ----- Geracao de resultados -----
-			result = result + Issue.makelog(path, BaseWindow) + "\n\n";
+			result = result + Issue.makelog(path) + "\n\n";
 			if(suspiciousWakelocks.size() > 0)
 			{
-				result = result + BaseWindow.getOptions().getTextSuspiciousHeader() + "\n";
+				result = result + SharedObjs.optionsPane.getTextSuspiciousHeader() + "\n";
 				for(int i=0; i<suspiciousWakelocks.size();i++){
 					result = result + "{panel}\n"
-							+ BaseWindow.getOptions().getTextSuspicious()
+							+ SharedObjs.optionsPane.getTextSuspicious()
 							.replace("#pname#", suspiciousWakelocks.get(i).getProcess())
 							.replace("#tag#", suspiciousWakelocks.get(i).getTag())
 							.replace("#duration#", suspiciousWakelocks.get(i).getDuration())

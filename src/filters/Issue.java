@@ -9,24 +9,24 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Throwables;
 
-import main.SAT;
+import core.SharedObjs;
 
 public class Issue {
 	
 	static String result;
 	private static boolean enabled = true;
 	
-	public static String makelog(String path, SAT BaseWindow) {
+	public static String makelog(String path) {
 		BufferedReader br = null;
 		result = "";
 		
 		try {
 			// Output text configuration
-			String screenOff = BaseWindow.getOptions().getTextHighCurrent() + "\n";			
+			String screenOff = SharedObjs.optionsPane.getTextHighCurrent() + "\n";			
 			String screenOffData = "";
-			String kernelWakelock = BaseWindow.getOptions().getTextKernel() + "\n";
+			String kernelWakelock = SharedObjs.optionsPane.getTextKernel() + "\n";
 			String kernelWakelockData = "";
-			String javaWakelock = BaseWindow.getOptions().getTextJava() + "\n";
+			String javaWakelock = SharedObjs.optionsPane.getTextJava() + "\n";
 			String javaWakelockData = "";
 			
 			

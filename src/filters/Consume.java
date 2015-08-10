@@ -1,41 +1,41 @@
 package filters;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Throwables;
 
-import main.SAT;
 import objects.HighConsume_List;
 import objects.HighConsumeItem;
+
 
 public class Consume {
 	
 	static HighConsume_List hcList;
 	static String result;
 	static int totalOccurrences;
-	static SAT BaseWindow;
 	private static boolean enabled = true;
 
 	/*
-	System.out.println("Mes:\t\t" + matcher.group(1));
-	System.out.println("Dia:\t\t" + matcher.group(2));
-	System.out.println("Hora:\t\t" + matcher.group(3));
-	System.out.println("Minuto:\t\t" + matcher.group(4));
-	System.out.println("Segundo:\t" + matcher.group(5));
-	System.out.println("Consumo:\t" + matcher.group(6));
+	System.out.println("Month:\t\t" + matcher.group(1));
+	System.out.println("Day:\t\t" + matcher.group(2));
+	System.out.println("Hour:\t\t" + matcher.group(3));
+	System.out.println("Minute:\t\t" + matcher.group(4));
+	System.out.println("Seconds:\t" + matcher.group(5));
+	System.out.println("Consume:\t" + matcher.group(6));
 	System.out.println("PID:\t\t" + matcher.group(7));
 	System.out.println("Process:\t" + matcher.group(8));
 	*/
-	
 
-	public static String makelog(String path, SAT parent) {
+	public static String makelog(String path) {
 		result = "- *The following processes are consuming too much CPU and draining battery:*\n";
 		totalOccurrences = 0;
 		
@@ -95,8 +95,6 @@ public class Consume {
 				reader = new BufferedReader(new FileReader(file));
 				System.out.println("Log de sistema encontrado!" + file);
 			}
-
-			
 			
 			System.out.println("Parser running ...");
 			
@@ -111,6 +109,7 @@ public class Consume {
 						screenStatus = "Screen OFF: ";
 					}
 				}
+				
 				// Consume line parsing:
 				else
 				{
@@ -168,7 +167,6 @@ public class Consume {
 				e.printStackTrace();
 			}
 			
-			
 			int hcitems = 0;
 			Iterator<HighConsumeItem> l = hcList.listIterator();
 			while (l.hasNext())
@@ -183,8 +181,6 @@ public class Consume {
 					l.remove();
 				}
 			}
-			
-			//System.out.println("A: " + a + "\nB: " + b);
 			
 			hcList.sortItens();
 			for(int i=0; i < hcList.size();i++){

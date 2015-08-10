@@ -1,19 +1,24 @@
 package supportive;
 
+
 import java.awt.Desktop;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import java.net.URI;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -22,31 +27,32 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.support.ui.Select;
 
-import main.SAT;
+import core.Logger;
+import core.SharedObjs;
+
 import panes.ClosingDiagDialog;
 
-public class DiagCrsCloser implements Runnable {
 
-	static SAT BaseWindow;
-	static ArrayList<String> diagCRs, unknownCRs;
-	static HashMap<String, String> b2gs_results;
-	static ClosingDiagDialog dialog;
-	static HashMap<String, String> b2g_crid;
+public class DiagCrsCloser implements Runnable {
 	
+	private static ArrayList<String> diagCRs, unknownCRs;
+	private static HashMap<String, String> b2gs_results;
+	private static ClosingDiagDialog dialog;
+	private static HashMap<String, String> b2g_crid;
+	private final static String TAG = "DIAG_CLOSER";
+
 	
-	
-	public DiagCrsCloser(SAT parent, ClosingDiagDialog dialog){
-		BaseWindow = parent;
+	public DiagCrsCloser(ClosingDiagDialog dialog){
 		DiagCrsCloser.dialog = dialog;
 	}
 	
 	
 	private static void checkDiag(){
 		
-		String path = BaseWindow.getCrsManager().getRootPath();
-		HashMap<String, String> b2g_analyzed = BaseWindow.getCrsManager().getB2g_analyzed();
+		String path = SharedObjs.crsManagerPane.getRootPath();
+		HashMap<String, String> b2g_analyzed = SharedObjs.crsManagerPane.getB2g_analyzed();
 		System.out.println("Path: " + path);
-		BaseWindow.logWrite("Path: " + path);
+		Logger.log(TAG, "Path: " + path);
 		String sCurrentLine, result, crPath;
 		BufferedReader br = null;
 		
@@ -129,7 +135,7 @@ public class DiagCrsCloser implements Runnable {
 							{
 								int index = sCurrentLine.indexOf("h ");
 								System.out.println("Index: " + index);
-								BaseWindow.logWrite("Index: " + index);
+								Logger.log(TAG, "Index: " + index);
 								if(index > 0)
 									result = result + sCurrentLine + "\n";
 							} else {
@@ -138,7 +144,7 @@ public class DiagCrsCloser implements Runnable {
 								{
 									int index = sCurrentLine.indexOf("h ");
 									System.out.println("Index: " + index);
-									BaseWindow.logWrite("Index: " + index);
+									Logger.log(TAG, "Index: " + index);
 									if(index > 0)
 										result = result + sCurrentLine + "\n";
 								}
@@ -159,7 +165,7 @@ public class DiagCrsCloser implements Runnable {
 								
 								for(String s : parts){
 									System.out.println("Part:  " + s);
-									BaseWindow.logWrite("Part:  " + s);
+									Logger.log(TAG, "Part:  " + s);
 								}
 								
 								diagMs = Long.parseLong(parts[6]);
@@ -234,7 +240,7 @@ public class DiagCrsCloser implements Runnable {
 							unknownCRs.add(b2gID);
 							b2g_analyzed.put(b2gID, "Not Diag");
 							System.out.println("\n\nNo DIAG_WS detected! \n");
-							BaseWindow.logWrite("\n\nNo DIAG_WS detected! \n");
+							Logger.log(TAG, "\n\nNo DIAG_WS detected! \n");
 						} else if(result.toLowerCase().contains("duplicate")){
 							diagCRs.add(b2gID);
 							b2gs_results.put(b2gID, result);
@@ -246,10 +252,10 @@ public class DiagCrsCloser implements Runnable {
 						unknownCRs.add(b2gID);
 						b2g_analyzed.put(b2gID, "Not Diag");
 						System.out.println("\n\nNo DIAG_WS detected! \n");
-						BaseWindow.logWrite("\n\nNo DIAG_WS detected! \n");
+						Logger.log(TAG, "\n\nNo DIAG_WS detected! \n");
 					}
 					System.out.println("\n\nResult:\n" + result + "\n");
-					BaseWindow.logWrite("\n\nResult:\n" + result + "\n");
+					Logger.log(TAG, "\n\nResult:\n" + result + "\n");
 				} catch (FileNotFoundException e){
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -266,17 +272,17 @@ public class DiagCrsCloser implements Runnable {
 		}
 
 		System.out.println("\n------- CRs nao diag -------");
-		BaseWindow.logWrite("\n------- CRs nao diag -------");
+		Logger.log(TAG, "\n------- CRs nao diag -------");
 		for(String s : unknownCRs){
 			System.out.println(s);
-			BaseWindow.logWrite(s);
+			Logger.log(TAG, s);
 		}
 		
 		System.out.println("\n------- CRs Diag -------");
-		BaseWindow.logWrite("\n------- CRs Diag -------");
+		Logger.log(TAG, "\n------- CRs Diag -------");
 		for(String s : diagCRs){
 			System.out.println(s);
-			BaseWindow.logWrite(s);
+			Logger.log(TAG, s);
 		}
 		
 	}
@@ -288,7 +294,7 @@ public class DiagCrsCloser implements Runnable {
 	public static void closeDiagCrs(){
 		
 		Object[] options = { "It's OK. Go!", "Cancel, I need to check" };
-		int n = JOptionPane.showOptionDialog(BaseWindow.getCrsManager(),
+		int n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
 				"Please, make sure that your username and password are set correctly at \"CRs and Jira\" tab. Otherwise, cancel this window and " +
 						"check your login data.",
 				"Warning",
@@ -297,7 +303,7 @@ public class DiagCrsCloser implements Runnable {
 				options[1]);
 		
 		System.out.println("Resposta: " + n);
-		BaseWindow.logWrite("Resposta: " + n);
+		Logger.log(TAG, "Resposta: " + n);
 		
 		if(n == 0){
 			try{
@@ -308,18 +314,18 @@ public class DiagCrsCloser implements Runnable {
 				
 				//Configuring Firefox
 				System.out.println("Generating Firefox profile");
-				BaseWindow.logWrite("Generating Firefox profile");
+				Logger.log(TAG, "Generating Firefox profile");
 				profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
 				driver = new FirefoxDriver(profile);
-				user = BaseWindow.getCrsManager().getUserData()[0];
-				pass = BaseWindow.getCrsManager().getUserData()[1];
+				user = SharedObjs.crsManagerPane.getUserData()[0];
+				pass = SharedObjs.crsManagerPane.getUserData()[1];
 		
 				// Open up a browser
 				System.out.println("Starting browser");
 				driver.navigate().to("http://google.com");
 				
 				Object[] option = { "Yes", "No" };
-				n = JOptionPane.showOptionDialog(BaseWindow.getCrsManager(),
+				n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
 						"Put DIAG_WS and krnl_wkl labels?",
 						"Warning",
 						JOptionPane.YES_NO_CANCEL_OPTION,
@@ -481,15 +487,15 @@ public class DiagCrsCloser implements Runnable {
 			FirefoxProfile profile;
 			
 			String user, pass;
-			String[] CRs = BaseWindow.getCrsManager().getCrsToDownload();
+			String[] CRs = SharedObjs.crsManagerPane.getCrsToDownload();
 			System.out.println("CRs: " + CRs.length);
 			
 			//Configuring Firefox
 			System.out.println("Generating Firefox profile");
 			profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
 			driver = new FirefoxDriver(profile);
-			user = BaseWindow.getCrsManager().getUserData()[0];
-			pass = BaseWindow.getCrsManager().getUserData()[1];
+			user = SharedObjs.crsManagerPane.getUserData()[0];
+			pass = SharedObjs.crsManagerPane.getUserData()[1];
 	
 			// Open up a browser
 			System.out.println("Starting browser");
@@ -544,7 +550,7 @@ public class DiagCrsCloser implements Runnable {
 	private static void finalizeCRs(WebDriver driver){
 		
 		Object[] options = new Object[]{ "Close Firefox", "Close Firefox and Open CRs on Chrome", "Nothing =)" };
-		int n = JOptionPane.showOptionDialog(BaseWindow.getCrsManager(),
+		int n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
 				"What do you want to do next?\n",
 				"Warning",
 				JOptionPane.YES_NO_CANCEL_OPTION,
@@ -579,7 +585,7 @@ public class DiagCrsCloser implements Runnable {
 		
 		
 		options = new Object[]{ "Yes", "No" };
-		n = JOptionPane.showOptionDialog(BaseWindow.getCrsManager(),
+		n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
 				"Do you want to delete the DIAG_WS CRs in your CRs folder?\n",
 				"Warning",
 				JOptionPane.YES_NO_CANCEL_OPTION,
@@ -587,7 +593,7 @@ public class DiagCrsCloser implements Runnable {
 				options[1]);
 		if(n == 0){
 			
-			String path = BaseWindow.getCrsManager().getRootPath();
+			String path = SharedObjs.crsManagerPane.getRootPath();
 			String folder = null;
 			
 			// Look for the file
@@ -608,7 +614,7 @@ public class DiagCrsCloser implements Runnable {
 		
 		
 		
-		n = JOptionPane.showOptionDialog(BaseWindow.getCrsManager(),
+		n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
 				"Do you want to generate report_output on each remaining CR in your CRs folder?\n",
 				"Warning",
 				JOptionPane.YES_NO_CANCEL_OPTION,
@@ -620,12 +626,12 @@ public class DiagCrsCloser implements Runnable {
 					"\n\nRunning build report at:");
 			String crFolder;
 			
-			File folder = new File(BaseWindow.getCrsManager().getRootPath());
+			File folder = new File(SharedObjs.crsManagerPane.getRootPath());
 			System.out.println("Folder: " + folder);
 			File[] listOfFiles = folder.listFiles();
 			
 			for (int i = 0; i < listOfFiles.length; i++) {
-				folder = new File(BaseWindow.getCrsManager().getRootPath());
+				folder = new File(SharedObjs.crsManagerPane.getRootPath());
 				listOfFiles = folder.listFiles();
 				if (listOfFiles[i].isDirectory()) {
 					try {
@@ -730,7 +736,7 @@ public class DiagCrsCloser implements Runnable {
 						ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + crFolder + " && build_report.pl");
 				        builder.redirectErrorStream(true);
 				        Process p = builder.start();
-				        BaseWindow.getCrsManager().addLogLine("Build report started at " + crFolder);
+				        SharedObjs.crsManagerPane.addLogLine("Build report started at " + crFolder);
 				        
 				        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				        //String line;
@@ -741,7 +747,7 @@ public class DiagCrsCloser implements Runnable {
 				            //System.out.println(line);
 				        }
 				        r.close();
-				        BaseWindow.getCrsManager().addLogLine("Build report script done at " + crFolder);
+				        SharedObjs.crsManagerPane.addLogLine("Build report script done at " + crFolder);
 						
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -760,8 +766,8 @@ public class DiagCrsCloser implements Runnable {
 	
 	
 	private static void delCRs(String dir){
-		String folder = BaseWindow.getCrsManager().getRootPath() + dir;
-		BaseWindow.getCrsManager().addLogLine("Trying to delete " + dir);
+		String folder = SharedObjs.crsManagerPane.getRootPath() + dir;
+		SharedObjs.crsManagerPane.addLogLine("Trying to delete " + dir);
 		File file = new File(folder);
 		try {
 			if(file.isDirectory()){
@@ -771,9 +777,9 @@ public class DiagCrsCloser implements Runnable {
 				System.out.println("Zip to be deleted: " + folder);
 				file.delete();
 			}
-			BaseWindow.getCrsManager().addLogLine(dir + " deleted");
+			SharedObjs.crsManagerPane.addLogLine(dir + " deleted");
 		} catch (IOException e) {
-			BaseWindow.getCrsManager().addLogLine("Could not delete " + dir);
+			SharedObjs.crsManagerPane.addLogLine("Could not delete " + dir);
 			e.printStackTrace();
 		}
 	}
@@ -796,15 +802,15 @@ public class DiagCrsCloser implements Runnable {
 		
 		while(step != 10){
 			if(step == 1){
-				if(BaseWindow.getCrsManager().getB2g_crid() != null && BaseWindow.getCrsManager().getB2g_crid().size() > 0){
-					b2g_crid = BaseWindow.getCrsManager().getB2g_crid();
+				if(SharedObjs.crsManagerPane.getB2g_crid() != null && SharedObjs.crsManagerPane.getB2g_crid().size() > 0){
+					b2g_crid = SharedObjs.crsManagerPane.getB2g_crid();
 					System.out.println("Geeting CRs/B2G IDs from the download usage\n" +
 							"b2g_crid: " + b2g_crid.size());
 					dialog.setText(dialog.getText() + "\nChecking the CRs ...");
 					step = 2;
 				}
 				else {
-					if(BaseWindow.getCrsManager().getCrsToDownload().length < 1){
+					if(SharedObjs.crsManagerPane.getCrsToDownload().length < 1){
 						JOptionPane.showMessageDialog(null, "The connection between CR Jira IDs and CR B2G IDs were not found.\n" +
 								"You can paste the CRs list on the text area below and try again.\n" +
 								"This way, the tool will be able to generate this connection if needed.");
@@ -812,7 +818,7 @@ public class DiagCrsCloser implements Runnable {
 						dialog.setText(dialog.getText() + "\nCanceling ...");
 					} else {
 						Object[] options = { "OK. Go!", "Cancel" };
-						int n = JOptionPane.showOptionDialog(BaseWindow.getCrsManager(),
+						int n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
 								"The connection between Jira IDs and B2G IDs were not found.\n" +
 								"Click \"OK\" to the Tool generate this connection or \"Cancel\" to cacel the entire process",
 								"Warning",
@@ -824,7 +830,7 @@ public class DiagCrsCloser implements Runnable {
 						if(n == 0){
 							dialog.setText(dialog.getText() + "\nCreating the link between b2g ids and Jira ids ...");
 							System.out.println("Connecting Jira IDs and B2G IDs");
-							b2g_crid = BaseWindow.getCrsManager().getB2g_crid();
+							b2g_crid = SharedObjs.crsManagerPane.getB2g_crid();
 							connectB2gidToJiraid();
 							System.out.println("b2g_crid: " + b2g_crid.size());
 							System.out.println("Going to step 2");
@@ -846,7 +852,7 @@ public class DiagCrsCloser implements Runnable {
 			} else if(step == 3){
 				System.out.println("Closing DIAG_WS issues");
 				dialog.setText(dialog.getText() + "\nClosing DIAG_WS issues on Jira...");
-				BaseWindow.getCrsManager().updateAllDataUI();
+				SharedObjs.crsManagerPane.updateAllDataUI();
 				closeDiagCrs();
 				step = 4;
 				
@@ -858,7 +864,7 @@ public class DiagCrsCloser implements Runnable {
 		}
 		dialog.dispose();
 		dialog.setVisible(false);
-		BaseWindow.getCrsManager().updateAllDataUI();
+		SharedObjs.crsManagerPane.updateAllDataUI();
 		System.out.println(">>>>DiagList Updated");
 	}
 

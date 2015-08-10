@@ -1,5 +1,6 @@
 package panes;
 
+
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -14,32 +15,9 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -60,13 +38,31 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+
+import java.net.URI;
+
+import java.sql.Timestamp;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
+
 import org.apache.commons.io.FileUtils;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -74,13 +70,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
+import core.SharedObjs;
+import core.XmlMngr;
 import supportive.CrsCloser;
 import supportive.Encryptation;
 import supportive.UnZip;
-import main.SAT;
 import supportive.DiagCrsCloser;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
+
 
 public class CrsManager extends JPanel {
 
@@ -114,7 +110,6 @@ public class CrsManager extends JPanel {
 	private String actualCR = "";
 	private HashMap<String, String> b2g_crid;
 	private HashMap<String, String> b2g_analyzed;
-	private SAT BaseWindow;
 	private ArrayList<String> listZipNames;
 	private ArrayList<String> listFoldersNames;
 	
@@ -122,13 +117,9 @@ public class CrsManager extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public CrsManager(SAT parent) {
+	public CrsManager() {
 		setPreferredSize(new Dimension(632, 765));
 		setMinimumSize(new Dimension(600, 950));
-		
-		
-		BaseWindow = parent;
-		
 		
 		//Panel construction
 		JPanel contentPane = new JPanel();
@@ -526,7 +517,7 @@ public class CrsManager extends JPanel {
 		JButton btnCloseOld = new JButton("Close As Old");
 		btnCloseOld.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				new Thread(new CrsCloser(BaseWindow)).start();
+				new Thread(new CrsCloser()).start();
 			}
 		});
 		GridBagConstraints gbc_btnCloseOld = new GridBagConstraints();
@@ -874,23 +865,23 @@ public class CrsManager extends JPanel {
 						System.out.println("Unzipping " + aux.length +" files and running build_report.pl\n" +
 								"Please wait, it may take some minutes to finish." +
 								"A message alerting you that the process is complete will be showed here.");
-						BaseWindow.getCrsManager().addLogLine("Unzipping " + aux.length + " files and running build_report.pl\n" +
+						SharedObjs.crsManagerPane.addLogLine("Unzipping " + aux.length + " files and running build_report.pl\n" +
 								"Please wait, it may take some minutes to finish.\n" +
 								"A message alerting you that the process is complete will be showed here.\n");
 						for(Object s : aux){
 							try {
-								BaseWindow.getUnzipSemaphore().acquire();
+								SharedObjs.unzipSemaphore.acquire();
 								System.out.println("Sending file: " + getRootPath() + s);
 								//new Thread(new UnZip(getRootPath() + s, BaseWindow)).start();
 								//UnZip unzipper = new UnZip(getRootPath() + s, BaseWindow);*
-								new UnZip(getRootPath() + s, BaseWindow).unzipFile();
+								new UnZip(getRootPath() + s).unzipFile();
 								//Thread.sleep(12);
 							} catch (InterruptedException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
-						BaseWindow.getCrsManager().addLogLine("\nUnzipping process completed");
+						SharedObjs.crsManagerPane.addLogLine("\nUnzipping process completed");
 						System.out.println("Unzipping process completed");
 					}
 				}).start();
@@ -1299,7 +1290,6 @@ public class CrsManager extends JPanel {
 		}
 		driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "w");
 		
-		saveUserData();
 		updateAllDataUI();
 	}
 	
@@ -1372,7 +1362,7 @@ public class CrsManager extends JPanel {
 				JOptionPane.QUESTION_MESSAGE, null, options,
 				options[0]);
 		if(n == 0){
-			new ClosingDiagDialog(BaseWindow);
+			new ClosingDiagDialog();
 		} else {
 			//JOptionPane.showMessageDialog(null,"Selected option: " + n);
 			System.out.println("Action cancelled");
@@ -1483,127 +1473,72 @@ public class CrsManager extends JPanel {
 	}
 	
 	public void saveUserData(){
-		try{
-			//Abre o arquivo XML
-			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			
-			//Cria o builder da estrutura XML
-			SAXBuilder builder = new SAXBuilder();
-			
-			//Cria documento formatado de acordo com a lib XML
-			Document document = (Document) builder.build(xmlFile);
-			
-			//Pega o nó raiz do XML
-			Element satNode = document.getRootElement();
-			
-			//Gera lista de filhos do nó root
-			//List<Element> satElements = satNode.getChildren();
-			
-			//Pega o nó referente ao option pane
-			Element optionPaneNode = satNode.getChild("crs_jira_pane"); 
-			for(Element e : optionPaneNode.getChildren()){
-				if(e.getName().equals("path")){
-					e.setText(textPath.getText());
-					
-				} else if(e.getName().equals("uname")){
-					e.setText(textUsername.getText());
-					
-				} else if(e.getName().equals("encrypt_len")){
-					File f = new File("Data\\cfgs\\pass.ini");
-					BufferedOutputStream bout;
-					try {
-						bout = new BufferedOutputStream(new FileOutputStream(f));
-						bout.write(Encryptation.encrypt(String.copyValueOf(textPassword.getPassword())));
-						bout.close();
-						//System.out.println("Pass saved\nPass: " + String.copyValueOf(passField.getPassword()));
-					} catch(Exception e2){
-						e2.printStackTrace();
-					}
-					e.setText("" + Encryptation.encrypt(String.copyValueOf(textPassword.getPassword())).length);
-					
-				} else if(e.getName().equals("remember")){
-					e.setText(chkbxRemember.isSelected() + "");
-					
-				} else if(e.getName().equals("assign")){
-					e.setText(chckbxAssign.isSelected() + "");
-					
-				} else if(e.getName().equals("label")){
-					e.setText(chckbxLabels.isSelected() + "");
-					
-				}
-			}
-			
-			//JDOM document is ready now, lets write it to file now
-	        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-	        //output xml to console for debugging
-	        //xmlOutputter.output(doc, System.out);
-	        xmlOutputter.output(document, new FileOutputStream(xmlFile));
-	        
-			System.out.println("Options Saved");
-		} catch (JDOMException | IOException | InvalidKeyException 
-				| InvalidKeySpecException | NoSuchAlgorithmException 
-				| NoSuchPaddingException | IllegalBlockSizeException 
-				| BadPaddingException e){
-			e.printStackTrace();
+		String xmlPath[] = new String[] {"crs_jira_pane", ""};
+		
+		xmlPath[1] = "path";
+		XmlMngr.setUserValueOf(xmlPath, textPath.getText());
+		
+		xmlPath[1] = "uname";
+		XmlMngr.setUserValueOf(xmlPath, textUsername.getText());
+		
+		xmlPath[1] = "encrypt_len";
+		BufferedOutputStream bout;
+		try {
+			bout = new BufferedOutputStream(new FileOutputStream(SharedObjs.pwdFile));
+			byte[] encPass = Encryptation.encrypt(String.copyValueOf(textPassword.getPassword()));
+			bout.write(encPass);
+			bout.close();
+			XmlMngr.setUserValueOf(xmlPath, "" + encPass.length);
+		} catch(Exception e2){
+			e2.printStackTrace();
 		}
+		
+		xmlPath[1] = "remember";
+		XmlMngr.setUserValueOf(xmlPath, chkbxRemember.isSelected() + "");
+		
+		xmlPath[1] = "assign";
+		XmlMngr.setUserValueOf(xmlPath, chckbxAssign.isSelected() + "");
+		
+		xmlPath[1] = "label";
+		XmlMngr.setUserValueOf(xmlPath, chckbxLabels.isSelected() + "");
+        
+		System.out.println("CrsManager variables Saved");
 	}
 	
 	private void loadUserData(){
-		try{
-			//Abre o arquivo XML
-			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			
-			//Cria o builder da estrutura XML
-			SAXBuilder builder = new SAXBuilder();
-			
-			//Cria documento formatado de acordo com a lib XML
-			Document document = (Document) builder.build(xmlFile);
-	
-			//Pega o nó raiz do XML
-			Element satNode = document.getRootElement();
-			
-			//Gera lista de filhos do nó root
-			//List<Element> satElements = satNode.getChildren();
-			
-			//Pega o nó referente ao option pane
-			Element crs_jira_paneNode = satNode.getChild("crs_jira_pane");
-			for(Element e : crs_jira_paneNode.getChildren()){
-				if(e.getName().equals("path")){
-					textPath.setText(e.getValue());
-					
-				} else if(e.getName().equals("uname")){
-					textUsername.setText(e.getValue());
-					
-				} else if(e.getName().equals("encrypt_len")){
-					File f = new File("Data\\cfgs\\pass.ini");
-					BufferedInputStream bin;
-					try {
-						bin = new BufferedInputStream(new FileInputStream(f));
-						byte[] toDecrypt = new byte[Integer.parseInt(e.getValue())];
-						bin.read(toDecrypt);
-						textPassword.setText(Encryptation.decrypt(toDecrypt));
-						bin.close();
-						//System.out.println("File saved\nDecrypted: " + Encryptation.decrypt(toDecrypt));
-					} catch(Exception e2){
-						e2.printStackTrace();
-					}
-					
-				} else if(e.getName().equals("remember")){
-					chkbxRemember.setSelected(Boolean.parseBoolean(e.getValue()));
-					
-				} else if(e.getName().equals("assign")){
-					chckbxAssign.setSelected(Boolean.parseBoolean(e.getValue()));
-					
-				} else if(e.getName().equals("label")){
-					chckbxLabels.setSelected(Boolean.parseBoolean(e.getValue()));
-					
-				}
-			}
-			System.out.println("Options Loaded");
+		String xmlPath[] = new String[] {"crs_jira_pane", ""};
 		
-		} catch (IOException | JDOMException e){
-			e.printStackTrace();
+		xmlPath[1] = "path";
+		textPath.setText(XmlMngr.getUserValueOf(xmlPath));
+		
+		xmlPath[1] = "uname";
+		textUsername.setText(XmlMngr.getUserValueOf(xmlPath));
+		
+		xmlPath[1] = "encrypt_len";
+		try {
+			BufferedInputStream bin;
+			bin = new BufferedInputStream(new FileInputStream(SharedObjs.pwdFile));
+			byte[] toDecrypt = new byte[Integer.parseInt(XmlMngr.getUserValueOf(xmlPath))];
+			System.out.println("Lenght: " + XmlMngr.getUserValueOf(xmlPath) + " - " + Integer.parseInt(XmlMngr.getUserValueOf(xmlPath)));
+			bin.read(toDecrypt);
+			textPassword.setText("" + Encryptation.decrypt(toDecrypt));
+			bin.close();
+			
+			//System.out.println("File saved\nDecrypted: " + Encryptation.decrypt(toDecrypt));
+		} catch(Exception e2){
+			e2.printStackTrace();
 		}
+		
+		xmlPath[1] = "remember";
+		chkbxRemember.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		
+		xmlPath[1] = "assign";
+		chckbxAssign.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		
+		xmlPath[1] = "label";
+		chckbxLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+			
+		System.out.println("CrsManager variables Loaded");
 	}
 	
 	
@@ -1675,7 +1610,7 @@ public class CrsManager extends JPanel {
 					@SuppressWarnings("resource")
 					Scanner scanner = new Scanner(new File(folder + "\\build_report.pl")); 
 					String content = scanner.useDelimiter("\\Z").next();
-					content = content.replace("#bat_cap#", BaseWindow.getOptions().getAdvOptions().getBat_capNode().getChildText(sCurrentLine));
+					content = content.replace("#bat_cap#", SharedObjs.advOptions.getBat_capNode().getChildText(sCurrentLine));
 					PrintWriter out = new PrintWriter(folder + "\\build_report.pl");
 					out.println(content);
 					out.close();
@@ -1706,12 +1641,7 @@ public class CrsManager extends JPanel {
 	public void copyScript(File source, File dest) throws IOException {
 		FileUtils.copyFile(source, dest);
 	}
-	
-	
-	
-	
-	
-	
+
 	//UI Initialization
 	private void uiConfiguration(){
 		b2g_analyzed = new HashMap<String, String>();

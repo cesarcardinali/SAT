@@ -2,6 +2,7 @@ package panes;
 
 import java.awt.Desktop;
 import java.awt.Dimension;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -26,16 +27,20 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import core.SharedObjs;
+
 import supportive.UnZip;
-import main.SAT;
+
 import style.FileTreeNodeRenderer;
 
 import java.awt.GridLayout;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -52,15 +57,11 @@ public class FileTree extends JPanel{
     private JScrollPane scrollPaneTree;
     private DefaultMutableTreeNode root; 
     private FileSystemView fileSystemView;
-    private SAT BaseWindow;
     private String lastDirectory;
     private String rootFolderPath;
     
     //File Tree constructor. It will initialize the file tree
-    public FileTree(SAT sAT){
-    	
-    	BaseWindow = sAT;
-        
+    public FileTree(){
         setPreferredSize(new Dimension(1000, 800));
         setLocation(350, 200);
         
@@ -95,12 +96,9 @@ public class FileTree extends JPanel{
                         	initializeNode(node);
                     	if(isCrNode(node)){
                     		if(!lastDirectory.equals(node.toString())) {
-                    		lastDirectory = node.toString();
-                    		BaseWindow.getParser().setCrPath(file.getAbsolutePath()+"\\");
-	                        BaseWindow.getParser().getFiltersResultsTree().clearTree();
-	                        BaseWindow.getParser().textPane.setText(""); //reset the text pane
-	                        BaseWindow.getParser().result = ""; //reset the result for the filters
-	                        BaseWindow.getParser().lblTitle.setText("Run a parser or select a result on the left"); //reset the text in the title
+	                    		lastDirectory = node.toString();
+	                    		SharedObjs.parserPane.setCrPath(file.getAbsolutePath()+"\\");
+	                    		SharedObjs.parserPane.clearPane();
                     		}
 	                    }
                 	}
@@ -399,12 +397,12 @@ public class FileTree extends JPanel{
 						public void run() {
 							// TODO Auto-generated method stub
 							int count = 0;
-							ProgressDialog dialog = new ProgressDialog(BaseWindow.getFrame(), fileTree.getSelectionPaths().length);
+							ProgressDialog dialog = new ProgressDialog(SharedObjs.satFrame, fileTree.getSelectionPaths().length);
 							for (TreePath p : fileTree.getSelectionPaths()){								
 								DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
 					    		File file = (File) node.getUserObject();
 					    		try {
-									BaseWindow.getCrsManager().runScript(file.getAbsolutePath());
+					    			SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
 									dialog.updateDialogView(++count);
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
@@ -618,7 +616,7 @@ public class FileTree extends JPanel{
 		    	File newFile;
 		        DefaultMutableTreeNode node;
 		        TreePath[] paths = fileTree.getSelectionPaths();
-		        ProgressDialog dialog = new ProgressDialog(BaseWindow.getFrame(), paths.length);
+		        ProgressDialog dialog = new ProgressDialog(SharedObjs.satFrame, paths.length);
 		        int length = 0;
 		        
 		        for (TreePath p : paths){
@@ -632,7 +630,7 @@ public class FileTree extends JPanel{
 		    			node.add(new DefaultMutableTreeNode(newFile));
 		    			if (run){
 		    				try {
-								BaseWindow.getCrsManager().runScript(newFile.getAbsolutePath());
+		    					SharedObjs.crsManagerPane.runScript(newFile.getAbsolutePath());
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();

@@ -1,11 +1,14 @@
 package filters;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -13,21 +16,22 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Throwables;
 
-import main.SAT;
+import core.SharedObjs;
+
 import objects.AlarmItem;
 import objects.Alarms_List;
 
+
 public class Alarm {
 
-
-	static Alarms_List alarmList;
-	static String result;
-	static BufferedReader reader;
-	static boolean enabled = true;
+	private static Alarms_List alarmList;
+	private static String result;
+	private static BufferedReader reader;
+	private static boolean enabled = true;
 
 	
-	public static String makelog(String path, SAT BaseWindow) {
-		result = BaseWindow.getOptions().getTextAlarms() + "\n";
+	public static String makelog(String path) {
+		result = SharedObjs.optionsPane.getTextAlarms() + "\n";
 
 		//File reader
 		reader = null;
@@ -120,7 +124,7 @@ public class Alarm {
 					if(index == -1){
 						alarmList.add(alarm);
 					} else {
-						// Atualiza o wakelock ja existente
+						// Update an existing wake lock
 						alarmList.get(index).alarmUpdate(parsedDate, sCurrentLine);
 					}
 					averageOccurrences++;
@@ -148,7 +152,6 @@ public class Alarm {
 			}
 		}
 		
-		
 		alarmList.sortItens();
 		if(alarmList.size() > 0)
 		{
@@ -166,6 +169,7 @@ public class Alarm {
 	}
 	
 	
+	// Getters and Setters
 	public static int getListSize(){
 		return alarmList.size();
 	}

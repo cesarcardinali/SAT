@@ -1,24 +1,29 @@
 package panes;
 
 
-import java.awt.EventQueue;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.GridBagLayout;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
+import javax.swing.JSeparator;
+import javax.swing.JButton;
+
+import java.awt.GridBagLayout;
+import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Font;
-import javax.swing.SwingConstants;
-import javax.swing.JComboBox;
 import java.awt.Dimension;
-import javax.swing.JTextField;
-import javax.swing.JSeparator;
 import java.awt.Color;
-import javax.swing.JButton;
+import java.awt.FlowLayout;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -27,24 +32,16 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import main.SAT;
-
-import java.awt.FlowLayout;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import java.util.HashMap;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+
 
 public class AdvancedOptionsPane extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3696506987866824851L;
 	private JPanel contentPane;
 	private JLabel lblTitle;
@@ -78,7 +75,7 @@ public class AdvancedOptionsPane extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AdvancedOptionsPane frame = new AdvancedOptionsPane(null);
+					AdvancedOptionsPane frame = new AdvancedOptionsPane();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -90,8 +87,8 @@ public class AdvancedOptionsPane extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public AdvancedOptionsPane(SAT BaseWindow) {
-		setTitle("Advanced options tab");
+	public AdvancedOptionsPane() {
+		setTitle("Advanced options");
 		setResizable(false);
 		setMinimumSize(new Dimension(400, 350));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

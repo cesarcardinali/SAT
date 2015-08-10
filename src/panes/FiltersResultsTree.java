@@ -1,5 +1,6 @@
 package panes;
 
+
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
@@ -7,7 +8,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import core.SharedObjs;
+
 import supportive.ColorPrinter;
+
 import filters.Alarm;
 import filters.B2G;
 import filters.Consume;
@@ -16,22 +20,22 @@ import filters.Issue;
 import filters.Normal;
 import filters.Suspicious;
 import filters.Tether;
-import main.SAT;
+
 import objects.CustomFilterItem;
+
 import style.LabelTreeNodeRenderer;
+
 
 @SuppressWarnings("serial")
 public class FiltersResultsTree extends JTree {
 	
 	// Global Variables
-	private SAT BaseWindow;
 	private DefaultTreeModel treeModel;
 	private DefaultMutableTreeNode rootNode;
 
 	// Tree definition
-	public FiltersResultsTree(SAT parent) {
+	public FiltersResultsTree() {
 		// Initializing variables
-		BaseWindow = parent;
 		treeModel = (DefaultTreeModel) getModel();
 		rootNode = (DefaultMutableTreeNode) treeModel.getRoot();
 		setToggleClickCount(1);
@@ -54,11 +58,11 @@ public class FiltersResultsTree extends JTree {
 				if(selectedNode != null){
 					
 					if(!selectedNode.toString().contains("On Colors"))						
-						ColorPrinter.resetPanelStyle(BaseWindow.getParser().getTextPane());
+						ColorPrinter.resetPanelStyle(SharedObjs.parserPane.getTextPane());
 					
 					switch (selectedNode.getLevel()){
 						case 0: // Root selected
-							BaseWindow.getParser().showAllResults();
+							SharedObjs.parserPane.showAllResults();
 							break;
 							
 						case 1: // Leaf filter selected
@@ -71,8 +75,8 @@ public class FiltersResultsTree extends JTree {
 											}
 										}).start();
 									}  else {
-										BaseWindow.getParser().setTitle("Alarms resume:");
-										BaseWindow.getParser().setResultsText(Alarm.getResult());
+										SharedObjs.parserPane.setTitle("Alarms resume:");
+										SharedObjs.parserPane.setResultsText(Alarm.getResult());
 									}
 									
 								} else if(selectedNode.toString().contains("Bug2Go")){
@@ -84,8 +88,8 @@ public class FiltersResultsTree extends JTree {
 											}
 										}).start();
 									}  else {
-										BaseWindow.getParser().setTitle("Bug2Go:");
-										BaseWindow.getParser().setResultsText(B2G.getResult());
+										SharedObjs.parserPane.setTitle("Bug2Go:");
+										SharedObjs.parserPane.setResultsText(B2G.getResult());
 									}
 									
 								} else if(selectedNode.toString().contains("Diag")){
@@ -97,8 +101,8 @@ public class FiltersResultsTree extends JTree {
 											}
 										}).start();
 									}  else {
-										BaseWindow.getParser().setTitle("Diag:");
-										BaseWindow.getParser().setResultsText(Diag.getResult());
+										SharedObjs.parserPane.setTitle("Diag:");
+										SharedObjs.parserPane.setResultsText(Diag.getResult());
 									}
 									
 								} else if(selectedNode.toString().contains("WakeLocks")){
@@ -110,8 +114,8 @@ public class FiltersResultsTree extends JTree {
 											}
 										}).start();
 									} else {
-										BaseWindow.getParser().setTitle("WakeLocks:");
-										BaseWindow.getParser().setResultsText(Issue.getResult());
+										SharedObjs.parserPane.setTitle("WakeLocks:");
+										SharedObjs.parserPane.setResultsText(Issue.getResult());
 									}
 									
 								} else if(selectedNode.toString().contains("High Consumption")){
@@ -123,8 +127,8 @@ public class FiltersResultsTree extends JTree {
 											}
 										}).start();	
 									} else {
-										BaseWindow.getParser().setTitle("High Consume Apps:");
-										BaseWindow.getParser().setResultsText(Consume.getResult());
+										SharedObjs.parserPane.setTitle("High Consume Apps:");
+										SharedObjs.parserPane.setResultsText(Consume.getResult());
 									}
 									
 								} else if(selectedNode.toString().contains("Summary")){
@@ -136,8 +140,8 @@ public class FiltersResultsTree extends JTree {
 											}
 										}).start();
 									}  else {
-										BaseWindow.getParser().setTitle("Discharge Summary:");
-										BaseWindow.getParser().setResultsText(Normal.getResult());
+										SharedObjs.parserPane.setTitle("Discharge Summary:");
+										SharedObjs.parserPane.setResultsText(Normal.getResult());
 									}
 									
 								} else if(selectedNode.toString().contains("Suspicious")){
@@ -149,8 +153,8 @@ public class FiltersResultsTree extends JTree {
 											}
 										}).start();
 									}  else {
-										BaseWindow.getParser().setTitle("Suspicious:");
-										BaseWindow.getParser().setResultsText(Suspicious.getResult());
+										SharedObjs.parserPane.setTitle("Suspicious:");
+										SharedObjs.parserPane.setResultsText(Suspicious.getResult());
 									}
 									
 								} else if(selectedNode.toString().contains("Tethering")){
@@ -162,12 +166,12 @@ public class FiltersResultsTree extends JTree {
 											}
 										}).start();
 									}  else {
-										BaseWindow.getParser().setTitle("Tethering:");
-										BaseWindow.getParser().setResultsText(Tether.getResult());
+										SharedObjs.parserPane.setTitle("Tethering:");
+										SharedObjs.parserPane.setResultsText(Tether.getResult());
 									}
 									
 								} else {
-									int index = BaseWindow.getCustomFiltersList().indexOf(selectedNode.toString().replace(" - Done", "").replace(" - Error", ""));
+									int index = SharedObjs.customFiltersList.indexOf(selectedNode.toString().replace(" - Done", "").replace(" - Error", ""));
 									if(index >= 0){
 										if(selectedNode.getChildCount() == 0){
 											System.out.println("3");
@@ -178,8 +182,8 @@ public class FiltersResultsTree extends JTree {
 												}
 											}).start();
 										}  else {
-											BaseWindow.getParser().setTitle(BaseWindow.getCustomFiltersList().get(index).getName());
-											BaseWindow.getParser().setResultsText(BaseWindow.getCustomFiltersList().get(index).getResult());
+											SharedObjs.parserPane.setTitle(SharedObjs.customFiltersList.get(index).getName());
+											SharedObjs.parserPane.setResultsText(SharedObjs.customFiltersList.get(index).getResult());
 										}
 									}
 								}
@@ -188,20 +192,20 @@ public class FiltersResultsTree extends JTree {
 						case 2: // A filter child selected
 							DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) selectedNode.getParent();
 							if(parentNode.toString().contains("Alarm")){
-								BaseWindow.getParser().setTitle("Alarms:");
+								SharedObjs.parserPane.setTitle("Alarms:");
 								if(parentNode.toString().contains("Error")) {
-									BaseWindow.getParser().setResultsText(Alarm.getResult());
+									SharedObjs.parserPane.setResultsText(Alarm.getResult());
 								} else {
 									int nodeIndex = parentNode.getIndex(selectedNode);
 									if(selectedNode.toString().contains("On Colors")){
-										BaseWindow.getParser().setTitle("Alarms On Colors:");
-										ColorPrinter.colorsAlarm(BaseWindow.getParser().getTextPane(), Alarm.getResult());
-										BaseWindow.getParser().getTextPane().setCaretPosition(0);
+										SharedObjs.parserPane.setTitle("Alarms On Colors:");
+										ColorPrinter.colorsAlarm(SharedObjs.parserPane.getTextPane(), Alarm.getResult());
+										SharedObjs.parserPane.getTextPane().setCaretPosition(0);
 										break;
 									} else {
-										BaseWindow.getParser().setTitle(selectedNode.toString() + " - " + Alarm.getList().get(nodeIndex-1).getAction());
-										BaseWindow.getParser().setResultsText(
-												BaseWindow.getOptions().getTextAlarms()
+										SharedObjs.parserPane.setTitle(selectedNode.toString() + " - " + Alarm.getList().get(nodeIndex-1).getAction());
+										SharedObjs.parserPane.setResultsText(
+												SharedObjs.optionsPane.getTextAlarms()
 												.replace("#pname#", Alarm.getList().get(nodeIndex-1).getProcess())
 												.replace("#log#", Alarm.getList().get(nodeIndex-1).toString())
 												.replace("\\n", "\n"));
@@ -210,75 +214,75 @@ public class FiltersResultsTree extends JTree {
 								}
 								
 							} else if(parentNode.toString().contains("Bug2Go")){
-								BaseWindow.getParser().setTitle("Bug2go:");
+								SharedObjs.parserPane.setTitle("Bug2go:");
 								if(parentNode.toString().contains("Error")) {
-									BaseWindow.getParser().setResultsText(B2G.getResult());
+									SharedObjs.parserPane.setResultsText(B2G.getResult());
 								} else {
-									BaseWindow.getParser().setResultsText(B2G.getResult());
+									SharedObjs.parserPane.setResultsText(B2G.getResult());
 								}
 								
 							} else if(parentNode.toString().contains("Diag")){
-								BaseWindow.getParser().setTitle("Diag:");
+								SharedObjs.parserPane.setTitle("Diag:");
 								if(parentNode.toString().contains("Error")) {
-									BaseWindow.getParser().setResultsText(Diag.getResult());
+									SharedObjs.parserPane.setResultsText(Diag.getResult());
 								} else {
-									BaseWindow.getParser().setResultsText(Diag.getResult());
+									SharedObjs.parserPane.setResultsText(Diag.getResult());
 								}
 								
 							} else if(parentNode.toString().contains("WakeLocks")){
-								BaseWindow.getParser().setTitle("WakeLocks:");
+								SharedObjs.parserPane.setTitle("WakeLocks:");
 								if(parentNode.toString().contains("Error")) {
-									BaseWindow.getParser().setResultsText(Issue.getResult());
+									SharedObjs.parserPane.setResultsText(Issue.getResult());
 								} else {
-									BaseWindow.getParser().setResultsText(Issue.getResult());
+									SharedObjs.parserPane.setResultsText(Issue.getResult());
 								}
 								
 							} else if(parentNode.toString().contains("High Consumption")){
-								BaseWindow.getParser().setTitle("Apps Consumption:");
+								SharedObjs.parserPane.setTitle("Apps Consumption:");
 								if(parentNode.toString().contains("Error")) {
-									BaseWindow.getParser().setResultsText(Consume.getResult());
+									SharedObjs.parserPane.setResultsText(Consume.getResult());
 								} else {
 									int nodeIndex = parentNode.getIndex(selectedNode);
 									if(selectedNode.toString().contains("On Colors")){
-										BaseWindow.getParser().setTitle("High Consumption Apps:");
-										ColorPrinter.colorsApps(BaseWindow.getParser().getTextPane(), Consume.getResult());
+										SharedObjs.parserPane.setTitle("High Consumption Apps:");
+										ColorPrinter.colorsApps(SharedObjs.parserPane.getTextPane(), Consume.getResult());
 									} else {
-										BaseWindow.getParser().setTitle(Consume.getHCList().get(nodeIndex-1).getProcess());
-										BaseWindow.getParser().setResultsText("{panel}\n" + Consume.getHCList().get(nodeIndex-1).toString() + "{panel}");
+										SharedObjs.parserPane.setTitle(Consume.getHCList().get(nodeIndex-1).getProcess());
+										SharedObjs.parserPane.setResultsText("{panel}\n" + Consume.getHCList().get(nodeIndex-1).toString() + "{panel}");
 									}
 								}
 								
 							} else if(parentNode.toString().contains("Summary")){
-								BaseWindow.getParser().setTitle("Summary:");
+								SharedObjs.parserPane.setTitle("Summary:");
 								if(parentNode.toString().contains("Error")) {
-									BaseWindow.getParser().setResultsText(Normal.getResult());
+									SharedObjs.parserPane.setResultsText(Normal.getResult());
 								} else {
-									BaseWindow.getParser().setResultsText(Normal.getResult());
+									SharedObjs.parserPane.setResultsText(Normal.getResult());
 								}
 								
 							} else if(parentNode.toString().contains("Suspicious")){
-								BaseWindow.getParser().setTitle("Suspicious:");
+								SharedObjs.parserPane.setTitle("Suspicious:");
 								if(parentNode.toString().contains("Error")) {
-									BaseWindow.getParser().setResultsText(Suspicious.getResult());
+									SharedObjs.parserPane.setResultsText(Suspicious.getResult());
 								} else {
 									int nodeIndex = parentNode.getIndex(selectedNode);
-									BaseWindow.getParser().setTitle(Suspicious.getWakeLocks().get(nodeIndex).getProcess());
-									BaseWindow.getParser().setResultsText(Suspicious.getWakeLocks().get(nodeIndex).toString());
+									SharedObjs.parserPane.setTitle(Suspicious.getWakeLocks().get(nodeIndex).getProcess());
+									SharedObjs.parserPane.setResultsText(Suspicious.getWakeLocks().get(nodeIndex).toString());
 								}
 								
 							} else if(parentNode.toString().contains("Tethering")){
-								BaseWindow.getParser().setTitle("Tethering:");
+								SharedObjs.parserPane.setTitle("Tethering:");
 								if(parentNode.toString().contains("Error")) {
-									BaseWindow.getParser().setResultsText(Tether.getResult());
+									SharedObjs.parserPane.setResultsText(Tether.getResult());
 								} else {
-									BaseWindow.getParser().setResultsText(Tether.getResult());
+									SharedObjs.parserPane.setResultsText(Tether.getResult());
 								}
 								
 							} else {
-								int index = BaseWindow.getCustomFiltersList().indexOf(parentNode.toString().replace(" - Done", "").replace(" - Error", ""));
+								int index = SharedObjs.customFiltersList.indexOf(parentNode.toString().replace(" - Done", "").replace(" - Error", ""));
 								if(index >= 0){
-									BaseWindow.getParser().setTitle(BaseWindow.getCustomFiltersList().get(index).getName());
-									BaseWindow.getParser().setResultsText(BaseWindow.getCustomFiltersList().get(index).getResult());
+									SharedObjs.parserPane.setTitle(SharedObjs.customFiltersList.get(index).getName());
+									SharedObjs.parserPane.setResultsText(SharedObjs.customFiltersList.get(index).getResult());
 								}
 							}
 							break;
@@ -287,37 +291,37 @@ public class FiltersResultsTree extends JTree {
 							parentNode = (DefaultMutableTreeNode) selectedNode.getParent().getParent();
 							int nodeIndex = parentNode.getIndex(selectedNode.getParent());
 							if(parentNode.toString().contains("Alarms")){
-								BaseWindow.getParser().setTitle(selectedNode.getParent().toString() + " - " + Alarm.getList().get(nodeIndex-1).getAction());
-								ColorPrinter.colorsAlarm(BaseWindow.getParser().getTextPane(), 
-										BaseWindow.getOptions().getTextAlarms()
+								SharedObjs.parserPane.setTitle(selectedNode.getParent().toString() + " - " + Alarm.getList().get(nodeIndex-1).getAction());
+								ColorPrinter.colorsAlarm(SharedObjs.parserPane.getTextPane(), 
+										SharedObjs.optionsPane.getTextAlarms()
 										.replace("#pname#", Alarm.getList().get(nodeIndex - 1).getProcess())
 										.replace("#log#", Alarm.getList().get(nodeIndex - 1).toString())
 										.replace("\\n", "\n"));
 								
 							} else if(parentNode.toString().contains("High Consumption")){
-								BaseWindow.getParser().setTitle(Consume.getHCList().get(nodeIndex-1).getProcess());
+								SharedObjs.parserPane.setTitle(Consume.getHCList().get(nodeIndex-1).getProcess());
 								if (selectedNode.toString().contains("ON"))
-									BaseWindow.getParser().setResultsText(BaseWindow.getOptions().getTextConsumeOn()
+									SharedObjs.parserPane.setResultsText(SharedObjs.optionsPane.getTextConsumeOn()
 											.replaceAll("#pname#",Consume.getHCList().get(nodeIndex-1).getProcess())
 											.replaceAll("#sconconsume#",String.valueOf(Consume.getHCList().get(nodeIndex-1).getScOnConsume()))
 											.replaceAll("#logon#", Consume.getHCList().get(nodeIndex-1).getLogOn())
 											.replace("\\n", "\n"));
 								else 
 									if (selectedNode.toString().contains("OFF"))
-									BaseWindow.getParser().setResultsText(BaseWindow.getOptions().getTextConsumeOff()
+									SharedObjs.parserPane.setResultsText(SharedObjs.optionsPane.getTextConsumeOff()
 											.replaceAll("#pname#",Consume.getHCList().get(nodeIndex-1).getProcess())
 											.replaceAll("#scoffconsume#",String.valueOf(Consume.getHCList().get(nodeIndex-1).getScOffConsume()))
 											.replaceAll("#logoff#", Consume.getHCList().get(nodeIndex-1).getLogOff())
 											.replace("\\n", "\n"));
 								else
 									if (selectedNode.toString().contains("Full"))
-									BaseWindow.getParser().setResultsText(BaseWindow.getOptions().getTextConsumeFull()
+									SharedObjs.parserPane.setResultsText(SharedObjs.optionsPane.getTextConsumeFull()
 											.replaceAll("#pname#",Consume.getHCList().get(nodeIndex-1).getProcess())
 											.replaceAll("#avgconsume#",String.valueOf(Consume.getHCList().get(nodeIndex-1).getConsumeAvg()))
 											.replaceAll("#logfull#", Consume.getHCList().get(nodeIndex-1).getLog())
 											.replace("\\n", "\n"));
 								else
-									ColorPrinter.colorsApps(BaseWindow.getParser().getTextPane(), BaseWindow.getOptions().getTextConsumeFull()
+									ColorPrinter.colorsApps(SharedObjs.parserPane.getTextPane(), SharedObjs.optionsPane.getTextConsumeFull()
 											.replaceAll("#pname#",Consume.getHCList().get(nodeIndex-1).getProcess())
 											.replaceAll("#avgconsume#",String.valueOf(Consume.getHCList().get(nodeIndex-1).getConsumeAvg()))
 											.replaceAll("#logfull#", Consume.getHCList().get(nodeIndex-1).getLog())
@@ -456,7 +460,7 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		alarmResult = Alarm.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
+		alarmResult = Alarm.makelog(SharedObjs.parserPane.getCrPath());
 		
 		if(alarmResult.contains("FileNotFoundException")){
 			x = ("Alarms - Error");
@@ -492,7 +496,7 @@ public class FiltersResultsTree extends JTree {
 				}
 			
 			
-			BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n======================= Alarms Resume =======================\n" + alarmResult);
+			SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n======================= Alarms Resume =======================\n" + alarmResult);
 			
 			x = ("Alarms - Done");
 			selectedNode.setUserObject(x);
@@ -512,7 +516,7 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		b2gResult = B2G.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
+		b2gResult = B2G.makelog(SharedObjs.parserPane.getCrPath());
 		
 		if(b2gResult.contains("FileNotFoundException")){
 			x = ("Bug2Go - Error");
@@ -538,7 +542,7 @@ public class FiltersResultsTree extends JTree {
 		} else {
 			addBug2go("Result");
 			
-			BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n========================= Bug2Go =========================\n" + b2gResult);
+			SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n========================= Bug2Go =========================\n" + b2gResult);
 			
 			x = ("Bug2Go - Done");
 			selectedNode.setUserObject(x);
@@ -557,7 +561,7 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		diagResult = Diag.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
+		diagResult = Diag.makelog(SharedObjs.parserPane.getCrPath());
 		
 		if(diagResult.contains("FileNotFoundException")){
 			x = ("Diag - Error");
@@ -590,7 +594,7 @@ public class FiltersResultsTree extends JTree {
 		} else {
 			addDiag("Result");
 			
-			BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n======================= Diag Wake locks =======================\n" + diagResult);
+			SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n======================= Diag Wake locks =======================\n" + diagResult);
 			
 			x = ("Diag - Done");
 			selectedNode.setUserObject(x);
@@ -609,7 +613,7 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		wakelocksResult = Issue.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
+		wakelocksResult = Issue.makelog(SharedObjs.parserPane.getCrPath());
 		
 		if(wakelocksResult.contains("FileNotFoundException")){
 			x = ("WakeLocks - Error");
@@ -635,7 +639,7 @@ public class FiltersResultsTree extends JTree {
 		} else {
 			addIssues("Result");
 			
-			BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n========================= Wakelocks =========================\n" + wakelocksResult);
+			SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n========================= Wakelocks =========================\n" + wakelocksResult);
 			
 			x = ("WakeLocks - Done");
 			selectedNode.setUserObject(x);
@@ -654,7 +658,7 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		consumptionResult = Consume.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
+		consumptionResult = Consume.makelog(SharedObjs.parserPane.getCrPath());
 		
 		if(consumptionResult.contains("FileNotFoundException")){
 			x = ("High Consumption - Error");
@@ -684,7 +688,7 @@ public class FiltersResultsTree extends JTree {
 			if(Consume.getHCList().size() == 0)
 				addConsumeNode("Nothing found in logs");
 			
-			BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n========================= High Consumption Apps =========================\n" + consumptionResult);
+			SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n========================= High Consumption Apps =========================\n" + consumptionResult);
 			
 			x = ("High Consumption - Done");
 			selectedNode.setUserObject(x);
@@ -703,7 +707,7 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		summaryResult = Normal.makeLog(BaseWindow.getParser().getCrPath(), BaseWindow);
+		summaryResult = Normal.makeLog(SharedObjs.parserPane.getCrPath());
 		
 		if(summaryResult.contains("FileNotFoundException")){
 			x = ("Summary - Error");
@@ -729,7 +733,7 @@ public class FiltersResultsTree extends JTree {
 		} else {
 			addSummary("Result");
 			
-			BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n========================= Summary =========================\n" + summaryResult);
+			SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n========================= Summary =========================\n" + summaryResult);
 			
 			x = ("Summary - Done");
 			selectedNode.setUserObject(x);
@@ -748,7 +752,7 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		suspiciousResult = Suspicious.makelog(BaseWindow.getParser().getCrPath(), BaseWindow);
+		suspiciousResult = Suspicious.makelog(SharedObjs.parserPane.getCrPath());
 		
 		if(suspiciousResult.contains("FileNotFoundException")){
 			x = ("Suspicious - Error");
@@ -783,7 +787,7 @@ public class FiltersResultsTree extends JTree {
 				addWakeLocksNode("No suspicious found");
 			}
 			
-			BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n========================= Suspicious =========================\n" + suspiciousResult);
+			SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n========================= Suspicious =========================\n" + suspiciousResult);
 			
 			x = ("Suspicious - Done");
 			selectedNode.setUserObject(x);
@@ -802,7 +806,7 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		tetherResult = Tether.makeLog(BaseWindow.getParser().getCrPath(), BaseWindow);
+		tetherResult = Tether.makeLog(SharedObjs.parserPane.getCrPath());
 		
 		if(tetherResult.contains("FileNotFoundException")){
 			x = ("Tethering - Error");
@@ -828,7 +832,7 @@ public class FiltersResultsTree extends JTree {
 		} else {
 			addTether("Result");
 			
-			BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n========================= Tethering =========================\n" + tetherResult);
+			SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n========================= Tethering =========================\n" + tetherResult);
 			
 			x = ("Tethering - Done");
 			selectedNode.setUserObject(x);
@@ -848,9 +852,9 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		int index = BaseWindow.getCustomFiltersList().indexOf(nodeName);
+		int index = SharedObjs.customFiltersList.indexOf(nodeName);
 		if(index >= 0){
-			result = BaseWindow.getCustomFiltersList().get(index).runFilter(BaseWindow.getParser().getCrPath());
+			result = SharedObjs.customFiltersList.get(index).runFilter(SharedObjs.parserPane.getCrPath());
 			
 			if(result.contains(" log missing")){
 				x = (nodeName + " - Error");
@@ -876,8 +880,8 @@ public class FiltersResultsTree extends JTree {
 			} else {
 				addCustomResult(nodeName, "Result");
 				
-				result = result + BaseWindow.getCustomFiltersList().get(index).getHeader() + "\n";
-				BaseWindow.getParser().setResult(BaseWindow.getParser().getResult() + "\n\n\n========================= Tethering =========================\n" + result);
+				result = result + SharedObjs.customFiltersList.get(index).getHeader() + "\n";
+				SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n========================= Tethering =========================\n" + result);
 				
 				x = (nodeName + " - Done");
 				selectedNode.setUserObject(x);
@@ -951,7 +955,7 @@ public class FiltersResultsTree extends JTree {
 			rootNode.add(new DefaultMutableTreeNode("Tethering"));
 		}
 		
-		for(CustomFilterItem item : BaseWindow.getCustomFiltersList()){
+		for(CustomFilterItem item : SharedObjs.customFiltersList){
 			rootNode.add(new DefaultMutableTreeNode(item.getName()));
 		}
 		
@@ -959,7 +963,7 @@ public class FiltersResultsTree extends JTree {
 	}
 	
 	public void addCustomFilters(String name){
-		/*for(CustomFilterItem item : BaseWindow.getCustomFiltersList()){
+		/*for(CustomFilterItem item : SharedObjs.customFiltersList){
 			if(findNode(item.getName()) == null){
 				rootNode.add(new DefaultMutableTreeNode(item.getName()));
 				updateResultTreeUI();

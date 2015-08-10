@@ -1,5 +1,6 @@
 package filters;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,19 +9,20 @@ import java.io.IOException;
 
 import com.google.common.base.Throwables;
 
-import main.SAT;
+import core.SharedObjs;
+
 
 public class Tether {
 	
 	static String result;
 	private static boolean enabled = true;
 
-	public static String makeLog(String path, SAT BaseWindow) {
+	public static String makeLog(String path) {
 		BufferedReader br = null;
 		result = "";
 
 		try {
-			String wifitether = BaseWindow.getOptions().getTextTether();
+			String wifitether = SharedObjs.optionsPane.getTextTether();
 			String wifitetherData1 = "";
 			String wifitetherData2 = "";
 			String sCurrentLine;

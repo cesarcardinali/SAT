@@ -8,18 +8,15 @@ import java.io.IOException;
 
 import com.google.common.base.Throwables;
 
-import main.SAT;
 
 public class Normal {
 	
 	static String result;
-	static SAT BaseWindow;
 	private static boolean enabled = true;
 	
 
-	public static String makeLog(String path, SAT parent){
+	public static String makeLog(String path){
 		BufferedReader br = null;
-		BaseWindow = parent;
 		result = "";
 		
 		try {

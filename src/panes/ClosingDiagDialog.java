@@ -1,5 +1,6 @@
 package panes;
 
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -11,16 +12,18 @@ import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import core.SharedObjs;
+
 import supportive.DiagCrsCloser;
-import main.SAT;
+
 
 public class ClosingDiagDialog extends JDialog {
 
 	private static final long serialVersionUID = 7336911787362736864L;
 	private final JPanel contentPanel = new JPanel();
-	JTextPane txtpnCheckingAllThe;
+	private JTextPane txtpnCheckingAllThe;
 
-	public ClosingDiagDialog(SAT parent) {
+	public ClosingDiagDialog() {
 		setType(Type.POPUP);
 		setBackground(UIManager.getColor("Panel.background"));
 		setTitle("Please Wait ...");
@@ -42,22 +45,21 @@ public class ClosingDiagDialog extends JDialog {
 				"_______________________________________\n\n");
 		contentPanel.add(txtpnCheckingAllThe);
 		
-		setLocationRelativeTo(parent.getFrame());
+		setLocationRelativeTo(SharedObjs.satFrame);
 		
-		new Thread(new DiagCrsCloser(parent, this)).start();
+		new Thread(new DiagCrsCloser(this)).start();
 		
 		setModal(true);
 		setVisible(true);
 	}
 
+	
+	// Getters and Setters
 	public void setText(String text){
 		txtpnCheckingAllThe.setText(text);
 	}
+	
 	public String getText(){
 		return txtpnCheckingAllThe.getText();
 	}
-	
-	
-	
-	
 }

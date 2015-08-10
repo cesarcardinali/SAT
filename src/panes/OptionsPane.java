@@ -1,20 +1,29 @@
 package panes;
 
+
 import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.JSeparator;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
+import javax.swing.JScrollPane;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
-import javax.swing.SwingConstants;
 import java.awt.Font;
-import javax.swing.JSeparator;
 import java.awt.Dimension;
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -27,22 +36,12 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import main.SAT;
-
-import javax.swing.JRadioButton;
-import java.awt.FlowLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JScrollPane;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.ActionEvent;
+import core.SharedObjs;
 
 
 @SuppressWarnings("serial")
 public class OptionsPane extends JPanel {
-	private AdvancedOptionsPane advOptions;
-	private SAT BaseWindow;
+	
 	private JTextField textConsumeFull;
 	private JTextField textConsumeOff;
 	private JTextField textConsumeOn;
@@ -66,9 +65,8 @@ public class OptionsPane extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public OptionsPane(SAT parent) {
+	public OptionsPane() {
 		setMinimumSize(new Dimension(800, 600));
-		BaseWindow= parent;
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {918};
@@ -681,9 +679,9 @@ public class OptionsPane extends JPanel {
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
 				if (arg0.getStateChange() == ItemEvent.SELECTED)
-					BaseWindow.getParser().getTextPane().setWrapText(true);
+					SharedObjs.parserPane.getTextPane().setWrapText(true);
 				else
-					BaseWindow.getParser().getTextPane().setWrapText(false);
+					SharedObjs.parserPane.getTextPane().setWrapText(false);
 			}
 		});
 		GridBagConstraints gbc_chkTextWrap = new GridBagConstraints();
@@ -722,7 +720,7 @@ public class OptionsPane extends JPanel {
 		rdbtnDouble.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				BaseWindow.getParser().getFiltersResultsTree().setToggleClickCount(2);
+				SharedObjs.parserPane.getFiltersResultsTree().setToggleClickCount(2);
 			}
 		});
 		panel_4.add(rdbtnDouble);
@@ -731,7 +729,7 @@ public class OptionsPane extends JPanel {
 		rdbtnSingleclick.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				BaseWindow.getParser().getFiltersResultsTree().setToggleClickCount(1);
+				SharedObjs.parserPane.getFiltersResultsTree().setToggleClickCount(1);
 			}
 		});
 		panel_4.add(rdbtnSingleclick);
@@ -761,7 +759,7 @@ public class OptionsPane extends JPanel {
 		btnManageFilters = new JButton("Manage filters");
 		btnManageFilters.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BaseWindow.getCustomFiltersPane().open();
+				SharedObjs.customFiltersPane.open();
 			}
 		});
 		panel_5.add(btnManageFilters);
@@ -769,15 +767,13 @@ public class OptionsPane extends JPanel {
 		btnAdvanced = new JButton("Advanced");
 		btnAdvanced.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				advOptions.setLocation(BaseWindow.getLocation().x+200, BaseWindow.getLocation().y + 200);
-				advOptions.setVisible(true);
+				SharedObjs.advOptions.setLocation(SharedObjs.satFrame.getLocation().x+200, SharedObjs.satFrame.getLocation().y + 200);
+				SharedObjs.advOptions.setVisible(true);
 			}
 		});
 		btnAdvanced.setToolTipText("Click to see advanced options");
 		btnAdvanced.setPreferredSize(new Dimension(103, 23));
 		panel_5.add(btnAdvanced);
-		
-		advOptions = new AdvancedOptionsPane(BaseWindow);
 		
 		editorSelector.add(rdbtnTAnalisys);
 		editorSelector.add(rdbtnNotepad);
@@ -882,9 +878,9 @@ public class OptionsPane extends JPanel {
 			if(e.getName().equals("tree_breakdown")){
 				if(e.getValue().equals("1")){
 					rdbtnSingleclick.setSelected(true);
-					BaseWindow.getParser().getFiltersResultsTree().setToggleClickCount(1);
+					SharedObjs.parserPane.getFiltersResultsTree().setToggleClickCount(1);
 				} else {
-					BaseWindow.getParser().getFiltersResultsTree().setToggleClickCount(2);
+					SharedObjs.parserPane.getFiltersResultsTree().setToggleClickCount(2);
 					rdbtnDouble.setSelected(true);
 				}
 				
@@ -1083,10 +1079,6 @@ public class OptionsPane extends JPanel {
 	
 	public String getTextHighCurrent() {
 		return textHighCurrent.getText();
-	}
-	
-	public AdvancedOptionsPane getAdvOptions() {
-		return advOptions;
 	}
 	
 	protected JRadioButton getRdbtnNotepad() {

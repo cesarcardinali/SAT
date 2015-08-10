@@ -1,5 +1,6 @@
 package filters;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,17 +9,14 @@ import java.io.IOException;
 
 import com.google.common.base.Throwables;
 
-import main.SAT;
 
 public class B2G {
 
-	
 	private static String result;
 	private static boolean edited = false;
 	private static boolean enabled = true;
 	
-	
-	public static String makelog(String path, SAT BaseWindow) {
+	public static String makelog(String path) {
 		BufferedReader br = null;
 		result = "";
 		
@@ -143,6 +141,7 @@ public class B2G {
 	}
 
 	
+	// Getters and Setters
 	public static String getResult() {
 		return result;
 	}

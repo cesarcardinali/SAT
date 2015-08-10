@@ -1,5 +1,6 @@
 package filters;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +17,7 @@ import org.jdom2.input.SAXBuilder;
 
 import com.google.common.base.Throwables;
 
-import main.SAT;
+import core.SharedObjs;
 
 
 public class Diag {
@@ -26,7 +27,7 @@ public class Diag {
 	private static boolean enabled = true;
 	
 	
-	public static String makelog(String path, SAT BaseWindow) {
+	public static String makelog(String path) {
 		long duration, diagDuration;
 		String regex, diagAllKernel, diagMs, product, line;
 		Pattern pattern;
@@ -147,7 +148,7 @@ public class Diag {
 			
 			//prepare the final comment:
 			if(!diagAllKernel.equals("") || !diagMs.equals("")){
-				result = BaseWindow.getOptions().getTextDiag()
+				result = SharedObjs.optionsPane.getTextDiag()
 						.replace("#log#", diagMs + "\n" + diagAllKernel + "\n")
 						.replace("\\n", "\n");
 				
