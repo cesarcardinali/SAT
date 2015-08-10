@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="Filters/|Main/|Objects/|Panes/|Supportive/|Tests/" kind="src" path="src"/>
+	<classpathentry including="core/|dao/|filters/|main/|objects/|panes/|style/|supportive/|tests/" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="C:/Java Libraries/JTattoo-1.6.10.jar"/>
 	<classpathentry kind="lib" path="C:/Java Libraries/selenium-java-2.45.0.jar"/>

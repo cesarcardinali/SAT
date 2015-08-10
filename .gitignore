@@ -21,10 +21,9 @@ hs_err_pid*
 *.txt
 *.btd
 *.log
-log.ini
-user_cfg.xml
-pass.ini
+src/tests/*.*
 BatTracer.jar
 Updater.jar
 TestDataCRs/
 /bin/
+*.log
