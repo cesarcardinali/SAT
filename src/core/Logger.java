@@ -33,17 +33,17 @@ public class Logger {
 	 */
 	public static void initClass(){
 		// Generate log file
-		if (new File(SharedObjs.logsFolder).exists())
+		if (new File(Strings.logsFolder).exists())
 		{
-			logFile = new File(SharedObjs.logsFolder + "log_"
+			logFile = new File(Strings.logsFolder + "log_"
 					+ new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
 					+ ".log");
 			System.out.println("Logs folder exists");
 		} 
 		else
 		{
-			new File(SharedObjs.logsFolder).mkdirs();
-			logFile = new File(SharedObjs.logsFolder + "log_"
+			new File(Strings.logsFolder).mkdirs();
+			logFile = new File(Strings.logsFolder + "log_"
 					+ new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
 					+ ".log");
 			System.out.println("Logs folder created");

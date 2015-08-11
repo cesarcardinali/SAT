@@ -102,7 +102,6 @@ public class XmlMngr {
 	 */
 	public static String getMessageValueOf(String path[]) {
 		Element requestedElement = messageDocument.getRootElement();
-		getMessageValueOf(path);
 		for(String item : path){
 			requestedElement = requestedElement.getChild(item);
 		}

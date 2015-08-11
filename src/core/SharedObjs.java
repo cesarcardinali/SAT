@@ -34,15 +34,7 @@ public class SharedObjs {
 	public static final File sytemCfgFile   = new File(contentFolder + "cfgs/system_cfg.xml");
 	public static final File userCfgFile    = new File(contentFolder + "cfgs/user_cfg.xml");
 	public static final File messageCfgFile = new File(contentFolder + "cfgs/message.xml");
-	public static final File pwdFile = new File(contentFolder + "cfgs/pass.pwd");
-	public static String toolName;
-	public static String toolVersion;
-	public static String toolFile;
-	public static String updaterFile;
-	public static String picsFolder;
-	public static String logsFolder;
-	public static String updateFolder1;
-	public static String updateFolder2;
+	public static final File pwdFile = new File(contentFolder + "cfgs/pass.pwd");	
 	
 	public static ArrayList<CrItem> crsList;
 	public static Semaphore unzipSemaphore;
@@ -62,15 +54,6 @@ public class SharedObjs {
 	 * Initialize class variables
 	 */
 	public static void initClass(){
-		// Load values form XML
-		toolName = XmlMngr.getSystemValueOf(new String[]{"configs","tool_name"});
-		toolVersion = XmlMngr.getSystemValueOf(new String[]{"configs","tool_version"});
-		toolFile = XmlMngr.getSystemValueOf(new String[]{"configs","tool_file"});
-		updaterFile = XmlMngr.getSystemValueOf(new String[]{"configs","updater"});
-		picsFolder = contentFolder + XmlMngr.getSystemValueOf(new String[]{"configs","pics_folder"});
-		logsFolder = contentFolder + XmlMngr.getSystemValueOf(new String[]{"configs","logs_folder"});
-		updateFolder1 = XmlMngr.getSystemValueOf(new String[]{"configs","update_path1"});
-		updateFolder2 = XmlMngr.getSystemValueOf(new String[]{"configs","update_path2"});
 		
 		// Initialize variables
 		unzipSemaphore = new Semaphore(1, true);

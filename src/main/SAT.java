@@ -27,6 +27,7 @@ import core.Icons;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
+import core.Strings;
 
 
 public class SAT extends JFrame{
@@ -72,7 +73,7 @@ public class SAT extends JFrame{
 	private void initialize() {
 		//Initializing window
 		setIconImage(Icons.iconSat);
-		setTitle(SharedObjs.toolName + " " + SharedObjs.toolVersion);
+		setTitle(Strings.toolName + " " + Strings.toolVersion);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double width = screenSize.getWidth();
@@ -124,10 +125,10 @@ public class SAT extends JFrame{
 						Element optionPaneNode = satNode.getChild("configs"); 
 						for(Element e : optionPaneNode.getChildren()){
 							if(e.getName().equals("update_path1")){
-								e.setText(SharedObjs.updateFolder1);
+								e.setText(Strings.updateFolder1);
 								
 							} else if(e.getName().equals("update_path2")){
-								e.setText(SharedObjs.updateFolder2);
+								e.setText(Strings.updateFolder2);
 								
 							}
 						}
@@ -196,10 +197,10 @@ public class SAT extends JFrame{
 		File f2;
 		long dateRemote, dateLocal;
 		
-		f1 = new File(SharedObjs.updateFolder1 + SharedObjs.toolFile);
+		f1 = new File(Strings.updateFolder1 + Strings.toolFile);
 		System.out.println("Remote file: " + f1.getAbsolutePath());
 		System.out.println("Remote: " + f1.lastModified());
-		f2 = new File(SharedObjs.toolFile);
+		f2 = new File(Strings.toolFile);
 		System.out.println("Local file: " + f2.getAbsolutePath());
 		System.out.println("Local: " + f2.lastModified());
 		dateRemote = f1.lastModified();
@@ -214,8 +215,8 @@ public class SAT extends JFrame{
 					options[1]);
 			if(n == 0) {
 				try {
-					System.out.println("Updating the Updater first, from: " + SharedObjs.updateFolder1);
-					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/" + SharedObjs.updaterFile), new File(SharedObjs.updaterFile));
+					System.out.println("Updating the Updater first, from: " + Strings.updateFolder1);
+					FileUtils.copyFile(new File(Strings.updateFolder1 + "/" + Strings.updaterFile), new File(Strings.updaterFile));
 				} catch (IOException e) {
 					System.out.println("Updating the Updater failed");
 					e.printStackTrace();
@@ -223,7 +224,7 @@ public class SAT extends JFrame{
 				System.out.println("Updating");
 				try {
 					System.out.println("path: " + new File("").getAbsolutePath());
-					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar " + SharedObjs.updaterFile);
+					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar " + Strings.updaterFile);
 					builder.start();
 				} catch (IOException e2) {
 					e2.printStackTrace();
