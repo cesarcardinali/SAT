@@ -32,6 +32,8 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import core.Icons;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -168,7 +170,7 @@ public class AdvancedOptionsPane extends JFrame {
 		btnSet = new JButton("Set");
 		btnSet.setPreferredSize(new Dimension(49, 20));
 		btnSet.setMinimumSize(new Dimension(49, 20));
-		btnSet.setIcon(new ImageIcon("Data\\pics\\Ok.png"));
+		btnSet.setIcon(Icons.ok);
 		btnSet.setMargin(new Insets(2, 2, 2, 2));
 		GridBagConstraints gbc_btnSet = new GridBagConstraints();
 		gbc_btnSet.insets = new Insets(0, 0, 5, 0);

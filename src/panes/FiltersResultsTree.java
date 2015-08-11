@@ -460,7 +460,7 @@ public class FiltersResultsTree extends JTree {
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		
-		alarmResult = Alarm.makelog(SharedObjs.parserPane.getCrPath());
+		alarmResult = Alarm.makelog(SharedObjs.crPath);
 		
 		if(alarmResult.contains("FileNotFoundException")){
 			x = ("Alarms - Error");
@@ -496,7 +496,7 @@ public class FiltersResultsTree extends JTree {
 				}
 			
 			
-			SharedObjs.parserPane.setResult(SharedObjs.parserPane.getResult() + "\n\n\n======================= Alarms Resume =======================\n" + alarmResult);
+			SharedObjs.setResult(SharedObjs.getResult() + "\n\n\n======================= Alarms Resume =======================\n" + alarmResult);
 			
 			x = ("Alarms - Done");
 			selectedNode.setUserObject(x);

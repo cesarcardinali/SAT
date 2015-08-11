@@ -35,6 +35,8 @@ public class SharedObjs {
 	public static final File userCfgFile    = new File(contentFolder + "cfgs/user_cfg.xml");
 	public static final File messageCfgFile = new File(contentFolder + "cfgs/message.xml");
 	public static final File pwdFile = new File(contentFolder + "cfgs/pass.pwd");
+	private static String crPath;
+	
 	public static String toolName;
 	public static String toolVersion;
 	public static String toolFile;
@@ -44,11 +46,12 @@ public class SharedObjs {
 	public static String updateFolder1;
 	public static String updateFolder2;
 	
-	public static ArrayList<CrItem> crsList;
-	public static Semaphore unzipSemaphore;
+	
+	private static ArrayList<CrItem> crsList;
+	private static Semaphore unzipSemaphore;
 
-	public static CustomFiltersList customFiltersList;
-	public static CustomFilters customFiltersPane;
+	private static CustomFiltersList customFiltersList;
+	private static CustomFilters customFiltersPane;
 	
 	public static JTabbedPane tabbedPane;
 	public static ParserPane parserPane;
@@ -62,7 +65,7 @@ public class SharedObjs {
 	 * Initialize class variables
 	 */
 	public static void initClass(){
-		// Load values form XML
+		// Initialize variables
 		toolName = XmlMngr.getSystemValueOf(new String[]{"configs","tool_name"});
 		toolVersion = XmlMngr.getSystemValueOf(new String[]{"configs","tool_version"});
 		toolFile = XmlMngr.getSystemValueOf(new String[]{"configs","tool_file"});
@@ -71,8 +74,8 @@ public class SharedObjs {
 		logsFolder = contentFolder + XmlMngr.getSystemValueOf(new String[]{"configs","logs_folder"});
 		updateFolder1 = XmlMngr.getSystemValueOf(new String[]{"configs","update_path1"});
 		updateFolder2 = XmlMngr.getSystemValueOf(new String[]{"configs","update_path2"});
+		crPath = XmlMngr.getUserValueOf(new String[] {"parser_pane" , "path"});
 		
-		// Initialize variables
 		unzipSemaphore = new Semaphore(1, true);
 		customFiltersList = new CustomFiltersList();
 		customFiltersPane = new CustomFilters();
@@ -123,10 +126,18 @@ public class SharedObjs {
 	/**
 	 * Getters and Setters:
 	 */
+	public static String getCrPath() {
+		return crPath;
+	}
+
+	public static void setCrPath(String crPath) {
+		SharedObjs.crPath = crPath;
+	}
+	
 	public ArrayList<CrItem> getCrsList() {
 		return crsList;
 	}
-	
+
 	public void setCrsList(ArrayList<CrItem> crsList) {
 		SharedObjs.crsList = crsList;
 	}
@@ -151,6 +162,12 @@ public class SharedObjs {
 		SharedObjs.customFiltersPane = customFiltersPane;
 	}
 	
+	// Static General Methods
+	public static void copyScript(File source, File dest)
+			throws IOException {
+		FileUtils.copyFile(source, dest);
+	}
+	
 	public CrItem getCrByJira(String jiraID){
 		for(CrItem aux : crsList){
 			if(aux.getJiraID().equals(jiraID)){
@@ -167,12 +184,5 @@ public class SharedObjs {
 			}
 		}
 		return null;
-	}
-	
-	
-	// Static General Methods
-	public static void copyScript(File source, File dest)
-			throws IOException {
-		FileUtils.copyFile(source, dest);
 	}
 }

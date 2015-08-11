@@ -48,21 +48,11 @@ import filters.Tether;
 import javax.swing.JSplitPane;
 
 
-/**
- * @author cesarc
- *
- */
-/**
- * @author cesarc
- *
- */
 public class ParserPane extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private String crPath;
 	private String result;
-	
 	private JLabel lblTitle;
 	private NonWrappingTextPane textPane;
 	private UndoManager undoManager;
@@ -267,12 +257,7 @@ public class ParserPane extends JPanel {
 			//Pega o nó referente ao option pane
 			Element crs_jira_paneNode = satNode.getChild("parser_pane");
 			for(Element e : crs_jira_paneNode.getChildren()){
-				if(e.getName().equals("path")){
-					crPath = (e.getValue());
-					//selecionar na JTree o último arquivo que estava selecionado
-					//folder.setText(getRootPath());
-					
-				} else if(e.getName().equals("tree_breakdown")){
+				if(e.getName().equals("tree_breakdown")){
 					filtersResultsTree.setToggleClickCount(Integer.parseInt(e.getValue()));
 				}
 			}
@@ -334,15 +319,7 @@ public class ParserPane extends JPanel {
 	public FiltersResultsTree getFiltersResultsTree() {
 		return filtersResultsTree;
 	}
-
-	public String getCrPath() {
-		return crPath;
-	}
-
-	public void setCrPath(String crPath) {
-		this.crPath = crPath;
-	}
-
+/*
 	public void setResult(String result) {
 		this.result = result;
 	}
@@ -353,7 +330,7 @@ public class ParserPane extends JPanel {
 	
 	public String getResult(){
 		return result;
-	}
+	}*/
 	
 	public void setResultsText(String text){
 		textPane.setText(text);

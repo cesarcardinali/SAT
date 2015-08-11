@@ -23,6 +23,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import core.Icons;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
@@ -70,7 +71,7 @@ public class SAT extends JFrame{
 	 */
 	private void initialize() {
 		//Initializing window
-		//setIconImage(Toolkit.getDefaultToolkit().getImage(contentFolder + "/pics/icon.png")); //Andre
+		setIconImage(Icons.iconSat);
 		setTitle(SharedObjs.toolName + " " + SharedObjs.toolVersion);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

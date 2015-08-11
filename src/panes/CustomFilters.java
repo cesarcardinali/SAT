@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
-import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -36,6 +35,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import core.Icons;
 import core.SharedObjs;
 
 import objects.CustomFilterItem;
@@ -208,7 +208,7 @@ public class CustomFilters extends JDialog {
 				}
 			}
 		});
-		btnDel.setIcon(new ImageIcon("Data\\pics\\delete2.png"));
+		btnDel.setIcon(Icons.delete);
 		btnDel.setPreferredSize(new Dimension(25, 25));
 		btnDel.setMargin(new Insets(2, 2, 2, 2));
 		GridBagConstraints gbc_btnDel = new GridBagConstraints();
@@ -254,7 +254,7 @@ public class CustomFilters extends JDialog {
 		});
 		btnAdd.setPreferredSize(new Dimension(25, 25));
 		btnAdd.setMargin(new Insets(2, 2, 2, 2));
-		btnAdd.setIcon(new ImageIcon("Data\\pics\\add2.png"));
+		btnAdd.setIcon(Icons.add);
 		GridBagConstraints gbc_btnAdd = new GridBagConstraints();
 		gbc_btnAdd.insets = new Insets(5, 0, 5, 5);
 		gbc_btnAdd.gridx = 3;
@@ -437,7 +437,7 @@ public class CustomFilters extends JDialog {
 		sharedPane.add(comboBox_1, gbc_comboBox_1);
 		
 		button = new JButton("");
-		button.setIcon(new ImageIcon("Data\\pics\\add2.png"));
+		button.setIcon(Icons.add);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			}
@@ -452,7 +452,7 @@ public class CustomFilters extends JDialog {
 		sharedPane.add(button, gbc_button);
 		
 		button_1 = new JButton("");
-		button_1.setIcon(new ImageIcon("Data\\pics\\delete2.png"));
+		button_1.setIcon(Icons.delete);
 		button_1.setMinimumSize(new Dimension(25, 25));
 		button_1.setPreferredSize(new Dimension(25, 25));
 		button_1.setMargin(new Insets(2, 2, 2, 2));
@@ -590,7 +590,7 @@ public class CustomFilters extends JDialog {
 		activePane.add(comboBox_2, gbc_comboBox_2);
 		
 		button_2 = new JButton("");
-		button_2.setIcon(new ImageIcon("Data\\pics\\add2.png"));
+		button_2.setIcon(Icons.add);
 		button_2.setPreferredSize(new Dimension(25, 25));
 		button_2.setMinimumSize(new Dimension(25, 25));
 		button_2.setMargin(new Insets(2, 2, 2, 2));
@@ -601,7 +601,7 @@ public class CustomFilters extends JDialog {
 		activePane.add(button_2, gbc_button_2);
 		
 		button_3 = new JButton("");
-		button_3.setIcon(new ImageIcon("Data\\pics\\delete2.png"));
+		button_3.setIcon(Icons.delete);
 		button_3.setPreferredSize(new Dimension(25, 25));
 		button_3.setMinimumSize(new Dimension(25, 25));
 		button_3.setMargin(new Insets(2, 2, 2, 2));

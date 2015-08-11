@@ -2,11 +2,17 @@ package panes;
 
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -34,20 +40,11 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import core.SharedObjs;
+import core.Icons;
 
 import supportive.UnZip;
 
 import style.FileTreeNodeRenderer;
-
-import java.awt.GridLayout;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 
 
 @SuppressWarnings("serial")
@@ -97,7 +94,7 @@ public class FileTree extends JPanel{
                     	if(isCrNode(node)){
                     		if(!lastDirectory.equals(node.toString())) {
 	                    		lastDirectory = node.toString();
-	                    		SharedObjs.parserPane.setCrPath(file.getAbsolutePath()+"\\");
+	                    		SharedObjs.setCrPath(file.getAbsolutePath() + "\\");
 	                    		SharedObjs.parserPane.clearPane();
                     		}
 	                    }
@@ -320,8 +317,8 @@ public class FileTree extends JPanel{
     		
     	});
     	
-    	delete.setIcon(new ImageIcon("Data\\pics\\rbin.jpg"));
-    	rename.setIcon(new ImageIcon("Data\\pics\\rename.png"));
+    	delete.setIcon(Icons.recycleBin);
+    	rename.setIcon(Icons.rename);
     	popup.add(open);
     	popup.add(rename);
     	
@@ -499,7 +496,7 @@ public class FileTree extends JPanel{
 	            }    
 	        });
 	        
-	        unzip.setIcon(new ImageIcon("Data\\pics\\zip-512.png"));
+	        unzip.setIcon(Icons.zip);
 	        unzipRun.setIcon(fileSystemView.getSystemIcon(new File ("Data\\scripts\\build_report.pl")));
 	        
 	        popup.add(unzip);
