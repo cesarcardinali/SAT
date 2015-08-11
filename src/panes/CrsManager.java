@@ -74,6 +74,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
+import core.Icons;
 import supportive.CrsCloser;
 import supportive.Encryptation;
 import supportive.UnZip;
@@ -905,7 +906,7 @@ public class CrsManager extends JPanel {
 		JButton btnUpdateAll = new JButton("Click to Update everything");
 		btnUpdateAll.setToolTipText("Update UI information");
 		btnUpdateAll.setPreferredSize(new Dimension(159, 20));
-		btnUpdateAll.setIcon(new ImageIcon("Data\\pics\\Refresh-24.png"));
+		btnUpdateAll.setIcon(Icons.refresh);
 		btnUpdateAll.setFont(new Font("Consolas", Font.BOLD, 12));
 		btnUpdateAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

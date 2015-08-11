@@ -9,6 +9,8 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import core.Icons;
+
 @SuppressWarnings("serial")
 public class LabelTreeNodeRenderer extends DefaultTreeCellRenderer{
 	
@@ -28,66 +30,66 @@ public class LabelTreeNodeRenderer extends DefaultTreeCellRenderer{
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 		
         if (node.isRoot()) {
-            label.setIcon(new ImageIcon("Data\\pics\\root.png"));
+            label.setIcon(Icons.root);
             label.setText(node.toString());
             
         } else if(node.getLevel() == 1) {
 	        	if (node.toString().contains("Alarms")) {
-	        	label.setIcon(new ImageIcon("Data\\pics\\alarm.png"));
+	        	label.setIcon(Icons.alarm);
 	            label.setText(node.toString());
 	            
 	        } else if (node.toString().contains("Bug2Go")) {
-	        	label.setIcon(new ImageIcon("Data\\pics\\bug2go.png"));
+	        	label.setIcon(Icons.bug2go);
 	            label.setText(node.toString());
 	            
 	        } else if (node.toString().contains("High Consumption")) {
-	        	label.setIcon(new ImageIcon("Data\\pics\\consumption.png"));
+	        	label.setIcon(Icons.consumption);
 	            label.setText(node.toString());
 	            
 	        } else if (node.toString().contains("Diag")) {
-	        	label.setIcon(new ImageIcon("Data\\pics\\diag.png"));
+	        	label.setIcon(Icons.diag);
 	            label.setText(node.toString());
 	            
 	        } else if (node.toString().contains("WakeLocks")) {
-	        	label.setIcon(new ImageIcon("Data\\pics\\suspiciouswakelocks.png"));
+	        	label.setIcon(Icons.suspiciousWakelocks);
 	            label.setText(node.toString());
 	            
 	        } else if (node.toString().contains("Summary")) {
-	        	label.setIcon(new ImageIcon("Data\\pics\\summary.png"));
+	        	label.setIcon(Icons.summary);
 	            label.setText(node.toString());
 	            
 	        } else if (node.toString().contains("Suspicious")) {
-	        	label.setIcon(new ImageIcon("Data\\pics\\suspicious.png"));
+	        	label.setIcon(Icons.suspicious);
 	            label.setText(node.toString());
 	            
 	        } else if (node.toString().contains("Tethering")) {
-	        	label.setIcon(new ImageIcon("Data\\pics\\tether.png"));
+	        	label.setIcon(Icons.tether);
 	            label.setText(node.toString());
 	            
 	        } else if (node.toString().equals("On Colors")) {
-	        	label.setIcon(new ImageIcon("Data\\pics\\colors.png"));
+	        	label.setIcon(Icons.colors);
 	            label.setText(node.toString());
 	            
 	        } else {
-	        	label.setIcon(new ImageIcon("Data\\pics\\custom.png"));
+	        	label.setIcon(Icons.newFilter);
 	        	label.setText(node.toString());
 	        }
 	        	
         } else if(node.getLevel() == 2 || node.getLevel() == 3) {
         	if (node.toString().equals("Screen ON")) {
-            	label.setIcon(new ImageIcon("Data\\pics\\on.png"));
+            	label.setIcon(Icons.on);
                 label.setText(node.toString());
                 
             } else if (node.toString().equals("Screen OFF")) {
-            	label.setIcon(new ImageIcon("Data\\pics\\off.png"));
+            	label.setIcon(Icons.off);
                 label.setText(node.toString() + "     "
                 		+ "                  ");
             } else if (node.toString().equals("Full Log")) {
-            	label.setIcon(new ImageIcon("Data\\pics\\onoff.png"));
+            	label.setIcon(Icons.onOff);
                 label.setText(node.toString());
                 
             } else if (node.toString().equals("On Colors")) {
-            	label.setIcon(new ImageIcon("Data\\pics\\colors.png"));
+            	label.setIcon(Icons.colors);
                 label.setText(node.toString());
                 
             } else {

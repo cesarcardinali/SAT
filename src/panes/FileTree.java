@@ -31,6 +31,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import core.Icons;
 import supportive.UnZip;
 import main.SAT;
 import style.FileTreeNodeRenderer;
@@ -322,8 +323,8 @@ public class FileTree extends JPanel{
     		
     	});
     	
-    	delete.setIcon(new ImageIcon("Data\\pics\\rbin.jpg"));
-    	rename.setIcon(new ImageIcon("Data\\pics\\rename.png"));
+    	delete.setIcon(Icons.recycleBin);
+    	rename.setIcon(Icons.rename);
     	popup.add(open);
     	popup.add(rename);
     	
@@ -501,7 +502,7 @@ public class FileTree extends JPanel{
 	            }    
 	        });
 	        
-	        unzip.setIcon(new ImageIcon("Data\\pics\\zip-512.png"));
+	        unzip.setIcon(Icons.zip);
 	        unzipRun.setIcon(fileSystemView.getSystemIcon(new File ("Data\\scripts\\build_report.pl")));
 	        
 	        popup.add(unzip);
