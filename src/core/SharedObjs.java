@@ -3,6 +3,7 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
@@ -18,13 +19,16 @@ import main.SAT;
 
 import objects.CrItem;
 import objects.CustomFiltersList;
+
 import panes.AdvancedOptionsPane;
-import panes.CrsManager;
-import panes.CustomFilters;
+import panes.CrsManagerPane;
+import panes.CustomFiltersPane;
 import panes.ParserPane;
 import panes.OptionsPane;
 
-
+/**
+ * It contains all shared variables used by SAT
+ */
 public class SharedObjs {
 	
 	/**
@@ -36,26 +40,22 @@ public class SharedObjs {
 	public static final File messageCfgFile = new File(contentFolder + "cfgs/message.xml");
 	public static final File pwdFile = new File(contentFolder + "cfgs/pass.pwd");
 	private static String crPath;
+	private static String result;
+	private static String user;
+	private static String pass;
 	
-	public static String toolName;
-	public static String toolVersion;
-	public static String toolFile;
-	public static String updaterFile;
-	public static String picsFolder;
-	public static String logsFolder;
 	public static String updateFolder1;
 	public static String updateFolder2;
-	
 	
 	private static ArrayList<CrItem> crsList;
 	private static Semaphore unzipSemaphore;
 
 	private static CustomFiltersList customFiltersList;
-	private static CustomFilters customFiltersPane;
+	private static CustomFiltersPane customFiltersPane;
 	
 	public static JTabbedPane tabbedPane;
 	public static ParserPane parserPane;
-	public static CrsManager crsManagerPane;
+	public static CrsManagerPane crsManagerPane;
 	public static OptionsPane optionsPane;
 	public static AdvancedOptionsPane advOptions;
 	public static SAT satFrame;
@@ -66,19 +66,13 @@ public class SharedObjs {
 	 */
 	public static void initClass(){
 		// Initialize variables
-		toolName = XmlMngr.getSystemValueOf(new String[]{"configs","tool_name"});
-		toolVersion = XmlMngr.getSystemValueOf(new String[]{"configs","tool_version"});
-		toolFile = XmlMngr.getSystemValueOf(new String[]{"configs","tool_file"});
-		updaterFile = XmlMngr.getSystemValueOf(new String[]{"configs","updater"});
-		picsFolder = contentFolder + XmlMngr.getSystemValueOf(new String[]{"configs","pics_folder"});
-		logsFolder = contentFolder + XmlMngr.getSystemValueOf(new String[]{"configs","logs_folder"});
 		updateFolder1 = XmlMngr.getSystemValueOf(new String[]{"configs","update_path1"});
 		updateFolder2 = XmlMngr.getSystemValueOf(new String[]{"configs","update_path2"});
 		crPath = XmlMngr.getUserValueOf(new String[] {"parser_pane" , "path"});
 		
 		unzipSemaphore = new Semaphore(1, true);
 		customFiltersList = new CustomFiltersList();
-		customFiltersPane = new CustomFilters();
+		customFiltersPane = new CustomFiltersPane();
 		customFiltersPane.loadFilters();
 		crsList = new ArrayList<CrItem>();
 		
@@ -92,7 +86,7 @@ public class SharedObjs {
 		
 		// Create Panes
 		parserPane = new ParserPane();
-		crsManagerPane = new CrsManager();
+		crsManagerPane = new CrsManagerPane();
 		optionsPane = new OptionsPane();
 		advOptions = new AdvancedOptionsPane();
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -116,56 +110,39 @@ public class SharedObjs {
 	 * If any of them does not exist, create it.
 	 */
 	public void checkFolder(){
-		
+		// TODO
 	}
 	
-	
-	
-	
-	
 	/**
-	 * Getters and Setters:
+	 * Getters and Setter
 	 */
+	// Getters:
+	public static String getUser() {
+		return user;
+	}
+
+	public static String getPass() {
+		return pass;
+	}
+
 	public static String getCrPath() {
 		return crPath;
 	}
 
-	public static void setCrPath(String crPath) {
-		SharedObjs.crPath = crPath;
+	public static String getResult() {
+		return result;
+	}
+	
+	public static CustomFiltersList getCustomFiltersList() {
+		return customFiltersList;
+	}
+	
+	public static CustomFiltersPane getCustomFiltersPane() {
+		return customFiltersPane;
 	}
 	
 	public ArrayList<CrItem> getCrsList() {
 		return crsList;
-	}
-
-	public void setCrsList(ArrayList<CrItem> crsList) {
-		SharedObjs.crsList = crsList;
-	}
-	
-	public Semaphore getUnzipSemaphore() {
-		return unzipSemaphore;
-	}
-	
-	public CustomFiltersList getCustomFiltersList() {
-		return customFiltersList;
-	}
-	
-	public CustomFilters getCustomFiltersPane() {
-		return customFiltersPane;
-	}
-	
-	public void setCustomFiltersList(CustomFiltersList customFiltersList) {
-		SharedObjs.customFiltersList = customFiltersList;
-	}
-	
-	public void setCustomFiltersPane(CustomFilters customFiltersPane) {
-		SharedObjs.customFiltersPane = customFiltersPane;
-	}
-	
-	// Static General Methods
-	public static void copyScript(File source, File dest)
-			throws IOException {
-		FileUtils.copyFile(source, dest);
 	}
 	
 	public CrItem getCrByJira(String jiraID){
@@ -184,5 +161,48 @@ public class SharedObjs {
 			}
 		}
 		return null;
+	}
+	
+	// Setters:
+	public static void setUser(String user) {
+		SharedObjs.user = user;
+	}
+
+	public static void setPass(String pass) {
+		SharedObjs.pass = pass;
+	}
+	
+	public static void setResult(String result) {
+		SharedObjs.result = result;
+	}
+
+	public static void setCrPath(String crPath) {
+		SharedObjs.crPath = crPath;
+	}
+	
+	public void setCrsList(ArrayList<CrItem> crsList) {
+		SharedObjs.crsList = crsList;
+	}
+	
+	public void setCustomFiltersList(CustomFiltersList customFiltersList) {
+		SharedObjs.customFiltersList = customFiltersList;
+	}
+	
+	public void setCustomFiltersPane(CustomFiltersPane customFiltersPane) {
+		SharedObjs.customFiltersPane = customFiltersPane;
+	}
+	
+	// Static General Methods
+	public static void copyScript(File source, File dest)
+			throws IOException {
+		FileUtils.copyFile(source, dest);
+	}
+
+	public static void acquireSemaphore() throws InterruptedException {
+		unzipSemaphore.acquire();
+	}
+	
+	public static void releaseSemaphore() throws InterruptedException {
+		unzipSemaphore.release();
 	}
 }

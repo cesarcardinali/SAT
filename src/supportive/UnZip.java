@@ -69,7 +69,7 @@ public class UnZip implements Runnable{
 				try {
 					SharedObjs.crsManagerPane.addLogLine("Unzipping file to " + fileName);
 					unZipIt(file, outputFolder);
-					SharedObjs.unzipSemaphore.release();
+					SharedObjs.releaseSemaphore();
 					
 					String sCurrentLine;
 					BufferedReader br = null;
@@ -152,7 +152,7 @@ public class UnZip implements Runnable{
 			        
 			        SharedObjs.crsManagerPane.addLogLine("Finished unzipping and running Bulid_report.pl of " + fileName);
 					
-				} catch (IOException e) {
+				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
 								
@@ -203,7 +203,7 @@ public class UnZip implements Runnable{
 				try {
 					SharedObjs.crsManagerPane.addLogLine("Unzipping file to " + fileName);
 					unZipIt(file, outputFolder);
-					SharedObjs.unzipSemaphore.release();
+					SharedObjs.releaseSemaphore();
 					
 					String sCurrentLine;
 					BufferedReader br = null;
@@ -286,7 +286,7 @@ public class UnZip implements Runnable{
 			        
 			        SharedObjs.crsManagerPane.addLogLine("Finished unzipping and running Bulid_report.pl of " + fileName);
 					
-				} catch (IOException e) {
+				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
 				

@@ -34,6 +34,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import core.SharedObjs;
 import supportive.NonWrappingTextPane;
 
 import filters.Alarm;
@@ -52,13 +53,12 @@ public class ParserPane extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private String result;
 	private JLabel lblTitle;
-	private NonWrappingTextPane textPane;
 	private UndoManager undoManager;
 	private JSplitPane splitPane;
 	private FileTree fileTree;
 	private FiltersResultsTree filtersResultsTree;
+	private NonWrappingTextPane resultTxtPane;
 
 	/**
 	 * Create the panel.
@@ -144,24 +144,24 @@ public class ParserPane extends JPanel {
 		gbc_scrollPane.gridy = 1;
 		add(scrollPane, gbc_scrollPane);
 		
-		textPane = new NonWrappingTextPane();
-		textPane.setToolTipText("Result of the selected parser item on the left");
-		textPane.setContentType("text/plain");
-		textPane.setMargin(new Insets(7, 2, 7, 2));
-		textPane.setForeground(new Color(0, 0, 0));
-		textPane.setFont(new Font("Consolas", Font.PLAIN, 11));
-		textPane.setText("");
+		resultTxtPane = new NonWrappingTextPane();
+		resultTxtPane.setToolTipText("Result of the selected parser item on the left");
+		resultTxtPane.setContentType("text/plain");
+		resultTxtPane.setMargin(new Insets(7, 2, 7, 2));
+		resultTxtPane.setForeground(new Color(0, 0, 0));
+		resultTxtPane.setFont(new Font("Consolas", Font.PLAIN, 11));
+		resultTxtPane.setText("");
 		undoManager = new UndoManager();
-		textPane.getDocument().addUndoableEditListener(new UndoableEditListener() {
+		resultTxtPane.getDocument().addUndoableEditListener(new UndoableEditListener() {
 			@Override
 			public void undoableEditHappened(UndoableEditEvent e) {
 				undoManager.addEdit(e.getEdit());
 			}
 		});
-		textPane.addKeyListener(new KeyListener() {
+		resultTxtPane.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				saveTextChanges(filtersResultsTree.getLastSelectedPathComponent(), textPane.getText());
+				saveTextChanges(filtersResultsTree.getLastSelectedPathComponent(), resultTxtPane.getText());
 			}
 
 			@Override
@@ -171,7 +171,7 @@ public class ParserPane extends JPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
-					// textPane.setText("woot!");
+					// resultTxtPane.setText("woot!");
 					try {
 						undoManager.undo();
 					} catch (CannotRedoException cre) {
@@ -180,18 +180,14 @@ public class ParserPane extends JPanel {
 				}
 			}
 		});
-		scrollPane.setViewportView(textPane);
+		scrollPane.setViewportView(resultTxtPane);
 		
-		result = "";
-		textPane.setText("");
+		SharedObjs.setResult("");
+		resultTxtPane.setText("");
 		lblTitle.setText("Run a parser or select a result on the left");
 		loadPaneData();
 	}
 	
-	
-	
-	
-	// Supportive methods
 	/**
 	 *  Save pane data
 	 */
@@ -228,7 +224,7 @@ public class ParserPane extends JPanel {
 	        //xmlOutputter.output(doc, System.out);
 	        xmlOutputter.output(document, new FileOutputStream(xmlFile));
 	        
-			System.out.println("Options Saved");
+			System.out.println("ParserPane data saved");
 		} catch (JDOMException | IOException e){
 			e.printStackTrace();
 		}
@@ -307,11 +303,19 @@ public class ParserPane extends JPanel {
 	/**
 	 * Reset pane UI to initial state
 	 */
-	public void clearPane(){
+	public void clearPane() {
 		filtersResultsTree.clearTree();
-		textPane.setText(""); 	//reset the text pane
-		result = ""; 			//reset the result for the filters
+		resultTxtPane.setText(""); 		//reset the text pane
+		SharedObjs.setResult("");	//reset the result for the filters
 		lblTitle.setText("Run a parser or select a result on the left");	//reset the text in the title
+	}
+	
+	/**
+	 * Show all log results on the results pane
+	 */
+	public void showAllLogResults(){
+		resultTxtPane.setText(SharedObjs.getResult());
+		lblTitle.setText("All Results:");
 	}
 
 
@@ -319,29 +323,17 @@ public class ParserPane extends JPanel {
 	public FiltersResultsTree getFiltersResultsTree() {
 		return filtersResultsTree;
 	}
-/*
-	public void setResult(String result) {
-		this.result = result;
+	
+	public void setResultsPaneTxt(String text){
+		resultTxtPane.setText(text);
+		resultTxtPane.setCaretPosition(0);
 	}
 	
-	public void showAllResults() {
-		textPane.setText("Results Compilation:" + result);
-	}
-	
-	public String getResult(){
-		return result;
-	}*/
-	
-	public void setResultsText(String text){
-		textPane.setText(text);
-		textPane.setCaretPosition(0);
+	public NonWrappingTextPane getResultsTxtPane(){
+		return resultTxtPane;
 	}
 	
 	public void setTitle(String text){
 		lblTitle.setText(text);
-	}
-	
-	public NonWrappingTextPane getTextPane(){
-		return textPane;
 	}
 }

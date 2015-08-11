@@ -52,8 +52,8 @@ public class CrsCloser implements Runnable {
 				
 				profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
 				driver = new FirefoxDriver(profile);
-				user = SharedObjs.crsManagerPane.getUserData()[0];
-				pass = SharedObjs.crsManagerPane.getUserData()[1];
+				user = SharedObjs.getUser();
+				pass = SharedObjs.getPass();
 		
 				// Open up a browser
 				System.out.println("Starting browser");

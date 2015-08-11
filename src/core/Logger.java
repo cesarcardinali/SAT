@@ -6,13 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 
-/**
- * @author cesarc
- *
- */
-/**
- * @author cesarc
- *
+/*
+ * This class is responsible for all Log features
  */
 public class Logger {
 	
@@ -22,6 +17,7 @@ public class Logger {
 	private static File logFile;
 	private static BufferedWriter logWriter;
 	private static boolean logCreated;
+	private static boolean debugMode;
 	
 	public static final String TAG_SAT = "SAT";
 	public static final String TAG_PARSER = "PARSER";
@@ -32,34 +28,41 @@ public class Logger {
 	 * Initialize class variables
 	 */
 	public static void initClass(){
-		// Generate log file
-		if (new File(SharedObjs.logsFolder).exists())
-		{
-			logFile = new File(SharedObjs.logsFolder + "log_"
-					+ new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
-					+ ".log");
-			System.out.println("Logs folder exists");
-		} 
-		else
-		{
-			new File(SharedObjs.logsFolder).mkdirs();
-			logFile = new File(SharedObjs.logsFolder + "log_"
-					+ new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
-					+ ".log");
-			System.out.println("Logs folder created");
-		}
+		// Read debug mode on/off
+		debugMode = Boolean.getBoolean(XmlMngr.getSystemValueOf(new String [] {"configs","debug_mode"}));
 		
-		// Start log writer
-		try
-		{
-			logCreated = true;
-			logWriter = new BufferedWriter(new FileWriter(logFile));
-		} 
-		catch (IOException e1)
-		{
+		if(debugMode){
+			// Generate log file
+			if (new File(Strings.getLogsFolder()).exists())
+			{
+				logFile = new File(Strings.getLogsFolder() + "log_"
+						+ new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
+						+ ".log");
+				System.out.println("Logs folder exists");
+			} 
+			else
+			{
+				new File(Strings.getLogsFolder()).mkdirs();
+				logFile = new File(Strings.getLogsFolder() + "log_"
+						+ new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
+						+ ".log");
+				System.out.println("Logs folder created");
+			}
+			
+			// Start log writer
+			try
+			{
+				logCreated = true;
+				logWriter = new BufferedWriter(new FileWriter(logFile));
+			} 
+			catch (IOException e1)
+			{
+				logCreated = false;
+				System.out.println("Log file could not be created");
+				e1.printStackTrace();
+			}
+		} else {
 			logCreated = false;
-			System.out.println("Log file could not be created");
-			e1.printStackTrace();
 		}
 	}
 	

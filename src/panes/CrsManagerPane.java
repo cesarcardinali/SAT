@@ -79,7 +79,7 @@ import supportive.UnZip;
 import supportive.DiagCrsCloser;
 
 
-public class CrsManager extends JPanel {
+public class CrsManagerPane extends JPanel {
 
 	private static final long serialVersionUID = -1072184113058141060L;
 	
@@ -105,7 +105,6 @@ public class CrsManager extends JPanel {
 	
 	private WebDriver driver;
 	private FirefoxProfile profile;
-	private String user, pass;
 	private String CRs[];
 	private String b2glink = "";
 	private String actualCR = "";
@@ -118,7 +117,7 @@ public class CrsManager extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public CrsManager() {
+	public CrsManagerPane() {
 		setPreferredSize(new Dimension(632, 765));
 		setMinimumSize(new Dimension(600, 950));
 		
@@ -871,7 +870,7 @@ public class CrsManager extends JPanel {
 								"A message alerting you that the process is complete will be showed here.\n");
 						for(Object s : aux){
 							try {
-								SharedObjs.unzipSemaphore.acquire();
+								SharedObjs.acquireSemaphore();
 								System.out.println("Sending file: " + getRootPath() + s);
 								//new Thread(new UnZip(getRootPath() + s, BaseWindow)).start();
 								//UnZip unzipper = new UnZip(getRootPath() + s, BaseWindow);*
@@ -1044,8 +1043,8 @@ public class CrsManager extends JPanel {
 	private boolean jiraLogin(){
 		if(driver.getTitle().contains("Log")){
 			//System.out.println("Trying to Log in");
-			driver.findElement(By.name("os_username")).sendKeys(user);		
-			driver.findElement(By.name("os_password")).sendKeys(pass);
+			driver.findElement(By.name("os_username")).sendKeys(SharedObjs.getUser());		
+			driver.findElement(By.name("os_password")).sendKeys(SharedObjs.getPass());
 			driver.findElement(By.name("os_cookie")).click();
 			driver.findElement(By.name("login")).click();
 			//sleep(1500);
@@ -1069,7 +1068,7 @@ public class CrsManager extends JPanel {
 			driver.findElement(By.className("issueaction-assign-to-me")).click();
 			System.out.println("Done.");
 			int error = 0;
-			while(!driver.getPageSource().contains("<span class=\"user-hover\" id=\"issue_summary_assignee_" + user + " rel=\"")){
+			while(!driver.getPageSource().contains("<span class=\"user-hover\" id=\"issue_summary_assignee_" + SharedObjs.getUser() + " rel=\"")){
 				error++;
 				System.out.println("Not assignned yet. Retrying");
 				sleep(750);
@@ -1140,8 +1139,8 @@ public class CrsManager extends JPanel {
 			
 			while(driver.getTitle().contains("MOTOROLA")){
 				System.out.println("Login to Bug2Go");
-				driver.findElement(By.id("username")).sendKeys(user);		
-				driver.findElement(By.id("password")).sendKeys(pass);
+				driver.findElement(By.id("username")).sendKeys(SharedObjs.getUser());		
+				driver.findElement(By.id("password")).sendKeys(SharedObjs.getPass());
 				driver.findElement(By.className("input_submit")).click();
 				sleep(1000);
 			}
@@ -1167,8 +1166,8 @@ public class CrsManager extends JPanel {
 		sleep(2500);
 		while(driver.getTitle().contains("MOTOROLA")){
 			System.out.println("Login to Bug2Go");
-			driver.findElement(By.id("username")).sendKeys(user);		
-			driver.findElement(By.id("password")).sendKeys(pass);
+			driver.findElement(By.id("username")).sendKeys(SharedObjs.getUser());		
+			driver.findElement(By.id("password")).sendKeys(SharedObjs.getPass());
 			driver.findElement(By.className("input_submit")).click();
 			sleep(1000);
 		}
@@ -1461,8 +1460,8 @@ public class CrsManager extends JPanel {
 	 *  Aux functions ------------------------------------------------------------------------------------------------
 	 */
 	private void updateUserdata(){
-		user = textUsername.getText();
-		pass = String.copyValueOf(textPassword.getPassword());
+		SharedObjs.setUser(textUsername.getText());
+		SharedObjs.setPass(String.copyValueOf(textPassword.getPassword()));
 	}
 	
 	private void sleep(int millis){
@@ -1503,7 +1502,7 @@ public class CrsManager extends JPanel {
 		xmlPath[1] = "label";
 		XmlMngr.setUserValueOf(xmlPath, chckbxLabels.isSelected() + "");
         
-		System.out.println("CrsManager variables Saved");
+		System.out.println("CrsManagerPane data saved");
 	}
 	
 	private void loadUserData(){
@@ -1539,7 +1538,7 @@ public class CrsManager extends JPanel {
 		xmlPath[1] = "label";
 		chckbxLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 			
-		System.out.println("CrsManager variables Loaded");
+		System.out.println("CrsManagerPane variables Loaded");
 	}
 	
 	
@@ -1659,11 +1658,6 @@ public class CrsManager extends JPanel {
 	/**
 	 * Getters -------------------------------------------------------------------------------------------------------
 	 */
-	public String[] getUserData() {
-		updateUserdata();
-		return new String[] {user, pass};
-	}	
-	
 	public HashMap<String, String> getB2g_crid() {
 		return b2g_crid;
 	}

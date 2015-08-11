@@ -679,9 +679,9 @@ public class OptionsPane extends JPanel {
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
 				if (arg0.getStateChange() == ItemEvent.SELECTED)
-					SharedObjs.parserPane.getTextPane().setWrapText(true);
+					SharedObjs.parserPane.getResultsTxtPane().setWrapText(true);
 				else
-					SharedObjs.parserPane.getTextPane().setWrapText(false);
+					SharedObjs.parserPane.getResultsTxtPane().setWrapText(false);
 			}
 		});
 		GridBagConstraints gbc_chkTextWrap = new GridBagConstraints();
@@ -759,7 +759,7 @@ public class OptionsPane extends JPanel {
 		btnManageFilters = new JButton("Manage filters");
 		btnManageFilters.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SharedObjs.customFiltersPane.open();
+				SharedObjs.getCustomFiltersPane().open();
 			}
 		});
 		panel_5.add(btnManageFilters);
@@ -1020,7 +1020,7 @@ public class OptionsPane extends JPanel {
         //xmlOutputter.output(doc, System.out);
         xmlOutputter.output(document, new FileOutputStream(xmlFile));
         
-		System.out.println("Options Saved");
+		System.out.println("OptionsPane data saved");
 	}
 	
 	

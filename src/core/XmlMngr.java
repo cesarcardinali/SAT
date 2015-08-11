@@ -1,5 +1,6 @@
 package core;
 
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +12,10 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+
+/**
+ * It deals with all XML features
+ */
 public class XmlMngr {
 
 	/**
@@ -102,7 +107,6 @@ public class XmlMngr {
 	 */
 	public static String getMessageValueOf(String path[]) {
 		Element requestedElement = messageDocument.getRootElement();
-		getMessageValueOf(path);
 		for(String item : path){
 			requestedElement = requestedElement.getChild(item);
 		}

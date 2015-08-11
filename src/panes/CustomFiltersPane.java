@@ -42,74 +42,74 @@ import objects.CustomFilterItem;
 import objects.CustomFiltersList;;
 
 
-public class CustomFilters extends JDialog {
+@SuppressWarnings("serial")
+public class CustomFiltersPane extends JDialog {
 	
-	private static final long serialVersionUID = 4568861765364938399L;
 	private JTextField txtName;
 	private JTextField txtRegex;
 	private JTextField txtHeader;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private JTextField textField_3;
+	private JTextField textField_4;
+	private JTextField textField_5;
 	private JCheckBox chckbxRadio;
 	private JCheckBox chckbxSystem;
 	private JCheckBox chckbxBugreport;
 	private JCheckBox chckbxMain;
-	private JButton btnAdd;
-	private JComboBox<String> comboBox;
-	private JButton btnDel;
 	private JCheckBox chckbxKernel;
 	private JCheckBox chckbxRoutput;
-	private JTabbedPane tabbedPane;
-	private JPanel myFiltersPane;
-	private JLabel lblShared;
 	private JCheckBox chckbxShared;
-	private JButton btnDone;
-	private JPanel sharedPane;
-	private JLabel label;
-	private JComboBox<String> comboBox_1;
-	private JButton button;
-	private JButton button_1;
-	private JLabel label_1;
-	private JLabel label_2;
-	private JLabel label_3;
-	private JLabel label_5;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JPanel panel;
+	private JCheckBox chckbxPublic;
 	private JCheckBox checkBox_2;
 	private JCheckBox checkBox_3;
 	private JCheckBox checkBox_4;
 	private JCheckBox checkBox_5;
 	private JCheckBox checkBox_6;
 	private JCheckBox checkBox_7;
-	private JPanel activePane;
-	private JLabel label_6;
-	private JComboBox<String> comboBox_2;
-	private JButton button_2;
-	private JButton button_3;
-	private JLabel label_7;
-	private JTextField textField_3;
-	private JLabel label_8;
-	private JTextField textField_4;
-	private JLabel label_9;
-	private JTextField textField_5;
-	private JLabel label_10;
-	private JPanel panel_2;
 	private JCheckBox checkBox_8;
 	private JCheckBox checkBox_9;
 	private JCheckBox checkBox_10;
 	private JCheckBox checkBox_11;
 	private JCheckBox checkBox_12;
 	private JCheckBox checkBox_13;
-	private JLabel label_11;
 	private JCheckBox checkBox_14;
-	private JLabel lblPublic;
-	private JCheckBox chckbxPublic;
+	private JButton btnDone;
+	private JButton btnAdd;
+	private JButton btnDel;
 	private JButton btnNew;
-	private CustomFiltersList filtersList; 
+	private JButton button;
+	private JButton button_1;
+	private JButton button_2;
+	private JButton button_3;
+	private JComboBox<String> comboBox;
+	private JComboBox<String> comboBox_1;
+	private JComboBox<String> comboBox_2;
+	private JTabbedPane tabbedPane;
+	private JPanel myFiltersPane;
+	private JPanel sharedPane;
+	private JPanel activePane;
+	private JPanel panel;
+	private JPanel panel_2;
+	private JLabel lblShared;
+	private JLabel lblPublic;
+	private JLabel label;
+	private JLabel label_1;
+	private JLabel label_2;
+	private JLabel label_3;
+	private JLabel label_5;
+	private JLabel label_6;
+	private JLabel label_7;
+	private JLabel label_8;
+	private JLabel label_9;
+	private JLabel label_10;
+	private JLabel label_11;
 	
-
+	private CustomFiltersList filtersList;
+	
 	// Create the dialog.
-	public CustomFilters() {
+	public CustomFiltersPane() {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		setVisible(false);
@@ -158,7 +158,7 @@ public class CustomFilters extends JDialog {
 		comboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				filtersList = SharedObjs.customFiltersList;
+				filtersList = SharedObjs.getCustomFiltersList();
 				String aux = (String) comboBox.getSelectedItem();
 				
 				for(CustomFilterItem item : filtersList){
@@ -191,7 +191,7 @@ public class CustomFilters extends JDialog {
 		btnDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(comboBox.getSelectedIndex() >= 0){
-					filtersList = SharedObjs.customFiltersList;
+					filtersList = SharedObjs.getCustomFiltersList();
 					CustomFilterItem aux = null;
 					for(CustomFilterItem item : filtersList){
 						if(comboBox.getSelectedItem().equals(item.getName())){
@@ -222,7 +222,7 @@ public class CustomFilters extends JDialog {
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!txtName.getText().equals("") && Character.isDigit(txtName.getText().toCharArray()[0])){
-					JOptionPane.showMessageDialog(SharedObjs.customFiltersPane, "The filter name cannot begin with a digit nor be empty.");
+					JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(), "The filter name cannot begin with a digit nor be empty.");
 					
 				} else if(!txtName.getText().equals("")){
 					CustomFilterItem auxItem = new CustomFilterItem(SharedObjs.satFrame, chckbxPublic.isSelected() ? " " : SharedObjs.crsManagerPane.getTextUsername().getText(),
@@ -231,23 +231,23 @@ public class CustomFilters extends JDialog {
 							chckbxBugreport.isSelected(), chckbxRoutput.isSelected(),
 							chckbxShared.isSelected(), chckbxPublic.isSelected());
 					
-					filtersList = SharedObjs.customFiltersList;
+					filtersList = SharedObjs.getCustomFiltersList();
 					int index = filtersList.indexOf(auxItem.getName());
 					
 					if(index >= 0){
-						int answ = JOptionPane.showConfirmDialog(SharedObjs.customFiltersPane, "There is another filter using this name.\nDo you want to overwrite this filter?.");
+						int answ = JOptionPane.showConfirmDialog(SharedObjs.getCustomFiltersPane(), "There is another filter using this name.\nDo you want to overwrite this filter?.");
 						if (answ == 0) {
 							filtersList.remove(index);
 							filtersList.add(auxItem);
 						}
 					} else {
-						SharedObjs.customFiltersList.add(auxItem);
+						SharedObjs.getCustomFiltersList().add(auxItem);
 						comboBox.insertItemAt(txtName.getText(), comboBox.getItemCount());
 						SharedObjs.parserPane.getFiltersResultsTree().addCustomFilters(txtName.getText());
 					}
 					clearfields();
 				} else {
-					JOptionPane.showMessageDialog(SharedObjs.customFiltersPane, "The filter name can not be empty.");
+					JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(), "The filter name can not be empty.");
 				}
 				
 			}
@@ -744,7 +744,7 @@ public class CustomFilters extends JDialog {
 		try{
 			File xmlFile = new File("Data/cfgs/user_cfg.xml");
 			
-			filtersList = SharedObjs.customFiltersList;
+			filtersList = SharedObjs.getCustomFiltersList();
 			
 			SAXBuilder builder = new SAXBuilder();
 			
@@ -778,7 +778,7 @@ public class CustomFilters extends JDialog {
 		try{
 			File xmlFile = new File("Data/cfgs/user_cfg.xml");
 			
-			filtersList = SharedObjs.customFiltersList;
+			filtersList = SharedObjs.getCustomFiltersList();
 			
 			SAXBuilder builder = new SAXBuilder();
 			

@@ -10,7 +10,6 @@ import javax.swing.ImageIcon;
  * It centralizes all icons used by SAT
  */
 public class Icons {
-	
 	//Result tree icons
 	public static ImageIcon alarm = new ImageIcon("Data\\pics\\alarm.png");
 	public static ImageIcon bug2go = new ImageIcon("Data\\pics\\bug2go.png");
@@ -35,7 +34,7 @@ public class Icons {
 	public static ImageIcon remove = new ImageIcon("Data\\pics\\remove.png");
 	public static ImageIcon delete = new ImageIcon("Data\\pics\\delete.png");
 	public static ImageIcon icon = new ImageIcon("Data\\pics\\icon.png");
-	public static Image iconSat = Toolkit.getDefaultToolkit().getImage("C:\\Users\\cesar.cardinali\\Pictures\\img.jpg");
+	public static Image iconSat = Toolkit.getDefaultToolkit().getImage("Data\\pics\\icon.png");
 	public static ImageIcon off = new ImageIcon("Data\\pics\\off.png");
 	public static ImageIcon ok = new ImageIcon("Data\\pics\\.png");
 	public static ImageIcon on = new ImageIcon("Data\\pics\\.png");
