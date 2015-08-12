@@ -39,7 +39,6 @@ public class DiagCrsCloser implements Runnable {
 	private static HashMap<String, String> b2gs_results;
 	private static ClosingDiagDialog dialog;
 	private static HashMap<String, String> b2g_crid;
-	private final static String TAG = "DIAG_CLOSER";
 
 	
 	public DiagCrsCloser(ClosingDiagDialog dialog){
@@ -51,8 +50,7 @@ public class DiagCrsCloser implements Runnable {
 		
 		String path = SharedObjs.crsManagerPane.getRootPath();
 		HashMap<String, String> b2g_analyzed = SharedObjs.crsManagerPane.getB2g_analyzed();
-		System.out.println("Path: " + path);
-		Logger.log(TAG, "Path: " + path);
+		Logger.log(Logger.TAG_DIAGCRSCLOSER, "Path: " + path);
 		String sCurrentLine, result, crPath;
 		BufferedReader br = null;
 		
@@ -75,7 +73,7 @@ public class DiagCrsCloser implements Runnable {
 					file = path + listOfFiles[i].getName();
 					crPath = file.substring(0, file.length() - 28);
 					b2gID = listOfFiles[i].getName().substring(0, listOfFiles[i].getName().length() - 28);
-					System.out.println("---------------------\nFile to unzip: " + file + "\nOutput folder: " + crPath + "\nB2Gid: " + b2gID + "\nUnzipping:");
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "---------------------\nFile to unzip: " + file + "\nOutput folder: " + crPath + "\nB2Gid: " + b2gID + "\nUnzipping:");
 					UnZip.unZipIt(file, crPath);
 					
 					result = "DIAG_WS wakelock issue:\n" + "{panel}\n";
@@ -86,11 +84,11 @@ public class DiagCrsCloser implements Runnable {
 					// Look for the file
 					File crFolder = new File(crPath);
 					File[] crListOfFiles = crFolder.listFiles();
-					System.out.println("Folder to look for files: " + crFolder);
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Folder to look for files: " + crFolder);
 					for (int a = 0; a < crListOfFiles.length; a++) {
 						if (crListOfFiles[a].isFile()) {
 							String files = crListOfFiles[a].getName();
-							//System.out.println("Actual file: " + files);
+							//Logger.log(Logger.TAG_DIAGCRSCLOSER, "Actual file: " + files);
 							if (files.toLowerCase().endsWith(".txt") && (files.contains("bugreport"))) {
 								bugreport = crPath + "\\" + files;
 							} else if (files.toLowerCase().endsWith(".txt") && (files.contains("report_info"))) {
@@ -134,8 +132,7 @@ public class DiagCrsCloser implements Runnable {
 							if (sCurrentLine.contains("Kernel Wake lock DIAG_"))
 							{
 								int index = sCurrentLine.indexOf("h ");
-								System.out.println("Index: " + index);
-								Logger.log(TAG, "Index: " + index);
+								Logger.log(Logger.TAG_DIAGCRSCLOSER, "Index: " + index);
 								if(index > 0)
 									result = result + sCurrentLine + "\n";
 							} else {
@@ -143,8 +140,7 @@ public class DiagCrsCloser implements Runnable {
 								if (sCurrentLine.contains("Kernel Wake lock DIAG_"))
 								{
 									int index = sCurrentLine.indexOf("h ");
-									System.out.println("Index: " + index);
-									Logger.log(TAG, "Index: " + index);
+									Logger.log(Logger.TAG_DIAGCRSCLOSER, "Index: " + index);
 									if(index > 0)
 										result = result + sCurrentLine + "\n";
 								}
@@ -164,8 +160,7 @@ public class DiagCrsCloser implements Runnable {
 								String parts[] = line.split("\t\t|\t");
 								
 								for(String s : parts){
-									System.out.println("Part:  " + s);
-									Logger.log(TAG, "Part:  " + s);
+									Logger.log(Logger.TAG_DIAGCRSCLOSER, "Part:  " + s);
 								}
 								
 								diagMs = Long.parseLong(parts[6]);
@@ -239,8 +234,7 @@ public class DiagCrsCloser implements Runnable {
 						if(result.contains("Following logs")){
 							unknownCRs.add(b2gID);
 							b2g_analyzed.put(b2gID, "Not Diag");
-							System.out.println("\n\nNo DIAG_WS detected! \n");
-							Logger.log(TAG, "\n\nNo DIAG_WS detected! \n");
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, "\n\nNo DIAG_WS detected! \n");
 						} else if(result.toLowerCase().contains("duplicate")){
 							diagCRs.add(b2gID);
 							b2gs_results.put(b2gID, result);
@@ -251,11 +245,9 @@ public class DiagCrsCloser implements Runnable {
 					} else {
 						unknownCRs.add(b2gID);
 						b2g_analyzed.put(b2gID, "Not Diag");
-						System.out.println("\n\nNo DIAG_WS detected! \n");
-						Logger.log(TAG, "\n\nNo DIAG_WS detected! \n");
+						Logger.log(Logger.TAG_DIAGCRSCLOSER, "\n\nNo DIAG_WS detected! \n");
 					}
-					System.out.println("\n\nResult:\n" + result + "\n");
-					Logger.log(TAG, "\n\nResult:\n" + result + "\n");
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "\n\nResult:\n" + result + "\n");
 				} catch (FileNotFoundException e){
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -271,18 +263,14 @@ public class DiagCrsCloser implements Runnable {
 			}
 		}
 
-		System.out.println("\n------- CRs nao diag -------");
-		Logger.log(TAG, "\n------- CRs nao diag -------");
+		Logger.log(Logger.TAG_DIAGCRSCLOSER, "\n------- CRs nao diag -------");
 		for(String s : unknownCRs){
-			System.out.println(s);
-			Logger.log(TAG, s);
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, s);
 		}
 		
-		System.out.println("\n------- CRs Diag -------");
-		Logger.log(TAG, "\n------- CRs Diag -------");
+		Logger.log(Logger.TAG_DIAGCRSCLOSER, "\n------- CRs Diag -------");
 		for(String s : diagCRs){
-			System.out.println(s);
-			Logger.log(TAG, s);
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, s);
 		}
 		
 	}
@@ -302,8 +290,7 @@ public class DiagCrsCloser implements Runnable {
 				JOptionPane.QUESTION_MESSAGE, null, options,
 				options[1]);
 		
-		System.out.println("Resposta: " + n);
-		Logger.log(TAG, "Resposta: " + n);
+		Logger.log(Logger.TAG_DIAGCRSCLOSER, "Resposta: " + n);
 		
 		if(n == 0){
 			try{
@@ -313,15 +300,14 @@ public class DiagCrsCloser implements Runnable {
 				String user, pass;
 				
 				//Configuring Firefox
-				System.out.println("Generating Firefox profile");
-				Logger.log(TAG, "Generating Firefox profile");
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Generating Firefox profile");
 				profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
 				driver = new FirefoxDriver(profile);
 				user = SharedObjs.getUser();
 				pass = SharedObjs.getPass();
 		
 				// Open up a browser
-				System.out.println("Starting browser");
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Starting browser");
 				driver.navigate().to("http://google.com");
 				
 				Object[] option = { "Yes", "No" };
@@ -338,13 +324,14 @@ public class DiagCrsCloser implements Runnable {
 						break;
 					
 					//Open CR page
-					System.out.println("Opening CR page");
-					System.out.println("CR: " + b2g_crid.get(diagCRs.get(i)));
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Opening CR page");
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR: " + b2g_crid.get(diagCRs.get(i)));
 					driver.navigate().to("http://idart.mot.com/browse/" + b2g_crid.get(diagCRs.get(i)));
 					
 					//Jira Login
 					while(driver.getTitle().contains("Log")){
-						System.out.println("Trying to Log in");
+						Logger.log(Logger.TAG_DIAGCRSCLOSER, "Trying to Log in");
+						Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR: " + "Trying to Log in");
 						driver.findElement(By.name("os_username")).sendKeys(user);		
 						driver.findElement(By.name("os_password")).sendKeys(pass);
 						//driver.findElement(By.name("os_cookie")).click();
@@ -358,7 +345,8 @@ public class DiagCrsCloser implements Runnable {
 						while(e != null){
 							e = null;
 							try {
-								System.out.println("Trying to insert label");
+								Logger.log(Logger.TAG_DIAGCRSCLOSER, "Trying to insert label");
+								Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR: " + "Trying to insert label");
 								while(!driver.getPageSource().contains("<span>krnl_wkl</span>") && !driver.getPageSource().contains("<span>DIAG_WS</span>")){
 									driver.findElement(By.cssSelector("body")).sendKeys(Keys.ESCAPE);
 									sleep(100);
@@ -388,12 +376,12 @@ public class DiagCrsCloser implements Runnable {
 									}
 									
 									driver.findElement(By.id("issue-workflow-transition-submit")).click();
-									System.out.println("Label inserted");
+									Logger.log(Logger.TAG_DIAGCRSCLOSER, "Label inserted");
 									driver.get(driver.getCurrentUrl());
 									sleep(2000);
 								}
 							} catch (Exception e1) {
-								System.out.println("Label error");
+								Logger.log(Logger.TAG_DIAGCRSCLOSER, "Label error");
 								driver.get(driver.getCurrentUrl());
 								e1.printStackTrace();
 								e = e1;
@@ -401,10 +389,10 @@ public class DiagCrsCloser implements Runnable {
 						}
 					}
 					
-					System.out.println("Clicking CLOSE");
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Clicking CLOSE");
 					driver.findElement(By.id("action_id_21")).click();
 					sleep(2000);
-					System.out.println("Setting as DUP");
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Setting as DUP");
 					Exception e = new Exception();
 					while(e != null){
 						e = null;
@@ -422,7 +410,7 @@ public class DiagCrsCloser implements Runnable {
 					while(e != null){
 						e = null;
 						try{
-							System.out.println("Inserting root CR on Duplicated field: "
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Inserting root CR on Duplicated field: "
 									+ b2gs_results.get(diagCRs.get(i)).substring(b2gs_results.get(diagCRs.get(i)).indexOf(" IK"), b2gs_results.get(diagCRs.get(i)).length()));
 							driver.findElement(By.id("customfield_10622")).clear();
 							sleep(600);
@@ -441,11 +429,11 @@ public class DiagCrsCloser implements Runnable {
 					while(e != null){
 						e = null;
 						try{
-							System.out.println("Inserting comment");
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Inserting comment");
 							driver.findElement(By.xpath("//div[@id=\"workflow-transition-21-dialog\"]//textarea[@id='comment']")).sendKeys("" + b2gs_results.get(diagCRs.get(i)).replace("\t", ""));
 							sleep(500);
 							
-							System.out.println("Closing");
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing");
 							driver.findElement(By.id("issue-workflow-transition-submit")).submit();
 							sleep(500);
 							
@@ -455,13 +443,13 @@ public class DiagCrsCloser implements Runnable {
 						}
 					}
 					
-					System.out.println("Opening new tab");
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Opening new tab");
 					sleep(500);
 					driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "t");
 				}
 				
 				driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "w");
-				System.out.println("Done");
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Done");
 				
 				
 				
@@ -473,7 +461,7 @@ public class DiagCrsCloser implements Runnable {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("Action cancelled");
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Action cancelled");
 		}
 	}
 	
@@ -488,30 +476,30 @@ public class DiagCrsCloser implements Runnable {
 			
 			String user, pass;
 			String[] CRs = SharedObjs.crsManagerPane.getCrsToDownload();
-			System.out.println("CRs: " + CRs.length);
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "CRs: " + CRs.length);
 			
 			//Configuring Firefox
-			System.out.println("Generating Firefox profile");
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Generating Firefox profile");
 			profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
 			driver = new FirefoxDriver(profile);
 			user = SharedObjs.getUser();
 			pass = SharedObjs.getPass();
 	
 			// Open up a browser
-			System.out.println("Starting browser");
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Starting browser");
 			driver.navigate().to("http://google.com");
-			System.out.println("Done.");
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Done.");
 			
 			for (int i = 0; i < CRs.length; i++) {
 				//Open CR page
-				System.out.println("Opening CR page");
-				System.out.println("CR: " + CRs[i]);
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Opening CR page");
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR: " + CRs[i]);
 				driver.navigate().to("http://idart.mot.com/browse/" + CRs[i]);
-				System.out.println("Done.");
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Done.");
 				
 				//Jira Login
 				while(driver.getTitle().contains("Log")){
-					//System.out.println("Trying to Log in");
+					//Logger.log(Logger.TAG_DIAGCRSCLOSER, "Trying to Log in");
 					driver.findElement(By.name("os_username")).sendKeys(user);		
 					driver.findElement(By.name("os_password")).sendKeys(pass);
 					driver.findElement(By.name("os_cookie")).click();
@@ -521,24 +509,24 @@ public class DiagCrsCloser implements Runnable {
 				
 				
 				String crID = driver.getTitle().substring(1, 12); 
-				System.out.println("CR id: " + crID);
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR id: " + crID);
 				
 				WebElement Element = driver.findElement(By.partialLinkText("b2gadm-mcloud101-blur"));
 				String b2gID = Element.getText().substring(Element.getText().indexOf('=') + 1);
-				System.out.println("B2G id: " + b2gID);
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "B2G id: " + b2gID);
 				
 				
 				b2g_crid.put(b2gID, crID);
 						
 				
-				System.out.println("\n\nOpening new tab");
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "\n\nOpening new tab");
 				sleep(500);
 				driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "t");
 			}
 			
 			driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "w");
 			driver.close();
-			System.out.println("Done");
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Done");
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -557,11 +545,11 @@ public class DiagCrsCloser implements Runnable {
 				JOptionPane.QUESTION_MESSAGE, null, options,
 				options[1]);
 		if(n == 0){
-			System.out.println("Closing Firefox");
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing Firefox");
 			if(driver != null)
 				driver.close();
 		} else if(n == 1){
-			System.out.println("Closing Firefox and opening CRs on Chrome");
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing Firefox and opening CRs on Chrome");
 			b2g_crid.values().toArray();
 			try{
 				driver.close();
@@ -599,12 +587,12 @@ public class DiagCrsCloser implements Runnable {
 			// Look for the file
 			File rFolder = new File(path);
 			File[] listOfFiles = rFolder.listFiles();
-			System.out.println("Folder to look for files: " + rFolder);
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Folder to look for files: " + rFolder);
 			for (int a = 0; a < listOfFiles.length; a++) {
 				folder = listOfFiles[a].getName();
 				if (listOfFiles[a].isDirectory() && diagCRs.contains(folder)) {
-					//System.out.println("Actual folder: " + folder);
-					//System.out.println("Contains?: " + diagCRs.contains(folder));
+					//Logger.log(Logger.TAG_DIAGCRSCLOSER, "Actual folder: " + folder);
+					//Logger.log(Logger.TAG_DIAGCRSCLOSER, "Contains?: " + diagCRs.contains(folder));
 					delCRs(folder);
 				} else if(listOfFiles[a].isFile() && diagCRs.contains(folder) && listOfFiles[a].getName().endsWith(".zip")){
 					delCRs(folder);
@@ -627,7 +615,7 @@ public class DiagCrsCloser implements Runnable {
 			String crFolder;
 			
 			File folder = new File(SharedObjs.crsManagerPane.getRootPath());
-			System.out.println("Folder: " + folder);
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Folder: " + folder);
 			File[] listOfFiles = folder.listFiles();
 			
 			for (int i = 0; i < listOfFiles.length; i++) {
@@ -636,7 +624,7 @@ public class DiagCrsCloser implements Runnable {
 				if (listOfFiles[i].isDirectory()) {
 					try {
 						crFolder = folder.getPath() + "\\" + listOfFiles[i].getName();
-						System.out.println("File: " + crFolder);
+						Logger.log(Logger.TAG_DIAGCRSCLOSER, "File: " + crFolder);
 						dialog.setText(dialog.getText() + "\n" + crFolder);
 						
 						String sCurrentLine;
@@ -648,7 +636,7 @@ public class DiagCrsCloser implements Runnable {
 
 						// Look for the file
 						for (int j = 0; j < filesList.length; j++) {
-							System.out.println(folder.listFiles()[j]);
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, String.valueOf(folder.listFiles()[j]));
 							if (filesList[j].isFile()) {
 								String files = filesList[j].getName();
 								if (files.toLowerCase().endsWith(".txt") && files.toLowerCase().contains("report_info")) {
@@ -661,12 +649,12 @@ public class DiagCrsCloser implements Runnable {
 						// Try to open file
 						if (file == null)
 						{
-							System.out.println("Log de sistema nao encontrado: " + file);
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Log de sistema nao encontrado: " + file);
 						}
 						else
 						{
 							br = new BufferedReader(new FileReader(file));
-							System.out.println("Log de sistema encontrado!" + file);
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Log de sistema encontrado!" + file);
 						}
 						
 						// Parse file
@@ -675,7 +663,7 @@ public class DiagCrsCloser implements Runnable {
 							{
 								if(sCurrentLine.toLowerCase().contains("product"))
 								{
-									System.out.println(sCurrentLine);
+									Logger.log(Logger.TAG_DIAGCRSCLOSER, sCurrentLine);
 									if(sCurrentLine.toLowerCase().contains("condor")){
 										copyScript(new File("Data\\scripts\\Condor.pl") ,  new File(folder + "\\build_report.pl"));
 										break;
@@ -736,7 +724,7 @@ public class DiagCrsCloser implements Runnable {
 						ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + crFolder + " && build_report.pl");
 				        builder.redirectErrorStream(true);
 				        Process p = builder.start();
-				        SharedObjs.crsManagerPane.addLogLine("Build report started at " + crFolder);
+				        Logger.log(Logger.TAG_DIAGCRSCLOSER, "Build report started at " + crFolder);
 				        
 				        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				        //String line;
@@ -744,10 +732,10 @@ public class DiagCrsCloser implements Runnable {
 				        while (true) {
 				            //line = r.readLine();
 				            if (r.readLine() == null) { break; }
-				            //System.out.println(line);
+				            //Logger.log(Logger.TAG_DIAGCRSCLOSER, line);
 				        }
 				        r.close();
-				        SharedObjs.crsManagerPane.addLogLine("Build report script done at " + crFolder);
+				        Logger.log(Logger.TAG_DIAGCRSCLOSER, "Build report script done at " + crFolder);
 						
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -755,7 +743,7 @@ public class DiagCrsCloser implements Runnable {
 				}
 			}
 		}
-		System.out.println("All done");
+		Logger.log(Logger.TAG_DIAGCRSCLOSER, "All done");
 	}
 
 	
@@ -767,19 +755,19 @@ public class DiagCrsCloser implements Runnable {
 	
 	private static void delCRs(String dir){
 		String folder = SharedObjs.crsManagerPane.getRootPath() + dir;
-		SharedObjs.crsManagerPane.addLogLine("Trying to delete " + dir);
+		Logger.log(Logger.TAG_DIAGCRSCLOSER, "Trying to delete " + dir);
 		File file = new File(folder);
 		try {
 			if(file.isDirectory()){
-				System.out.println("Folder to be deleted: " + folder);
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Folder to be deleted: " + folder);
 				FileUtils.deleteDirectory(file);
 			} else if(file.isFile() && file.getName().endsWith(".zip")){
-				System.out.println("Zip to be deleted: " + folder);
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Zip to be deleted: " + folder);
 				file.delete();
 			}
-			SharedObjs.crsManagerPane.addLogLine(dir + " deleted");
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, dir + " deleted");
 		} catch (IOException e) {
-			SharedObjs.crsManagerPane.addLogLine("Could not delete " + dir);
+			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Could not delete " + dir);
 			e.printStackTrace();
 		}
 	}
@@ -804,7 +792,7 @@ public class DiagCrsCloser implements Runnable {
 			if(step == 1){
 				if(SharedObjs.crsManagerPane.getB2g_crid() != null && SharedObjs.crsManagerPane.getB2g_crid().size() > 0){
 					b2g_crid = SharedObjs.crsManagerPane.getB2g_crid();
-					System.out.println("Geeting CRs/B2G IDs from the download usage\n" +
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Geeting CRs/B2G IDs from the download usage\n" +
 							"b2g_crid: " + b2g_crid.size());
 					dialog.setText(dialog.getText() + "\nChecking the CRs ...");
 					step = 2;
@@ -825,15 +813,15 @@ public class DiagCrsCloser implements Runnable {
 								JOptionPane.YES_NO_CANCEL_OPTION,
 								JOptionPane.QUESTION_MESSAGE, null, options,
 								options[1]);
-						System.out.println("Resposta: " + n);
+						Logger.log(Logger.TAG_DIAGCRSCLOSER, "Resposta: " + n);
 						
 						if(n == 0){
 							dialog.setText(dialog.getText() + "\nCreating the link between b2g ids and Jira ids ...");
-							System.out.println("Connecting Jira IDs and B2G IDs");
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Connecting Jira IDs and B2G IDs");
 							b2g_crid = SharedObjs.crsManagerPane.getB2g_crid();
 							connectB2gidToJiraid();
-							System.out.println("b2g_crid: " + b2g_crid.size());
-							System.out.println("Going to step 2");
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, "b2g_crid: " + b2g_crid.size());
+							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Going to step 2");
 							step = 2;
 						} else {
 							step = 10;
@@ -843,14 +831,14 @@ public class DiagCrsCloser implements Runnable {
 				}
 				
 			} else if(step == 2){
-				System.out.println("Searching for DIAG_WS issues");
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Searching for DIAG_WS issues");
 				dialog.setText(dialog.getText() + "\nSearching for DIAG_WS issues in zip files ...");
 				checkDiag();
-				System.out.println("diagCRs: " + diagCRs.size() + "\nDiagList Updated");
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "diagCRs: " + diagCRs.size() + "\nDiagList Updated");
 				step = 3;
 				
 			} else if(step == 3){
-				System.out.println("Closing DIAG_WS issues");
+				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing DIAG_WS issues");
 				dialog.setText(dialog.getText() + "\nClosing DIAG_WS issues on Jira...");
 				SharedObjs.crsManagerPane.updateAllDataUI();
 				closeDiagCrs();
@@ -865,7 +853,7 @@ public class DiagCrsCloser implements Runnable {
 		dialog.dispose();
 		dialog.setVisible(false);
 		SharedObjs.crsManagerPane.updateAllDataUI();
-		System.out.println(">>>>DiagList Updated");
+		Logger.log(Logger.TAG_DIAGCRSCLOSER, ">>>>DiagList Updated");
 	}
 
 

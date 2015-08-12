@@ -9,6 +9,6 @@
     <logs_folder>logs/</logs_folder>
     <update_path1>S:/Rio_Itu/SAT/</update_path1>
     <update_path2>S:/Rio_Itu/Temporário/Cesar/</update_path2>
-    <debug_mode>false</debug_mode>
+    <debug_mode>true</debug_mode>
   </configs>
 </SAT>

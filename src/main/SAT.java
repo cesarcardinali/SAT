@@ -93,7 +93,7 @@ public class SAT extends JFrame{
 					stop = checkForUpdate();
 				}
 				if(stop == 1){
-					System.out.println("\n\nExiting");
+					Logger.log(Logger.TAG_SAT, "\n\nExiting");
 					System.exit(0);
 				}
 			}
@@ -110,11 +110,11 @@ public class SAT extends JFrame{
 		long dateRemote, dateLocal;
 		
 		f1 = new File(SharedObjs.updateFolder1 + Strings.getToolFileName());
-		System.out.println("Remote file: " + f1.getAbsolutePath());
-		System.out.println("Remote: " + f1.lastModified());
+		Logger.log(Logger.TAG_SAT, "Remote file: " + f1.getAbsolutePath());
+		Logger.log(Logger.TAG_SAT, "Remote: " + f1.lastModified());
 		f2 = new File(Strings.getToolFileName());
-		System.out.println("Local file: " + f2.getAbsolutePath());
-		System.out.println("Local: " + f2.lastModified());
+		Logger.log(Logger.TAG_SAT, "Local file: " + f2.getAbsolutePath());
+		Logger.log(Logger.TAG_SAT, "Local: " + f2.lastModified());
 		dateRemote = f1.lastModified();
 		dateLocal = f2.lastModified();
 		
@@ -127,15 +127,15 @@ public class SAT extends JFrame{
 					options[1]);
 			if(n == 0) {
 				try {
-					System.out.println("Updating the Updater first, from: " + SharedObjs.updateFolder1);
+					Logger.log(Logger.TAG_SAT, "Updating the Updater first, from: " + SharedObjs.updateFolder1);
 					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/" + Strings.getUpdaterFileName()), new File(Strings.getUpdaterFileName()));
 				} catch (IOException e) {
-					System.out.println("Updating the Updater failed");
+					Logger.log(Logger.TAG_SAT, "Updating the Updater failed");
 					e.printStackTrace();
 				}
-				System.out.println("Updating");
+				Logger.log(Logger.TAG_SAT, "Updating");
 				try {
-					System.out.println("path: " + new File("").getAbsolutePath());
+					Logger.log(Logger.TAG_SAT, "path: " + new File("").getAbsolutePath());
 					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar " + Strings.getUpdaterFileName());
 					builder.start();
 				} catch (IOException e2) {
@@ -165,10 +165,10 @@ public class SAT extends JFrame{
 					run = 1;
 				} catch (JDOMException | IOException e1) {
 					e1.printStackTrace();
-					System.out.println("finished3");
+					Logger.log(Logger.TAG_SAT, "finished3");
 					run = 1;
 				} finally{
-					System.out.println("finished1");
+					Logger.log(Logger.TAG_SAT, "finished1");
 					run = 1;
 				}
 			}
@@ -184,12 +184,12 @@ public class SAT extends JFrame{
 	WindowFocusListener satWFL = new WindowFocusListener() {
 		@Override
 		public void windowLostFocus(WindowEvent e) {
-			System.out.println("Window focus lost");
+			Logger.log(Logger.TAG_SAT, "Window focus lost");
 		}
 		
 		@Override
 		public void windowGainedFocus(WindowEvent e) {
-			System.out.println("Window focus gained ");
+			Logger.log(Logger.TAG_SAT, "Window focus gained ");
 			SharedObjs.crsManagerPane.updateAllDataUI();
 		}
 	};

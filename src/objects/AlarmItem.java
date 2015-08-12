@@ -2,6 +2,8 @@ package objects;
 
 import java.util.Date;
 
+import core.Logger;
+
 public class AlarmItem {
 	
 	private Date begin, end, last;
@@ -26,7 +28,7 @@ public class AlarmItem {
 	
 	public static void main(String[] args) {
 		//AlarmItem a = new AlarmItem();
-		System.out.println("Date: " + 16589758/1000 % 60);
+		Logger.log(Logger.TAG_ALARMITEM, "Date: " + 16589758/1000 % 60);
 	}
 
 	

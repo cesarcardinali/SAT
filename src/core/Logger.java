@@ -1,5 +1,6 @@
 package core;
 
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -23,13 +24,29 @@ public class Logger {
 	public static final String TAG_PARSER = "PARSER";
 	public static final String TAG_CRSMANAGER = "CRS MANAGER";
 	public static final String TAG_OPTIONS = "OPTIONS";
+	public static final String TAG_FILETREE = "FILE TREE";
+	public static final String TAG_CUSTOMFILTER = "CUSTOM FILTER";
+	public static final String TAG_FILTERSRESULTSTREE = "FILTER RESULTS TREE";
+	public static final String TAG_COLORPRINTER = "COLOR PRINTER";
+	public static final String TAG_CRSCLOSER = "CRS CLOSER";
+	public static final String TAG_DIAGCRSCLOSER = "DIAG CRS CLOSER";
+	public static final String TAG_ALARM = "ALARM";
+	public static final String TAG_B2G = "BUG TO GO";
+	public static final String TAG_CONSUME = "CONSUME";
+	public static final String TAG_DIAG = "DIAG";
+	public static final String TAG_NORMAL = "NORMAL";
+	public static final String TAG_SUSPICIOUS = "SUSPICIOUS";
+	public static final String TAG_TETHER = "TETHER";
+	public static final String TAG_ALARMITEM = "ALARM ITEM";
+	public static final String TAG_UNZIP = "UNZIP";
+	
 	
 	/**
 	 * Initialize class variables
 	 */
 	public static void initClass(){
 		// Read debug mode on/off
-		debugMode = Boolean.getBoolean(XmlMngr.getSystemValueOf(new String [] {"configs","debug_mode"}));
+		debugMode = Boolean.parseBoolean(XmlMngr.getSystemValueOf(new String [] {"configs","debug_mode"}));
 		
 		if(debugMode){
 			// Generate log file
@@ -75,12 +92,13 @@ public class Logger {
 	public static void log(String tag, String text){
 		if(logCreated){
 			try {
-				logWriter.write(tag + ": " + text);
+				logWriter.write(tag + ": " + text + "\n");
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.out.println("Log file does not exist");
 			}
 		}
+		System.out.println(text);
 	}
 	
 	// Getters and Setters

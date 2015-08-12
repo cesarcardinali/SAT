@@ -9,6 +9,8 @@ import java.io.IOException;
 
 import com.google.common.base.Throwables;
 
+import core.Logger;
+
 
 public class B2G {
 
@@ -38,7 +40,7 @@ public class B2G {
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (listOfFiles[i].isFile()) {
 					String files = listOfFiles[i].getName();
-					System.out.println("" + files);
+					Logger.log(Logger.TAG_B2G, "" + files);
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT"))) && (files.contains("system"))) {
 						if(path.equals("."))
 							file_report = files;
@@ -48,7 +50,7 @@ public class B2G {
 					}
 				}
 			}
-			System.out.println("\n\nB2G: system file: " + file_report);
+			Logger.log(Logger.TAG_B2G, "\n\nB2G: system file: " + file_report);
 			
 			// Try to open file
 			if (!file_report.equals("")){
@@ -74,7 +76,7 @@ public class B2G {
 				for (int i = 0; i < listOfFiles.length; i++) {
 					if (listOfFiles[i].isFile()) {
 						String files = listOfFiles[i].getName();
-						System.out.println("" + files);
+						Logger.log(Logger.TAG_B2G, "" + files);
 						if (((files.endsWith(".txt")) || (files.endsWith(".TXT"))) && (files.contains("-main"))) {
 							if(path.equals("."))
 								file_report = files;
@@ -84,7 +86,7 @@ public class B2G {
 						}
 					}
 				}
-				System.out.println("\n\n" + file_report);
+				Logger.log(Logger.TAG_B2G, "\n\n" + file_report);
 				
 				// Try to open file
 				if (file_report.equals("")){

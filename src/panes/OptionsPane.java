@@ -36,6 +36,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import core.Logger;
 import core.SharedObjs;
 
 
@@ -852,7 +853,7 @@ public class OptionsPane extends JPanel {
 				
 			}
 		}
-		System.out.println("Options Loaded");
+		Logger.log(Logger.TAG_OPTIONS, "Options Loaded");
 		
 	}
 	
@@ -898,7 +899,7 @@ public class OptionsPane extends JPanel {
 				
 			}
 		}
-		System.out.println("Options Loaded");
+		Logger.log(Logger.TAG_OPTIONS, "Options Loaded");
 		
 	}
 	
@@ -966,7 +967,7 @@ public class OptionsPane extends JPanel {
         //xmlOutputter.output(doc, System.out);
         xmlOutputter.output(document, new FileOutputStream(xmlFile));
         
-		System.out.println("Options Saved");
+		Logger.log(Logger.TAG_OPTIONS, "Options Saved");
 	}
 	
 	/**
@@ -1020,7 +1021,7 @@ public class OptionsPane extends JPanel {
         //xmlOutputter.output(doc, System.out);
         xmlOutputter.output(document, new FileOutputStream(xmlFile));
         
-		System.out.println("OptionsPane data saved");
+		Logger.log(Logger.TAG_OPTIONS, "Options Saved");
 	}
 	
 	

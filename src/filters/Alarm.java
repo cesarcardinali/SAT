@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Throwables;
 
+import core.Logger;
 import core.SharedObjs;
 
 import objects.AlarmItem;
@@ -81,7 +82,7 @@ public class Alarm {
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			return result;
 		}
-		System.out.println("Log de sistema encontrado: " + file);
+		Logger.log(Logger.TAG_ALARM, "Log de sistema encontrado: " + file);
 		
 		int averageOccurrences = 1;
 		Date parsedDate = null;
@@ -101,7 +102,7 @@ public class Alarm {
 						}
 						catch(Exception e)
 						{
-							System.out.println("********Error: " + Throwables.getStackTraceAsString(e));
+							Logger.log(Logger.TAG_ALARM, "********Error: " + Throwables.getStackTraceAsString(e));
 						}
 						alarm = new AlarmItem(parsedDate, matcherAlarmLine.group(2), 
 					    		matcherAlarmLine.group(3).substring(0, matcherAlarmLine.group(3).length()-1), matcherAlarmLine.group(4), matcherAlarmLine.group(0));
@@ -113,7 +114,7 @@ public class Alarm {
 						}
 						catch(Exception e)
 						{
-							System.out.println("********Error: " + Throwables.getStackTraceAsString(e));
+							Logger.log(Logger.TAG_ALARM, "********Error: " + Throwables.getStackTraceAsString(e));
 						}
 						if(Character.isUpperCase(matcherAlarmLine.group(7).charAt(0)))
 					    	alarm = new AlarmItem(parsedDate, matcherAlarmLine.group(6), "Unknown", matcherAlarmLine.group(7), matcherAlarmLine.group(0));
@@ -141,7 +142,7 @@ public class Alarm {
 			averageOccurrences = averageOccurrences/alarmList.size();
 		else
 			averageOccurrences = 2;
-		System.out.println(averageOccurrences);
+		Logger.log(Logger.TAG_ALARM, String.valueOf(averageOccurrences));
 		Iterator<AlarmItem> l = alarmList.listIterator();
 		while (l.hasNext())
 		{

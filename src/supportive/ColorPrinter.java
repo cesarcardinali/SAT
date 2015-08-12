@@ -10,6 +10,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
+import core.Logger;
 import style.Colors;
 
 public class ColorPrinter {
@@ -33,12 +34,10 @@ public class ColorPrinter {
 				
 		String[] lines = log.split("\n");
 		txtPaneAlarms.setText("");
-		//System.out.println("Lines: " + lines.length);
 
 		try {
 			for (int i=0; i < lines.length; i++) {
 				linhaAtual = lines[i];
-				//System.out.println("Actual Line: " + lines[i]);
 				
 				if(linhaAtual.contains("AlarmManager")){ //parse the line color
 					if (linhaAnterior != null) {
@@ -74,8 +73,7 @@ public class ColorPrinter {
 		}
 
 		txtPaneAlarms.setCaretPosition(0);
-		System.out.println("Done");
-		//System.out.println("\n\n\n\n\nElse results:\n" + result);
+		Logger.log(Logger.TAG_COLORPRINTER, "Done");
 	}
 	
 	
@@ -112,7 +110,6 @@ public class ColorPrinter {
 		try {
 			for (int i=0; i < lines.length; i++) {
 				
-				//System.out.println("Actual Line: " + lines[i]);
 				
 				if(lines[i].toLowerCase().contains("%  pid:")){ //notice that is a new application in question
 					linhaAtual = lines[i];
@@ -164,7 +161,7 @@ public class ColorPrinter {
 		}
 
 		txtPaneAlarms.setCaretPosition(0);
-		System.out.println("Done");
+		Logger.log(Logger.TAG_COLORPRINTER, "Done");
 	}
 	
 	public static void resetPanelStyle(JTextPane pane) {
@@ -201,7 +198,6 @@ public class ColorPrinter {
 		try {
 			
 			if(line.contains("AlarmManager")){
-				//System.out.println("Substring: " + line.subSequence(0, 13));
 				time = dateFormat.parse((String) line.subSequence(0, 13)).getTime();
 			} else if((!line.contains("AlarmManager")) && (line.contains("Screen") || line.matches("Unknow.+pid"))){
 				time = dateFormat.parse((String) line.substring(12, 26)).getTime();

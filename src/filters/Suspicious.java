@@ -13,6 +13,7 @@ import java.util.Date;
 
 import com.google.common.base.Throwables;
 
+import core.Logger;
 import core.SharedObjs;
 
 import objects.WackLock_List;
@@ -84,7 +85,7 @@ public class Suspicious {
 						ws = sCurrentLine.substring(sCurrentLine.indexOf("ws=")+3, sCurrentLine.indexOf(",",sCurrentLine.indexOf("ws=")));
 					else
 						ws = sCurrentLine.substring(sCurrentLine.indexOf("ws=")+3, sCurrentLine.indexOf("}",sCurrentLine.indexOf("ws="))+1);
-					//System.out.println("WS != null: " + ws);
+					//Logger.log(Logger.TAG_SUSPICIOUS, "WS != null: " + ws);
 					
 					String uid = sCurrentLine.substring(sCurrentLine.indexOf("uid=")+4, sCurrentLine.indexOf(",",sCurrentLine.indexOf("uid=")));
 					String process = "";
@@ -97,7 +98,7 @@ public class Suspicious {
 					}
 					catch(Exception e)
 					{
-						System.out.println("Error: " + e.toString());
+						Logger.log(Logger.TAG_SUSPICIOUS, "Error: " + e.toString());
 					}
 					
 				// ----- Busca pelo id do processo que provoca o wake lock -----
@@ -108,7 +109,7 @@ public class Suspicious {
 					} else {
 						process = "userId=\"" + uid + "\"";
 					}
-					System.out.println("uid: " + uid);
+					Logger.log(Logger.TAG_SUSPICIOUS, "uid: " + uid);
 				
 					
 				// ----- Criacao do objeto de wake lock a ser inserido na lista -----
@@ -138,7 +139,7 @@ public class Suspicious {
 								}
 							}
 							if(file_report.contains("bugreport")){
-								System.out.println("File opened: " + file_report);
+								Logger.log(Logger.TAG_SUSPICIOUS, "File opened: " + file_report);
 								BufferedReader aux = new BufferedReader(new FileReader(file_report));
 								aux.skip(1850000);
 								String str;

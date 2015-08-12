@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Throwables;
 
+import core.Logger;
 import objects.HighConsume_List;
 import objects.HighConsumeItem;
 
@@ -25,14 +26,14 @@ public class Consume {
 	private static boolean enabled = true;
 
 	/*
-	System.out.println("Month:\t\t" + matcher.group(1));
-	System.out.println("Day:\t\t" + matcher.group(2));
-	System.out.println("Hour:\t\t" + matcher.group(3));
-	System.out.println("Minute:\t\t" + matcher.group(4));
-	System.out.println("Seconds:\t" + matcher.group(5));
-	System.out.println("Consume:\t" + matcher.group(6));
-	System.out.println("PID:\t\t" + matcher.group(7));
-	System.out.println("Process:\t" + matcher.group(8));
+	Logger.log(Logger.TAG_CONSUME, "Month:\t\t" + matcher.group(1));
+	Logger.log(Logger.TAG_CONSUME, "Day:\t\t" + matcher.group(2));
+	Logger.log(Logger.TAG_CONSUME, "Hour:\t\t" + matcher.group(3));
+	Logger.log(Logger.TAG_CONSUME, "Minute:\t\t" + matcher.group(4));
+	Logger.log(Logger.TAG_CONSUME, "Seconds:\t" + matcher.group(5));
+	Logger.log(Logger.TAG_CONSUME, "Consume:\t" + matcher.group(6));
+	Logger.log(Logger.TAG_CONSUME, "PID:\t\t" + matcher.group(7));
+	Logger.log(Logger.TAG_CONSUME, "Process:\t" + matcher.group(8));
 	*/
 
 	public static String makelog(String path) {
@@ -93,10 +94,10 @@ public class Consume {
 			else
 			{
 				reader = new BufferedReader(new FileReader(file));
-				System.out.println("Log de sistema encontrado!" + file);
+				Logger.log(Logger.TAG_CONSUME, "Log de sistema encontrado!" + file);
 			}
 			
-			System.out.println("Parser running ...");
+			Logger.log(Logger.TAG_CONSUME, "Parser running ...");
 			
 			while ((sCurrentLine = reader.readLine()) != null)
 			{
@@ -159,7 +160,7 @@ public class Consume {
 				}
 			}
 			
-			System.out.println("Parser terminated.\n\n");
+			Logger.log(Logger.TAG_CONSUME, "Parser terminated.\n\n");
 			try {
 				if(reader != null)
 					reader.close();
@@ -191,9 +192,9 @@ public class Consume {
 				result = "- No app high consume evidences were found in text logs";
 			}
 			
-			//System.out.println(result);
-			//System.out.println("Apps detected: " + hcList.size());
-			System.out.println("Apps high: " + hcitems + " - " + hcList.size());
+			//Logger.log(Logger.TAG_CONSUME, result);
+			//Logger.log(Logger.TAG_CONSUME, "Apps detected: " + hcList.size());
+			Logger.log(Logger.TAG_CONSUME, "Apps high: " + hcitems + " - " + hcList.size());
 		
 		} catch (FileNotFoundException e) {
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
@@ -214,7 +215,7 @@ public class Consume {
 			}
 		}
 		
-		//System.out.println(result);
+		//Logger.log(Logger.TAG_CONSUME, result);
 		return result;
 	}
 	

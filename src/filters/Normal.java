@@ -8,6 +8,8 @@ import java.io.IOException;
 
 import com.google.common.base.Throwables;
 
+import core.Logger;
+
 
 public class Normal {
 	
@@ -41,7 +43,7 @@ public class Normal {
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (listOfFiles[i].isFile()) {
 					String files = listOfFiles[i].getName();
-					//System.out.println("" + files);
+					//Logger.log(Logger.TAG_NORMAL, "" + files);
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT"))) && (files.contains("report-output"))) {
 						if(path.equals("."))
 							str_report = files;
@@ -65,7 +67,7 @@ public class Normal {
 			while ((sCurrentLine = br.readLine()) != null) {
 				if (sCurrentLine.contains("Statistics since last unplugged:"))
 				{
-					System.out.println("bugReportData - 1");
+					Logger.log(Logger.TAG_NORMAL, "bugReportData - 1");
 					bugReportData = "\n" + noFormat + "\n" + sCurrentLine + "\n";
 					sCurrentLine = br.readLine();
 					
@@ -79,7 +81,7 @@ public class Normal {
 				
 				if (sCurrentLine.contains("obile total receiv"))
 				{
-					System.out.println("dataNbatteryData - 2");
+					Logger.log(Logger.TAG_NORMAL, "dataNbatteryData - 2");
 					dataNbatteryData = "\n" + noFormat+ "\n" + sCurrentLine + "\n";
 					sCurrentLine = br.readLine();
 					
@@ -96,7 +98,7 @@ public class Normal {
 				
 				else if(sCurrentLine.equals("Discharging"))
 				{
-					System.out.println("Secondary - 4");
+					Logger.log(Logger.TAG_NORMAL, "Secondary - 4");
 					secondaryData1 = "*Battery Discharging Summary*\n{panel}\n";
 					sCurrentLine = br.readLine();
 					while(!sCurrentLine.contains("-------") && !sCurrentLine.equals(""))
@@ -109,7 +111,7 @@ public class Normal {
 
 				else if(sCurrentLine.toLowerCase().equals("summary"))
 				{
-					System.out.println("Secondary - 5");
+					Logger.log(Logger.TAG_NORMAL, "Secondary - 5");
 					secondaryData2 = "\n*General Battery Summary*\n{panel}\n";
 					sCurrentLine = br.readLine();
 					if(sCurrentLine.equals("================="))
@@ -136,7 +138,7 @@ public class Normal {
 			}
 			result = result + "\n- No current drain issues found in this CR.\n\n??Closed as normal use??";
 			
-			//System.out.println(result);
+			//Logger.log(Logger.TAG_NORMAL, result);
 		} catch (FileNotFoundException e) {
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();

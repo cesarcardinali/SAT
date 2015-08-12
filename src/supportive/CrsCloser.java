@@ -19,8 +19,6 @@ import core.SharedObjs;
 
 
 public class CrsCloser implements Runnable {
-
-	static final String TAG = "CrsCloser";
 	
 	/*
 	 * closeDiagCrs
@@ -36,8 +34,7 @@ public class CrsCloser implements Runnable {
 				JOptionPane.QUESTION_MESSAGE, null, options,
 				options[1]);
 		
-		System.out.println("Resposta: " + n);
-		Logger.log(TAG, "Resposta: " + n);
+		Logger.log(Logger.TAG_CRSCLOSER, "Resposta: " + n);
 		
 		if(n == 0){
 			try{
@@ -47,8 +44,7 @@ public class CrsCloser implements Runnable {
 				String user, pass;
 				
 				//Configuring Firefox
-				System.out.println("Generating Firefox profile");
-				Logger.log(TAG, "Generating Firefox profile");
+				Logger.log(Logger.TAG_CRSCLOSER, "Generating Firefox profile");
 				
 				profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
 				driver = new FirefoxDriver(profile);
@@ -56,7 +52,8 @@ public class CrsCloser implements Runnable {
 				pass = SharedObjs.getPass();
 		
 				// Open up a browser
-				System.out.println("Starting browser");
+				
+				Logger.log(Logger.TAG_CRSCLOSER, "Starting browser");
 				driver.navigate().to("http://google.com");
 				
 				
@@ -67,13 +64,13 @@ public class CrsCloser implements Runnable {
 					s.replace("\r", "").replace(" ", "");
 					
 					//Open CR page
-					System.out.println("Opening CR page");
-					System.out.println("CR: " + s);
+					Logger.log(Logger.TAG_CRSCLOSER, "Opening CR page");
+					Logger.log(Logger.TAG_CRSCLOSER, "CR: " + s);
 					driver.navigate().to("http://idart.mot.com/browse/" + s);
 					
 					//Jira Login
 					while(driver.getTitle().contains("Log")){
-						System.out.println("Trying to Log in");
+						Logger.log(Logger.TAG_CRSCLOSER, "Trying to Log in");
 						driver.findElement(By.name("os_username")).sendKeys(user);		
 						driver.findElement(By.name("os_password")).sendKeys(pass);
 						//driver.findElement(By.name("os_cookie")).click();
@@ -82,7 +79,7 @@ public class CrsCloser implements Runnable {
 					}
 					
 					//Closing
-					System.out.println("Clicking CLOSE");
+					Logger.log(Logger.TAG_CRSCLOSER, "Clicking CLOSE");
 					driver.findElement(By.id("action_id_21")).click();
 					sleep(1700);
 					
@@ -91,11 +88,11 @@ public class CrsCloser implements Runnable {
 					while(e != null){
 						e = null;
 						try{
-							System.out.println("Inserting comment");
+							Logger.log(Logger.TAG_CRSCLOSER, "Inserting comment");
 							driver.findElement(By.xpath("//div[@id=\"workflow-transition-21-dialog\"]//textarea[@id='comment']")).sendKeys("Closing old CRs and focusing on newer releases");
 							sleep(500);
 							
-							System.out.println("Closing");
+							Logger.log(Logger.TAG_CRSCLOSER, "Closing");
 							driver.findElement(By.id("issue-workflow-transition-submit")).submit();
 							sleep(500);
 							
@@ -105,19 +102,19 @@ public class CrsCloser implements Runnable {
 						}
 					}
 					
-					System.out.println("Opening new tab");
+					Logger.log(Logger.TAG_CRSCLOSER, "Opening new tab");
 					sleep(500);
 					driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "t");
 				}
 				
 				driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "w");
-				System.out.println("Done");
+				Logger.log(Logger.TAG_CRSCLOSER, "Done");
 				
 			} catch (Exception e){
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("Action cancelled");
+			Logger.log(Logger.TAG_CRSCLOSER, "Action cancelled");
 		}
 	}
 	

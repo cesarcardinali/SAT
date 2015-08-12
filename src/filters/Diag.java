@@ -17,6 +17,7 @@ import org.jdom2.input.SAXBuilder;
 
 import com.google.common.base.Throwables;
 
+import core.Logger;
 import core.SharedObjs;
 
 
@@ -55,7 +56,7 @@ public class Diag {
 
 			// Look for the file
 			for (int i = 0; i < listOfFiles.length; i++) {
-				//System.out.println(folder.listFiles()[i]);
+				//Logger.log(Logger.TAG_DIAG, folder.listFiles()[i]);
 				if (listOfFiles[i].isFile()) {
 					String files = listOfFiles[i].getName();
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT"))) && (files.contains("bugreport"))) {
@@ -66,7 +67,7 @@ public class Diag {
 			}
 			
 			try {
-				System.out.println("Log file: " + file_report);
+				Logger.log(Logger.TAG_DIAG, "Log file: " + file_report);
 				reader = new BufferedReader(new FileReader(file_report));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -85,9 +86,9 @@ public class Diag {
 					matcher = pattern.matcher(line);
 					
 					if (!matcher.matches()){
-						System.out.println("Nao encontrou produto");
+						Logger.log(Logger.TAG_DIAG, "Nao encontrou produto");
 					} else {
-						System.out.println("Produto: " + matcher.group(1));
+						Logger.log(Logger.TAG_DIAG, "Produto: " + matcher.group(1));
 						product = matcher.group(1);
 					}
 				}
@@ -99,9 +100,9 @@ public class Diag {
 					matcher = pattern.matcher(line);
 					
 					if (!matcher.matches()){
-						System.out.println("Nao encontrou duracao da CR");
+						Logger.log(Logger.TAG_DIAG, "Nao encontrou duracao da CR");
 					} else {
-						System.out.println("Duração: " + matcher.group(1) + "ms");
+						Logger.log(Logger.TAG_DIAG, "Duração: " + matcher.group(1) + "ms");
 						duration = Long.parseLong(matcher.group(1));
 					}
 				}
@@ -133,18 +134,18 @@ public class Diag {
 				}
 			}
 			if(diagDuration > duration*0.5){
-				System.out.println("Diag!");
+				Logger.log(Logger.TAG_DIAG, "Diag!");
 			} else {
-				System.out.println("Not Diag! The DIAG period seems too short");
+				Logger.log(Logger.TAG_DIAG, "Not Diag! The DIAG period seems too short");
 				diagMs = "";
 			}
 			reader.close();
 			
-			/*System.out.println("Produto:\t\t" + product);
-			System.out.println("Duracao da CR:\t\t" + duration);
-			System.out.println("Duracao do Diag:\t" + diagDuration);
-			System.out.println("All Kernel:\t\t" + diagAllKernel);
-			System.out.println("General mode:\t\t" + diagMs);*/
+			/*Logger.log(Logger.TAG_DIAG, "Produto:\t\t" + product);
+			Logger.log(Logger.TAG_DIAG, "Duracao da CR:\t\t" + duration);
+			Logger.log(Logger.TAG_DIAG, "Duracao do Diag:\t" + diagDuration);
+			Logger.log(Logger.TAG_DIAG, "All Kernel:\t\t" + diagAllKernel);
+			Logger.log(Logger.TAG_DIAG, "General mode:\t\t" + diagMs);*/
 			
 			//prepare the final comment:
 			if(!diagAllKernel.equals("") || !diagMs.equals("")){

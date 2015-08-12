@@ -23,22 +23,17 @@ import org.apache.commons.io.FileUtils;
 import core.Logger;
 import core.SharedObjs;
 
-import panes.UnzippingCrsDialog;
-
 
 public class UnZip implements Runnable{
 	
 	List<String> fileList;
-	UnzippingCrsDialog dialog;
 	static Process p;
 	static String file;
 	
 	private String path;
-	private static final String TAG = "UNZIP";
 	
 	
 	public UnZip(String path){
-		dialog = null;
 		this.path = path;
 	}
 
@@ -53,21 +48,20 @@ public class UnZip implements Runnable{
 			
 		} else if(fileFolder.isFile()){
 			if (fileFolder.getName().toLowerCase().endsWith(".zip")) {
-				System.out.println("File to unzip: " + path);
-				Logger.log(TAG, "File to unzip: " + path);
+				Logger.log(Logger.TAG_UNZIP, "File to unzip: " + path);
 				
 				file = fileFolder.getAbsolutePath();
 				String fileName = getFileName(file);
 				String fileFolderPath = getFileFolders(file);
 				String outputFolder = fileFolderPath + fileName;
 				
-				System.out.println("File full path: " + file + 
+				Logger.log(Logger.TAG_UNZIP, "File full path: " + file + 
 						"\nFile Name: " + fileName +
 						"\nFile folder path: " + fileFolderPath +
 						"\nOutput folder: " + fileFolderPath + fileName);
 				
 				try {
-					SharedObjs.crsManagerPane.addLogLine("Unzipping file to " + fileName);
+					Logger.log(Logger.TAG_UNZIP, "Unzipping file to " + fileName);
 					unZipIt(file, outputFolder);
 					SharedObjs.releaseSemaphore();
 					
@@ -80,8 +74,7 @@ public class UnZip implements Runnable{
 
 					// Look for the file
 					for (int j = 0; j < filesList.length; j++) {
-						System.out.println(fileFolder.listFiles()[j]);
-						Logger.log(TAG, "" + fileFolder.listFiles()[j]);
+						Logger.log(Logger.TAG_UNZIP, String.valueOf(fileFolder.listFiles()[j]));
 						if (filesList[j].isFile()) {
 							String files = filesList[j].getName();
 							if (files.toLowerCase().endsWith(".txt") && files.toLowerCase().contains("report_info")) {
@@ -94,24 +87,22 @@ public class UnZip implements Runnable{
 					// Try to open file
 					if (npath.equals(outputFolder))
 					{
-						System.out.println("Log de sistema nao encontrado em " + outputFolder);
-						Logger.log(TAG, "Log de sistema nao encontrado em " + outputFolder);
+						Logger.log(Logger.TAG_UNZIP, "Log de sistema nao encontrado em " + outputFolder);
 					}
 					else
 					{
 						br = new BufferedReader(new FileReader(npath));
-						System.out.println("Log de sistema encontrado!" + npath);
-						Logger.log(TAG, "Log de sistema encontrado!" + npath);
+						Logger.log(Logger.TAG_UNZIP, "Log de sistema encontrado!" + npath);
 					}
 					
 					// Parse file
 					while ((sCurrentLine = br.readLine()) != null) {
 						if(sCurrentLine.toLowerCase().contains("product"))
 						{
-							System.out.println("--- Initial line: " + sCurrentLine);
+							Logger.log(Logger.TAG_UNZIP, "--- Initial line: " + sCurrentLine);
 							sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
 							sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
-							System.out.println(sCurrentLine);
+							Logger.log(Logger.TAG_UNZIP, sCurrentLine);
 							
 							copyScript(new File("Data\\scripts\\_Base.pl") ,  new File(outputFolder + "\\build_report.pl"));
 							
@@ -141,32 +132,25 @@ public class UnZip implements Runnable{
 			        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			        String line;
 			        
-			        SharedObjs.crsManagerPane.addLogLine("Running build_report.pl at " + fileName);
+			        Logger.log(Logger.TAG_UNZIP, "Running build_report.pl at " + fileName);
 			        while (true) {
 			            line = r.readLine();
 			            if (line == null) { break; }
-			            System.out.println(line);
-						Logger.log(TAG, line);
+			            Logger.log(Logger.TAG_UNZIP, line);
 			            //SharedObjs.crsManagerPane.addLogLine(line);
 			        }
 			        
-			        SharedObjs.crsManagerPane.addLogLine("Finished unzipping and running Bulid_report.pl of " + fileName);
+			        Logger.log(Logger.TAG_UNZIP, "Finished unzipping and running Bulid_report.pl of " + fileName);
 					
 				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
 								
 				SharedObjs.crsManagerPane.updateAllDataUI();
-				if(dialog != null){
-					dialog.dispose();
-					dialog.setVisible(false);
-				}
 				
-		        System.out.println(fileName + " Successfully extracted");
-				Logger.log(TAG, fileName + " Successfully extracted");
+		        Logger.log(Logger.TAG_UNZIP, fileName + " Successfully extracted");
 			} else {
-				System.out.println("It is not a ZIP file. Action cancelled.");
-				Logger.log(TAG, "It is not a ZIP file. Action cancelled.");
+				Logger.log(Logger.TAG_UNZIP, "It is not a ZIP file. Action cancelled.");
 			}
 		}
 	}
@@ -184,24 +168,19 @@ public class UnZip implements Runnable{
 			
 		} else if(fileFolder.isFile()){
 			if (fileFolder.getName().toLowerCase().endsWith(".zip")) {
-				System.out.println("File to unzip: " + path);
-				Logger.log(TAG, "File to unzip: " + path);
+				Logger.log(Logger.TAG_UNZIP, "File to unzip: " + path);
 				
 				file = fileFolder.getAbsolutePath();
 				String fileName = getFileName(file);
 				String fileFolderPath = getFileFolders(file);
 				String outputFolder = fileFolderPath + fileName;
 				
-				System.out.println("File full path: " + file + 
-						"\nFile Name: " + fileName +
-						"\nFile folder path: " + fileFolderPath +
-						"\nOutput folder: " + fileFolderPath + fileName);
-				Logger.log(TAG, "File full path: " + file + 
+				Logger.log(Logger.TAG_UNZIP, "File full path: " + file + 
 						"\nFile Name: " + fileName +
 						"\nFile folder path: " + fileFolderPath +
 						"\nOutput folder: " + fileFolderPath + fileName);
 				try {
-					SharedObjs.crsManagerPane.addLogLine("Unzipping file to " + fileName);
+					Logger.log(Logger.TAG_UNZIP, "Unzipping file to " + fileName);
 					unZipIt(file, outputFolder);
 					SharedObjs.releaseSemaphore();
 					
@@ -214,8 +193,7 @@ public class UnZip implements Runnable{
 
 					// Look for the file
 					for (int j = 0; j < filesList.length; j++) {
-						System.out.println(fileFolder.listFiles()[j]);
-						Logger.log(TAG, "" + fileFolder.listFiles()[j]);
+						Logger.log(Logger.TAG_UNZIP, String.valueOf(fileFolder.listFiles()[j]));
 						if (filesList[j].isFile()) {
 							String files = filesList[j].getName();
 							if (files.toLowerCase().endsWith(".txt") && files.toLowerCase().contains("report_info")) {
@@ -228,24 +206,22 @@ public class UnZip implements Runnable{
 					// Try to open file
 					if (npath.equals(outputFolder))
 					{
-						System.out.println("Log de sistema nao encontrado em " + outputFolder);
-						Logger.log(TAG, "Log de sistema nao encontrado em " + outputFolder);
+						Logger.log(Logger.TAG_UNZIP, "Log de sistema nao encontrado em " + outputFolder);
 					}
 					else
 					{
 						br = new BufferedReader(new FileReader(npath));
-						System.out.println("Log de sistema encontrado!" + npath);
-						Logger.log(TAG, "Log de sistema encontrado!" + npath);
+						Logger.log(Logger.TAG_UNZIP, "Log de sistema encontrado!" + npath);
 					}
 					
 					// Parse file
 					while ((sCurrentLine = br.readLine()) != null) {
 						if(sCurrentLine.toLowerCase().contains("product"))
 						{
-							System.out.println("--- Initial line: " + sCurrentLine);
+							Logger.log(Logger.TAG_UNZIP, "--- Initial line: " + sCurrentLine);
 							sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
 							sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
-							System.out.println(sCurrentLine);
+							Logger.log(Logger.TAG_UNZIP, sCurrentLine);
 							
 							copyScript(new File("Data\\scripts\\_Base.pl") ,  new File(outputFolder + "\\build_report.pl"));
 							
@@ -275,32 +251,25 @@ public class UnZip implements Runnable{
 			        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			        String line;
 			        
-			        SharedObjs.crsManagerPane.addLogLine("Running build_report.pl at " + fileName);
+			        Logger.log(Logger.TAG_UNZIP, "Running build_report.pl at " + fileName);
 			        while (true) {
 			            line = r.readLine();
 			            if (line == null) { break; }
-			            System.out.println(line);
-						Logger.log(TAG, line);
+			            Logger.log(Logger.TAG_UNZIP, line);
 			            //SharedObjs.crsManagerPane.addLogLine(line);
 			        }
 			        
-			        SharedObjs.crsManagerPane.addLogLine("Finished unzipping and running Bulid_report.pl of " + fileName);
+			        Logger.log(Logger.TAG_UNZIP, "Finished unzipping and running Bulid_report.pl of " + fileName);
 					
 				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
 				
 				SharedObjs.crsManagerPane.updateAllDataUI();
-				if(dialog != null){
-					dialog.dispose();
-					dialog.setVisible(false);
-				}
 				
-		        System.out.println(fileName + " Successfully extracted");
-				Logger.log(TAG, fileName + " Successfully extracted");
+		        Logger.log(Logger.TAG_UNZIP, fileName + " Successfully extracted");
 			} else {
-				System.out.println("It is not a ZIP file. Action cancelled.");
-				Logger.log(TAG, "It is not a ZIP file. Action cancelled.");
+				Logger.log(Logger.TAG_UNZIP, "It is not a ZIP file. Action cancelled.");
 			}
 		}
 	}
@@ -313,8 +282,7 @@ public class UnZip implements Runnable{
 	
 	public void delZips(String file){
 		try {
-			System.out.println("File to delete: " + file);
-			Logger.log(TAG, "File to delete: " + file);
+			Logger.log(Logger.TAG_UNZIP, "File to delete: " + file);
 			ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "del \"" + file + "\"");
 	        builder.redirectErrorStream(true);
 			p = builder.start();
@@ -324,8 +292,7 @@ public class UnZip implements Runnable{
 	        while (true) {
 	            line = r.readLine();
 	            if (line == null) { break; }
-	            System.out.println(line);
-				Logger.log(TAG, line);
+	            Logger.log(Logger.TAG_UNZIP, line);
 	        }
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -342,8 +309,7 @@ public class UnZip implements Runnable{
 	        while (true) {
 	            line = r.readLine();
 	            if (line == null) { break; }
-	            System.out.println(line);
-				Logger.log(TAG, line);
+	            Logger.log(Logger.TAG_UNZIP, line);
 	        }
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -359,9 +325,7 @@ public class UnZip implements Runnable{
 	
 	private String getFileName(String fullPath){
 		String [] folders = fullPath.split("\\\\");
-		System.out.println("File name: " + folders[folders.length-1] +
-				"\nSubstring: " + folders[folders.length-1].subSequence(0, 8));
-		Logger.log(TAG, "File name: " + folders[folders.length-1] +
+		Logger.log(Logger.TAG_UNZIP, "File name: " + folders[folders.length-1] +
 				"\nSubstring: " + folders[folders.length-1].subSequence(0, 8));
 		return (String) folders[folders.length-1].subSequence(0, 8);
 	}
@@ -373,8 +337,7 @@ public class UnZip implements Runnable{
 			if(!s.contains(".zip"))
 				path = path + s + File.separator;
 		}
-		System.out.println("File path: " + path);
-		Logger.log(TAG, "File path: " + path);
+		Logger.log(Logger.TAG_UNZIP, "File path: " + path);
 		return path;
 	}
 	
@@ -412,7 +375,7 @@ public class UnZip implements Runnable{
 				String fileName = ze.getName();
 				File newFile = new File(outputFolder + File.separator + fileName);
 
-				System.out.println("file unzip : " + newFile.getAbsoluteFile());
+				Logger.log(Logger.TAG_UNZIP, "file unzip : " + newFile.getAbsoluteFile());
 
 				// create all non exists folders
 				// else you will hit FileNotFoundException for compressed fileFolder
@@ -432,7 +395,7 @@ public class UnZip implements Runnable{
 			zis.closeEntry();
 			zis.close();
 
-			System.out.println(zipFile + " extraction succeful\n");
+			Logger.log(Logger.TAG_UNZIP, zipFile + " extraction succeful\n");
 
 		} catch (IOException ex) {
 			ex.printStackTrace();

@@ -8,6 +8,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import core.Logger;
 import core.SharedObjs;
 
 import supportive.ColorPrinter;
@@ -174,7 +175,7 @@ public class FiltersResultsTree extends JTree {
 									int index = SharedObjs.getCustomFiltersList().indexOf(selectedNode.toString().replace(" - Done", "").replace(" - Error", ""));
 									if(index >= 0){
 										if(selectedNode.getChildCount() == 0){
-											System.out.println("3");
+											Logger.log(Logger.TAG_FILTERSRESULTSTREE, "3");
 											new Thread(new Runnable() {
 												@Override
 												public void run() {
@@ -348,7 +349,7 @@ public class FiltersResultsTree extends JTree {
 		DefaultMutableTreeNode HCNode = findNode("High Consumption");
 		DefaultMutableTreeNode HCitem = new DefaultMutableTreeNode(node);
 		if(HCNode == null) {
-			System.out.println("Could not find node");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Could not find node");
 		} else if(!HCNode.toString().contains("Error")){
 			if(HCNode.getChildCount() == 0){
 				HCNode.add(new DefaultMutableTreeNode("On Colors"));
@@ -365,7 +366,7 @@ public class FiltersResultsTree extends JTree {
 		DefaultMutableTreeNode SPNode = findNode("Suspicious");
 		DefaultMutableTreeNode WLitem = new DefaultMutableTreeNode(node);
 		if(SPNode == null){
-			System.out.println("Could not find node");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Could not find node");
 		}
 		SPNode.insert(WLitem, SPNode.getChildCount());
 		
@@ -375,7 +376,7 @@ public class FiltersResultsTree extends JTree {
 		DefaultMutableTreeNode INode = findNode("WakeLocks");
 		DefaultMutableTreeNode Iitem = new DefaultMutableTreeNode(node);
 		if(INode == null){
-			System.out.println("Could not find node");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Could not find node");
 			INode = new DefaultMutableTreeNode("WakeLocks");
 		}
 		INode.insert(Iitem, 0);
@@ -384,7 +385,7 @@ public class FiltersResultsTree extends JTree {
 	public void addBug2go(String node){
 		DefaultMutableTreeNode BGNode = findNode("Bug2Go");
 		if(BGNode == null){
-			System.out.println("Could not find node");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Could not find node");
 			BGNode = new DefaultMutableTreeNode("Bug2Go");
 		}
 		BGNode.insert(new DefaultMutableTreeNode(node), 0);
@@ -393,7 +394,7 @@ public class FiltersResultsTree extends JTree {
 	public void addTether(String node){
 		DefaultMutableTreeNode TNode = findNode("Tethering");
 		if(TNode == null){
-			System.out.println("Could not find node");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Could not find node");
 		}
 		if (Tether.getResult().contains("No tethering evidences were found in text logs"))
 			TNode.insert(new DefaultMutableTreeNode("No tethering activity found"), TNode.getChildCount());
@@ -404,7 +405,7 @@ public class FiltersResultsTree extends JTree {
 	public void addDiag(String node){
 		DefaultMutableTreeNode DNode = findNode("Diag");
 		if(DNode == null){
-			System.out.println("Could not find node");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Could not find node");
 		}
 		DNode.insert(new DefaultMutableTreeNode(node), 0);
 	}
@@ -413,7 +414,7 @@ public class FiltersResultsTree extends JTree {
 		DefaultMutableTreeNode ANode = findNode("Alarms");
 		DefaultMutableTreeNode Aitem = new DefaultMutableTreeNode(node);
 		if(ANode == null){
-			System.out.println("Could not find node");
+			Logger.log(Logger.TAG_OPTIONS, "Could not find node");
 		} else if(!node.contains("Nothing") && !(ANode.getUserObject().toString()).contains("Error")) {
 			if(ANode.getChildCount() == 0){
 				ANode.add(new DefaultMutableTreeNode("On Colors"));
@@ -426,7 +427,7 @@ public class FiltersResultsTree extends JTree {
 	public void addSummary(String node){
 		DefaultMutableTreeNode SNode = findNode("Summary");
 		if(SNode == null){
-			System.out.println("Could not find node");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Could not find node");
 		}
 		SNode.insert(new DefaultMutableTreeNode(node), 0);
 	}
@@ -434,7 +435,7 @@ public class FiltersResultsTree extends JTree {
 	public void addCustomResult(String node, String res){
 		DefaultMutableTreeNode Node = findNode(node);
 		if(Node == null){
-			System.out.println("Could not find node. Adding new one.");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Could not find node. Adding new one.");
 			Node = new DefaultMutableTreeNode(node);
 			Node.add(new DefaultMutableTreeNode(res));
 		}
@@ -444,7 +445,7 @@ public class FiltersResultsTree extends JTree {
 	public void addCustomNode(String node){
 		DefaultMutableTreeNode Node = findNode(node);
 		if(Node == null){
-			System.out.println("Could not find node. Adding new one.");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Could not find node. Adding new one.");
 			Node = new DefaultMutableTreeNode(node);
 			rootNode.add(Node);
 		}
@@ -452,7 +453,7 @@ public class FiltersResultsTree extends JTree {
 	
 	// Filter threads
 	public void alarmThread(DefaultMutableTreeNode selectedNode){
-		System.out.println("Alarms thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Alarms thread running");
 		String alarmResult;
 
 		String x = (String) selectedNode.getUserObject();
@@ -492,7 +493,7 @@ public class FiltersResultsTree extends JTree {
 			else
 			    for (int i = 0; i < Alarm.getListSize(); i++) {
 					addAlarms(Alarm.getList().get(i).getProcess());
-					System.out.println(Alarm.getList().get(i).getProcess());
+					Logger.log(Logger.TAG_FILTERSRESULTSTREE, Alarm.getList().get(i).getProcess());
 				}
 			
 			
@@ -502,13 +503,13 @@ public class FiltersResultsTree extends JTree {
 			selectedNode.setUserObject(x);
 		}
 		
-		System.out.println("Alarms thread finished");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Alarms thread finished");
 		updateResultTreeUI();
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
 	
 	public void bug2goThread(DefaultMutableTreeNode selectedNode){
-		System.out.println("Bug2go thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Bug2go thread running");
 		String b2gResult;
 		
 		String x = (String) selectedNode.getUserObject();
@@ -523,21 +524,21 @@ public class FiltersResultsTree extends JTree {
 			selectedNode.setUserObject(x);
 			addBug2go("Logs not found");
 			updateResultTreeUI();
-			System.out.println("Bug2go thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Bug2go thread error");
 			
 		} else if(b2gResult.contains("IOException")){
 			x = ("Bug2Go - Error");
 			selectedNode.setUserObject(x);
 			addBug2go("IOException");
 			updateResultTreeUI();
-			System.out.println("Bug2go thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Bug2go thread error");
 			
 		} else if(b2gResult.contains("Not a directory")){
 			x = ("Bug2Go - Error");
 			selectedNode.setUserObject(x);
 			addBug2go("No directory selected");
 			updateResultTreeUI();
-			System.out.println("Bug2go thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Bug2go thread error");
 			
 		} else {
 			addBug2go("Result");
@@ -547,13 +548,13 @@ public class FiltersResultsTree extends JTree {
 			x = ("Bug2Go - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
-			System.out.println("Bug2go thread finished");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Bug2go thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
 			
 	public void diagThread(DefaultMutableTreeNode selectedNode){
-		System.out.println("Diag thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Diag thread running");
 		String diagResult;
 		
 		String x = (String) selectedNode.getUserObject();
@@ -568,28 +569,28 @@ public class FiltersResultsTree extends JTree {
 			selectedNode.setUserObject(x);
 			addDiag("Logs not found");
 			updateResultTreeUI();
-			System.out.println("Diag thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Diag thread error");
 			
 		} else if(diagResult.contains("IOException")){
 			x = ("Diag - Error");
 			selectedNode.setUserObject(x);
 			addDiag("IOException");
 			updateResultTreeUI();
-			System.out.println("Diag thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Diag thread error");
 			
 		} else if(diagResult.contains("JDOMException")){
 			x = ("Diag - Error");
 			selectedNode.setUserObject(x);
 			addDiag("JDOM Error");
 			updateResultTreeUI();
-			System.out.println("Diag thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Diag thread error");
 			
 		} else if(diagResult.contains("Not a directory")){
 			x = ("Diag - Error");
 			selectedNode.setUserObject(x);
 			addDiag("No directory selected");
 			updateResultTreeUI();
-			System.out.println("Diag thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Diag thread error");
 			
 		} else {
 			addDiag("Result");
@@ -599,13 +600,13 @@ public class FiltersResultsTree extends JTree {
 			x = ("Diag - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
-			System.out.println("Diag thread finished");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Diag thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
 
 	public void wakelocksThread(DefaultMutableTreeNode selectedNode){
-		System.out.println("Wakelocks thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread running");
 		String wakelocksResult;
 		
 		String x = (String) selectedNode.getUserObject();
@@ -620,21 +621,21 @@ public class FiltersResultsTree extends JTree {
 			selectedNode.setUserObject(x);
 			addIssues("Logs not found");
 			updateResultTreeUI();
-			System.out.println("Wakelocks thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread error");
 			
 		} else if(wakelocksResult.contains("IOException")){
 			x = ("WakeLocks - Error");
 			selectedNode.setUserObject(x);
 			addIssues("IOException");
 			updateResultTreeUI();
-			System.out.println("Wakelocks thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread error");
 			
 		} else if(wakelocksResult.contains("Not a directory")){
 			x = ("WakeLocks - Error");
 			selectedNode.setUserObject(x);
 			addIssues("No directory selected");
 			updateResultTreeUI();
-			System.out.println("Wakelocks thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread error");
 			
 		} else {
 			addIssues("Result");
@@ -644,13 +645,13 @@ public class FiltersResultsTree extends JTree {
 			x = ("WakeLocks - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
-			System.out.println("Wakelocks thread finished");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
 	
 	public void comsumptionThread(DefaultMutableTreeNode selectedNode){
-		System.out.println("Consumption thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Consumption thread running");
 		String consumptionResult;
 		
 		String x = (String) selectedNode.getUserObject();
@@ -665,21 +666,22 @@ public class FiltersResultsTree extends JTree {
 			selectedNode.setUserObject(x);
 			addConsumeNode("Logs not found");
 			updateResultTreeUI();
-			System.out.println("Consumption thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Consumption thread error");
+			
 			
 		} else if(consumptionResult.contains("IOException")){
 			x = ("High Consumption - Error");
 			selectedNode.setUserObject(x);
 			addConsumeNode("IOException");
 			updateResultTreeUI();
-			System.out.println("Consumption thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Consumption thread error");
 			
 		} else if(consumptionResult.contains("Not a directory")){
 			x = ("High Consumption - Error");
 			selectedNode.setUserObject(x);
 			addConsumeNode("No directory selected");
 			updateResultTreeUI();
-			System.out.println("Consumption thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Consumption thread error");
 			
 		} else {
 			for (int i = 0; i < Consume.getHCList().size(); i++) {
@@ -693,13 +695,13 @@ public class FiltersResultsTree extends JTree {
 			x = ("High Consumption - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
-			System.out.println("Consumption thread finished");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Consumption thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
 
 	public void summaryThread(DefaultMutableTreeNode selectedNode){
-		System.out.println("Summary thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Summary thread running");
 		String summaryResult;
 		
 		String x = (String) selectedNode.getUserObject();
@@ -714,21 +716,21 @@ public class FiltersResultsTree extends JTree {
 			selectedNode.setUserObject(x);
 			addSummary("Logs not found");
 			updateResultTreeUI();
-			System.out.println("Summary thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Summary thread error");
 			
 		} else if(summaryResult.contains("IOException")){
 			x = ("Summary - Error");
 			selectedNode.setUserObject(x);
 			addSummary("IOException");
 			updateResultTreeUI();
-			System.out.println("Summary thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Summary thread error");
 			
 		} else if(summaryResult.contains("Not a directory")){
 			x = ("Summary - Error");
 			selectedNode.setUserObject(x);
 			addSummary("No directory selected");
 			updateResultTreeUI();
-			System.out.println("Summary thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Summary thread error");
 			
 		} else {
 			addSummary("Result");
@@ -738,13 +740,13 @@ public class FiltersResultsTree extends JTree {
 			x = ("Summary - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
-			System.out.println("Summary thread finished");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Summary thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
 	
 	public void suspiciousThread(DefaultMutableTreeNode selectedNode){
-		System.out.println("Suspicious thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Suspicious thread running");
 		String suspiciousResult;
 		
 		String x = (String) selectedNode.getUserObject();
@@ -759,21 +761,21 @@ public class FiltersResultsTree extends JTree {
 			selectedNode.setUserObject(x);
 			addWakeLocksNode("Logs not found");
 			updateResultTreeUI();
-			System.out.println("Suspicious thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Suspicious thread error");
 			
 		} else if(suspiciousResult.contains("IOException")){
 			x = ("Suspicious - Error");
 			selectedNode.setUserObject(x);
 			addWakeLocksNode("IOException");
 			updateResultTreeUI();
-			System.out.println("Suspicious thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Suspicious thread error");
 			
 		} else if(suspiciousResult.contains("Not a directory")){
 			x = ("Suspicious - Error");
 			selectedNode.setUserObject(x);
 			addWakeLocksNode("No directory selected");
 			updateResultTreeUI();
-			System.out.println("Suspicious thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Suspicious thread error");
 			
 		} else {
 			if (Suspicious.getWakeLocks().size() != 0)
@@ -792,13 +794,13 @@ public class FiltersResultsTree extends JTree {
 			x = ("Suspicious - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
-			System.out.println("Suspicious thread finished");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Suspicious thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
 	
 	public void tetherThread(DefaultMutableTreeNode selectedNode){
-		System.out.println("Summary thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Summary thread running");
 		String tetherResult;
 		
 		String x = (String) selectedNode.getUserObject();
@@ -813,21 +815,21 @@ public class FiltersResultsTree extends JTree {
 			selectedNode.setUserObject(x);
 			addTether("Logs not found");
 			updateResultTreeUI();
-			System.out.println("Tethering thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Tethering thread error");
 			
 		} else if(tetherResult.contains("IOException")){
 			x = ("Tethering - Error");
 			selectedNode.setUserObject(x);
 			addTether("IOException");
 			updateResultTreeUI();
-			System.out.println("Tethering thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Tethering thread error");
 			
 		} else if(tetherResult.contains("Not a directory")){
 			x = ("Tethering - Error");
 			selectedNode.setUserObject(x);
 			addTether("No directory selected");
 			updateResultTreeUI();
-			System.out.println("Tethering thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Tethering thread error");
 			
 		} else {
 			addTether("Result");
@@ -837,7 +839,7 @@ public class FiltersResultsTree extends JTree {
 			x = ("Tethering - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
-			System.out.println("Tethering thread finished");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Tethering thread finished");
 		}
 		//expandPath(new TreePath(selectedNode.getPath()));
 	}
@@ -845,7 +847,7 @@ public class FiltersResultsTree extends JTree {
 	public void customThread(DefaultMutableTreeNode selectedNode){
 		String result;
 		String nodeName = selectedNode.toString();
-		System.out.println(nodeName + " thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + " thread running");
 		
 		String x = (String) selectedNode.getUserObject();
 		x = (nodeName + " - Running");
@@ -861,21 +863,21 @@ public class FiltersResultsTree extends JTree {
 				selectedNode.setUserObject(x);
 				addCustomResult(nodeName, "Logs not found");
 				updateResultTreeUI();
-				System.out.println(nodeName + " thread error");
+				Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + " thread error");
 				
 			} else if(result.contains("SAT IOException")){
 				x = (nodeName + " - Error");
 				selectedNode.setUserObject(x);
 				addCustomResult(nodeName, "IOException");
 				updateResultTreeUI();
-				System.out.println(nodeName + " thread error");
+				Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + " thread error");
 				
 			} else if(result.contains("Not a directory")){
 				x = (nodeName + " - Error");
 				selectedNode.setUserObject(x);
 				addCustomResult(nodeName, "No directory selected");
 				updateResultTreeUI();
-				System.out.println(nodeName + " thread error");
+				Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + " thread error");
 				
 			} else {
 				addCustomResult(nodeName, "Result");
@@ -886,7 +888,7 @@ public class FiltersResultsTree extends JTree {
 				x = (nodeName + " - Done");
 				selectedNode.setUserObject(x);
 				updateResultTreeUI();
-				System.out.println(nodeName + "thread finished");
+				Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + "thread finished");
 			}
 			//expandPath(new TreePath(selectedNode.getPath()));
 		} else {
@@ -894,7 +896,7 @@ public class FiltersResultsTree extends JTree {
 			selectedNode.setUserObject(x);
 			addCustomResult(nodeName, "Filter does not exists");
 			updateResultTreeUI();
-			System.out.println(nodeName + " thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + " thread error");
 		}
 	}
 
@@ -912,7 +914,7 @@ public class FiltersResultsTree extends JTree {
 	}
 	
 	public int findNodeIndex(DefaultMutableTreeNode Node){
-		System.out.println(rootNode.getIndex(Node));
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, String.valueOf(rootNode.getIndex(Node)));
 		return rootNode.getIndex(Node);
 	}
 	
@@ -975,9 +977,9 @@ public class FiltersResultsTree extends JTree {
 	
 	public void removeCustomNode(String name){
 		for(int i=0; i < rootNode.getChildCount(); i++){
-			System.out.println("No: " + rootNode.getChildAt(i).toString());
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "No: " + rootNode.getChildAt(i).toString());
 			if(rootNode.getChildAt(i).toString().replace(" - Done", "").replace(" - Error", "").replace(" - Running", "").equals(name)){
-				System.out.println("achou");
+				Logger.log(Logger.TAG_FILTERSRESULTSTREE, "achou");
 				rootNode.remove(i);
 				updateResultTreeUI();
 			}

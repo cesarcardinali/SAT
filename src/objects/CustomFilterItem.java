@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import core.Logger;
 import main.SAT;
 
 public class CustomFilterItem {
@@ -93,13 +94,13 @@ public class CustomFilterItem {
 		bures = "";
 		rores = "";
 		res = "";
-		System.out.println("regex: " + regex);
-		System.out.println("main: " + main);
-		System.out.println("system: " + system);
-		System.out.println("kernel: " + kernel);
-		System.out.println("radio: " + radio);
-		System.out.println("bugreport: " + bugreport);
-		System.out.println("routput: " + routput);
+		Logger.log(Logger.TAG_CUSTOMFILTER, "regex: " + regex);
+		Logger.log(Logger.TAG_CUSTOMFILTER, "main: " + main);
+		Logger.log(Logger.TAG_CUSTOMFILTER, "system: " + system);
+		Logger.log(Logger.TAG_CUSTOMFILTER, "kernel: " + kernel);
+		Logger.log(Logger.TAG_CUSTOMFILTER, "radio: " + radio);
+		Logger.log(Logger.TAG_CUSTOMFILTER, "bugreport: " + bugreport);
+		Logger.log(Logger.TAG_CUSTOMFILTER, "routput: " + routput);
 		
 		//File path
 		String file = "";
@@ -122,8 +123,8 @@ public class CustomFilterItem {
 					file = path + listOfFiles[i].getName();
 				}
 			}
-			System.out.println("file: " + file);
-			System.out.println("path: " + path);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
 
 			try {
 					reader = new BufferedReader(new FileReader(file));
@@ -144,12 +145,12 @@ public class CustomFilterItem {
 					
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				System.out.println("main log missing");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "main log missing");
 				mares = "main log missing\n";
 				res = res + "\n********From main log:\n" + mares;
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("IOException");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
 				mares = "SAT IOException\n";
 				res = res + "\n********From main log:\n" + mares;
 			}
@@ -169,8 +170,8 @@ public class CustomFilterItem {
 					file = path + listOfFiles[i].getName();
 				}
 			}
-			System.out.println("file: " + file);
-			System.out.println("path: " + path);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
 
 			try {
 					reader = new BufferedReader(new FileReader(file));
@@ -191,12 +192,12 @@ public class CustomFilterItem {
 					
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				System.out.println("System log missing");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "System log missing");
 				syres = "System log missing\n";
 				res = res + "\n********From system log:\n" + syres;
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("IOException");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
 				syres = "SAT IOException\n";
 				res = res + "\n********From system log:\n" + syres;
 			}
@@ -218,8 +219,8 @@ public class CustomFilterItem {
 					file = path + listOfFiles[i].getName();
 				}
 			}
-			System.out.println("file: " + file);
-			System.out.println("path: " + path);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
 
 			try {
 					reader = new BufferedReader(new FileReader(file));
@@ -240,12 +241,12 @@ public class CustomFilterItem {
 					
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				System.out.println("Kernel log missing");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "Kernel log missing");
 				keres = "Kernel log missing\n";
 				res = res + "\n********From kernel log:\n" + keres;
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("IOException");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
 				keres = "SAT IOException\n";
 				res = res + "\n********From kernel log:\n" + keres;
 			}
@@ -267,8 +268,8 @@ public class CustomFilterItem {
 					file = path + listOfFiles[i].getName();
 				}
 			}
-			System.out.println("file: " + file);
-			System.out.println("path: " + path);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
 
 			try {
 					reader = new BufferedReader(new FileReader(file));
@@ -289,12 +290,12 @@ public class CustomFilterItem {
 					
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				System.out.println("radio log missing");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "radio log missing");
 				rares = "radio log missing\n";
 				res = res + "\n********From radio log:\n" + rares;
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("IOException");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
 				rares = "SAT IOException\n";
 				res = res + "\n********From radio log:\n" + rares;
 			}
@@ -316,8 +317,8 @@ public class CustomFilterItem {
 					file = path + listOfFiles[i].getName();
 				}
 			}
-			System.out.println("file: " + file);
-			System.out.println("path: " + path);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
 
 			try {
 					reader = new BufferedReader(new FileReader(file));
@@ -338,12 +339,12 @@ public class CustomFilterItem {
 					
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				System.out.println("bugreport log missing");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "bugreport log missing");
 				bures = "bugreport log missing\n";
 				res = res + "\n********From bugreport log:\n" + bures;
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("IOException");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
 				bures = "SAT IOException\n";
 				res = res + "\n********From bugreport log:\n" + bures;
 			}
@@ -365,8 +366,8 @@ public class CustomFilterItem {
 					file = path + listOfFiles[i].getName();
 				}
 			}
-			System.out.println("file: " + file);
-			System.out.println("path: " + path);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
 
 			try {
 					reader = new BufferedReader(new FileReader(file));
@@ -387,12 +388,12 @@ public class CustomFilterItem {
 					
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				System.out.println("report output log missing");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "report output log missing");
 				rores = "report output log missing\n";
 				res = res + "\n********From report output log:********\n" + rores;
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("IOException");
+				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
 				rores = "SAT IOException\n";
 				res = res + "\n********From report output log:********\n" + rores;
 			}

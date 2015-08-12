@@ -41,7 +41,7 @@ import org.jdom2.input.SAXBuilder;
 
 import core.SharedObjs;
 import core.Icons;
-
+import core.Logger;
 import supportive.UnZip;
 
 import style.FileTreeNodeRenderer;
@@ -365,7 +365,7 @@ public class FileTree extends JPanel{
 				public void actionPerformed(ActionEvent arg0) {
 					// TODO Auto-generated method stub
 					rootFolderPath = "";
-					System.out.println(rootFolderPath);
+					Logger.log(Logger.TAG_FILETREE, rootFolderPath);
 					buildTree();
 				}
     			
@@ -551,7 +551,7 @@ public class FileTree extends JPanel{
   				} catch(Exception e){
   					
   					e.printStackTrace();
-  					System.out.println("Error while deleting file(s)");
+  					Logger.log(Logger.TAG_FILETREE, "Error while deleting file(s)");
   					
   				}
   				
@@ -622,7 +622,7 @@ public class FileTree extends JPanel{
 		    		node = (DefaultMutableTreeNode) node.getParent();
 		    		UnZip.unZipIt(file.getAbsolutePath(), file.getAbsolutePath().substring(0, file.getAbsolutePath().length()-28));
 		    		newFile = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length()-28));
-		    		System.out.println(newFile);
+		    		Logger.log(Logger.TAG_FILETREE, newFile.getAbsolutePath());
 		    		if (newFile != null) {
 		    			node.add(new DefaultMutableTreeNode(newFile));
 		    			if (run){
@@ -707,7 +707,7 @@ public class FileTree extends JPanel{
 					
 				}
 			}
-			System.out.println("Options Loaded");
+			Logger.log(Logger.TAG_FILETREE, "Options Loaded");
 		
 		} catch (IOException | JDOMException e){
 			e.printStackTrace();

@@ -41,7 +41,7 @@ public class Tether {
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (listOfFiles[i].isFile()) {
 					String files = listOfFiles[i].getName();
-					//System.out.println(listOfFiles[i].getName());
+					//Logger.log(Logger.TAG_TETHER, listOfFiles[i].getName());
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
 							&& (files.contains("system"))) {
 						if(path.equals("."))
@@ -65,7 +65,7 @@ public class Tether {
 						wifitetherData1 = wifitetherData1 + sCurrentLine + "\n";
 					}
 				}
-				//System.out.println(wifitetherData1);
+				//Logger.log(Logger.TAG_TETHER, wifitetherData1);
 				
 				if(br != null)
 					br.close();
@@ -76,7 +76,7 @@ public class Tether {
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (listOfFiles[i].isFile()) {
 					String files = listOfFiles[i].getName();
-					//System.out.println(listOfFiles[i].getName());
+					//Logger.log(Logger.TAG_TETHER, listOfFiles[i].getName());
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
 							&& (files.contains("main"))) {
 						if(path.equals("."))
@@ -102,14 +102,14 @@ public class Tether {
 					wifitetherData2 = wifitetherData2 + sCurrentLine + "\n";
 				}
 				else if (sCurrentLine.toLowerCase().contains("starting tether")){
-					//System.out.println(sCurrentLine);
+					//Logger.log(Logger.TAG_TETHER, sCurrentLine);
 					if(!startTether.equals(""))
 						startTether = startTether + "\n" + sCurrentLine;
 					else
 						startTether = sCurrentLine;
 				}
 				else if (sCurrentLine.toLowerCase().contains("stopping tether")){
-					//System.out.println(sCurrentLine);
+					//Logger.log(Logger.TAG_TETHER, sCurrentLine);
 					if(!stopTether.equals(""))
 						stopTether = stopTether + "\n" + sCurrentLine;
 					else
@@ -117,7 +117,7 @@ public class Tether {
 				}
 			}
 			
-			//System.out.println("\n\n\n" + startTether + "\n" + stopTether);
+			//Logger.log(Logger.TAG_TETHER, "\n\n\n" + startTether + "\n" + stopTether);
 			result = wifitether;
 			
 			if(!startTether.equals("") || !stopTether.equals("")){
@@ -162,7 +162,7 @@ public class Tether {
 				ex.printStackTrace();
 			}
 			
-			//System.out.println(result);
+			//Logger.log(Logger.TAG_TETHER, result);
 
 		} catch (FileNotFoundException e) {
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
@@ -188,7 +188,7 @@ public class Tether {
 	}
 
 	public static String getResult() {
-		//System.out.println(result);
+		//Logger.log(Logger.TAG_TETHER, result);
 		return result;
 	}
 

@@ -33,6 +33,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import core.Icons;
+import core.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -369,7 +370,7 @@ public class AdvancedOptionsPane extends JFrame {
         //Print the file
         xmlOutputter.output(document, new FileOutputStream(xmlFile));
         
-		System.out.println("Options Saved");
+		Logger.log(Logger.TAG_OPTIONS, "Options Saved");
 	}
 	
 	

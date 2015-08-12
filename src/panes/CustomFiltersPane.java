@@ -36,6 +36,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import core.Icons;
+import core.Logger;
 import core.SharedObjs;
 
 import objects.CustomFilterItem;
@@ -201,7 +202,7 @@ public class CustomFiltersPane extends JDialog {
 						}
 					}
 					if(aux != null){
-						System.out.println(aux.getName());
+						Logger.log(Logger.TAG_CUSTOMFILTER,  aux.getName());
 						filtersList.remove(aux);
 						comboBox.removeItem(aux.getName());
 					}
@@ -769,7 +770,7 @@ public class CustomFiltersPane extends JDialog {
 			}
 		} catch(IOException | JDOMException e){
 			e.printStackTrace();
-			System.out.println(e.getMessage());
+			Logger.log(Logger.TAG_CUSTOMFILTER,  e.getMessage());
 		}
 	}
 
@@ -810,7 +811,7 @@ public class CustomFiltersPane extends JDialog {
 	        //xmlOutputter.output(doc, System.out);
 	        xmlOutputter.output(document, new FileOutputStream(xmlFile));
 	        
-			System.out.println("Options Saved");
+			Logger.log(Logger.TAG_CUSTOMFILTER,  "Options Saved");
 			loadFilters();
 		} catch (JDOMException | IOException e){
 			e.printStackTrace();

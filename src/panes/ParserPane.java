@@ -35,6 +35,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import core.SharedObjs;
+import core.Logger;
 import supportive.NonWrappingTextPane;
 
 import filters.Alarm;
@@ -224,7 +225,7 @@ public class ParserPane extends JPanel {
 	        //xmlOutputter.output(doc, System.out);
 	        xmlOutputter.output(document, new FileOutputStream(xmlFile));
 	        
-			System.out.println("ParserPane data saved");
+			Logger.log(Logger.TAG_PARSER, "Options Saved");
 		} catch (JDOMException | IOException e){
 			e.printStackTrace();
 		}
@@ -257,7 +258,7 @@ public class ParserPane extends JPanel {
 					filtersResultsTree.setToggleClickCount(Integer.parseInt(e.getValue()));
 				}
 			}
-			System.out.println("Options Loaded");
+			Logger.log(Logger.TAG_PARSER, "Options Saved");
 		
 		} catch (IOException | JDOMException e){
 			e.printStackTrace();
