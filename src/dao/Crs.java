@@ -1,5 +1,6 @@
 package dao;
 
-public class Crs {
 
+public class Crs
+{
 }

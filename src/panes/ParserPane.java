@@ -50,291 +50,301 @@ import filters.Tether;
 import javax.swing.JSplitPane;
 
 
-public class ParserPane extends JPanel {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private JLabel lblTitle;
-	private UndoManager undoManager;
-	private JSplitPane splitPane;
-	private FileTree fileTree;
-	private FiltersResultsTree filtersResultsTree;
-	private NonWrappingTextPane resultTxtPane;
-
-	/**
-	 * Create the panel.
-	 */
-	public ParserPane() {
-		setMinimumSize(new Dimension(800, 600));
-		
-		GridBagLayout layout = new GridBagLayout();
-		layout.columnWidths = new int[]{250, 600};
-		layout.rowHeights = new int[]{40, 300};
-		layout.rowWeights = new double[]{1.0, 1.0};
-		layout.columnWeights = new double[]{1.0, 1.0};
-		setLayout(layout);
-		JPanel topright = new JPanel();
-		topright.setPreferredSize(new Dimension(10, 30));
-		topright.setMaximumSize(new Dimension(32767, 31));
-		topright.setBorder(new LineBorder(UIManager.getColor("Button.light")));;
-		topright.setMinimumSize(new Dimension(35, 30));		
-		
-		GridBagLayout tr = new GridBagLayout();
-		tr.rowWeights = new double[]{0.0};
-		tr.rowHeights = new int[]{0};
-		topright.setLayout(tr);
-		
-		GridBagConstraints g1 = new GridBagConstraints();
-		g1.fill = GridBagConstraints.HORIZONTAL;
-		g1.weightx = 20.0;
-		g1.weighty = 1.0;
-		g1.insets = new Insets(5, 10, 5, 10);
-		g1.gridx = 1;
-		g1.gridy = 0;
-		add(topright, g1);
-		lblTitle = new JLabel("Select a result folder on the left panel");
-		lblTitle.setMaximumSize(new Dimension(2000, 31));
-		lblTitle.setHorizontalTextPosition(SwingConstants.LEFT);
-		lblTitle.setHorizontalAlignment(SwingConstants.LEFT);
-		lblTitle.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 20));
-		lblTitle.setPreferredSize(new Dimension(35, 30));
-		lblTitle.setMinimumSize(new Dimension(400, 30));
-		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
-		gbc_lblTitle.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblTitle.insets = new Insets(0, 0, 0, 5);
-		gbc_lblTitle.anchor = GridBagConstraints.WEST;
-		gbc_lblTitle.weighty = 1.0;
-		gbc_lblTitle.weightx = 5.0;
-		gbc_lblTitle.gridy = 0;
-		gbc_lblTitle.gridx = 0;
-		topright.add(lblTitle, gbc_lblTitle);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setToolTipText("Result of the selected parser item on the left");
-		scrollPane.setFont(new Font("Consolas", Font.PLAIN, 12));
-		scrollPane.setBorder(new LineBorder(new Color(220, 220, 220)));;
-		scrollPane.setAutoscrolls(true);
-		scrollPane.setRequestFocusEnabled(false);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setPreferredSize(new Dimension(500, 500));
-		scrollPane.setMinimumSize(new Dimension(400, 400));
-		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		
-		splitPane = new JSplitPane();
-		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		fileTree = new FileTree();
-		splitPane.setRightComponent(fileTree);
-		JScrollPane scrollFiltersResults = new JScrollPane();
-		filtersResultsTree = new FiltersResultsTree();
-		scrollFiltersResults.setViewportView(filtersResultsTree);
-		scrollFiltersResults.setMinimumSize(new Dimension(200, 150));
-		splitPane.setLeftComponent(scrollFiltersResults);
-		GridBagConstraints gbc_splitPane = new GridBagConstraints();
-		gbc_splitPane.insets = new Insets(0, 0, 0, 5);
-		gbc_splitPane.fill = GridBagConstraints.BOTH;
-		gbc_splitPane.gridx = 0;
-		gbc_splitPane.gridy = 1;
-		add(splitPane, gbc_splitPane);
-
-		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.insets = new Insets(2, 10, 10, 10);
-		gbc_scrollPane.weighty = 22.0;
-		gbc_scrollPane.weightx = 15.0;
-		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.gridx = 1;
-		gbc_scrollPane.gridy = 1;
-		add(scrollPane, gbc_scrollPane);
-		
-		resultTxtPane = new NonWrappingTextPane();
-		resultTxtPane.setToolTipText("Result of the selected parser item on the left");
-		resultTxtPane.setContentType("text/plain");
-		resultTxtPane.setMargin(new Insets(7, 2, 7, 2));
-		resultTxtPane.setForeground(new Color(0, 0, 0));
-		resultTxtPane.setFont(new Font("Consolas", Font.PLAIN, 11));
-		resultTxtPane.setText("");
-		undoManager = new UndoManager();
-		resultTxtPane.getDocument().addUndoableEditListener(new UndoableEditListener() {
-			@Override
-			public void undoableEditHappened(UndoableEditEvent e) {
-				undoManager.addEdit(e.getEdit());
-			}
-		});
-		resultTxtPane.addKeyListener(new KeyListener() {
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				saveTextChanges(filtersResultsTree.getLastSelectedPathComponent(), resultTxtPane.getText());
-			}
-
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
-					// resultTxtPane.setText("woot!");
-					try {
-						undoManager.undo();
-					} catch (CannotRedoException cre) {
-						cre.printStackTrace();
-					}
-				}
-			}
-		});
-		scrollPane.setViewportView(resultTxtPane);
-		
-		SharedObjs.setResult("");
-		resultTxtPane.setText("");
-		lblTitle.setText("Run a parser or select a result on the left");
-		loadPaneData();
-	}
-	
-	/**
-	 *  Save pane data
-	 */
-	public void savePaneData(){
-		try{
-			//Abre o arquivo XML
-			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			
-			//Cria o builder da estrutura XML
-			SAXBuilder builder = new SAXBuilder();
-			
-			//Cria documento formatado de acordo com a lib XML
-			Document document = (Document) builder.build(xmlFile);
-			
-			//Pega o nó raiz do XML
-			Element satNode = document.getRootElement();
-			
-			//Gera lista de filhos do nó root
-			//List<Element> satElements = satNode.getChildren();
-			
-			//Pega o nó referente ao option pane
-			Element optionPaneNode = satNode.getChild("parser_pane"); 
-			for(Element e : optionPaneNode.getChildren()){
-				if(e.getName().equals("path")){
-					//salvar a root folder usada para criar a file tree
-					e.setText(fileTree.getRootFolderPath());
-					
-				}
-			}
-			
-			//JDOM document is ready now, lets write it to file now
-	        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-	        //output xml to console for debugging
-	        //xmlOutputter.output(doc, System.out);
-	        xmlOutputter.output(document, new FileOutputStream(xmlFile));
-	        
-			Logger.log(Logger.TAG_PARSER, "Options Saved");
-		} catch (JDOMException | IOException e){
-			e.printStackTrace();
+public class ParserPane extends JPanel
+{
+    private static final long	serialVersionUID = 1L;
+    private JLabel		lblTitle;
+    private UndoManager		undoManager;
+    private JSplitPane		splitPane;
+    private FileTree		fileTree;
+    private FiltersResultsTree	filtersResultsTree;
+    private NonWrappingTextPane	resultTxtPane;
+    
+    /**
+     * Create the panel.
+     */
+    public ParserPane()
+    {
+	setMinimumSize(new Dimension(800, 600));
+	GridBagLayout layout = new GridBagLayout();
+	layout.columnWidths = new int[] {250, 600};
+	layout.rowHeights = new int[] {40, 300};
+	layout.rowWeights = new double[] {1.0, 1.0};
+	layout.columnWeights = new double[] {1.0, 1.0};
+	setLayout(layout);
+	JPanel topright = new JPanel();
+	topright.setPreferredSize(new Dimension(10, 30));
+	topright.setMaximumSize(new Dimension(32767, 31));
+	topright.setBorder(new LineBorder(UIManager.getColor("Button.light")));
+	;
+	topright.setMinimumSize(new Dimension(35, 30));
+	GridBagLayout tr = new GridBagLayout();
+	tr.rowWeights = new double[] {0.0};
+	tr.rowHeights = new int[] {0};
+	topright.setLayout(tr);
+	GridBagConstraints g1 = new GridBagConstraints();
+	g1.fill = GridBagConstraints.HORIZONTAL;
+	g1.weightx = 20.0;
+	g1.weighty = 1.0;
+	g1.insets = new Insets(5, 10, 5, 10);
+	g1.gridx = 1;
+	g1.gridy = 0;
+	add(topright, g1);
+	lblTitle = new JLabel("Select a result folder on the left panel");
+	lblTitle.setMaximumSize(new Dimension(2000, 31));
+	lblTitle.setHorizontalTextPosition(SwingConstants.LEFT);
+	lblTitle.setHorizontalAlignment(SwingConstants.LEFT);
+	lblTitle.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 20));
+	lblTitle.setPreferredSize(new Dimension(35, 30));
+	lblTitle.setMinimumSize(new Dimension(400, 30));
+	GridBagConstraints gbc_lblTitle = new GridBagConstraints();
+	gbc_lblTitle.fill = GridBagConstraints.HORIZONTAL;
+	gbc_lblTitle.insets = new Insets(0, 0, 0, 5);
+	gbc_lblTitle.anchor = GridBagConstraints.WEST;
+	gbc_lblTitle.weighty = 1.0;
+	gbc_lblTitle.weightx = 5.0;
+	gbc_lblTitle.gridy = 0;
+	gbc_lblTitle.gridx = 0;
+	topright.add(lblTitle, gbc_lblTitle);
+	JScrollPane scrollPane = new JScrollPane();
+	scrollPane.setToolTipText("Result of the selected parser item on the left");
+	scrollPane.setFont(new Font("Consolas", Font.PLAIN, 12));
+	scrollPane.setBorder(new LineBorder(new Color(220, 220, 220)));
+	;
+	scrollPane.setAutoscrolls(true);
+	scrollPane.setRequestFocusEnabled(false);
+	scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+	scrollPane.setPreferredSize(new Dimension(500, 500));
+	scrollPane.setMinimumSize(new Dimension(400, 400));
+	scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+	splitPane = new JSplitPane();
+	splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+	fileTree = new FileTree();
+	splitPane.setRightComponent(fileTree);
+	JScrollPane scrollFiltersResults = new JScrollPane();
+	filtersResultsTree = new FiltersResultsTree();
+	scrollFiltersResults.setViewportView(filtersResultsTree);
+	scrollFiltersResults.setMinimumSize(new Dimension(200, 150));
+	splitPane.setLeftComponent(scrollFiltersResults);
+	GridBagConstraints gbc_splitPane = new GridBagConstraints();
+	gbc_splitPane.insets = new Insets(0, 0, 0, 5);
+	gbc_splitPane.fill = GridBagConstraints.BOTH;
+	gbc_splitPane.gridx = 0;
+	gbc_splitPane.gridy = 1;
+	add(splitPane, gbc_splitPane);
+	GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+	gbc_scrollPane.insets = new Insets(2, 10, 10, 10);
+	gbc_scrollPane.weighty = 22.0;
+	gbc_scrollPane.weightx = 15.0;
+	gbc_scrollPane.fill = GridBagConstraints.BOTH;
+	gbc_scrollPane.gridx = 1;
+	gbc_scrollPane.gridy = 1;
+	add(scrollPane, gbc_scrollPane);
+	resultTxtPane = new NonWrappingTextPane();
+	resultTxtPane.setToolTipText("Result of the selected parser item on the left");
+	resultTxtPane.setContentType("text/plain");
+	resultTxtPane.setMargin(new Insets(7, 2, 7, 2));
+	resultTxtPane.setForeground(new Color(0, 0, 0));
+	resultTxtPane.setFont(new Font("Consolas", Font.PLAIN, 11));
+	resultTxtPane.setText("");
+	undoManager = new UndoManager();
+	resultTxtPane.getDocument().addUndoableEditListener(new UndoableEditListener()
+	{
+	    @Override
+	    public void undoableEditHappened(UndoableEditEvent e)
+	    {
+		undoManager.addEdit(e.getEdit());
+	    }
+	});
+	resultTxtPane.addKeyListener(new KeyListener()
+	{
+	    @Override
+	    public void keyReleased(KeyEvent arg0)
+	    {
+		saveTextChanges(filtersResultsTree.getLastSelectedPathComponent(), resultTxtPane.getText());
+	    }
+	    
+	    @Override
+	    public void keyTyped(KeyEvent arg0)
+	    {
+	    }
+	    
+	    @Override
+	    public void keyPressed(KeyEvent e)
+	    {
+		if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0))
+		{
+		    // resultTxtPane.setText("woot!");
+		    try
+		    {
+			undoManager.undo();
+		    }
+		    catch (CannotRedoException cre)
+		    {
+			cre.printStackTrace();
+		    }
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void loadPaneData(){
-		try{
-			//Abre o arquivo XML
-			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			
-			//Cria o builder da estrutura XML
-			SAXBuilder builder = new SAXBuilder();
-			
-			//Cria documento formatado de acordo com a lib XML
-			Document document = (Document) builder.build(xmlFile);
-	
-			//Pega o nó raiz do XML
-			Element satNode = document.getRootElement();
-			
-			//Gera lista de filhos do nó root
-			//List<Element> satElements = satNode.getChildren();
-			
-			//Pega o nó referente ao option pane
-			Element crs_jira_paneNode = satNode.getChild("parser_pane");
-			for(Element e : crs_jira_paneNode.getChildren()){
-				if(e.getName().equals("tree_breakdown")){
-					filtersResultsTree.setToggleClickCount(Integer.parseInt(e.getValue()));
-				}
-			}
-			Logger.log(Logger.TAG_PARSER, "Options Saved");
-		
-		} catch (IOException | JDOMException e){
-			e.printStackTrace();
+	    }
+	});
+	scrollPane.setViewportView(resultTxtPane);
+	SharedObjs.setResult("");
+	resultTxtPane.setText("");
+	lblTitle.setText("Run a parser or select a result on the left");
+	loadPaneData();
+    }
+    
+    /**
+     * Save pane data
+     */
+    public void savePaneData()
+    {
+	try
+	{
+	    // Abre o arquivo XML
+	    File xmlFile = new File("Data/cfgs/user_cfg.xml");
+	    // Cria o builder da estrutura XML
+	    SAXBuilder builder = new SAXBuilder();
+	    // Cria documento formatado de acordo com a lib XML
+	    Document document = (Document) builder.build(xmlFile);
+	    // Pega o nó raiz do XML
+	    Element satNode = document.getRootElement();
+	    // Gera lista de filhos do nó root
+	    // List<Element> satElements = satNode.getChildren();
+	    // Pega o nó referente ao option pane
+	    Element optionPaneNode = satNode.getChild("parser_pane");
+	    for (Element e : optionPaneNode.getChildren())
+	    {
+		if (e.getName().equals("path"))
+		{
+		    // salvar a root folder usada para criar a file
+		    // tree
+		    e.setText(fileTree.getRootFolderPath());
 		}
+	    }
+	    // JDOM document is ready now, lets write it to file now
+	    XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+	    // output xml to console for debugging
+	    // xmlOutputter.output(doc, System.out);
+	    xmlOutputter.output(document, new FileOutputStream(xmlFile));
+	    Logger.log(Logger.TAG_PARSER, "Options Saved");
 	}
-
-	/**
-	 *  Save textPane text user edited
-	 * @param node
-	 * @param text
-	 */
-	private void saveTextChanges(Object node, String text) {
-		String selectedNode = node.toString().toLowerCase();
-		String selectedNodeParent = ((DefaultMutableTreeNode) node).getParent().toString().toLowerCase();
-		
-		if ((selectedNode.contains("colors") && selectedNodeParent.contains("alarms ")) || selectedNode.contains("alarms "))
-			Alarm.updateResult(text);
-		
-		if ((selectedNode.contains("colors") && selectedNodeParent.contains(" consum")) || selectedNode.contains(" consum"))
-			Consume.updateResult(text);
-		
-		if (selectedNode.contains("diag ") || selectedNodeParent.contains("diag "))
-			Diag.updateResult(text);
-		
-		if (selectedNode.contains("suspicious"))
-			Suspicious.updateResult(text);
-		
-		if (selectedNode.contains("tether") || selectedNodeParent.contains("tether"))
-			Tether.updateResult(text);
-		
-		if (selectedNode.contains("summary") || selectedNodeParent.contains("summary"))
-			Normal.updateResult(text);
-		
-		if (selectedNode.contains(" issues") || selectedNodeParent.contains(" issues"))
-			Issue.updateResult(text);
-		
-		if (selectedNode.contains("bug2go") || selectedNodeParent.contains("bug2go")) {
-			B2G.updateResult(text);
-			B2G.setEdited(true);
+	catch (JDOMException | IOException e)
+	{
+	    e.printStackTrace();
+	}
+    }
+    
+    /**
+     * 
+     */
+    private void loadPaneData()
+    {
+	try
+	{
+	    // Abre o arquivo XML
+	    File xmlFile = new File("Data/cfgs/user_cfg.xml");
+	    // Cria o builder da estrutura XML
+	    SAXBuilder builder = new SAXBuilder();
+	    // Cria documento formatado de acordo com a lib XML
+	    Document document = (Document) builder.build(xmlFile);
+	    // Pega o nó raiz do XML
+	    Element satNode = document.getRootElement();
+	    // Gera lista de filhos do nó root
+	    // List<Element> satElements = satNode.getChildren();
+	    // Pega o nó referente ao option pane
+	    Element crs_jira_paneNode = satNode.getChild("parser_pane");
+	    for (Element e : crs_jira_paneNode.getChildren())
+	    {
+		if (e.getName().equals("tree_breakdown"))
+		{
+		    filtersResultsTree.setToggleClickCount(Integer.parseInt(e.getValue()));
 		}
+	    }
+	    Logger.log(Logger.TAG_PARSER, "Options Saved");
 	}
-	
-	/**
-	 * Reset pane UI to initial state
-	 */
-	public void clearPane() {
-		filtersResultsTree.clearTree();
-		resultTxtPane.setText(""); 		//reset the text pane
-		SharedObjs.setResult("");	//reset the result for the filters
-		lblTitle.setText("Run a parser or select a result on the left");	//reset the text in the title
+	catch (IOException | JDOMException e)
+	{
+	    e.printStackTrace();
 	}
-	
-	/**
-	 * Show all log results on the results pane
-	 */
-	public void showAllLogResults(){
-		resultTxtPane.setText(SharedObjs.getResult());
-		lblTitle.setText("All Results:");
+    }
+    
+    /**
+     * Save textPane text user edited
+     * 
+     * @param node
+     * @param text
+     */
+    private void saveTextChanges(Object node, String text)
+    {
+	String selectedNode = node.toString().toLowerCase();
+	String selectedNodeParent = ((DefaultMutableTreeNode) node).getParent().toString().toLowerCase();
+	if ((selectedNode.contains("colors") && selectedNodeParent.contains("alarms "))
+	    || selectedNode.contains("alarms "))
+	    Alarm.updateResult(text);
+	if ((selectedNode.contains("colors") && selectedNodeParent.contains(" consum"))
+	    || selectedNode.contains(" consum"))
+	    Consume.updateResult(text);
+	if (selectedNode.contains("diag ") || selectedNodeParent.contains("diag "))
+	    Diag.updateResult(text);
+	if (selectedNode.contains("suspicious"))
+	    Suspicious.updateResult(text);
+	if (selectedNode.contains("tether") || selectedNodeParent.contains("tether"))
+	    Tether.updateResult(text);
+	if (selectedNode.contains("summary") || selectedNodeParent.contains("summary"))
+	    Normal.updateResult(text);
+	if (selectedNode.contains(" issues") || selectedNodeParent.contains(" issues"))
+	    Issue.updateResult(text);
+	if (selectedNode.contains("bug2go") || selectedNodeParent.contains("bug2go"))
+	{
+	    B2G.updateResult(text);
+	    B2G.setEdited(true);
 	}
-
-
-	// Getters and Setters
-	public FiltersResultsTree getFiltersResultsTree() {
-		return filtersResultsTree;
-	}
-	
-	public void setResultsPaneTxt(String text){
-		resultTxtPane.setText(text);
-		resultTxtPane.setCaretPosition(0);
-	}
-	
-	public NonWrappingTextPane getResultsTxtPane(){
-		return resultTxtPane;
-	}
-	
-	public void setTitle(String text){
-		lblTitle.setText(text);
-	}
+    }
+    
+    /**
+     * Reset pane UI to initial state
+     */
+    public void clearPane()
+    {
+	filtersResultsTree.clearTree();
+	resultTxtPane.setText(""); // reset the text pane
+	SharedObjs.setResult(""); // reset the result for the filters
+	lblTitle.setText("Run a parser or select a result on the left"); // reset
+									 // the
+									 // text
+									 // in
+									 // the
+									 // title
+    }
+    
+    /**
+     * Show all log results on the results pane
+     */
+    public void showAllLogResults()
+    {
+	resultTxtPane.setText(SharedObjs.getResult());
+	lblTitle.setText("All Results:");
+    }
+    
+    // Getters and Setters
+    public FiltersResultsTree getFiltersResultsTree()
+    {
+	return filtersResultsTree;
+    }
+    
+    public void setResultsPaneTxt(String text)
+    {
+	resultTxtPane.setText(text);
+	resultTxtPane.setCaretPosition(0);
+    }
+    
+    public NonWrappingTextPane getResultsTxtPane()
+    {
+	return resultTxtPane;
+    }
+    
+    public void setTitle(String text)
+    {
+	lblTitle.setText(text);
+    }
 }

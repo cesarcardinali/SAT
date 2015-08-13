@@ -1,5 +1,6 @@
 package dao;
 
-public class Filters {
 
+public class Filters
+{
 }
