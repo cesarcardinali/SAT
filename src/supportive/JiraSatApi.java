@@ -547,7 +547,7 @@ public class JiraSatApi
 			cr.setDup(fields.get("customfield_10622").toString()); // Get CR dups
 		}
 		
-		System.out.println(cr);
+		//System.out.println(cr);
 		
 		return cr;
 	}
