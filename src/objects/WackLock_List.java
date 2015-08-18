@@ -18,6 +18,7 @@ public class WackLock_List extends ArrayList<WakelockItem>
 	public int wlIndexOf(WakelockItem o)
 	{
 		WakelockItem wl;
+		
 		for (int i = 0; i < this.size(); i++)
 		{
 			wl = this.get(i);
@@ -27,6 +28,7 @@ public class WackLock_List extends ArrayList<WakelockItem>
 				return i;
 			}
 		}
+		
 		return -1;
 	}
 	
@@ -40,6 +42,7 @@ public class WackLock_List extends ArrayList<WakelockItem>
 	public int wlMatchUidTag(String uid, String tag)
 	{
 		WakelockItem wl;
+		
 		for (int i = 0; i < this.size(); i++)
 		{
 			wl = this.get(i);
@@ -48,6 +51,7 @@ public class WackLock_List extends ArrayList<WakelockItem>
 				return i;
 			}
 		}
+		
 		return -1;
 	}
 }

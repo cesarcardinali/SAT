@@ -24,6 +24,7 @@ public class Normal
 	{
 		BufferedReader br = null;
 		result = "";
+		
 		try
 		{
 			// Configure headers
@@ -33,20 +34,24 @@ public class Normal
 			String bugReportData = "";
 			String dataNbatteryData = "";
 			String str_report = "";
+			
 			// Find file to be parsed
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
+			
 			if (!folder.isDirectory())
 			{
 				result = "Not a directory";
 				return result;
 			}
+			
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
 				if (listOfFiles[i].isFile())
 				{
 					String files = listOfFiles[i].getName();
 					// Logger.log(Logger.TAG_NORMAL, "" + files);
+					
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
 						&& (files.contains("report-output")))
 					{
@@ -58,15 +63,19 @@ public class Normal
 					}
 				}
 			}
+			
 			// Try to open file
 			if (str_report.equals(""))
 			{
 				throw new FileNotFoundException();
 			}
+			
 			br = new BufferedReader(new FileReader(str_report));
+			
 			String sCurrentLine;
 			String secondaryData1 = "";
 			String secondaryData2 = "";
+			
 			// Read new line and parse it
 			while ((sCurrentLine = br.readLine()) != null)
 			{
@@ -80,20 +89,23 @@ public class Normal
 						bugReportData = bugReportData + sCurrentLine + "\n";
 						sCurrentLine = br.readLine();
 					}
+					
 					bugReportData = bugReportData + noFormat + "\n";
 				}
+				
 				if (sCurrentLine.contains("obile total receiv"))
 				{
 					Logger.log(Logger.TAG_NORMAL, "dataNbatteryData - 2");
 					dataNbatteryData = "\n" + noFormat + "\n" + sCurrentLine + "\n";
 					sCurrentLine = br.readLine();
-					// Device battery use since last full charge
-					do
+					
+					do // Device battery use since last full charge
 					{
 						dataNbatteryData = dataNbatteryData + sCurrentLine + "\n";
 						sCurrentLine = br.readLine();
 					}
 					while ((sCurrentLine).indexOf("Full Charge Battery Capacity") < 0);
+					
 					dataNbatteryData = dataNbatteryData + noFormat + "\n";
 				}
 				else if (sCurrentLine.equals("Discharging"))
@@ -101,11 +113,13 @@ public class Normal
 					Logger.log(Logger.TAG_NORMAL, "Secondary - 4");
 					secondaryData1 = "*Battery Discharging Summary*\n{panel}\n";
 					sCurrentLine = br.readLine();
+					
 					while (!sCurrentLine.contains("-------") && !sCurrentLine.equals(""))
 					{
 						secondaryData1 = secondaryData1 + sCurrentLine + "\n";
 						sCurrentLine = br.readLine();
 					}
+					
 					secondaryData1 = secondaryData1 + "{panel}";
 				}
 				else if (sCurrentLine.toLowerCase().equals("summary"))
@@ -113,16 +127,20 @@ public class Normal
 					Logger.log(Logger.TAG_NORMAL, "Secondary - 5");
 					secondaryData2 = "\n*General Battery Summary*\n{panel}\n";
 					sCurrentLine = br.readLine();
+					
 					if (sCurrentLine.equals("================="))
 						sCurrentLine = br.readLine();
+						
 					while (!sCurrentLine.contains("<END_BTD_FILE_") && !sCurrentLine.equals(""))
 					{
 						secondaryData2 = secondaryData2 + sCurrentLine + "\n";
 						sCurrentLine = br.readLine();
 					}
+					
 					secondaryData2 = secondaryData2 + "{panel}";
 				}
 			}
+			
 			try
 			{
 				br.close();
@@ -131,25 +149,30 @@ public class Normal
 			{
 				ex.printStackTrace();
 			}
+			
 			result = bugReport + bugReportData + dataNbatteryUsage + dataNbatteryData;
-			if (result.split("\n").length < 10) // Check how much data
-			// was collected
+			
+			if (result.split("\n").length < 10) // Check how much data was collected
 			{
 				result = secondaryData1 + "\n" + secondaryData2;
 			}
+			
 			result = result + "\n- No current drain issues found in this CR.\n\n??Closed as normal use??";
+			
 			// Logger.log(Logger.TAG_NORMAL, result);
 		}
 		catch (FileNotFoundException e)
 		{
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			
 			return result;
 		}
 		catch (IOException e)
 		{
 			result = "IOException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			
 			return result;
 		}
 		finally
@@ -164,6 +187,7 @@ public class Normal
 				ex.printStackTrace();
 			}
 		}
+		
 		return result;
 	}
 	

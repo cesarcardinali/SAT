@@ -34,8 +34,11 @@ public class NonWrappingTextPane extends JTextPane
 		super(doc);
 	}
 	
-	// Override getScrollableTracksViewportWidth
-	// to preserve the full width of the text
+	/*
+	 * Override getScrollableTracksViewportWidth to preserve the full width of the text (non-Javadoc)
+	 * 
+	 * @see javax.swing.JEditorPane#getScrollableTracksViewportWidth()
+	 */
 	public boolean getScrollableTracksViewportWidth()
 	{
 		Component parent = getParent();

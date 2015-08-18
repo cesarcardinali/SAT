@@ -167,6 +167,7 @@ public class OptionsPane extends JPanel
 		gbc_label_3.gridx = 0;
 		gbc_label_3.gridy = 0;
 		panel.add(label_3, gbc_label_3);
+		
 		JLabel label_4 = new JLabel("Comments personalization:");
 		label_4.setFont(new Font("Tahoma", Font.BOLD, 16));
 		label_4.setAlignmentX(0.5f);
@@ -178,6 +179,7 @@ public class OptionsPane extends JPanel
 		gbc_label_4.gridx = 0;
 		gbc_label_4.gridy = 1;
 		panel.add(label_4, gbc_label_4);
+		
 		JLabel label_5 = new JLabel("High consumption apps:");
 		label_5.setMinimumSize(new Dimension(96, 18));
 		label_5.setFont(new Font("Tahoma", Font.ITALIC, 14));
@@ -190,6 +192,7 @@ public class OptionsPane extends JPanel
 		gbc_label_5.gridx = 0;
 		gbc_label_5.gridy = 2;
 		panel.add(label_5, gbc_label_5);
+		
 		JLabel label_19 = new JLabel("Full log:");
 		label_19.setMaximumSize(new Dimension(100, 14));
 		label_19.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -199,6 +202,7 @@ public class OptionsPane extends JPanel
 		gbc_label_19.gridx = 0;
 		gbc_label_19.gridy = 3;
 		panel.add(label_19, gbc_label_19);
+		
 		textConsumeFull = new JTextField();
 		textConsumeFull.setColumns(10);
 		GridBagConstraints gbc_textConsumeFull = new GridBagConstraints();
@@ -207,6 +211,7 @@ public class OptionsPane extends JPanel
 		gbc_textConsumeFull.gridx = 1;
 		gbc_textConsumeFull.gridy = 3;
 		panel.add(textConsumeFull, gbc_textConsumeFull);
+		
 		JButton button_12 = new JButton("?");
 		button_12.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_12 = new GridBagConstraints();
@@ -214,6 +219,7 @@ public class OptionsPane extends JPanel
 		gbc_button_12.gridx = 2;
 		gbc_button_12.gridy = 3;
 		panel.add(button_12, gbc_button_12);
+		
 		JLabel label_20 = new JLabel("Screen Off:");
 		label_20.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_20 = new GridBagConstraints();
@@ -222,6 +228,7 @@ public class OptionsPane extends JPanel
 		gbc_label_20.gridx = 0;
 		gbc_label_20.gridy = 4;
 		panel.add(label_20, gbc_label_20);
+		
 		textConsumeOff = new JTextField();
 		textConsumeOff.setColumns(10);
 		GridBagConstraints gbc_textConsumeOff = new GridBagConstraints();
@@ -230,6 +237,7 @@ public class OptionsPane extends JPanel
 		gbc_textConsumeOff.gridx = 1;
 		gbc_textConsumeOff.gridy = 4;
 		panel.add(textConsumeOff, gbc_textConsumeOff);
+		
 		JButton button_13 = new JButton("?");
 		button_13.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_13 = new GridBagConstraints();
@@ -237,6 +245,7 @@ public class OptionsPane extends JPanel
 		gbc_button_13.gridx = 2;
 		gbc_button_13.gridy = 4;
 		panel.add(button_13, gbc_button_13);
+		
 		JLabel label_21 = new JLabel("Screen On:");
 		label_21.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_21 = new GridBagConstraints();
@@ -245,6 +254,7 @@ public class OptionsPane extends JPanel
 		gbc_label_21.gridx = 0;
 		gbc_label_21.gridy = 5;
 		panel.add(label_21, gbc_label_21);
+		
 		textConsumeOn = new JTextField();
 		textConsumeOn.setColumns(10);
 		GridBagConstraints gbc_textConsumeOn = new GridBagConstraints();
@@ -253,6 +263,7 @@ public class OptionsPane extends JPanel
 		gbc_textConsumeOn.gridx = 1;
 		gbc_textConsumeOn.gridy = 5;
 		panel.add(textConsumeOn, gbc_textConsumeOn);
+		
 		JButton button_14 = new JButton("?");
 		button_14.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_14 = new GridBagConstraints();
@@ -260,6 +271,7 @@ public class OptionsPane extends JPanel
 		gbc_button_14.gridx = 2;
 		gbc_button_14.gridy = 5;
 		panel.add(button_14, gbc_button_14);
+		
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setPreferredSize(new Dimension(500, 1));
 		separator_2.setMinimumSize(new Dimension(3, 2));
@@ -272,6 +284,7 @@ public class OptionsPane extends JPanel
 		gbc_separator_2.gridx = 0;
 		gbc_separator_2.gridy = 6;
 		panel.add(separator_2, gbc_separator_2);
+		
 		JLabel label_22 = new JLabel("General Issues:");
 		label_22.setMinimumSize(new Dimension(100, 18));
 		label_22.setFont(new Font("Tahoma", Font.ITALIC, 14));
@@ -282,6 +295,7 @@ public class OptionsPane extends JPanel
 		gbc_label_22.gridx = 0;
 		gbc_label_22.gridy = 7;
 		panel.add(label_22, gbc_label_22);
+		
 		JLabel label_23 = new JLabel("High Current:");
 		label_23.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_23 = new GridBagConstraints();
@@ -290,6 +304,7 @@ public class OptionsPane extends JPanel
 		gbc_label_23.gridx = 0;
 		gbc_label_23.gridy = 8;
 		panel.add(label_23, gbc_label_23);
+		
 		textHighCurrent = new JTextField();
 		textHighCurrent.setColumns(10);
 		GridBagConstraints gbc_textHighCurrent = new GridBagConstraints();
@@ -298,6 +313,7 @@ public class OptionsPane extends JPanel
 		gbc_textHighCurrent.gridx = 1;
 		gbc_textHighCurrent.gridy = 8;
 		panel.add(textHighCurrent, gbc_textHighCurrent);
+		
 		JButton button_15 = new JButton("?");
 		button_15.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_15 = new GridBagConstraints();
@@ -305,6 +321,7 @@ public class OptionsPane extends JPanel
 		gbc_button_15.gridx = 2;
 		gbc_button_15.gridy = 8;
 		panel.add(button_15, gbc_button_15);
+		
 		JLabel label_24 = new JLabel("Kernel Wakelocks:");
 		label_24.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_24 = new GridBagConstraints();
@@ -313,6 +330,7 @@ public class OptionsPane extends JPanel
 		gbc_label_24.gridx = 0;
 		gbc_label_24.gridy = 9;
 		panel.add(label_24, gbc_label_24);
+		
 		textKernelWake = new JTextField();
 		textKernelWake.setColumns(10);
 		GridBagConstraints gbc_textKernelWake = new GridBagConstraints();
@@ -321,6 +339,7 @@ public class OptionsPane extends JPanel
 		gbc_textKernelWake.gridx = 1;
 		gbc_textKernelWake.gridy = 9;
 		panel.add(textKernelWake, gbc_textKernelWake);
+		
 		JButton button_16 = new JButton("?");
 		button_16.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_16 = new GridBagConstraints();
@@ -328,6 +347,7 @@ public class OptionsPane extends JPanel
 		gbc_button_16.gridx = 2;
 		gbc_button_16.gridy = 9;
 		panel.add(button_16, gbc_button_16);
+		
 		JLabel label_25 = new JLabel("Java Wakelocks:");
 		label_25.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_25 = new GridBagConstraints();
@@ -336,6 +356,7 @@ public class OptionsPane extends JPanel
 		gbc_label_25.gridx = 0;
 		gbc_label_25.gridy = 10;
 		panel.add(label_25, gbc_label_25);
+		
 		textJavaWake = new JTextField();
 		textJavaWake.setColumns(10);
 		GridBagConstraints gbc_textJavaWake = new GridBagConstraints();
@@ -344,6 +365,7 @@ public class OptionsPane extends JPanel
 		gbc_textJavaWake.gridx = 1;
 		gbc_textJavaWake.gridy = 10;
 		panel.add(textJavaWake, gbc_textJavaWake);
+		
 		JButton button_17 = new JButton("?");
 		button_17.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_17 = new GridBagConstraints();
@@ -351,6 +373,7 @@ public class OptionsPane extends JPanel
 		gbc_button_17.gridx = 2;
 		gbc_button_17.gridy = 10;
 		panel.add(button_17, gbc_button_17);
+		
 		JSeparator separator_3 = new JSeparator();
 		separator_3.setPreferredSize(new Dimension(500, 1));
 		separator_3.setMinimumSize(new Dimension(3, 2));
@@ -363,6 +386,7 @@ public class OptionsPane extends JPanel
 		gbc_separator_3.gridx = 0;
 		gbc_separator_3.gridy = 11;
 		panel.add(separator_3, gbc_separator_3);
+		
 		JLabel label_26 = new JLabel("Suspicious:");
 		label_26.setMinimumSize(new Dimension(100, 18));
 		label_26.setFont(new Font("Tahoma", Font.ITALIC, 14));
@@ -374,6 +398,7 @@ public class OptionsPane extends JPanel
 		gbc_label_26.gridx = 0;
 		gbc_label_26.gridy = 12;
 		panel.add(label_26, gbc_label_26);
+		
 		JLabel label_27 = new JLabel("Header:");
 		label_27.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_27 = new GridBagConstraints();
@@ -382,6 +407,7 @@ public class OptionsPane extends JPanel
 		gbc_label_27.gridx = 0;
 		gbc_label_27.gridy = 13;
 		panel.add(label_27, gbc_label_27);
+		
 		textSuspiciousHeader = new JTextField();
 		textSuspiciousHeader.setColumns(10);
 		GridBagConstraints gbc_textSuspiciousHeader = new GridBagConstraints();
@@ -390,6 +416,7 @@ public class OptionsPane extends JPanel
 		gbc_textSuspiciousHeader.gridx = 1;
 		gbc_textSuspiciousHeader.gridy = 13;
 		panel.add(textSuspiciousHeader, gbc_textSuspiciousHeader);
+		
 		JButton button_18 = new JButton("?");
 		button_18.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_18 = new GridBagConstraints();
@@ -397,6 +424,7 @@ public class OptionsPane extends JPanel
 		gbc_button_18.gridx = 2;
 		gbc_button_18.gridy = 13;
 		panel.add(button_18, gbc_button_18);
+		
 		JLabel label_28 = new JLabel("Comment:");
 		label_28.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_28 = new GridBagConstraints();
@@ -405,6 +433,7 @@ public class OptionsPane extends JPanel
 		gbc_label_28.gridx = 0;
 		gbc_label_28.gridy = 14;
 		panel.add(label_28, gbc_label_28);
+		
 		textSuspicious = new JTextField();
 		textSuspicious.setColumns(10);
 		GridBagConstraints gbc_textSuspicious = new GridBagConstraints();
@@ -413,6 +442,7 @@ public class OptionsPane extends JPanel
 		gbc_textSuspicious.gridx = 1;
 		gbc_textSuspicious.gridy = 14;
 		panel.add(textSuspicious, gbc_textSuspicious);
+		
 		JButton button_19 = new JButton("?");
 		button_19.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_19 = new GridBagConstraints();
@@ -420,6 +450,7 @@ public class OptionsPane extends JPanel
 		gbc_button_19.gridx = 2;
 		gbc_button_19.gridy = 14;
 		panel.add(button_19, gbc_button_19);
+		
 		JSeparator separator_7 = new JSeparator();
 		separator_7.setPreferredSize(new Dimension(500, 1));
 		separator_7.setMinimumSize(new Dimension(3, 2));
@@ -432,6 +463,7 @@ public class OptionsPane extends JPanel
 		gbc_separator_7.gridx = 0;
 		gbc_separator_7.gridy = 15;
 		panel.add(separator_7, gbc_separator_7);
+		
 		JLabel label_29 = new JLabel("Alarms: ");
 		label_29.setMinimumSize(new Dimension(125, 18));
 		label_29.setFont(new Font("Tahoma", Font.ITALIC, 14));
@@ -443,6 +475,7 @@ public class OptionsPane extends JPanel
 		gbc_label_29.gridx = 0;
 		gbc_label_29.gridy = 16;
 		panel.add(label_29, gbc_label_29);
+		
 		JLabel label_30 = new JLabel("Comment:");
 		label_30.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_30 = new GridBagConstraints();
@@ -451,6 +484,7 @@ public class OptionsPane extends JPanel
 		gbc_label_30.gridx = 0;
 		gbc_label_30.gridy = 17;
 		panel.add(label_30, gbc_label_30);
+		
 		textAlarms = new JTextField();
 		textAlarms.setColumns(10);
 		GridBagConstraints gbc_textAlarms = new GridBagConstraints();
@@ -459,6 +493,7 @@ public class OptionsPane extends JPanel
 		gbc_textAlarms.gridx = 1;
 		gbc_textAlarms.gridy = 17;
 		panel.add(textAlarms, gbc_textAlarms);
+		
 		JButton button_20 = new JButton("?");
 		button_20.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_20 = new GridBagConstraints();
@@ -466,6 +501,7 @@ public class OptionsPane extends JPanel
 		gbc_button_20.gridx = 2;
 		gbc_button_20.gridy = 17;
 		panel.add(button_20, gbc_button_20);
+		
 		JSeparator separator_9 = new JSeparator();
 		separator_9.setPreferredSize(new Dimension(500, 1));
 		separator_9.setMinimumSize(new Dimension(3, 2));
@@ -478,6 +514,7 @@ public class OptionsPane extends JPanel
 		gbc_separator_9.gridx = 0;
 		gbc_separator_9.gridy = 18;
 		panel.add(separator_9, gbc_separator_9);
+		
 		JLabel label_31 = new JLabel("Bug2Go: ");
 		label_31.setMinimumSize(new Dimension(125, 18));
 		label_31.setFont(new Font("Tahoma", Font.ITALIC, 14));
@@ -489,6 +526,7 @@ public class OptionsPane extends JPanel
 		gbc_label_31.gridx = 0;
 		gbc_label_31.gridy = 19;
 		panel.add(label_31, gbc_label_31);
+		
 		JLabel label_32 = new JLabel("Comment:");
 		label_32.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_32 = new GridBagConstraints();
@@ -497,6 +535,7 @@ public class OptionsPane extends JPanel
 		gbc_label_32.gridx = 0;
 		gbc_label_32.gridy = 20;
 		panel.add(label_32, gbc_label_32);
+		
 		textB2g = new JTextField();
 		textB2g.setColumns(10);
 		GridBagConstraints gbc_textB2g = new GridBagConstraints();
@@ -505,6 +544,7 @@ public class OptionsPane extends JPanel
 		gbc_textB2g.gridx = 1;
 		gbc_textB2g.gridy = 20;
 		panel.add(textB2g, gbc_textB2g);
+		
 		JButton button_21 = new JButton("?");
 		button_21.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_21 = new GridBagConstraints();
@@ -512,6 +552,7 @@ public class OptionsPane extends JPanel
 		gbc_button_21.gridx = 2;
 		gbc_button_21.gridy = 20;
 		panel.add(button_21, gbc_button_21);
+		
 		JSeparator separator_10 = new JSeparator();
 		separator_10.setPreferredSize(new Dimension(500, 1));
 		separator_10.setMinimumSize(new Dimension(3, 2));
@@ -524,6 +565,7 @@ public class OptionsPane extends JPanel
 		gbc_separator_10.gridx = 0;
 		gbc_separator_10.gridy = 21;
 		panel.add(separator_10, gbc_separator_10);
+		
 		JLabel label_33 = new JLabel("Tethering: ");
 		label_33.setMinimumSize(new Dimension(125, 18));
 		label_33.setFont(new Font("Tahoma", Font.ITALIC, 14));
@@ -535,6 +577,7 @@ public class OptionsPane extends JPanel
 		gbc_label_33.gridx = 0;
 		gbc_label_33.gridy = 22;
 		panel.add(label_33, gbc_label_33);
+		
 		JLabel label_34 = new JLabel("Comment:");
 		label_34.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_34 = new GridBagConstraints();
@@ -543,6 +586,7 @@ public class OptionsPane extends JPanel
 		gbc_label_34.gridx = 0;
 		gbc_label_34.gridy = 23;
 		panel.add(label_34, gbc_label_34);
+		
 		textTether = new JTextField();
 		textTether.setColumns(10);
 		GridBagConstraints gbc_textTether = new GridBagConstraints();
@@ -551,6 +595,7 @@ public class OptionsPane extends JPanel
 		gbc_textTether.gridx = 1;
 		gbc_textTether.gridy = 23;
 		panel.add(textTether, gbc_textTether);
+		
 		JButton button_22 = new JButton("?");
 		button_22.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_22 = new GridBagConstraints();
@@ -558,6 +603,7 @@ public class OptionsPane extends JPanel
 		gbc_button_22.gridx = 2;
 		gbc_button_22.gridy = 23;
 		panel.add(button_22, gbc_button_22);
+		
 		JSeparator separator_11 = new JSeparator();
 		separator_11.setPreferredSize(new Dimension(500, 1));
 		separator_11.setMinimumSize(new Dimension(3, 2));
@@ -570,6 +616,7 @@ public class OptionsPane extends JPanel
 		gbc_separator_11.gridx = 0;
 		gbc_separator_11.gridy = 24;
 		panel.add(separator_11, gbc_separator_11);
+		
 		JLabel label_35 = new JLabel("Diag: ");
 		label_35.setMinimumSize(new Dimension(125, 18));
 		label_35.setFont(new Font("Tahoma", Font.ITALIC, 14));
@@ -581,6 +628,7 @@ public class OptionsPane extends JPanel
 		gbc_label_35.gridx = 0;
 		gbc_label_35.gridy = 25;
 		panel.add(label_35, gbc_label_35);
+		
 		JLabel label_36 = new JLabel("Comment:");
 		label_36.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_label_36 = new GridBagConstraints();
@@ -589,6 +637,7 @@ public class OptionsPane extends JPanel
 		gbc_label_36.gridx = 0;
 		gbc_label_36.gridy = 26;
 		panel.add(label_36, gbc_label_36);
+		
 		textDiag = new JTextField();
 		textDiag.setColumns(10);
 		GridBagConstraints gbc_textDiag = new GridBagConstraints();
@@ -597,6 +646,7 @@ public class OptionsPane extends JPanel
 		gbc_textDiag.gridx = 1;
 		gbc_textDiag.gridy = 26;
 		panel.add(textDiag, gbc_textDiag);
+		
 		JButton button_23 = new JButton("?");
 		button_23.setMargin(new Insets(2, 8, 2, 8));
 		GridBagConstraints gbc_button_23 = new GridBagConstraints();
@@ -604,6 +654,7 @@ public class OptionsPane extends JPanel
 		gbc_button_23.gridx = 2;
 		gbc_button_23.gridy = 26;
 		panel.add(button_23, gbc_button_23);
+		
 		JButton btnSalvar = new JButton("Save");
 		btnSalvar.addActionListener(new ActionListener()
 		{
@@ -631,6 +682,7 @@ public class OptionsPane extends JPanel
 		gbc_btnSalvar.gridx = 0;
 		gbc_btnSalvar.gridy = 27;
 		panel.add(btnSalvar, gbc_btnSalvar);
+		
 		JLabel label_37 = new JLabel("Parser options:");
 		label_37.setFont(new Font("Tahoma", Font.BOLD, 16));
 		label_37.setAlignmentX(0.5f);
@@ -642,6 +694,7 @@ public class OptionsPane extends JPanel
 		gbc_label_37.gridx = 0;
 		gbc_label_37.gridy = 28;
 		panel.add(label_37, gbc_label_37);
+		
 		JLabel label_38 = new JLabel("Text editor:");
 		label_38.setToolTipText("Select default text editor");
 		GridBagConstraints gbc_label_38 = new GridBagConstraints();
@@ -651,6 +704,7 @@ public class OptionsPane extends JPanel
 		gbc_label_38.gridx = 0;
 		gbc_label_38.gridy = 29;
 		panel.add(label_38, gbc_label_38);
+		
 		JPanel panel_3 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_3.getLayout();
 		flowLayout.setVgap(1);
@@ -667,13 +721,16 @@ public class OptionsPane extends JPanel
 		gbc_panel_3.gridx = 1;
 		gbc_panel_3.gridy = 29;
 		panel.add(panel_3, gbc_panel_3);
+		
 		rdbtnTAnalisys = new JRadioButton("TextAnalysis");
 		rdbtnTAnalisys.setToolTipText("Use TextAnalysis tool as default text editor");
 		rdbtnTAnalisys.setSelected(true);
 		panel_3.add(rdbtnTAnalisys);
+		
 		rdbtnNotepad = new JRadioButton("Notepad++");
 		rdbtnNotepad.setToolTipText("Use Notepad++ as default text editor");
 		panel_3.add(rdbtnNotepad);
+		
 		JLabel label_39 = new JLabel("Word Wrap:");
 		label_39.setToolTipText("Word wrap on/off");
 		label_39.setPreferredSize(new Dimension(55, 23));
@@ -685,6 +742,7 @@ public class OptionsPane extends JPanel
 		gbc_label_39.gridx = 0;
 		gbc_label_39.gridy = 30;
 		panel.add(label_39, gbc_label_39);
+		
 		chkTextWrap = new JCheckBox("");
 		chkTextWrap.addItemListener(new ItemListener()
 		{
@@ -703,6 +761,7 @@ public class OptionsPane extends JPanel
 		gbc_chkTextWrap.gridx = 1;
 		gbc_chkTextWrap.gridy = 30;
 		panel.add(chkTextWrap, gbc_chkTextWrap);
+		
 		JLabel label_40 = new JLabel("Tree Breakdown:");
 		label_40.setToolTipText("Changes affect just filters/Results tree");
 		GridBagConstraints gbc_label_40 = new GridBagConstraints();
@@ -725,6 +784,7 @@ public class OptionsPane extends JPanel
 		gbc_panel_4.gridx = 1;
 		gbc_panel_4.gridy = 31;
 		panel.add(panel_4, gbc_panel_4);
+		
 		rdbtnDouble = new JRadioButton("DoubleClick");
 		rdbtnDouble.setSelected(true);
 		rdbtnDouble.addActionListener(new ActionListener()
@@ -736,6 +796,7 @@ public class OptionsPane extends JPanel
 			}
 		});
 		panel_4.add(rdbtnDouble);
+		
 		rdbtnSingleclick = new JRadioButton("SingleClick");
 		rdbtnSingleclick.addActionListener(new ActionListener()
 		{
@@ -746,6 +807,7 @@ public class OptionsPane extends JPanel
 			}
 		});
 		panel_4.add(rdbtnSingleclick);
+		
 		JLabel label_41 = new JLabel("More options:");
 		label_41.setToolTipText("More options for parser pane");
 		label_41.setPreferredSize(new Dimension(55, 23));
@@ -758,6 +820,7 @@ public class OptionsPane extends JPanel
 		gbc_label_41.gridx = 0;
 		gbc_label_41.gridy = 32;
 		panel.add(label_41, gbc_label_41);
+		
 		JPanel panel_5 = new JPanel();
 		GridBagConstraints gbc_panel_5 = new GridBagConstraints();
 		gbc_panel_5.anchor = GridBagConstraints.WEST;
@@ -766,6 +829,7 @@ public class OptionsPane extends JPanel
 		gbc_panel_5.gridx = 1;
 		gbc_panel_5.gridy = 32;
 		panel.add(panel_5, gbc_panel_5);
+		
 		btnManageFilters = new JButton("Manage filters");
 		btnManageFilters.addActionListener(new ActionListener()
 		{
@@ -775,6 +839,7 @@ public class OptionsPane extends JPanel
 			}
 		});
 		panel_5.add(btnManageFilters);
+		
 		btnAdvanced = new JButton("Advanced");
 		btnAdvanced.addActionListener(new ActionListener()
 		{
@@ -788,6 +853,7 @@ public class OptionsPane extends JPanel
 		btnAdvanced.setToolTipText("Click to see advanced options");
 		btnAdvanced.setPreferredSize(new Dimension(103, 23));
 		panel_5.add(btnAdvanced);
+		
 		editorSelector.add(rdbtnTAnalisys);
 		editorSelector.add(rdbtnNotepad);
 		breakdownSelector.add(rdbtnDouble);
@@ -807,25 +873,18 @@ public class OptionsPane extends JPanel
 		}
 		catch (JDOMException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	public void getComments() throws IOException, JDOMException
 	{
-		// Abre o arquivo XML
 		File xmlFile = new File("Data/cfgs/user_cfg.xml");
-		// Cria o builder da estrutura XML
 		SAXBuilder builder = new SAXBuilder();
-		// Cria documento formatado de acordo com a lib XML
 		Document document = (Document) builder.build(xmlFile);
-		// Pega o nó raiz do XML
 		Element satNode = document.getRootElement();
-		// Gera lista de filhos do nó root
-		// List<Element> satElements = satNode.getChildren();
-		// Pega o nó referente ao option pane
 		Element optionPaneNode = satNode.getChild("option_pane");
+		
 		for (Element e : optionPaneNode.getChildren())
 		{
 			if (e.getName().equals("full_log"))
@@ -877,24 +936,19 @@ public class OptionsPane extends JPanel
 				textDiag.setText(e.getValue());
 			}
 		}
+		
 		Logger.log(Logger.TAG_OPTIONS, "Options Loaded");
 	}
 	
 	public void loadDataPane() throws IOException, JDOMException
 	{
-		// Abre o arquivo XML
 		File xmlFile = new File("Data/cfgs/user_cfg.xml");
-		// Cria o builder da estrutura XML
 		SAXBuilder builder = new SAXBuilder();
-		// Cria documento formatado de acordo com a lib XML
 		Document document = (Document) builder.build(xmlFile);
-		// Pega o nó raiz do XML
 		Element satNode = document.getRootElement();
-		// Gera lista de filhos do nó root
-		// List<Element> satElements = satNode.getChildren();
-		// Pega o nó referente ao option pane
 		Element optionPaneNode = satNode.getChild("option_pane");
 		for (Element e : optionPaneNode.getChildren())
+		
 		{
 			if (e.getName().equals("tree_breakdown"))
 			{
@@ -924,23 +978,18 @@ public class OptionsPane extends JPanel
 					rdbtnNotepad.setSelected(true);
 			}
 		}
+		
 		Logger.log(Logger.TAG_OPTIONS, "Options Loaded");
 	}
 	
 	public void setComments() throws IOException, JDOMException
 	{
-		// Abre o arquivo XML
 		File xmlFile = new File("Data/cfgs/user_cfg.xml");
-		// Cria o builder da estrutura XML
 		SAXBuilder builder = new SAXBuilder();
-		// Cria documento formatado de acordo com a lib XML
 		Document document = (Document) builder.build(xmlFile);
-		// Pega o nó raiz do XML
 		Element satNode = document.getRootElement();
-		// Gera lista de filhos do nó root
-		// List<Element> satElements = satNode.getChildren();
-		// Pega o nó referente ao option pane
 		Element optionPaneNode = satNode.getChild("option_pane");
+		
 		for (Element e : optionPaneNode.getChildren())
 		{
 			if (e.getName().equals("full_log"))
@@ -992,11 +1041,10 @@ public class OptionsPane extends JPanel
 				e.setText(textDiag.getText());
 			}
 		}
-		// JDOM document is ready now, lets write it to file now
+		
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-		// output xml to console for debugging
-		// xmlOutputter.output(doc, System.out);
 		xmlOutputter.output(document, new FileOutputStream(xmlFile));
+		
 		Logger.log(Logger.TAG_OPTIONS, "Options Saved");
 	}
 	
@@ -1008,18 +1056,12 @@ public class OptionsPane extends JPanel
 	 */
 	public void savePaneData() throws JDOMException, IOException
 	{
-		// Abre o arquivo XML
 		File xmlFile = new File("Data/cfgs/user_cfg.xml");
-		// Cria o builder da estrutura XML
 		SAXBuilder builder = new SAXBuilder();
-		// Cria documento formatado de acordo com a lib XML
 		Document document = (Document) builder.build(xmlFile);
-		// Pega o nó raiz do XML
 		Element satNode = document.getRootElement();
-		// Gera lista de filhos do nó root
-		// List<Element> satElements = satNode.getChildren();
-		// Pega o nó referente ao option pane
 		Element optionPaneNode = satNode.getChild("option_pane");
+		
 		for (Element e : optionPaneNode.getChildren())
 		{
 			if (e.getName().equals("editor"))
@@ -1044,11 +1086,10 @@ public class OptionsPane extends JPanel
 					e.setText("2");
 			}
 		}
-		// JDOM document is ready now, lets write it to file now
+		
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-		// output xml to console for debugging
-		// xmlOutputter.output(doc, System.out);
 		xmlOutputter.output(document, new FileOutputStream(xmlFile));
+		
 		Logger.log(Logger.TAG_OPTIONS, "Options Saved");
 	}
 	

@@ -113,6 +113,7 @@ public class CrItem
 	public void setSummary(String summary)
 	{
 		this.summary = summary;
+		
 		if (summary.contains("B2GID:") && b2gID.equals(""))
 		{
 			int index = summary.lastIndexOf("B2GID:");

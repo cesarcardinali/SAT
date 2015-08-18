@@ -79,9 +79,9 @@ import supportive.UnZip;
 import supportive.DiagCrsCloser;
 
 
+@SuppressWarnings("serial")
 public class CrsManagerPane extends JPanel
 {
-	private static final long		 serialVersionUID = -1072184113058141060L;
 	/**
 	 * Global Variables
 	 */
@@ -103,8 +103,8 @@ public class CrsManagerPane extends JPanel
 	private WebDriver				 driver;
 	private FirefoxProfile			 profile;
 	private String					 CRs[];
-	private String					 b2glink		  = "";
-	private String					 actualCR		  = "";
+	private String					 b2glink  = "";
+	private String					 actualCR = "";
 	private HashMap<String, String>	 b2g_crid;
 	private HashMap<String, String>	 b2g_analyzed;
 	private ArrayList<String>		 listZipNames;
@@ -117,9 +117,11 @@ public class CrsManagerPane extends JPanel
 	{
 		setPreferredSize(new Dimension(632, 765));
 		setMinimumSize(new Dimension(600, 950));
+		
 		// Panel construction
 		JPanel contentPane = new JPanel();
 		add(contentPane);
+		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {0, 0, 0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -135,6 +137,7 @@ public class CrsManagerPane extends JPanel
 												 0.0,
 												 Double.MIN_VALUE};
 		contentPane.setLayout(gridBagLayout);
+		
 		JPanel panel_1 = new JPanel();
 		panel_1.setMinimumSize(new Dimension(150, 100));
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
@@ -143,12 +146,14 @@ public class CrsManagerPane extends JPanel
 		gbc_panel_1.gridx = 0;
 		gbc_panel_1.gridy = 0;
 		contentPane.add(panel_1, gbc_panel_1);
+		
 		GridBagLayout gbl_panel_1 = new GridBagLayout();
 		gbl_panel_1.columnWidths = new int[] {0, 0, 0};
 		gbl_panel_1.rowHeights = new int[] {14, 0, 0, 0, 0, 0};
 		gbl_panel_1.columnWeights = new double[] {0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel_1.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		panel_1.setLayout(gbl_panel_1);
+		
 		JLabel lblNewLabel = new JLabel("User Data:");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
@@ -158,6 +163,7 @@ public class CrsManagerPane extends JPanel
 		gbc_lblNewLabel.gridx = 0;
 		gbc_lblNewLabel.gridy = 0;
 		panel_1.add(lblNewLabel, gbc_lblNewLabel);
+		
 		JLabel lblUsername = new JLabel("Username");
 		lblUsername.setPreferredSize(new Dimension(60, 14));
 		lblUsername.setMinimumSize(new Dimension(60, 14));
@@ -170,6 +176,7 @@ public class CrsManagerPane extends JPanel
 		gbc_lblUsername.gridx = 0;
 		gbc_lblUsername.gridy = 1;
 		panel_1.add(lblUsername, gbc_lblUsername);
+		
 		textUsername = new JTextField();
 		textUsername.setToolTipText("Motorola username");
 		textUsername.setPreferredSize(new Dimension(90, 20));
@@ -179,6 +186,7 @@ public class CrsManagerPane extends JPanel
 		gbc_textUsername.gridx = 1;
 		gbc_textUsername.gridy = 1;
 		panel_1.add(textUsername, gbc_textUsername);
+		
 		JLabel lblPassword = new JLabel("Password");
 		lblPassword.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblPassword.setPreferredSize(new Dimension(60, 14));
@@ -189,6 +197,7 @@ public class CrsManagerPane extends JPanel
 		gbc_lblPassword.gridx = 0;
 		gbc_lblPassword.gridy = 2;
 		panel_1.add(lblPassword, gbc_lblPassword);
+		
 		textPassword = new JPasswordField();
 		textPassword.setToolTipText("Motorola password");
 		textPassword.setPreferredSize(new Dimension(90, 20));
@@ -198,6 +207,7 @@ public class CrsManagerPane extends JPanel
 		gbc_textPassword.gridx = 1;
 		gbc_textPassword.gridy = 2;
 		panel_1.add(textPassword, gbc_textPassword);
+		
 		chkbxRemember = new JCheckBox("Remember?");
 		chkbxRemember.setToolTipText("Remember your login and password");
 		chkbxRemember.setSelected(true);
@@ -206,6 +216,7 @@ public class CrsManagerPane extends JPanel
 		gbc_chkbxRemember.gridx = 0;
 		gbc_chkbxRemember.gridy = 3;
 		panel_1.add(chkbxRemember, gbc_chkbxRemember);
+		
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setOrientation(SwingConstants.VERTICAL);
 		separator_2.setForeground(Color.DARK_GRAY);
@@ -216,6 +227,7 @@ public class CrsManagerPane extends JPanel
 		gbc_separator_2.gridx = 1;
 		gbc_separator_2.gridy = 0;
 		contentPane.add(separator_2, gbc_separator_2);
+		
 		JPanel panel_3 = new JPanel();
 		panel_3.setMinimumSize(new Dimension(150, 10));
 		GridBagConstraints gbc_panel_3 = new GridBagConstraints();
@@ -225,6 +237,7 @@ public class CrsManagerPane extends JPanel
 		gbc_panel_3.gridx = 2;
 		gbc_panel_3.gridy = 0;
 		contentPane.add(panel_3, gbc_panel_3);
+		
 		GridBagLayout gbl_panel_3 = new GridBagLayout();
 		gbl_panel_3.columnWidths = new int[] {0, 0};
 		gbl_panel_3.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -239,6 +252,7 @@ public class CrsManagerPane extends JPanel
 		gbc_lblDownloader.gridx = 0;
 		gbc_lblDownloader.gridy = 0;
 		panel_3.add(lblDownloader, gbc_lblDownloader);
+		
 		chckbxAssign = new JCheckBox("Assign?");
 		chckbxAssign.setMargin(new Insets(0, 2, 0, 2));
 		chckbxAssign.setPreferredSize(new Dimension(61, 15));
@@ -248,6 +262,7 @@ public class CrsManagerPane extends JPanel
 		gbc_chckbxAssign.gridx = 0;
 		gbc_chckbxAssign.gridy = 1;
 		panel_3.add(chckbxAssign, gbc_chckbxAssign);
+		
 		chckbxLabels = new JCheckBox("Labels?");
 		chckbxLabels.setMargin(new Insets(0, 2, 0, 2));
 		chckbxLabels.setMinimumSize(new Dimension(61, 15));
@@ -258,6 +273,7 @@ public class CrsManagerPane extends JPanel
 		gbc_chckbxLabels.gridx = 0;
 		gbc_chckbxLabels.gridy = 2;
 		panel_3.add(chckbxLabels, gbc_chckbxLabels);
+		
 		JScrollPane scrollPane_2 = new JScrollPane();
 		scrollPane_2.setPreferredSize(new Dimension(140, 350));
 		scrollPane_2.setBorder(new LineBorder(SystemColor.activeCaption));
@@ -268,12 +284,14 @@ public class CrsManagerPane extends JPanel
 		gbc_scrollPane_2.gridx = 0;
 		gbc_scrollPane_2.gridy = 3;
 		panel_3.add(scrollPane_2, gbc_scrollPane_2);
+		
 		textDownload = new JTextArea();
 		textDownload.setToolTipText("List of CRs to be downloaded. Used to create the link between downloded CRs and its Jira ID too.");
 		textDownload.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		scrollPane_2.setViewportView(textDownload);
 		textDownload.setTabSize(4);
 		textDownload.setBorder(null);
+		
 		JButton btnClear = new JButton("Clear");
 		btnClear.setToolTipText("Clear the text area above");
 		btnClear.addActionListener(new ActionListener()
@@ -291,6 +309,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnClear.gridx = 0;
 		gbc_btnClear.gridy = 4;
 		panel_3.add(btnClear, gbc_btnClear);
+		
 		JButton btnPaste = new JButton("Paste");
 		btnPaste.setToolTipText("Paste from clipboard");
 		btnPaste.addActionListener(new ActionListener()
@@ -308,6 +327,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnPaste.gridx = 0;
 		gbc_btnPaste.gridy = 5;
 		panel_3.add(btnPaste, gbc_btnPaste);
+		
 		JButton btnDownload = new JButton("Download");
 		btnDownload.setToolTipText("Start to download the CRs on the list above");
 		btnDownload.addActionListener(new ActionListener()
@@ -325,6 +345,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnDownload.gridx = 0;
 		gbc_btnDownload.gridy = 6;
 		panel_3.add(btnDownload, gbc_btnDownload);
+		
 		JButton btnOpenOnChrome = new JButton("Open on Chrome");
 		btnOpenOnChrome.setToolTipText("Open the CRs on the list above on Chrome");
 		btnOpenOnChrome.addActionListener(new ActionListener()
@@ -338,6 +359,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnOpenOnChrome.gridx = 0;
 		gbc_btnOpenOnChrome.gridy = 7;
 		panel_3.add(btnOpenOnChrome, gbc_btnOpenOnChrome);
+		
 		JSeparator separator_3 = new JSeparator();
 		separator_3.setForeground(Color.DARK_GRAY);
 		separator_3.setBackground(Color.WHITE);
@@ -349,6 +371,7 @@ public class CrsManagerPane extends JPanel
 		gbc_separator_3.gridx = 3;
 		gbc_separator_3.gridy = 0;
 		contentPane.add(separator_3, gbc_separator_3);
+		
 		JPanel panel_4 = new JPanel();
 		GridBagConstraints gbc_panel_4 = new GridBagConstraints();
 		gbc_panel_4.insets = new Insets(10, 5, 5, 0);
@@ -357,6 +380,7 @@ public class CrsManagerPane extends JPanel
 		gbc_panel_4.gridx = 4;
 		gbc_panel_4.gridy = 0;
 		contentPane.add(panel_4, gbc_panel_4);
+		
 		GridBagLayout gbl_panel_4 = new GridBagLayout();
 		gbl_panel_4.columnWidths = new int[] {0, 0};
 		gbl_panel_4.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -371,6 +395,7 @@ public class CrsManagerPane extends JPanel
 		gbc_lblDiagCloser.gridx = 0;
 		gbc_lblDiagCloser.gridy = 0;
 		panel_4.add(lblDiagCloser, gbc_lblDiagCloser);
+		
 		JScrollPane scrollPane_5 = new JScrollPane();
 		scrollPane_5.setBorder(new LineBorder(SystemColor.activeCaption));
 		scrollPane_5.setPreferredSize(new Dimension(220, 360));
@@ -381,6 +406,7 @@ public class CrsManagerPane extends JPanel
 		gbc_scrollPane_5.gridx = 0;
 		gbc_scrollPane_5.gridy = 1;
 		panel_4.add(scrollPane_5, gbc_scrollPane_5);
+		
 		listDiag = new JList<String>();
 		scrollPane_5.setViewportView(listDiag);
 		listDiag.setToolTipText("List of CRs to be checked");
@@ -389,9 +415,11 @@ public class CrsManagerPane extends JPanel
 		listDiag.setBorder(null);
 		listDiag.setMinimumSize(new Dimension(220, 360));
 		listDiag.setModel(new DefaultListModel<String>());
+		
 		JLabel lblBgId = new JLabel("   B2G ID   -    Jira ID  -  Diag Result");
 		lblBgId.setBorder(new LineBorder(new Color(0, 0, 0)));
 		scrollPane_5.setColumnHeaderView(lblBgId);
+		
 		JTextArea txtrInstructionsHere = new JTextArea();
 		txtrInstructionsHere.setTabSize(4);
 		txtrInstructionsHere.setWrapStyleWord(true);
@@ -409,6 +437,7 @@ public class CrsManagerPane extends JPanel
 		gbc_txtrInstructionsHere.gridx = 0;
 		gbc_txtrInstructionsHere.gridy = 2;
 		panel_4.add(txtrInstructionsHere, gbc_txtrInstructionsHere);
+		
 		JButton btnHelp = new JButton("Help");
 		btnHelp.setEnabled(false);
 		btnHelp.setPreferredSize(new Dimension(70, 23));
@@ -434,6 +463,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnHelp.gridx = 0;
 		gbc_btnHelp.gridy = 3;
 		panel_4.add(btnHelp, gbc_btnHelp);
+		
 		JButton btnrun = new JButton("Run");
 		btnrun.setEnabled(false);
 		btnrun.setPreferredSize(new Dimension(70, 23));
@@ -450,6 +480,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnrun.gridx = 0;
 		gbc_btnrun.gridy = 4;
 		panel_4.add(btnrun, gbc_btnrun);
+		
 		JButton btnOpenDiagsOn = new JButton("Open Diags on Chrome");
 		btnOpenDiagsOn.setEnabled(false);
 		btnOpenDiagsOn.addActionListener(new ActionListener()
@@ -482,6 +513,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnOpenDiagsOn.gridx = 0;
 		gbc_btnOpenDiagsOn.gridy = 5;
 		panel_4.add(btnOpenDiagsOn, gbc_btnOpenDiagsOn);
+		
 		JButton btnOpenNondiagsOn = new JButton("Open Non-Diags on Chrome");
 		btnOpenNondiagsOn.setEnabled(false);
 		btnOpenNondiagsOn.addActionListener(new ActionListener()
@@ -513,6 +545,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnOpenNondiagsOn.gridx = 0;
 		gbc_btnOpenNondiagsOn.gridy = 6;
 		panel_4.add(btnOpenNondiagsOn, gbc_btnOpenNondiagsOn);
+		
 		JButton btnCloseOld = new JButton("Close As Old");
 		btnCloseOld.addActionListener(new ActionListener()
 		{
@@ -525,6 +558,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnCloseOld.gridx = 0;
 		gbc_btnCloseOld.gridy = 7;
 		panel_4.add(btnCloseOld, gbc_btnCloseOld);
+		
 		JSeparator separator = new JSeparator();
 		separator.setMaximumSize(new Dimension(130, 32767));
 		separator.setForeground(Color.DARK_GRAY);
@@ -534,6 +568,7 @@ public class CrsManagerPane extends JPanel
 		gbc_separator.gridx = 0;
 		gbc_separator.gridy = 1;
 		contentPane.add(separator, gbc_separator);
+		
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.insets = new Insets(0, 5, 5, 5);
@@ -541,6 +576,7 @@ public class CrsManagerPane extends JPanel
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 2;
 		contentPane.add(panel, gbc_panel);
+		
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] {30, 0};
 		gbl_panel.rowHeights = new int[] {22, 0, 0};
@@ -553,6 +589,7 @@ public class CrsManagerPane extends JPanel
 		gbc_lblRootPath.gridx = 0;
 		gbc_lblRootPath.gridy = 0;
 		panel.add(lblRootPath, gbc_lblRootPath);
+		
 		lblRootPath.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRootPath.setFont(new Font("Tahoma", Font.BOLD, 18));
 		textPath = new JTextField();
@@ -562,6 +599,7 @@ public class CrsManagerPane extends JPanel
 		gbc_textPath.gridx = 0;
 		gbc_textPath.gridy = 1;
 		panel.add(textPath, gbc_textPath);
+		
 		textPath.setHorizontalAlignment(SwingConstants.CENTER);
 		textPath.setBorder(new LineBorder(SystemColor.activeCaption));
 		textPath.setMinimumSize(new Dimension(130, 20));
@@ -573,6 +611,7 @@ public class CrsManagerPane extends JPanel
 		gbc_separator_1.gridx = 0;
 		gbc_separator_1.gridy = 3;
 		contentPane.add(separator_1, gbc_separator_1);
+		
 		separator_1.setForeground(SystemColor.activeCaptionText);
 		JPanel panel_2 = new JPanel();
 		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
@@ -582,6 +621,7 @@ public class CrsManagerPane extends JPanel
 		gbc_panel_2.gridx = 0;
 		gbc_panel_2.gridy = 4;
 		contentPane.add(panel_2, gbc_panel_2);
+		
 		GridBagLayout gbl_panel_2 = new GridBagLayout();
 		gbl_panel_2.columnWidths = new int[] {0};
 		gbl_panel_2.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};
@@ -594,6 +634,7 @@ public class CrsManagerPane extends JPanel
 		gbc_panel_10.gridx = 0;
 		gbc_panel_10.gridy = 0;
 		panel_2.add(panel_10, gbc_panel_10);
+		
 		GridBagLayout gbl_panel_10 = new GridBagLayout();
 		gbl_panel_10.columnWidths = new int[] {41, 0, 0, 0};
 		gbl_panel_10.rowHeights = new int[] {22, 0};
@@ -607,6 +648,7 @@ public class CrsManagerPane extends JPanel
 		gbc_lblCrs.gridx = 0;
 		gbc_lblCrs.gridy = 0;
 		panel_10.add(lblCrs, gbc_lblCrs);
+		
 		lblCrs.setHorizontalAlignment(SwingConstants.CENTER);
 		lblCrs.setFont(new Font("Tahoma", Font.BOLD, 18));
 		final JLabel btnSelectAllCRs = new JLabel("select");
@@ -621,6 +663,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnSelectAllCRs.gridx = 1;
 		gbc_btnSelectAllCRs.gridy = 0;
 		panel_10.add(btnSelectAllCRs, gbc_btnSelectAllCRs);
+		
 		chkBoxSelectCRs = new JCheckBox("");
 		chkBoxSelectCRs.addItemListener(new ItemListener()
 		{
@@ -654,6 +697,7 @@ public class CrsManagerPane extends JPanel
 		gbc_chkBoxSelectCRs.gridx = 2;
 		gbc_chkBoxSelectCRs.gridy = 0;
 		panel_10.add(chkBoxSelectCRs, gbc_chkBoxSelectCRs);
+		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBorder(new LineBorder(SystemColor.activeCaption));
 		scrollPane_1.setPreferredSize(new Dimension(140, 150));
@@ -664,6 +708,7 @@ public class CrsManagerPane extends JPanel
 		gbc_scrollPane_1.gridx = 0;
 		gbc_scrollPane_1.gridy = 1;
 		panel_2.add(scrollPane_1, gbc_scrollPane_1);
+		
 		listCRs = new JList<String>();
 		listCRs.setToolTipText("CRs in Root Path folder");
 		listCRs.setVisibleRowCount(30);
@@ -671,6 +716,7 @@ public class CrsManagerPane extends JPanel
 		listCRs.setBorder(null);
 		listCRs.setMinimumSize(new Dimension(100, 100));
 		listCRs.setModel(new DefaultListModel<String>());
+		
 		JPanel panel_6 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_6.getLayout();
 		flowLayout.setVgap(0);
@@ -680,6 +726,7 @@ public class CrsManagerPane extends JPanel
 		gbc_panel_6.gridx = 0;
 		gbc_panel_6.gridy = 2;
 		panel_2.add(panel_6, gbc_panel_6);
+		
 		JButton btnDeleteFolder = new JButton("Delete");
 		btnDeleteFolder.setToolTipText("Delete selected folders");
 		btnDeleteFolder.addActionListener(new ActionListener()
@@ -693,6 +740,7 @@ public class CrsManagerPane extends JPanel
 			}
 		});
 		panel_6.add(btnDeleteFolder);
+		
 		JButton btnRunScript = new JButton("RunScript");
 		btnRunScript.setToolTipText("Run build_report.pl on selected folders");
 		btnRunScript.addActionListener(new ActionListener()
@@ -722,12 +770,14 @@ public class CrsManagerPane extends JPanel
 			}
 		});
 		panel_6.add(btnRunScript);
+		
 		JPanel panel_8 = new JPanel();
 		GridBagConstraints gbc_panel_8 = new GridBagConstraints();
 		gbc_panel_8.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_8.gridx = 0;
 		gbc_panel_8.gridy = 3;
 		panel_2.add(panel_8, gbc_panel_8);
+		
 		GridBagLayout gbl_panel_8 = new GridBagLayout();
 		gbl_panel_8.columnWidths = new int[] {43, 24, 0, 24, 0};
 		gbl_panel_8.rowHeights = new int[] {24, 0};
@@ -743,6 +793,7 @@ public class CrsManagerPane extends JPanel
 		gbc_label.gridx = 0;
 		gbc_label.gridy = 0;
 		panel_8.add(label, gbc_label);
+		
 		JLabel label_1 = new JLabel("select");
 		label_1.setToolTipText("Select all CRs");
 		label_1.setPreferredSize(new Dimension(24, 24));
@@ -754,6 +805,7 @@ public class CrsManagerPane extends JPanel
 		gbc_label_1.gridx = 2;
 		gbc_label_1.gridy = 0;
 		panel_8.add(label_1, gbc_label_1);
+		
 		chkBoxSelectZips = new JCheckBox("");
 		chkBoxSelectZips.addItemListener(new ItemListener()
 		{
@@ -786,6 +838,7 @@ public class CrsManagerPane extends JPanel
 		gbc_chkBoxSelectZips.gridx = 3;
 		gbc_chkBoxSelectZips.gridy = 0;
 		panel_8.add(chkBoxSelectZips, gbc_chkBoxSelectZips);
+		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBorder(new LineBorder(SystemColor.activeCaption));
 		scrollPane.setPreferredSize(new Dimension(140, 150));
@@ -796,6 +849,7 @@ public class CrsManagerPane extends JPanel
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 4;
 		panel_2.add(scrollPane, gbc_scrollPane);
+		
 		listZips = new JList<String>();
 		listZips.setToolTipText("Zip files in Root Path folder");
 		listZips.setVisibleRowCount(30);
@@ -804,6 +858,7 @@ public class CrsManagerPane extends JPanel
 		listZips.setBorder(null);
 		listZips.setMinimumSize(new Dimension(100, 100));
 		listZips.setModel(new DefaultListModel<String>());
+		
 		JPanel panel_7 = new JPanel();
 		FlowLayout flowLayout_1 = (FlowLayout) panel_7.getLayout();
 		flowLayout_1.setVgap(0);
@@ -812,6 +867,7 @@ public class CrsManagerPane extends JPanel
 		gbc_panel_7.gridx = 0;
 		gbc_panel_7.gridy = 5;
 		panel_2.add(panel_7, gbc_panel_7);
+		
 		JButton btnDeleteZip = new JButton("Delete");
 		btnDeleteZip.setToolTipText("Delete selected zip files");
 		btnDeleteZip.addActionListener(new ActionListener()
@@ -825,6 +881,7 @@ public class CrsManagerPane extends JPanel
 			}
 		});
 		panel_7.add(btnDeleteZip);
+		
 		JButton btnUnzip = new JButton("Unzip");
 		btnUnzip.setToolTipText("Unzip selected zip files and run build_report.pl");
 		btnUnzip.addActionListener(new ActionListener()
@@ -879,6 +936,7 @@ public class CrsManagerPane extends JPanel
 			}
 		});
 		panel_7.add(btnUnzip);
+		
 		JButton btnUpdateAll = new JButton("Click to Update everything");
 		btnUpdateAll.setToolTipText("Update UI information");
 		btnUpdateAll.setPreferredSize(new Dimension(159, 20));
@@ -891,6 +949,7 @@ public class CrsManagerPane extends JPanel
 				updateAllDataUI();
 			}
 		});
+		
 		JSeparator separator_4 = new JSeparator();
 		separator_4.setForeground(new Color(0, 0, 0));
 		GridBagConstraints gbc_separator_4 = new GridBagConstraints();
@@ -900,6 +959,7 @@ public class CrsManagerPane extends JPanel
 		gbc_separator_4.gridx = 0;
 		gbc_separator_4.gridy = 6;
 		contentPane.add(separator_4, gbc_separator_4);
+		
 		GridBagConstraints gbc_btnUpdateAll = new GridBagConstraints();
 		gbc_btnUpdateAll.insets = new Insets(10, 10, 10, 10);
 		gbc_btnUpdateAll.fill = GridBagConstraints.HORIZONTAL;
@@ -907,6 +967,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnUpdateAll.gridx = 0;
 		gbc_btnUpdateAll.gridy = 7;
 		contentPane.add(btnUpdateAll, gbc_btnUpdateAll);
+		
 		JPanel panel_5 = new JPanel();
 		panel_5.setBorder(new LineBorder(new Color(240, 128, 128), 1, true));
 		GridBagConstraints gbc_panel_5 = new GridBagConstraints();
@@ -914,12 +975,14 @@ public class CrsManagerPane extends JPanel
 		gbc_panel_5.gridx = 0;
 		gbc_panel_5.gridy = 8;
 		contentPane.add(panel_5, gbc_panel_5);
+		
 		GridBagLayout gbl_panel_5 = new GridBagLayout();
 		gbl_panel_5.columnWidths = new int[] {0, 0, 0};
 		gbl_panel_5.rowHeights = new int[] {0, 0, 0};
 		gbl_panel_5.columnWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
 		gbl_panel_5.rowWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
 		panel_5.setLayout(gbl_panel_5);
+		
 		JLabel lblStatusLog = new JLabel("Status Log:");
 		GridBagConstraints gbc_lblStatusLog = new GridBagConstraints();
 		gbc_lblStatusLog.anchor = GridBagConstraints.WEST;
@@ -927,6 +990,7 @@ public class CrsManagerPane extends JPanel
 		gbc_lblStatusLog.gridx = 0;
 		gbc_lblStatusLog.gridy = 0;
 		panel_5.add(lblStatusLog, gbc_lblStatusLog);
+		
 		JLabel lblLastAction = new JLabel("Last Action:");
 		GridBagConstraints gbc_lblLastAction = new GridBagConstraints();
 		gbc_lblLastAction.anchor = GridBagConstraints.WEST;
@@ -934,6 +998,7 @@ public class CrsManagerPane extends JPanel
 		gbc_lblLastAction.gridx = 1;
 		gbc_lblLastAction.gridy = 0;
 		panel_5.add(lblLastAction, gbc_lblLastAction);
+		
 		JScrollPane scrollPane_3 = new JScrollPane();
 		scrollPane_3.setPreferredSize(new Dimension(400, 82));
 		scrollPane_3.setMinimumSize(new Dimension(400, 82));
@@ -943,26 +1008,31 @@ public class CrsManagerPane extends JPanel
 		gbc_scrollPane_3.gridx = 0;
 		gbc_scrollPane_3.gridy = 1;
 		panel_5.add(scrollPane_3, gbc_scrollPane_3);
+		
 		textLog = new JTextPane();
 		scrollPane_3.setViewportView(textLog);
 		textLog.setEditable(false);
 		textLog.setBorder(null);
 		textLog.setPreferredSize(new Dimension(400, 82));
 		textLog.setMinimumSize(new Dimension(400, 42));
+		
 		JScrollPane scrollPane_4 = new JScrollPane();
 		scrollPane_4.setPreferredSize(new Dimension(100, 82));
 		scrollPane_4.setMinimumSize(new Dimension(100, 82));
 		scrollPane_4.setBorder(new LineBorder(new Color(128, 128, 128)));
+		
 		GridBagConstraints gbc_scrollPane_4 = new GridBagConstraints();
 		gbc_scrollPane_4.gridx = 1;
 		gbc_scrollPane_4.gridy = 1;
 		panel_5.add(scrollPane_4, gbc_scrollPane_4);
+		
 		textPane = new JTextPane();
 		scrollPane_4.setViewportView(textPane);
 		textPane.setEditable(false);
 		textPane.setBorder(null);
 		textPane.setPreferredSize(new Dimension(100, 82));
 		textPane.setMinimumSize(new Dimension(50, 42));
+		
 		// Initialization
 		uiConfiguration();
 		textPath.getDocument().addDocumentListener(new DocumentListener()
@@ -987,15 +1057,16 @@ public class CrsManagerPane extends JPanel
 	}
 	
 	/**
-	 * Download functions ---------------------------------------------------------------
-	 * --------------------------------------------------------------- -------------------
+	 * Download functions -----------------------------------
 	 */
 	private void initialize()
 	{
 		Logger.log(Logger.TAG_CRSMANAGER, "Generating Firefox profile");
+		
 		// Configure download local
 		String content;
 		Scanner scanner;
+		
 		try
 		{
 			scanner = new Scanner(new File("Data\\complements\\profiles\\y2fvgaq0.bot\\prefs_base.js"));
@@ -1011,8 +1082,10 @@ public class CrsManagerPane extends JPanel
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
 		driver = new FirefoxDriver(profile);
+		
 		// Setup motorola user account
 		updateUserdata();
 	}
@@ -1021,8 +1094,11 @@ public class CrsManagerPane extends JPanel
 	{
 		// Open up a browser
 		Logger.log(Logger.TAG_CRSMANAGER, "Starting browser");
+		
 		driver.navigate().to("http://google.com");
+		
 		Logger.log(Logger.TAG_CRSMANAGER, "Done.");
+		
 		return true;
 	}
 	
@@ -1036,6 +1112,7 @@ public class CrsManagerPane extends JPanel
 			driver.findElement(By.name("os_cookie")).click();
 			driver.findElement(By.name("login")).click();
 			// sleep(1500);
+			
 			if (driver.getTitle().contains("Log"))
 			{
 				return false;
@@ -1049,6 +1126,7 @@ public class CrsManagerPane extends JPanel
 		else
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Already logged in");
+			
 			return true;
 		}
 	}
@@ -1058,9 +1136,13 @@ public class CrsManagerPane extends JPanel
 		try
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Trying to assign");
+			
 			driver.findElement(By.className("issueaction-assign-to-me")).click();
+			
 			Logger.log(Logger.TAG_CRSMANAGER, "Done.");
+			
 			int error = 0;
+			
 			while (!driver.getPageSource().contains("<span class=\"user-hover\" id=\"issue_summary_assignee_"
 													+ SharedObjs.getUser() + " rel=\""))
 			{
@@ -1068,12 +1150,14 @@ public class CrsManagerPane extends JPanel
 				Logger.log(Logger.TAG_CRSMANAGER, "Not assignned yet. Retrying");
 				sleep(750);
 				driver.findElement(By.className("issueaction-assign-to-me")).click();
+				
 				if (error > 3)
 				{
 					JOptionPane.showMessageDialog(this, "Error trying to assign. Canceling process.");
 					driver.close();
 					break;
 				}
+				
 				sleep(2000);
 			}
 		}
@@ -1081,6 +1165,7 @@ public class CrsManagerPane extends JPanel
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "CR assigned already");
 		}
+		
 		return true;
 	}
 	
@@ -1089,6 +1174,7 @@ public class CrsManagerPane extends JPanel
 		try
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Trying to insert label");
+			
 			if (!driver.getPageSource().contains("ll_prodteam_analyzed"))
 			{
 				driver.findElement(By.cssSelector("body")).sendKeys(Keys.ESCAPE);
@@ -1139,6 +1225,7 @@ public class CrsManagerPane extends JPanel
 			Element.click();
 			// driver.navigate().to(b2glink);
 			sleep(1000);
+			
 			while (driver.getTitle().contains("MOTOROLA"))
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "Login to Bug2Go");
@@ -1147,7 +1234,9 @@ public class CrsManagerPane extends JPanel
 				driver.findElement(By.className("input_submit")).click();
 				sleep(1000);
 			}
+			
 			sleep(2000);
+			
 			return true;
 		}
 		catch (Exception e)
@@ -1164,10 +1253,12 @@ public class CrsManagerPane extends JPanel
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Verify download - 1");
 		}
+		
 		Logger.log(Logger.TAG_CRSMANAGER, "B2G page loaded");
 		Logger.log(Logger.TAG_CRSMANAGER, "Clicking download");
 		driver.findElement(By.className("bg_btn")).click();
 		sleep(2500);
+		
 		while (driver.getTitle().contains("MOTOROLA"))
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Login to Bug2Go");
@@ -1176,34 +1267,44 @@ public class CrsManagerPane extends JPanel
 			driver.findElement(By.className("input_submit")).click();
 			sleep(1000);
 		}
+		
 		if (driver.getTitle().contains("Bug2Go--"))
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Download failed\nRetry...");
+			
 			return false;
 		}
+		
 		Logger.log(Logger.TAG_CRSMANAGER, "Downloading");
+		
 		return true;
 	}
 	
 	private boolean verifyDownloadPage()
 	{
 		Logger.log(Logger.TAG_CRSMANAGER, "Verifying download page");
+		
 		if (driver.getTitle().contains("Bug2Go--"))
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "B2G page failed. Retrying ...");
+			
 			try
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "Refreshing page");
 				driver.navigate().to(b2glink);
+				
 				return false;
 			}
 			catch (Exception e)
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "Driver Error");
+				
 				return false;
 			}
 		}
+		
 		sleep(1000);
+		
 		return true;
 	}
 	
@@ -1214,30 +1315,39 @@ public class CrsManagerPane extends JPanel
 	{
 		// Initialize variables
 		initialize();
+		
 		// Open up browser
 		openBrowser();
+		
 		// Clean up the hashmaps
 		b2g_crid = new HashMap<String, String>();
 		b2g_analyzed = new HashMap<String, String>();
+		
 		// Start the download process
 		CRs = textDownload.getText().replaceAll(" ", "").split("\n");
+		
 		Logger.log(Logger.TAG_CRSMANAGER, "CRs List:" + CRs.length);
+		
 		for (int i = 0; i < CRs.length; i++)
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "-" + CRs[i] + "-");
 		}
+		
 		// boolean login=false, assign=false, label=false,
 		// download=false;
 		int flow = 0;
+		
 		for (int i = 0; i < CRs.length; i++)
 		{
 			// Open page
 			Logger.log(Logger.TAG_CRSMANAGER, "Opening CR page");
 			driver.navigate().to("http://idart.mot.com/browse/" + CRs[i]);
 			Logger.log(Logger.TAG_CRSMANAGER, "Done.");
+			
 			// Log in
 			Logger.log(Logger.TAG_CRSMANAGER, "Trying to login.");
 			jiraLogin();
+			
 			// Check if login successful
 			while (driver.getTitle().contains("Log"))
 			{
@@ -1246,16 +1356,11 @@ public class CrsManagerPane extends JPanel
 						  .contains("Sorry, your username and password are incorrect - please try again."))
 				{
 					JOptionPane.showMessageDialog(this,
-												  "Username and password are incorrect.\nPlease correct them and try again\n" /*
-																															   * +
-																															   * e
-																															   * .
-																															   * getMessage
-																															   * (
-																															   * )
-																															   */);
+												  "Username and password are incorrect.\nPlease correct them and try again\n");
+												  
 					Logger.log(Logger.TAG_CRSMANAGER, "An error occurred. Canceling process.");
 					flow++;
+					
 					break;
 				}
 				else
@@ -1263,15 +1368,19 @@ public class CrsManagerPane extends JPanel
 					Logger.log(Logger.TAG_CRSMANAGER, "No login errors");
 					// login = true;
 				}
+				
 				Logger.log(Logger.TAG_CRSMANAGER, "Browser still loading at login page. Waiting a sec ...");
 				sleep(1000);
 			}
+			
 			if (flow != 0)
 			{
 				driver.close();
 				break;
 			}
+			
 			Logger.log(Logger.TAG_CRSMANAGER, "Done.");
+			
 			// Label
 			if (chckbxLabels.isSelected())
 			{
@@ -1285,19 +1394,25 @@ public class CrsManagerPane extends JPanel
 				Logger.log(Logger.TAG_CRSMANAGER, "Skipping Label Inserting");
 			}
 			sleep(1000);
+			
 			// Assign
 			while (chckbxAssign.isSelected() && !assignCR())
 			{
 			}
+			
 			Logger.log(Logger.TAG_CRSMANAGER, "Assign Done");
 			actualCR = CRs[i];
+			
 			while (!openB2G())
 			{
 			}
+			
 			Logger.log(Logger.TAG_CRSMANAGER, "Open B2G Done");
+			
 			while (!downloadCR())
 			{
 			}
+			
 			Logger.log(Logger.TAG_CRSMANAGER, "Going back to jira");
 			sleep(300);
 			driver.navigate().to("http://idart.mot.com/browse/" + CRs[i]);
@@ -1305,13 +1420,13 @@ public class CrsManagerPane extends JPanel
 			driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "t");
 			sleep(1000);
 		}
+		
 		driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "w");
 		updateAllDataUI();
 	}
 	
 	/**
-	 * Interface functions ---------------------------------------------------------------
-	 * --------------------------------------------------------------- --------------
+	 * Interface functions -------------------------------
 	 */
 	private void btnClearAction()
 	{
@@ -1323,11 +1438,13 @@ public class CrsManagerPane extends JPanel
 		textDownload.setText("");
 		Scanner scanner;
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		
 		try
 		{
 			String string = (String) clipboard.getData(DataFlavor.stringFlavor);
 			scanner = new Scanner(string);
 			String str;
+			
 			while (scanner.hasNext())
 			{
 				str = scanner.nextLine();
@@ -1344,6 +1461,7 @@ public class CrsManagerPane extends JPanel
 	{
 		// Clear UI data
 		clearUIData();
+		
 		// Open and download the CRs
 		downloadCRs();
 	}
@@ -1371,24 +1489,26 @@ public class CrsManagerPane extends JPanel
 	{
 		Object[] options = {"Go!", "Cancel"};
 		b2g_analyzed = new HashMap<String, String>();
+		
 		if (b2g_crid == null || b2g_crid.size() < 1)
 		{
 			b2g_crid = new HashMap<String, String>();
 		}
+		
 		int n = JOptionPane.showOptionDialog(null,
 											 "Please, make sure that the following path is your CRs path. Otherwise, cancel this window and "
 												   + "put the correct path on \"CRs path\" located on the main window.\n"
 												   + textPath.getText(),
 											 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
 											 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+											 
 		if (n == 0)
 		{
 			new ClosingDiagDialog();
 		}
 		else
 		{
-			// JOptionPane.showMessageDialog(null,"Selected option: "
-			// + n);
+			// JOptionPane.showMessageDialog(null,"Selected option: " + n);
 			Logger.log(Logger.TAG_CRSMANAGER, "Action cancelled");
 		}
 	}
@@ -1399,11 +1519,13 @@ public class CrsManagerPane extends JPanel
 		listFoldersNames = new ArrayList<String>();
 		String rootFolder = getRootPath();
 		File rootPath = new File(rootFolder);
+		
 		if (rootPath.isDirectory())
 		{
 			for (String itemName : rootPath.list())
 			{
 				File actualFile = new File(rootFolder + itemName);
+				
 				if (actualFile.isDirectory())
 				{
 					// Logger.log(Logger.TAG_CRSMANAGER, "CR Folder: "
@@ -1417,6 +1539,7 @@ public class CrsManagerPane extends JPanel
 					listZipNames.add(actualFile.getName());
 				}
 			}
+			
 			String[] aux1 = new String[listZipNames.size()];
 			listZipNames.toArray(aux1);
 			String[] aux2 = new String[listFoldersNames.size()];
@@ -1430,6 +1553,7 @@ public class CrsManagerPane extends JPanel
 	{
 		listModel = (DefaultListModel<String>) listDiag.getModel();
 		listModel.removeAllElements();
+		
 		if (b2g_crid != null && b2g_crid.size() > 0)
 		{
 			for (String key : b2g_crid.keySet())
@@ -1444,6 +1568,7 @@ public class CrsManagerPane extends JPanel
 				listModel.addElement((String) key + " - " + "Unknown" + " - " + b2g_analyzed.get(key));
 			}
 		}
+		
 		updateUI();
 		repaint();
 		revalidate();
@@ -1454,11 +1579,13 @@ public class CrsManagerPane extends JPanel
 		updateZipAndFoldersList();
 		// updateDiagList(); Diag disabled
 		// Solving --> CRs get unselected when window loses focus
+		
 		if (chkBoxSelectCRs.isSelected())
 		{
 			chkBoxSelectCRs.setSelected(false);
 			chkBoxSelectCRs.setSelected(true);
 		}
+		
 		if (chkBoxSelectZips.isSelected())
 		{
 			chkBoxSelectZips.setSelected(false);
@@ -1487,8 +1614,10 @@ public class CrsManagerPane extends JPanel
 			{
 				e.printStackTrace();
 			}
+			
 			textLog.setText("");
 		}
+		
 		textLog.setText(textLog.getText() + line + "\n");
 		textLog.setCaretPosition(textLog.getText().length());
 	}
@@ -1523,6 +1652,7 @@ public class CrsManagerPane extends JPanel
 		XmlMngr.setUserValueOf(xmlPath, textUsername.getText());
 		xmlPath[1] = "encrypt_len";
 		BufferedOutputStream bout;
+		
 		try
 		{
 			bout = new BufferedOutputStream(new FileOutputStream(SharedObjs.pwdFile));
@@ -1535,12 +1665,14 @@ public class CrsManagerPane extends JPanel
 		{
 			e2.printStackTrace();
 		}
+		
 		xmlPath[1] = "remember";
 		XmlMngr.setUserValueOf(xmlPath, chkbxRemember.isSelected() + "");
 		xmlPath[1] = "assign";
 		XmlMngr.setUserValueOf(xmlPath, chckbxAssign.isSelected() + "");
 		xmlPath[1] = "label";
 		XmlMngr.setUserValueOf(xmlPath, chckbxLabels.isSelected() + "");
+		
 		Logger.log(Logger.TAG_CRSMANAGER, "CrsManagerPane data saved");
 	}
 	
@@ -1552,11 +1684,13 @@ public class CrsManagerPane extends JPanel
 		xmlPath[1] = "uname";
 		textUsername.setText(XmlMngr.getUserValueOf(xmlPath));
 		xmlPath[1] = "encrypt_len";
+		
 		try
 		{
 			BufferedInputStream bin;
 			bin = new BufferedInputStream(new FileInputStream(SharedObjs.pwdFile));
 			byte[] toDecrypt = new byte[Integer.parseInt(XmlMngr.getUserValueOf(xmlPath))];
+			
 			Logger.log(Logger.TAG_CRSMANAGER, "Lenght: " + XmlMngr.getUserValueOf(xmlPath) + " - "
 											  + Integer.parseInt(XmlMngr.getUserValueOf(xmlPath)));
 			bin.read(toDecrypt);
@@ -1569,18 +1703,21 @@ public class CrsManagerPane extends JPanel
 		{
 			e2.printStackTrace();
 		}
+		
 		xmlPath[1] = "remember";
 		chkbxRemember.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		xmlPath[1] = "assign";
 		chckbxAssign.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		xmlPath[1] = "label";
 		chckbxLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		
 		Logger.log(Logger.TAG_CRSMANAGER, "CrsManagerPane variables Loaded");
 	}
 	
 	private void delFolder(String folder)
 	{
 		File file = new File(folder);
+		
 		try
 		{
 			if (file.isDirectory())
@@ -1598,6 +1735,7 @@ public class CrsManagerPane extends JPanel
 	private void delFile(String folder)
 	{
 		File file = new File(folder);
+		
 		if (file.isFile())
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Deleting " + folder);
@@ -1609,6 +1747,7 @@ public class CrsManagerPane extends JPanel
 	{
 		Logger.log(Logger.TAG_CRSMANAGER, "\nRunning script at: " + folder);
 		addLogLine("Running script at: " + folder);
+		
 		// File seek and load configuration
 		File f = new File(folder);
 		File[] filesList = f.listFiles();
@@ -1626,6 +1765,7 @@ public class CrsManagerPane extends JPanel
 				}
 			}
 		}
+		
 		// Try to open file
 		BufferedReader br = null;
 		if (reportFile == null)
@@ -1636,6 +1776,7 @@ public class CrsManagerPane extends JPanel
 		{
 			br = new BufferedReader(new FileReader(reportFile));
 		}
+		
 		// Parse file
 		while ((sCurrentLine = br.readLine()) != null)
 		{
@@ -1646,6 +1787,7 @@ public class CrsManagerPane extends JPanel
 				sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
 				Logger.log(Logger.TAG_CRSMANAGER, sCurrentLine);
 				copyScript(new File("Data\\scripts\\_Base.pl"), new File(folder + "\\build_report.pl"));
+				
 				// Configure build report battery capacity
 				try
 				{
@@ -1660,12 +1802,12 @@ public class CrsManagerPane extends JPanel
 				}
 				catch (FileNotFoundException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				break;
 			}
 		}
+		
 		br.close();
 		ProcessBuilder builder = new ProcessBuilder("cmd.exe",
 													"/c",
@@ -1674,6 +1816,7 @@ public class CrsManagerPane extends JPanel
 		Process p = builder.start();
 		BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String line;
+		
 		while (true)
 		{
 			line = r.readLine();
@@ -1683,6 +1826,7 @@ public class CrsManagerPane extends JPanel
 			}
 			// Logger.log(Logger.TAG_CRSMANAGER, line);
 		}
+		
 		addLogLine("Done running at: " + folder);
 	}
 	
@@ -1700,7 +1844,7 @@ public class CrsManagerPane extends JPanel
 	}
 	
 	/**
-	 * Getters --------------------------------------------------------------- ----------------------------------------
+	 * Getters ---------------------------------------------------
 	 */
 	public HashMap<String, String> getB2g_crid()
 	{

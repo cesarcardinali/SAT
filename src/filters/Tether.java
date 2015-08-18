@@ -17,20 +17,22 @@ import core.SharedObjs;
  */
 public class Tether
 {
-	static String		   result;
+	private static String  result;
 	private static boolean enabled = true;
 	
 	public static String makeLog(String path)
 	{
 		BufferedReader br = null;
 		result = "";
+		
 		try
 		{
 			String wifitetherData1 = "";
 			String wifitetherData2 = "";
 			String sCurrentLine;
-			// File seek and load configuration
 			String file_report = "";
+			
+			// File seek and load configuration
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 			
@@ -58,6 +60,7 @@ public class Tether
 					}
 				}
 			}
+			
 			// Try to open file
 			if (file_report.equals(""))
 			{
@@ -66,6 +69,7 @@ public class Tether
 			else
 			{
 				br = new BufferedReader(new FileReader(file_report));
+				
 				while ((sCurrentLine = br.readLine()) != null)
 				{
 					if (sCurrentLine.contains("WiFi Tethered already"))
@@ -73,11 +77,14 @@ public class Tether
 						wifitetherData1 = wifitetherData1 + sCurrentLine + "\n";
 					}
 				}
+				
 				if (br != null)
 					br.close();
 			}
+			
 			// Look for a file
 			file_report = "";
+			
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
 				if (listOfFiles[i].isFile())
@@ -95,13 +102,16 @@ public class Tether
 					}
 				}
 			}
+			
 			// Try to open file
 			if (file_report.equals("") && result.equals("system not found"))
 				throw new FileNotFoundException();
 			else
 				br = new BufferedReader(new FileReader(file_report));
+			
 			result = "";
 			String startTether = "", stopTether = "";
+			
 			while ((sCurrentLine = br.readLine()) != null)
 			{
 				if ((sCurrentLine.contains("Tether") && sCurrentLine.contains("what=4"))
@@ -134,6 +144,7 @@ public class Tether
 					stopTether = stopTether + "\nUnknown";
 					String starts[] = startTether.split("\n");
 					String stops[] = stopTether.split("\n");
+					
 					for (int i = 0; i < starts.length; i++)
 					{
 						result = result + "\n|Starting Tethering at| " + starts[i] + "|";
@@ -145,6 +156,7 @@ public class Tether
 					startTether = startTether + "Unknown";
 					String starts[] = startTether.split("\n");
 					String stops[] = stopTether.split("\n");
+					
 					for (int i = 0; i < starts.length; i++)
 					{
 						result = result + "\n|Starting Tethering at| " + starts[i] + "|";
@@ -155,6 +167,7 @@ public class Tether
 				{
 					String starts[] = startTether.split("\n");
 					String stops[] = stopTether.split("\n");
+					
 					for (int i = 0; i < starts.length; i++)
 					{
 						result = result + "\n|Starting Tethering at| " + starts[i] + "|";
@@ -191,12 +204,14 @@ public class Tether
 		{
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			
 			return result;
 		}
 		catch (IOException e)
 		{
 			result = "IOException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			
 			return result;
 		}
 		finally

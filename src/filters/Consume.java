@@ -23,24 +23,16 @@ import objects.HighConsumeItem;
  */
 public class Consume
 {
-	private static HighConsume_List	hcList;			  // List of apps
-	// detected
+	private static HighConsume_List	hcList;			  // List of apps detected
 	private static String			result;			  // Final result
-	private static int				totalOccurrences; // Total
-	// occurrences
-	// of lines
-	// about app
-	// consumption
-	private static boolean			enabled	= true;	  // If result is
-	// edited by the
-	// user
+	private static int				totalOccurrences; // Total occurrences of lines about app consumption
+	private static boolean			enabled	= true;	  // If result is edited by the user
 	
 	/*
-	 * Logger.log(Logger.TAG_CONSUME, "Month:\t\t" + matcher.group(1)); Logger.log(Logger.TAG_CONSUME, "Day:\t\t" +
-	 * matcher.group(2)); Logger.log(Logger.TAG_CONSUME, "Hour:\t\t" + matcher.group(3)); Logger.log(Logger.TAG_CONSUME,
-	 * "Minute:\t\t" + matcher.group(4)); Logger.log(Logger.TAG_CONSUME, "Seconds:\t" + matcher.group(5));
-	 * Logger.log(Logger.TAG_CONSUME, "Consume:\t" + matcher.group(6)); Logger.log(Logger.TAG_CONSUME, "PID:\t\t" +
-	 * matcher.group(7)); Logger.log(Logger.TAG_CONSUME, "Process:\t" + matcher.group(8));
+	 * Logger.log(Logger.TAG_CONSUME, "Month:\t\t" + matcher.group(1)); Logger.log(Logger.TAG_CONSUME, "Day:\t\t" + matcher.group(2));
+	 * Logger.log(Logger.TAG_CONSUME, "Hour:\t\t" + matcher.group(3)); Logger.log(Logger.TAG_CONSUME, "Minute:\t\t" + matcher.group(4));
+	 * Logger.log(Logger.TAG_CONSUME, "Seconds:\t" + matcher.group(5)); Logger.log(Logger.TAG_CONSUME, "Consume:\t" + matcher.group(6));
+	 * Logger.log(Logger.TAG_CONSUME, "PID:\t\t" + matcher.group(7)); Logger.log(Logger.TAG_CONSUME, "Process:\t" + matcher.group(8));
 	 */
 	public static String makelog(String path)
 	{
@@ -50,9 +42,9 @@ public class Consume
 		
 		try
 		{
-			hcList = new HighConsume_List(); // List of Apps with high
-			// consume
+			hcList = new HighConsume_List(); // List of Apps with high consume
 			String panel = "{panel}\n"; // Jira panel tag
+			
 			// Regex configuration
 			String regexBTT = "([0-9]{2})-([0-9]{2}).*([0-2][0-9]):([0-5][0-9]):([0-5][0-9]).*BTTopWriter: ([1-9][0-9].*)\\%.*PID:(.+).*\\((.+)\\)";
 			String regexBTToff = "([0-9]{2})-([0-9]{2}).*([0-2][0-9]):([0-5][0-9]):([0-5][0-9]).*BTTopWriter: ([1-9][\\.|\\,].*)\\%.*PID:(.+).*\\((.+)\\)";
@@ -66,9 +58,9 @@ public class Consume
 			Matcher matcherScreen = null;
 			
 			String sCurrentLine; // Line to be parsed
-			String screenStatus = "Unknown   : "; // Last screen
-			// status detected
+			String screenStatus = "Unknown   : "; // Last screen status detected
 			String file = ""; // File path configuration
+			
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 			
@@ -85,6 +77,7 @@ public class Consume
 												&& listOfFiles[i].getName().contains("main")))
 				{
 					file = listOfFiles[i].getName();
+					
 					if (!path.equals("."))
 						file = path + listOfFiles[i].getName();
 					break;
@@ -118,6 +111,7 @@ public class Consume
 						screenStatus = "Screen OFF: ";
 					}
 				}
+				
 				// Consume line parsing:
 				else
 				{
@@ -129,14 +123,13 @@ public class Consume
 					}
 					else
 						matcherBTT = patternBTT.matcher(sCurrentLine);
+						
 					if (matcherBTT.matches())
 					{
-						if (matcherBTT.group(8).contains("kworker")) // Group
-						// up
-						// kworker
-						// processes
+						if (matcherBTT.group(8).contains("kworker")) // Group up kworker processes
 						{
 							int index = hcList.indexOf("kworker");
+							
 							if (index == -1)
 							{
 								HighConsumeItem hcItem = new HighConsumeItem("kworker",
@@ -158,8 +151,8 @@ public class Consume
 						else
 						{
 							int index = hcList.indexOf(matcherBTT.group(8));
-							if (index == -1) // Check if app was not
-							// detected already
+							
+							if (index == -1) // Check if app was not detected already
 							{
 								HighConsumeItem hcItem = new HighConsumeItem(matcherBTT.group(8),
 																			 matcherBTT.group(7),
@@ -194,12 +187,15 @@ public class Consume
 			{
 				e.printStackTrace();
 			}
+			
 			int hcitems = 0; // Initialize apps detected count
 			Iterator<HighConsumeItem> l = hcList.listIterator();
+			
 			// Organize apps detected list
 			while (l.hasNext())
 			{
 				HighConsumeItem aux = l.next();
+				
 				if (100.0 * (float) aux.getOccurencesTotal() / (float) totalOccurrences > 1
 					&& !aux.getProcess().contains("motorola.tools.batterytracer"))
 				{
@@ -210,19 +206,23 @@ public class Consume
 					l.remove();
 				}
 			}
+			
 			hcList.sortItens(); // Sort apps list
-			for (int i = 0; i < hcList.size(); i++) // Generate final
-			// result txt
+			
+			for (int i = 0; i < hcList.size(); i++) // Generate final result txt
 			{
 				result = result + panel + hcList.get(i).toString() + panel;
 			}
+			
 			if (hcList.size() == 0) // If no apps detected
 			{
 				result = "- No app high consume evidences were found in text logs";
 			}
+			
 			// Logger.log(Logger.TAG_CONSUME, result);
 			// Logger.log(Logger.TAG_CONSUME, "Apps detected: " +
 			// hcList.size());
+			
 			Logger.log(Logger.TAG_CONSUME, "Apps detected: " + hcitems + "\nApps Selected: " + hcList.size());
 		}
 		catch (FileNotFoundException e)

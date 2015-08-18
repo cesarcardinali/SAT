@@ -68,12 +68,16 @@ public class SAT extends JFrame
 		setBounds((int) (width / 3), 0, (int) (width / 1.5), (int) height - 40);
 		setVisible(true);
 		setMinimumSize(new Dimension(800, 600));
+		
 		// Inserting the TabPane
 		getContentPane().add(SharedObjs.tabbedPane);
+		
 		// Window Focus Listener
 		addWindowFocusListener(satWFL);
+		
 		// Save configurations on close
 		Runtime.getRuntime().addShutdownHook(onShutdown);
+		
 		// Start updater thread
 		updateThread();
 	}
@@ -95,8 +99,7 @@ public class SAT extends JFrame
 				{
 					try
 					{
-						Thread.sleep(900000); // Check for update each
-						// 15 minutes
+						Thread.sleep(900000); // Check for update each 15 minutes
 					}
 					catch (InterruptedException e)
 					{
@@ -123,13 +126,18 @@ public class SAT extends JFrame
 		File f2;
 		long dateRemote, dateLocal;
 		f1 = new File(SharedObjs.updateFolder1 + Strings.getToolFileName());
+		
 		Logger.log(Logger.TAG_SAT, "Remote file: " + f1.getAbsolutePath());
 		Logger.log(Logger.TAG_SAT, "Remote: " + f1.lastModified());
+		
 		f2 = new File(Strings.getToolFileName());
+		
 		Logger.log(Logger.TAG_SAT, "Local file: " + f2.getAbsolutePath());
 		Logger.log(Logger.TAG_SAT, "Local: " + f2.lastModified());
+		
 		dateRemote = f1.lastModified();
 		dateLocal = f2.lastModified();
+		
 		if (dateLocal < dateRemote && dateLocal != 0)
 		{
 			Object[] options = new Object[] {"Yes", "No"};
@@ -137,6 +145,7 @@ public class SAT extends JFrame
 												 "Uma nova vers�o foi encontrada. Voce desaja atualizar agora?",
 												 "New version available", JOptionPane.YES_NO_CANCEL_OPTION,
 												 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+												 
 			if (n == 0)
 			{
 				try
@@ -152,7 +161,9 @@ public class SAT extends JFrame
 					Logger.log(Logger.TAG_SAT, "Updating the Updater failed");
 					e.printStackTrace();
 				}
+				
 				Logger.log(Logger.TAG_SAT, "Updating");
+				
 				try
 				{
 					Logger.log(Logger.TAG_SAT, "path: " + new File("").getAbsolutePath());
@@ -167,6 +178,7 @@ public class SAT extends JFrame
 				{
 					e2.printStackTrace();
 				}
+				
 				return 1;
 			}
 			else
@@ -174,18 +186,20 @@ public class SAT extends JFrame
 				return 2;
 			}
 		}
+		
 		return 0;
 	}
 	
 	/**
 	 * Thread to run when shutting down SAT application
 	 */
-	Thread				onShutdown = new Thread(new Runnable()
+	Thread onShutdown = new Thread(new Runnable()
 	{
 		@Override
 		public void run()
 		{
 			int run = 0;
+			
 			while (run == 0)
 			{
 				try
@@ -207,14 +221,16 @@ public class SAT extends JFrame
 					run = 1;
 				}
 			}
+			
 			XmlMngr.closeXmls();
 			Logger.close();
 		}
 	});
+	
 	/**
 	 * Window Focus Listener used on SAT main Frame
 	 */
-	WindowFocusListener	satWFL	   = new WindowFocusListener()
+	WindowFocusListener satWFL = new WindowFocusListener()
 	{
 		@Override
 		public void windowLostFocus(WindowEvent e)

@@ -34,20 +34,25 @@ public class Suspicious
 		// Variables
 		BufferedReader br = null;
 		result = "";
+		
 		try
 		{
 			// Variables initialization
 			String file_report = "";
 			String sCurrentLine = "";
+			
 			suspiciousWakelocks = new WackLock_List();
+			
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
+			
 			// Test if is directory
 			if (!folder.isDirectory())
 			{
 				result = "Not a directory";
 				return result;
 			}
+			
 			// Search for the file to be parsed
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
@@ -64,15 +69,18 @@ public class Suspicious
 					}
 				}
 			}
+			
 			// Verify if file exists
 			if (file_report.equals(""))
 				throw new FileNotFoundException();
 			else
 				br = new BufferedReader(new FileReader(file_report));
+			
 			// Search for the suspicious wake locks
 			while ((sCurrentLine = br.readLine()) != null)
 			{
 				Date parsedDate = null;
+				
 				if (sCurrentLine.contains("PowerManagerService: Suspicious wakelock held"))
 				{
 					String tag = sCurrentLine.substring(sCurrentLine.indexOf("tag=") + 4,
@@ -82,6 +90,7 @@ public class Suspicious
 														 sCurrentLine.indexOf(",",
 																			  sCurrentLine.indexOf("lock=")));
 					String ws;
+					
 					if (sCurrentLine.contains("ws=null"))
 						ws = sCurrentLine.substring(sCurrentLine.indexOf("ws=") + 3,
 													sCurrentLine.indexOf(",", sCurrentLine.indexOf("ws=")));
@@ -89,12 +98,14 @@ public class Suspicious
 						ws = sCurrentLine.substring(sCurrentLine.indexOf("ws=") + 3,
 													sCurrentLine.indexOf("}", sCurrentLine.indexOf("ws="))
 																					 + 1);
-					// Logger.log(Logger.TAG_SUSPICIOUS, "WS != null:
-					// " + ws);
+					
+					// Logger.log(Logger.TAG_SUSPICIOUS, "WS != null:" + ws);
+					
 					String uid = sCurrentLine.substring(sCurrentLine.indexOf("uid=") + 4,
 														sCurrentLine.indexOf(",",
 																			 sCurrentLine.indexOf("uid=")));
 					String process = "";
+					
 					// Date format
 					try
 					{
@@ -105,6 +116,7 @@ public class Suspicious
 					{
 						Logger.log(Logger.TAG_SUSPICIOUS, "Error: " + e.toString());
 					}
+					
 					// Find by ID the process causing the wake lock
 					if (!ws.equals("null"))
 					{
@@ -116,17 +128,20 @@ public class Suspicious
 					{
 						process = "userId=\"" + uid + "\"";
 					}
+					
 					Logger.log(Logger.TAG_SUSPICIOUS, "uid: " + uid);
+					
 					// Create new wake lock item
 					WakelockItem wl = new WakelockItem(uid, tag, lock, parsedDate, sCurrentLine);
+					
 					// Verify if the wake lock exists already
 					int index = suspiciousWakelocks.wlIndexOf(wl);
-					if (index == -1) // If does not exists, add a new
-					// entry to list
+					
+					if (index == -1) // If does not exists, add a new entry to list
 					{
 						wl.quantityInc();
-						// Search for the process name in bugreport
-						// file
+						
+						// Search for the process name in bugreport file
 						if (uid.length() == 5)
 						{
 							for (int i = 0; i < listOfFiles.length; i++)
@@ -134,6 +149,7 @@ public class Suspicious
 								if (listOfFiles[i].isFile())
 								{
 									String files = listOfFiles[i].getName();
+									
 									if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
 										&& (files.contains("bugreport")))
 									{
@@ -145,6 +161,7 @@ public class Suspicious
 									}
 								}
 							}
+							
 							if (file_report.contains("bugreport"))
 							{
 								Logger.log(Logger.TAG_SUSPICIOUS, "File opened: " + file_report);
@@ -152,6 +169,7 @@ public class Suspicious
 								aux.skip(1850000);
 								String str;
 								boolean found = false;
+								
 								while ((((str = aux.readLine()) != null) && found == false) && str != null)
 								{
 									if ((str.contains("uid=" + uid + " ")/*
@@ -164,6 +182,7 @@ public class Suspicious
 										found = true;
 									}
 								}
+								
 								aux.close();
 							}
 							else
@@ -184,13 +203,13 @@ public class Suspicious
 										}
 									}
 								}
+								
 								BufferedReader aux = new BufferedReader(new FileReader(file_report));
 								aux.skip(10000);
 								String str;
 								boolean found = false;
-								// process = (String)
-								// process.substring(8,
-								// process.length()-1);
+								// process = (String) process.substring(8, process.length()-1);
+								
 								while ((((str = aux.readLine()) != null) && found == false))
 								{
 									if (str.equals(""))
@@ -198,15 +217,19 @@ public class Suspicious
 									else if (str.matches("(.*):" + uid + ":(.*)"))
 									{
 										int start = str.indexOf(":" + uid + ":") - 1;
+								
 										while (str.charAt(start) != '|')
 											start--;
+										
 										process = str.substring(start + 1, str.indexOf(":" + uid + ":"));
 										found = true;
 									}
 								}
+								
 								aux.close();
 							}
 						}
+						
 						// Search for process name in BTD file
 						else
 						{
@@ -215,6 +238,7 @@ public class Suspicious
 								if (listOfFiles[i].isFile())
 								{
 									String files = listOfFiles[i].getName();
+						
 									if (((files.endsWith(".btd")) || (files.endsWith(".BTD")))
 										&& (files.contains("BT9")))
 									{
@@ -226,12 +250,13 @@ public class Suspicious
 									}
 								}
 							}
+							
 							BufferedReader aux = new BufferedReader(new FileReader(file_report));
 							aux.skip(10000);
 							String str;
 							boolean found = false;
-							// process = (String) process.substring(8,
-							// process.length()-1);
+							// process = (String) process.substring(8, process.length()-1);
+							
 							while ((((str = aux.readLine()) != null) && found == false))
 							{
 								if (str.equals(""))
@@ -239,15 +264,20 @@ public class Suspicious
 								else if (str.matches("(.*):" + uid + ":(.*)"))
 								{
 									int start = str.indexOf(":" + uid + ":") - 1;
+							
 									while (str.charAt(start) != '|')
 										start--;
+									
 									process = str.substring(start + 1, str.indexOf(":" + uid + ":"));
 									found = true;
 								}
 							}
+							
 							aux.close();
 						}
+						
 						wl.setProcess(process);
+						
 						// Add the wake lock to the list
 						suspiciousWakelocks.add(wl);
 					}
@@ -258,8 +288,7 @@ public class Suspicious
 						wl.quantityInc();
 						wl.setEnd(parsedDate);
 						wl.addLogLine("\n" + sCurrentLine);
-						suspiciousWakelocks.set(index, wl); // Update
-						// list
+						suspiciousWakelocks.set(index, wl); // Update list
 					}
 				}
 			}
@@ -271,11 +300,14 @@ public class Suspicious
 			{
 				ex.printStackTrace();
 			}
+			
 			// Generate final results
 			result = result + Issue.makelog(path) + "\n\n";
+			
 			if (suspiciousWakelocks.size() > 0)
 			{
 				result = result + SharedObjs.optionsPane.getTextSuspiciousHeader() + "\n";
+				
 				for (int i = 0; i < suspiciousWakelocks.size(); i++)
 				{
 					result = result + "{panel}\n"
@@ -319,6 +351,7 @@ public class Suspicious
 				ex.printStackTrace();
 			}
 		}
+		
 		return result;
 	}
 	

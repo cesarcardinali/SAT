@@ -15,9 +15,11 @@ import core.Logger;
 import style.Colors;
 
 
+/**
+ * Defines the color printer class. It is responsible to put colors on text
+ */
 public class ColorPrinter
 {
-	/** Color alarm */
 	static public void colorsAlarm(JTextPane txtPaneAlarms, String log)
 	{
 		long difTempo = 0L;
@@ -31,13 +33,16 @@ public class ColorPrinter
 		StyleConstants.setForeground(NOK, Colors.vermelhoEscuro);
 		String[] lines = log.split("\n");
 		txtPaneAlarms.setText("");
+		
 		try
 		{
 			for (int i = 0; i < lines.length; i++)
 			{
 				linhaAtual = lines[i];
+				
 				if (linhaAtual.contains("AlarmManager"))
-				{ // parse the line color
+				{
+					// parse the line color
 					if (linhaAnterior != null)
 					{
 						difTempo = getTime(linhaAtual) - getTime(linhaAnterior);
@@ -66,10 +71,12 @@ public class ColorPrinter
 				{ // just skip and write it black
 					docAlarms.insertString(docAlarms.getLength(), linhaAtual + "\n", null);
 				}
+				
 				if (linhaAnterior != null)
 				{
 					difTempo = getTime(linhaAtual) - getTime(linhaAnterior);
 				}
+				
 				linhaAnterior = linhaAtual;
 			}
 		}
@@ -78,7 +85,9 @@ public class ColorPrinter
 			JOptionPane.showMessageDialog(null, ex.getClass() + ":\n" + ex.getStackTrace());
 			ex.printStackTrace();
 		}
+		
 		txtPaneAlarms.setCaretPosition(0);
+		
 		Logger.log(Logger.TAG_COLORPRINTER, "Done");
 	}
 	
@@ -104,6 +113,7 @@ public class ColorPrinter
 		float cons = 0;
 		int scrn = -1;
 		String linhaAnterior = null, linhaAtual = null;
+		
 		try
 		{
 			for (int i = 0; i < lines.length; i++)
@@ -117,6 +127,7 @@ public class ColorPrinter
 					{
 						difTempo = getTime(linhaAtual) - getTime(linhaAnterior);
 					}
+					
 					if (scrn == 2)
 					{
 						if (cons > 20F)
@@ -153,6 +164,7 @@ public class ColorPrinter
 								docAlarms.insertString(docAlarms.getLength(), lines[i] + " \t\t\n", Ok_Freq);
 						}
 					}
+					
 					linhaAnterior = linhaAtual;
 				}
 				else
@@ -168,7 +180,9 @@ public class ColorPrinter
 			JOptionPane.showMessageDialog(null, ex.getClass() + ":\n" + ex.getStackTrace());
 			ex.printStackTrace();
 		}
+		
 		txtPaneAlarms.setCaretPosition(0);
+		
 		Logger.log(Logger.TAG_COLORPRINTER, "Done");
 	}
 	
@@ -200,6 +214,7 @@ public class ColorPrinter
 	{
 		long time = 0L;
 		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd hh:mm:ss");
+		
 		try
 		{
 			if (line.contains("AlarmManager"))
@@ -216,6 +231,7 @@ public class ColorPrinter
 		{
 			e.printStackTrace();
 		}
+		
 		return time;
 	}
 }

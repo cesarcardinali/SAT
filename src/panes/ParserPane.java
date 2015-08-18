@@ -50,9 +50,9 @@ import filters.Tether;
 import javax.swing.JSplitPane;
 
 
+@SuppressWarnings("serial")
 public class ParserPane extends JPanel
 {
-	private static final long	serialVersionUID = 1L;
 	private JLabel				lblTitle;
 	private UndoManager			undoManager;
 	private JSplitPane			splitPane;
@@ -72,16 +72,18 @@ public class ParserPane extends JPanel
 		layout.rowWeights = new double[] {1.0, 1.0};
 		layout.columnWeights = new double[] {1.0, 1.0};
 		setLayout(layout);
+		
 		JPanel topright = new JPanel();
 		topright.setPreferredSize(new Dimension(10, 30));
 		topright.setMaximumSize(new Dimension(32767, 31));
 		topright.setBorder(new LineBorder(UIManager.getColor("Button.light")));
-		;
 		topright.setMinimumSize(new Dimension(35, 30));
+		
 		GridBagLayout tr = new GridBagLayout();
 		tr.rowWeights = new double[] {0.0};
 		tr.rowHeights = new int[] {0};
 		topright.setLayout(tr);
+		
 		GridBagConstraints g1 = new GridBagConstraints();
 		g1.fill = GridBagConstraints.HORIZONTAL;
 		g1.weightx = 20.0;
@@ -90,6 +92,7 @@ public class ParserPane extends JPanel
 		g1.gridx = 1;
 		g1.gridy = 0;
 		add(topright, g1);
+		
 		lblTitle = new JLabel("Select a result folder on the left panel");
 		lblTitle.setMaximumSize(new Dimension(2000, 31));
 		lblTitle.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -106,19 +109,22 @@ public class ParserPane extends JPanel
 		gbc_lblTitle.gridy = 0;
 		gbc_lblTitle.gridx = 0;
 		topright.add(lblTitle, gbc_lblTitle);
+		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setToolTipText("Result of the selected parser item on the left");
 		scrollPane.setFont(new Font("Consolas", Font.PLAIN, 12));
 		scrollPane.setBorder(new LineBorder(new Color(220, 220, 220)));
-		;
+		
 		scrollPane.setAutoscrolls(true);
 		scrollPane.setRequestFocusEnabled(false);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setPreferredSize(new Dimension(500, 500));
 		scrollPane.setMinimumSize(new Dimension(400, 400));
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		
 		splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		
 		fileTree = new FileTree();
 		splitPane.setRightComponent(fileTree);
 		JScrollPane scrollFiltersResults = new JScrollPane();
@@ -132,6 +138,7 @@ public class ParserPane extends JPanel
 		gbc_splitPane.gridx = 0;
 		gbc_splitPane.gridy = 1;
 		add(splitPane, gbc_splitPane);
+		
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.insets = new Insets(2, 10, 10, 10);
 		gbc_scrollPane.weighty = 22.0;
@@ -140,6 +147,7 @@ public class ParserPane extends JPanel
 		gbc_scrollPane.gridx = 1;
 		gbc_scrollPane.gridy = 1;
 		add(scrollPane, gbc_scrollPane);
+		
 		resultTxtPane = new NonWrappingTextPane();
 		resultTxtPane.setToolTipText("Result of the selected parser item on the left");
 		resultTxtPane.setContentType("text/plain");
@@ -147,6 +155,7 @@ public class ParserPane extends JPanel
 		resultTxtPane.setForeground(new Color(0, 0, 0));
 		resultTxtPane.setFont(new Font("Consolas", Font.PLAIN, 11));
 		resultTxtPane.setText("");
+		
 		undoManager = new UndoManager();
 		resultTxtPane.getDocument().addUndoableEditListener(new UndoableEditListener()
 		{
@@ -156,6 +165,7 @@ public class ParserPane extends JPanel
 				undoManager.addEdit(e.getEdit());
 			}
 		});
+		
 		resultTxtPane.addKeyListener(new KeyListener()
 		{
 			@Override
@@ -174,7 +184,6 @@ public class ParserPane extends JPanel
 			{
 				if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0))
 				{
-					// resultTxtPane.setText("woot!");
 					try
 					{
 						undoManager.undo();
@@ -186,10 +195,12 @@ public class ParserPane extends JPanel
 				}
 			}
 		});
+		
 		scrollPane.setViewportView(resultTxtPane);
 		SharedObjs.setResult("");
 		resultTxtPane.setText("");
 		lblTitle.setText("Run a parser or select a result on the left");
+		
 		loadPaneData();
 	}
 	
@@ -200,32 +211,23 @@ public class ParserPane extends JPanel
 	{
 		try
 		{
-			// Abre o arquivo XML
 			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			// Cria o builder da estrutura XML
 			SAXBuilder builder = new SAXBuilder();
-			// Cria documento formatado de acordo com a lib XML
 			Document document = (Document) builder.build(xmlFile);
-			// Pega o nó raiz do XML
 			Element satNode = document.getRootElement();
-			// Gera lista de filhos do nó root
-			// List<Element> satElements = satNode.getChildren();
-			// Pega o nó referente ao option pane
 			Element optionPaneNode = satNode.getChild("parser_pane");
+			
 			for (Element e : optionPaneNode.getChildren())
 			{
 				if (e.getName().equals("path"))
 				{
-					// salvar a root folder usada para criar a file
-					// tree
 					e.setText(fileTree.getRootFolderPath());
 				}
 			}
-			// JDOM document is ready now, lets write it to file now
+			
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-			// output xml to console for debugging
-			// xmlOutputter.output(doc, System.out);
 			xmlOutputter.output(document, new FileOutputStream(xmlFile));
+			
 			Logger.log(Logger.TAG_PARSER, "Options Saved");
 		}
 		catch (JDOMException | IOException e)
@@ -241,18 +243,12 @@ public class ParserPane extends JPanel
 	{
 		try
 		{
-			// Abre o arquivo XML
 			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			// Cria o builder da estrutura XML
 			SAXBuilder builder = new SAXBuilder();
-			// Cria documento formatado de acordo com a lib XML
 			Document document = (Document) builder.build(xmlFile);
-			// Pega o nó raiz do XML
 			Element satNode = document.getRootElement();
-			// Gera lista de filhos do nó root
-			// List<Element> satElements = satNode.getChildren();
-			// Pega o nó referente ao option pane
 			Element crs_jira_paneNode = satNode.getChild("parser_pane");
+			
 			for (Element e : crs_jira_paneNode.getChildren())
 			{
 				if (e.getName().equals("tree_breakdown"))
@@ -260,6 +256,7 @@ public class ParserPane extends JPanel
 					filtersResultsTree.setToggleClickCount(Integer.parseInt(e.getValue()));
 				}
 			}
+			
 			Logger.log(Logger.TAG_PARSER, "Options Saved");
 		}
 		catch (IOException | JDOMException e)
@@ -278,6 +275,7 @@ public class ParserPane extends JPanel
 	{
 		String selectedNode = node.toString().toLowerCase();
 		String selectedNodeParent = ((DefaultMutableTreeNode) node).getParent().toString().toLowerCase();
+		
 		if ((selectedNode.contains("colors") && selectedNodeParent.contains("alarms "))
 			|| selectedNode.contains("alarms "))
 			Alarm.updateResult(text);
@@ -309,12 +307,7 @@ public class ParserPane extends JPanel
 		filtersResultsTree.clearTree();
 		resultTxtPane.setText(""); // reset the text pane
 		SharedObjs.setResult(""); // reset the result for the filters
-		lblTitle.setText("Run a parser or select a result on the left"); // reset
-		// the
-		// text
-		// in
-		// the
-		// title
+		lblTitle.setText("Run a parser or select a result on the left");
 	}
 	
 	/**

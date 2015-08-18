@@ -43,9 +43,9 @@ import java.io.IOException;
 import java.util.HashMap;
 
 
+@SuppressWarnings("serial")
 public class AdvancedOptionsPane extends JFrame
 {
-	private static final long		serialVersionUID = 3696506987866824851L;
 	private JPanel					contentPane;
 	private JLabel					lblTitle;
 	private JPanel					panel;
@@ -106,12 +106,14 @@ public class AdvancedOptionsPane extends JFrame
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
+		
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[] {0, 0};
 		gbl_contentPane.rowHeights = new int[] {0, 0, 0, 0};
 		gbl_contentPane.columnWeights = new double[] {1.0, Double.MIN_VALUE};
 		gbl_contentPane.rowWeights = new double[] {0.0, 1.0, 1.0, Double.MIN_VALUE};
 		contentPane.setLayout(gbl_contentPane);
+		
 		lblTitle = new JLabel("Advanced Options:");
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 24));
@@ -121,6 +123,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_lblTitle.gridx = 0;
 		gbc_lblTitle.gridy = 0;
 		contentPane.add(lblTitle, gbc_lblTitle);
+		
 		panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.insets = new Insets(5, 5, 5, 10);
@@ -128,6 +131,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 1;
 		contentPane.add(panel, gbc_panel);
+		
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] {0, 0, 0, 0, 0};
 		gbl_panel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};
@@ -136,6 +140,7 @@ public class AdvancedOptionsPane extends JFrame
 		panel.setLayout(gbl_panel);
 		lblConfigureDiagwsDup = new JLabel("Configure DIAG_WS Dup CR");
 		lblConfigureDiagwsDup.setFont(new Font("Tahoma", Font.BOLD, 14));
+		
 		GridBagConstraints gbc_lblConfigureDiagwsDup = new GridBagConstraints();
 		gbc_lblConfigureDiagwsDup.anchor = GridBagConstraints.WEST;
 		gbc_lblConfigureDiagwsDup.gridwidth = 4;
@@ -143,12 +148,14 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_lblConfigureDiagwsDup.gridx = 0;
 		gbc_lblConfigureDiagwsDup.gridy = 0;
 		panel.add(lblConfigureDiagwsDup, gbc_lblConfigureDiagwsDup);
+		
 		lblProduct = new JLabel("Product:");
 		GridBagConstraints gbc_lblProduct = new GridBagConstraints();
 		gbc_lblProduct.insets = new Insets(0, 10, 5, 5);
 		gbc_lblProduct.gridx = 0;
 		gbc_lblProduct.gridy = 1;
 		panel.add(lblProduct, gbc_lblProduct);
+		
 		cbxDiagProd = new JComboBox<String>();
 		cbxDiagProd.setMinimumSize(new Dimension(150, 20));
 		cbxDiagProd.setPreferredSize(new Dimension(150, 20));
@@ -158,6 +165,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_cbxDiagProd.gridx = 1;
 		gbc_cbxDiagProd.gridy = 1;
 		panel.add(cbxDiagProd, gbc_cbxDiagProd);
+		
 		textDiag = new JTextField();
 		textDiag.setPreferredSize(new Dimension(150, 20));
 		textDiag.setMinimumSize(new Dimension(150, 20));
@@ -168,6 +176,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_textDiag.gridy = 1;
 		panel.add(textDiag, gbc_textDiag);
 		textDiag.setColumns(10);
+		
 		btnSet = new JButton("Set");
 		btnSet.setPreferredSize(new Dimension(49, 20));
 		btnSet.setMinimumSize(new Dimension(49, 20));
@@ -178,6 +187,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_btnSet.gridx = 3;
 		gbc_btnSet.gridy = 1;
 		panel.add(btnSet, gbc_btnSet);
+		
 		separator = new JSeparator();
 		separator.setBackground(Color.LIGHT_GRAY);
 		separator.setForeground(Color.GRAY);
@@ -189,6 +199,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_separator.gridx = 0;
 		gbc_separator.gridy = 2;
 		panel.add(separator, gbc_separator);
+		
 		lblBatCap = new JLabel("Configure battery capacities");
 		lblBatCap.setFont(new Font("Tahoma", Font.BOLD, 14));
 		GridBagConstraints gbc_lblBatCap = new GridBagConstraints();
@@ -198,6 +209,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_lblBatCap.gridx = 0;
 		gbc_lblBatCap.gridy = 3;
 		panel.add(lblBatCap, gbc_lblBatCap);
+		
 		lblProduct2 = new JLabel("Product:");
 		GridBagConstraints gbc_lblProduct2 = new GridBagConstraints();
 		gbc_lblProduct2.anchor = GridBagConstraints.EAST;
@@ -205,6 +217,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_lblProduct2.gridx = 0;
 		gbc_lblProduct2.gridy = 4;
 		panel.add(lblProduct2, gbc_lblProduct2);
+		
 		cbxBatCap = new JComboBox<String>();
 		cbxBatCap.setMinimumSize(new Dimension(150, 20));
 		cbxBatCap.setPreferredSize(new Dimension(150, 20));
@@ -214,6 +227,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_cbxBatCap.gridx = 1;
 		gbc_cbxBatCap.gridy = 4;
 		panel.add(cbxBatCap, gbc_cbxBatCap);
+		
 		textBatCap = new JTextField();
 		textBatCap.setPreferredSize(new Dimension(150, 20));
 		textBatCap.setMinimumSize(new Dimension(150, 20));
@@ -224,6 +238,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_textBatCap.gridx = 2;
 		gbc_textBatCap.gridy = 4;
 		panel.add(textBatCap, gbc_textBatCap);
+		
 		btnSet2 = new JButton("Set");
 		btnSet2.setPreferredSize(new Dimension(49, 20));
 		btnSet2.setMinimumSize(new Dimension(49, 20));
@@ -234,6 +249,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_btnSet2.gridx = 3;
 		gbc_btnSet2.gridy = 4;
 		panel.add(btnSet2, gbc_btnSet2);
+		
 		separator_1 = new JSeparator();
 		separator_1.setPreferredSize(new Dimension(2, 2));
 		separator_1.setForeground(Color.GRAY);
@@ -245,6 +261,7 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_separator_1.gridx = 0;
 		gbc_separator_1.gridy = 5;
 		panel.add(separator_1, gbc_separator_1);
+		
 		panel_1 = new JPanel();
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.anchor = GridBagConstraints.SOUTH;
@@ -253,14 +270,17 @@ public class AdvancedOptionsPane extends JFrame
 		gbc_panel_1.gridx = 0;
 		gbc_panel_1.gridy = 2;
 		contentPane.add(panel_1, gbc_panel_1);
+		
 		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
 		btnOk = new JButton("Save and Exit");
 		panel_1.add(btnOk);
+		
 		// Initialize variables
 		dupMap = new HashMap<String, String>();
 		dupMap.clear();
 		bat_capMap = new HashMap<String, String>();
 		bat_capMap.clear();
+		
 		// Load data
 		try
 		{
@@ -271,6 +291,7 @@ public class AdvancedOptionsPane extends JFrame
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		// Components action configuration
 		cbxDiagProd.addItemListener(new ItemListener()
 		{
@@ -279,6 +300,7 @@ public class AdvancedOptionsPane extends JFrame
 				textDiag.setText(dupMap.get(e.getItem()));
 			}
 		});
+		
 		cbxBatCap.addItemListener(new ItemListener()
 		{
 			public void itemStateChanged(ItemEvent e)
@@ -286,6 +308,7 @@ public class AdvancedOptionsPane extends JFrame
 				textBatCap.setText(bat_capMap.get(e.getItem()));
 			}
 		});
+		
 		btnSet.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -294,6 +317,7 @@ public class AdvancedOptionsPane extends JFrame
 				dupMap.put((String) cbxDiagProd.getSelectedItem(), textDiag.getText());
 			}
 		});
+		
 		btnSet2.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -302,6 +326,7 @@ public class AdvancedOptionsPane extends JFrame
 				bat_capMap.put((String) cbxBatCap.getSelectedItem(), textBatCap.getText());
 			}
 		});
+		
 		btnOk.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -319,47 +344,57 @@ public class AdvancedOptionsPane extends JFrame
 		});
 	}
 	
+	/**
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
 	public void getData() throws JDOMException, IOException
 	{
-		// Abre o arquivo XML
 		xmlFile = new File("Data/cfgs/user_cfg.xml");
-		// Cria o builder da estrutura XML
 		builder = new SAXBuilder();
-		// Cria documento formatado de acordo com a lib XML
 		document = (Document) builder.build(xmlFile);
-		// Pega o nó raiz do XML
+		
 		Element satNode = document.getRootElement();
-		// Pega os nós
+		
 		diag_dupNode = satNode.getChild("diag_dup");
 		bat_capNode = satNode.getChild("bat_cap");
-		// Limpa os maps
+		
 		dupMap.clear();
 		bat_capMap.clear();
-		// Carrega lista de dup
+		
 		for (Element e : diag_dupNode.getChildren())
 		{
 			cbxDiagProd.addItem(e.getName());
 			dupMap.put(e.getName(), e.getValue());
 		}
+		
 		textDiag.setText(dupMap.get((String) cbxDiagProd.getSelectedItem()));
-		// Carrega lista de bat_cap
+		
 		for (Element e : bat_capNode.getChildren())
 		{
 			cbxBatCap.addItem(e.getName());
 			bat_capMap.put(e.getName(), e.getValue());
 		}
+		
 		textBatCap.setText(bat_capMap.get((String) cbxBatCap.getSelectedItem()));
 	}
 	
+	/**
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws JDOMException
+	 */
 	public void setData() throws FileNotFoundException, IOException, JDOMException
 	{
-		// Assuming that JDOM document is ready, here we format it to
-		// XML
+		// Assuming that JDOM document is ready, here we format it to XML
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+		
 		// Output xml to console for debugging
 		// xmlOutputter.output(document, System.out);
+		
 		// Print the file
 		xmlOutputter.output(document, new FileOutputStream(xmlFile));
+		
 		Logger.log(Logger.TAG_OPTIONS, "Options Saved");
 	}
 	

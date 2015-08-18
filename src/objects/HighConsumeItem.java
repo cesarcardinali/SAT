@@ -35,6 +35,7 @@ public class HighConsumeItem
 		Log = line + "\n";
 		LogOn = "";
 		LogOff = "";
+		
 		if (line.charAt(8) == 'F')
 		{
 			LogOff = LogOff + line + "\n";
@@ -68,6 +69,7 @@ public class HighConsumeItem
 	public boolean updateItem(float cons, String line)
 	{
 		Log = Log + line + "\n";
+		
 		if (line.charAt(8) == 'F')
 		{
 			LogOff = LogOff + line + "\n";
@@ -88,9 +90,12 @@ public class HighConsumeItem
 			LogOn = LogOn + line + "\n";
 			sumConsAvg += cons;
 		}
+		
 		occurencesTotal++;
+		
 		if (cons > consumePeak)
 			consumePeak = cons;
+			
 		return true;
 	}
 	

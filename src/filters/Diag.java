@@ -36,25 +36,29 @@ public class Diag
 		String regex, diagAllKernel, diagMs, product, line;
 		Pattern pattern;
 		Matcher matcher;
+		
 		// Initialize variables
 		diagAllKernel = "";
 		diagMs = "";
 		product = "";
+		result = "";
 		duration = 0;
 		diagDuration = 0;
 		BufferedReader reader = null;
-		result = "";
+		
 		try
 		{
 			// File seek and load configuration
 			String file_report = "";
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
+			
 			if (!folder.isDirectory())
 			{
 				result = "Not a directory";
 				return result;
 			}
+			
 			// Look for the file
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
@@ -70,6 +74,7 @@ public class Diag
 					}
 				}
 			}
+			
 			try
 			{
 				Logger.log(Logger.TAG_DIAG, "Log file: " + file_report);
@@ -81,6 +86,7 @@ public class Diag
 				result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 				return result;
 			}
+			
 			// Find DIAG_WS evidences
 			while ((line = reader.readLine()) != null)
 			{
@@ -90,6 +96,7 @@ public class Diag
 					regex = ".*/([a-z]*)_.*";
 					pattern = Pattern.compile(regex);
 					matcher = pattern.matcher(line);
+					
 					if (!matcher.matches())
 					{
 						Logger.log(Logger.TAG_DIAG, "Nao encontrou produto");
@@ -100,12 +107,14 @@ public class Diag
 						product = matcher.group(1);
 					}
 				}
+				
 				// Find duration
 				if (line.contains("[ID=BT_DISCHARGE_SUMMARY;") && line.contains("duration="))
 				{
 					regex = ".*;duration=([0-9]+);.*";
 					pattern = Pattern.compile(regex);
 					matcher = pattern.matcher(line);
+					
 					if (!matcher.matches())
 					{
 						Logger.log(Logger.TAG_DIAG, "Nao encontrou duracao da CR");
@@ -116,10 +125,12 @@ public class Diag
 						duration = Long.parseLong(matcher.group(1));
 					}
 				}
+				
 				// Find "all kernel" data
 				if (line.contains("All kernel wake locks"))
 				{
 					line = reader.readLine();
+					
 					if (line.contains("Kernel Wake lock DIAG_WS"))
 					{
 						diagAllKernel = diagAllKernel + "||" + line.replace(": ", "|").concat("|") + "\n";
@@ -133,6 +144,7 @@ public class Diag
 						}
 					}
 				}
+				
 				// Find kernel ms's data
 				if (line.contains("DIAG_WS") && !line.contains(",") && !line.contains(";")
 					&& !line.contains(".") && !line.contains("Kernel"))
@@ -144,11 +156,13 @@ public class Diag
 							 + "||name		|active_count	|event_count	|wakeup_count	|expire_count	|active_since	|total_time	|max_time	|last_change | prevent_suspend_time|"
 							 + "\n||" + line.replaceAll("\t\t|\t", "|") + "|\n";
 				}
+				
 				if (line.contains("DUMP OF SERVICE entropy:"))
 				{
 					break;
 				}
 			}
+			
 			if (diagDuration > duration * 0.5)
 			{
 				Logger.log(Logger.TAG_DIAG, "Diag!");
@@ -158,29 +172,33 @@ public class Diag
 				Logger.log(Logger.TAG_DIAG, "Not Diag! The DIAG period seems too short");
 				diagMs = "";
 			}
+			
 			reader.close();
+			
 			/*
-			 * Logger.log(Logger.TAG_DIAG, "Product:\t\t" + product); Logger.log(Logger.TAG_DIAG, "CR Duration:\t\t" +
-			 * duration); Logger.log(Logger.TAG_DIAG, "DIAG_WS duration:\t" + diagDuration); Logger.log(Logger.TAG_DIAG,
-			 * "All Kernel:\t\t" + diagAllKernel); Logger.log(Logger.TAG_DIAG, "General mode:\t\t" + diagMs);
+			 * Logger.log(Logger.TAG_DIAG, "Product:\t\t" + product); Logger.log(Logger.TAG_DIAG, "CR Duration:\t\t" + duration);
+			 * Logger.log(Logger.TAG_DIAG, "DIAG_WS duration:\t" + diagDuration); Logger.log(Logger.TAG_DIAG, "All Kernel:\t\t" +
+			 * diagAllKernel); Logger.log(Logger.TAG_DIAG, "General mode:\t\t" + diagMs);
 			 */
+			
 			// Prepare the final comment:
 			if (!diagAllKernel.equals("") || !diagMs.equals(""))
 			{
 				result = SharedObjs.optionsPane.getTextDiag()
 											   .replace("#log#", diagMs + "\n" + diagAllKernel + "\n")
 											   .replace("\\n", "\n");
-				// Abre o arquivo XML
-				File xmlFile = new File("Data/cfgs/user_cfg.xml");
-				// Cria o builder da estrutura XML
-				SAXBuilder builder = new SAXBuilder();
-				// Cria documento formatado de acordo com a lib XML
-				Document document = (Document) builder.build(xmlFile);
-				// Pega o nó raiz do XML
-				Element satNode = document.getRootElement();
-				// Pega o nó referente ao diag
-				Element diagNode = satNode.getChild("diag_dup");
-				result = result.replace("#dupcr#", diagNode.getChildText(product));
+											   
+				File xmlFile = new File("Data/cfgs/user_cfg.xml"); // Create XML file
+				
+				SAXBuilder builder = new SAXBuilder(); // Instance of XML builder
+				
+				Document document = (Document) builder.build(xmlFile); // Create a document as a XML file
+				
+				Element satNode = document.getRootElement(); // Get root node
+				
+				Element diagNode = satNode.getChild("diag_dup"); // Get diag node
+				
+				result = result.replace("#dupcr#", diagNode.getChildText(product)); // Replace tag by diag dup cr
 			}
 			else
 			{
@@ -191,18 +209,21 @@ public class Diag
 		{
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			
 			return result;
 		}
 		catch (IOException e)
 		{
 			result = "IOException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			
 			return result;
 		}
 		catch (JDOMException e)
 		{
 			result = "JDOMException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			
 			return result;
 		}
 		return result;

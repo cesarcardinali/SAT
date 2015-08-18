@@ -18,8 +18,7 @@ import core.Logger;
 public class B2G
 {
 	private static String  result;			// Parser result
-	private static boolean edited  = false;	// If result edited by the
-	// user
+	private static boolean edited  = false;	// If result edited by the user
 	private static boolean enabled = true;	// If filter is enabled
 	
 	public static String makelog(String path)
@@ -28,16 +27,19 @@ public class B2G
 		result = "";
 		String bug2goData = "";
 		String sCurrentLine = "";
+		
 		try
 		{
 			String file_report = "";
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
+			
 			if (!folder.isDirectory())
 			{
 				result = "Not a directory";
 				return result;
 			}
+			
 			// Look for the file to be parsed
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
@@ -45,21 +47,26 @@ public class B2G
 				{
 					String files = listOfFiles[i].getName();
 					Logger.log(Logger.TAG_B2G, "" + files);
+					
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT"))) && (files.contains("system")))
 					{
 						if (path.equals("."))
 							file_report = files;
 						else
 							file_report = path + "\\" + files;
+							
 						break;
 					}
 				}
 			}
+			
 			Logger.log(Logger.TAG_B2G, "\nB2G: system file: " + file_report);
+			
 			// Try to open file
 			if (!file_report.equals(""))
 			{
 				br = new BufferedReader(new FileReader(file_report));
+				
 				// Search for b2g evidences
 				while ((sCurrentLine = br.readLine()) != null)
 				{
@@ -69,16 +76,20 @@ public class B2G
 						bug2goData = bug2goData + sCurrentLine + "\n";
 					}
 				}
+				
 				// Close file reader
 				if (br != null)
 					br.close();
+					
 				// If found a reasonable amount of evidences
 				if (bug2goData.length() > 12)
 				{
 					bug2goData = "{noformat}\n" + bug2goData + "{noformat}\n";
 				}
 			}
+			
 			file_report = "";
+			
 			if (bug2goData.length() < 2000) // If evidences found were
 			// not enough
 			{
@@ -100,44 +111,50 @@ public class B2G
 						}
 					}
 				}
+				
 				Logger.log(Logger.TAG_B2G, "\nB2G: main file: " + file_report);
+				
 				// Try to open file
 				if (file_report.equals(""))
 				{
 					result = "";
 					throw new FileNotFoundException();
 				}
+				
 				br = new BufferedReader(new FileReader(file_report));
 				String newData;
 				newData = "";
 				int ok = 0;
-				while ((sCurrentLine = br.readLine()) != null) // Search
-				// for
-				// more
-				// evidences
+				
+				while ((sCurrentLine = br.readLine()) != null) // Search for more evidences
 				{
 					if (sCurrentLine.contains("BUG2GO-DBAdapter: update"))
 					{
 						newData = newData + sCurrentLine + "\n";
 						ok = 1;
 					}
+					
 					if (sCurrentLine.contains("BUG2GO-DBAdapter:") && ok == 1)
 					{
 						newData = newData + sCurrentLine + "\n";
 					}
 				}
+				
 				if (newData.length() > 20)
 				{
 					bug2goData = bug2goData + "{noformat}\n" + newData + "{noformat}\n";
 				}
+				
 				if (br != null)
 					br.close();
 			}
+			
 			if (bug2goData.split("\n").length > 3) // If enough
 				// evidences found
 				result = bug2goData;
 			else
 				result = "- No B2G evidences were found in text logs";
+				
 			return result;
 		}
 		catch (FileNotFoundException e)

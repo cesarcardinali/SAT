@@ -22,15 +22,18 @@ public class Alarms_List extends ArrayList<AlarmItem>
 	public int alarmIndexOf(AlarmItem o)
 	{
 		AlarmItem wl;
+		
 		for (int i = 0; i < this.size(); i++)
 		{
 			wl = this.get(i);
+			
 			if (wl.getProcess().equals(o.getProcess()) && wl.getType().equals(o.getType())
 				&& wl.getAction().equals(o.getAction()))
 			{
 				return i;
 			}
 		}
+		
 		return -1;
 	}
 	

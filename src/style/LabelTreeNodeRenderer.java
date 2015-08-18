@@ -32,6 +32,7 @@ public class LabelTreeNodeRenderer extends DefaultTreeCellRenderer
 	{
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+		
 		if (node.isRoot())
 		{
 			label.setIcon(Icons.root);
@@ -118,6 +119,7 @@ public class LabelTreeNodeRenderer extends DefaultTreeCellRenderer
 				label.setText(node.toString());
 			}
 		}
+		
 		if (sel)
 		{
 			label.setBackground(backgroundSelectionColor);
@@ -130,9 +132,12 @@ public class LabelTreeNodeRenderer extends DefaultTreeCellRenderer
 			label.setForeground(textNonSelectionColor);
 			label.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		}
+		
 		label.setPreferredSize(new Dimension(label.getText().length() * 11, 20));
+		
 		if (label.getText().length() < 5)
 			label.setPreferredSize(new Dimension(120, 20));
+		
 		return label;
 	}
 }

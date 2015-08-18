@@ -25,6 +25,7 @@ public class Issue
 	{
 		BufferedReader br = null;
 		result = "";
+		
 		try
 		{
 			// Output text configuration
@@ -35,9 +36,12 @@ public class Issue
 			String javaWakelock = SharedObjs.optionsPane.getTextJava() + "\n";
 			String javaWakelockData = "";
 			String regexHighCurrent = ".*off:.*=>.*[0-9]{3}.*";
-			Pattern patternHC = Pattern.compile(regexHighCurrent);
 			String sCurrentLine;
+			
+			Pattern patternHC = Pattern.compile(regexHighCurrent);
+			
 			boolean hc = false;
+			
 			// File seek and load configuration
 			String file_report = "";
 			File folder = new File(path);
@@ -64,11 +68,14 @@ public class Issue
 					}
 				}
 			}
+			
 			if (file_report.equals(""))
 			{
 				throw new FileNotFoundException();
 			}
+			
 			br = new BufferedReader(new FileReader(file_report));
+			
 			// Parse file
 			while ((sCurrentLine = br.readLine()) != null)
 			{
@@ -91,18 +98,14 @@ public class Issue
 					}
 					screenOffData = screenOffData + "{panel}\n";
 				}
+				
 				while (sCurrentLine.matches(".*Kernel Wake lock.*: [3-5][0-9]m.*")
-					   || sCurrentLine.matches(".*Kernel Wake lock .*: [1-9]h.*")) // Try
-				// to
-				// get
-				// kernel
-				// wake
-				// lock
-				// information
+					   || sCurrentLine.matches(".*Kernel Wake lock .*: [1-9]h.*")) // Try to get kernel wake lock information
 				{
 					kernelWakelockData = kernelWakelockData + "|" + sCurrentLine.replace(":", "|") + "|\n";
 					sCurrentLine = br.readLine();
 				}
+				
 				if (sCurrentLine.contains("Device is currently"))
 				{
 					screenOffData = screenOffData + "{panel}\n";
@@ -118,23 +121,21 @@ public class Issue
 						}
 						else
 							screenOffData = screenOffData + sCurrentLine + "\n";
+							
 						sCurrentLine = br.readLine();
 					}
+					
 					if (hc == false)
 						screenOffData = "";
 					else
 						screenOffData = screenOffData + "{panel}\n";
 				}
-				if (sCurrentLine.contains("Java wakelocks held")) // Try
-				// to
-				// find
-				// java
-				// wake
-				// locks
-				// information
+				
+				if (sCurrentLine.contains("Java wakelocks held")) // Try to find java wake locks information
 				{
 					javaWakelockData = "{panel}\n";
 					sCurrentLine = br.readLine();
+					
 					while (!sCurrentLine.contains("Java wakelocks held"))
 					{
 						if (!sCurrentLine.contains("Kernel"))
@@ -146,18 +147,23 @@ public class Issue
 							kernelWakelockData = kernelWakelockData + "|" + sCurrentLine.replace(":", "|")
 												 + "|\n";
 						}
+						
 						sCurrentLine = br.readLine();
 					}
+					
 					if (javaWakelockData.split("\n").length < 3)
 						javaWakelockData = "";
 					else
 						javaWakelockData = javaWakelockData + "{panel}";
 				}
 			}
+			
 			if (br != null)
 				br.close();
+				
 			// Building final results
 			result = "Issues seen in this CR:\n\n";
+			
 			if (hc)
 			{
 				result = result + screenOff + screenOffData + "\n\n";
@@ -175,12 +181,14 @@ public class Issue
 		{
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			
 			return result;
 		}
 		catch (IOException e)
 		{
 			result = "IOException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
+			
 			return result;
 		}
 		finally
@@ -195,6 +203,7 @@ public class Issue
 				ex.printStackTrace();
 			}
 		}
+		
 		return result;
 	}
 	

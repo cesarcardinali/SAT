@@ -25,11 +25,20 @@ public class ProgressDialog extends JDialog
 	private int		files;
 	
 	public ProgressDialog(JFrame parentFrame, int numberOfFiles)
-	{
+	{	
 		files = numberOfFiles;
 		frame = parentFrame;
+		
+		setTitle("Processing ...");
+		setLocationRelativeTo(parentFrame);
+		setVisible(true);
+		setResizable(false);
+		setSize(436, 220);
+		
 		panel = new JPanel();
+		
 		button = new JButton("Hide");
+		button.setBounds(272, 128, 118, 34);
 		button.addActionListener(new ActionListener()
 		{
 			@Override
@@ -44,40 +53,41 @@ public class ProgressDialog extends JDialog
 				}
 			}
 		});
+		
 		message = new JLabel("Wait while SAT processes your request");
+		message.setFont(new Font("Tahoma", Font.BOLD, 15));
+		message.setBounds(71, 22, 303, 23);
+		
 		filesToProcess = new JLabel("Files to be processed: " + String.valueOf(numberOfFiles));
+		filesToProcess.setBounds(41, 68, 150, 23);
+		
 		filesDone = new JLabel("Done: 0");
+		filesDone.setBounds(41, 92, 118, 23);
+		
+		panel = new JPanel();
+		panel.setLayout(null);
 		panel.add(message);
 		panel.add(filesToProcess);
 		panel.add(filesDone);
 		panel.add(button);
 		getContentPane().add(panel);
-		setTitle("Processing ...");
-		setLocationRelativeTo(parentFrame);
-		setVisible(true);
-		setResizable(false);
-		setSize(436, 220);
-		button.setBounds(272, 128, 118, 34);
-		panel.setLayout(null);
-		message.setFont(new Font("Tahoma", Font.BOLD, 15));
-		message.setBounds(71, 22, 303, 23);
-		filesToProcess.setBounds(41, 68, 150, 23);
-		filesDone.setBounds(41, 92, 118, 23);
 	}
 	
 	public void updateDialogView(int remainingCRs)
 	{
 		filesDone.setText("Done: " + String.valueOf(remainingCRs));
 		filesDone.updateUI();
+		
 		if (files == remainingCRs)
 		{
 			setTitle("Done");
-			button.setText("Done");
 			setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-			frame.toFront();
 			toFront();
 			setAlwaysOnTop(true);
 			setVisible(true);
+			
+			button.setText("Done");
+			frame.toFront();
 		}
 	}
 }

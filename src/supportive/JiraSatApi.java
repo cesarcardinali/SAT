@@ -537,7 +537,8 @@ public class JiraSatApi
 			cr.setAssignee(aux.get("name").toString()); // Get CR assignee
 		}
 		
-		if (fields.get("customfield_10622") == null || fields.get("customfield_10622").toString().equals("null")) // Check if it has dups
+		if (fields.get("customfield_10622") == null
+			|| fields.get("customfield_10622").toString().equals("null")) // Check if it has dups
 		{
 			cr.setDup("");
 		}

@@ -10,8 +10,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-
-import java.util.List;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -26,10 +24,9 @@ import core.SharedObjs;
 
 public class UnZip implements Runnable
 {
-	List<String>   fileList;
-	static Process p;
-	static String  file;
-	private String path;
+	private static Process p;
+	private static String  file;
+	private String		   path;
 	
 	public UnZip(String path)
 	{
@@ -40,6 +37,7 @@ public class UnZip implements Runnable
 	public void run()
 	{
 		File fileFolder = new File(path);
+		
 		if (fileFolder.isDirectory())
 		{
 			JOptionPane.showMessageDialog(null,
@@ -59,17 +57,21 @@ public class UnZip implements Runnable
 						   "File full path: " + file + "\nFile Name: " + fileName + "\nFile folder path: "
 											 + fileFolderPath + "\nOutput folder: " + fileFolderPath
 											 + fileName);
+											 
 				try
 				{
 					Logger.log(Logger.TAG_UNZIP, "Unzipping file to " + fileName);
 					unZipIt(file, outputFolder);
+					
 					SharedObjs.releaseSemaphore();
 					String sCurrentLine;
 					BufferedReader br = null;
+					
 					// File seek and load configuration
 					String npath = outputFolder;
 					fileFolder = new File(npath);
 					File[] filesList = fileFolder.listFiles();
+					
 					// Look for the file
 					for (int j = 0; j < filesList.length; j++)
 					{
@@ -85,6 +87,7 @@ public class UnZip implements Runnable
 							}
 						}
 					}
+					
 					// Try to open file
 					if (npath.equals(outputFolder))
 					{
@@ -95,6 +98,7 @@ public class UnZip implements Runnable
 						br = new BufferedReader(new FileReader(npath));
 						Logger.log(Logger.TAG_UNZIP, "Log de sistema encontrado!" + npath);
 					}
+					
 					// Parse file
 					while ((sCurrentLine = br.readLine()) != null)
 					{
@@ -121,12 +125,12 @@ public class UnZip implements Runnable
 							}
 							catch (FileNotFoundException e)
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							break;
 						}
 					}
+					
 					br.close();
 					ProcessBuilder builder = new ProcessBuilder("cmd.exe",
 																"/c",
@@ -135,10 +139,13 @@ public class UnZip implements Runnable
 					p = builder.start();
 					BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 					String line;
+					
 					Logger.log(Logger.TAG_UNZIP, "Running build_report.pl at " + fileName);
+					
 					while (true)
 					{
 						line = r.readLine();
+						
 						if (line == null)
 						{
 							break;
@@ -146,6 +153,7 @@ public class UnZip implements Runnable
 						Logger.log(Logger.TAG_UNZIP, line);
 						// SharedObjs.crsManagerPane.addLogLine(line);
 					}
+					
 					Logger.log(Logger.TAG_UNZIP,
 							   "Finished unzipping and running Bulid_report.pl of " + fileName);
 				}
@@ -153,7 +161,9 @@ public class UnZip implements Runnable
 				{
 					e.printStackTrace();
 				}
+				
 				SharedObjs.crsManagerPane.updateAllDataUI();
+				
 				Logger.log(Logger.TAG_UNZIP, fileName + " Successfully extracted");
 			}
 			else
@@ -167,6 +177,7 @@ public class UnZip implements Runnable
 	public void unzipFile()
 	{
 		File fileFolder = new File(path);
+		
 		if (fileFolder.isDirectory())
 		{
 			JOptionPane.showMessageDialog(null,
@@ -186,6 +197,7 @@ public class UnZip implements Runnable
 						   "File full path: " + file + "\nFile Name: " + fileName + "\nFile folder path: "
 											 + fileFolderPath + "\nOutput folder: " + fileFolderPath
 											 + fileName);
+											 
 				try
 				{
 					Logger.log(Logger.TAG_UNZIP, "Unzipping file to " + fileName);
@@ -193,14 +205,17 @@ public class UnZip implements Runnable
 					SharedObjs.releaseSemaphore();
 					String sCurrentLine;
 					BufferedReader br = null;
+					
 					// File seek and load configuration
 					String npath = outputFolder;
 					fileFolder = new File(npath);
 					File[] filesList = fileFolder.listFiles();
+					
 					// Look for the file
 					for (int j = 0; j < filesList.length; j++)
 					{
 						Logger.log(Logger.TAG_UNZIP, String.valueOf(fileFolder.listFiles()[j]));
+						
 						if (filesList[j].isFile())
 						{
 							String files = filesList[j].getName();
@@ -212,6 +227,7 @@ public class UnZip implements Runnable
 							}
 						}
 					}
+					
 					// Try to open file
 					if (npath.equals(outputFolder))
 					{
@@ -222,6 +238,7 @@ public class UnZip implements Runnable
 						br = new BufferedReader(new FileReader(npath));
 						Logger.log(Logger.TAG_UNZIP, "Log de sistema encontrado!" + npath);
 					}
+					
 					// Parse file
 					while ((sCurrentLine = br.readLine()) != null)
 					{
@@ -233,6 +250,7 @@ public class UnZip implements Runnable
 							Logger.log(Logger.TAG_UNZIP, sCurrentLine);
 							copyScript(new File("Data\\scripts\\_Base.pl"),
 									   new File(outputFolder + "\\build_report.pl"));
+									   
 							// Configure build report battery capacity
 							try
 							{
@@ -248,12 +266,12 @@ public class UnZip implements Runnable
 							}
 							catch (FileNotFoundException e)
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							break;
 						}
 					}
+					
 					br.close();
 					ProcessBuilder builder = new ProcessBuilder("cmd.exe",
 																"/c",
@@ -262,17 +280,22 @@ public class UnZip implements Runnable
 					p = builder.start();
 					BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 					String line;
+					
 					Logger.log(Logger.TAG_UNZIP, "Running build_report.pl at " + fileName);
+					
 					while (true)
 					{
 						line = r.readLine();
+						
 						if (line == null)
 						{
 							break;
 						}
+						
 						Logger.log(Logger.TAG_UNZIP, line);
 						// SharedObjs.crsManagerPane.addLogLine(line);
 					}
+					
 					Logger.log(Logger.TAG_UNZIP,
 							   "Finished unzipping and running Bulid_report.pl of " + fileName);
 				}
@@ -280,6 +303,7 @@ public class UnZip implements Runnable
 				{
 					e.printStackTrace();
 				}
+				
 				SharedObjs.crsManagerPane.updateAllDataUI();
 				Logger.log(Logger.TAG_UNZIP, fileName + " Successfully extracted");
 			}
@@ -291,24 +315,27 @@ public class UnZip implements Runnable
 	}
 	
 	// supportive functions
-	// -----------------------------------------------------------------------------------------------------------------------
 	public void delZips(String file)
 	{
 		try
 		{
 			Logger.log(Logger.TAG_UNZIP, "File to delete: " + file);
+			
 			ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "del \"" + file + "\"");
 			builder.redirectErrorStream(true);
 			p = builder.start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
+			
 			while (true)
 			{
 				line = r.readLine();
+				
 				if (line == null)
 				{
 					break;
 				}
+				
 				Logger.log(Logger.TAG_UNZIP, line);
 			}
 		}
@@ -325,18 +352,22 @@ public class UnZip implements Runnable
 													"cd " + file.substring(0, file.length() - 28)
 														  + "&& cd .. && del *.zip");
 		builder.redirectErrorStream(true);
+		
 		try
 		{
 			p = builder.start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
+			
 			while (true)
 			{
 				line = r.readLine();
+				
 				if (line == null)
 				{
 					break;
 				}
+				
 				Logger.log(Logger.TAG_UNZIP, line);
 			}
 		}
@@ -356,6 +387,7 @@ public class UnZip implements Runnable
 		String[] folders = fullPath.split("\\\\");
 		Logger.log(Logger.TAG_UNZIP, "File name: " + folders[folders.length - 1] + "\nSubstring: "
 									 + folders[folders.length - 1].subSequence(0, 8));
+									 
 		return (String) folders[folders.length - 1].subSequence(0, 8);
 	}
 	
@@ -363,12 +395,15 @@ public class UnZip implements Runnable
 	{
 		String[] folders = fullPath.split("\\\\");
 		String path = "";
+		
 		for (String s : folders)
 		{
 			if (!s.contains(".zip"))
 				path = path + s + File.separator;
 		}
+		
 		Logger.log(Logger.TAG_UNZIP, "File path: " + path);
+		
 		return path;
 	}
 	
@@ -381,38 +416,47 @@ public class UnZip implements Runnable
 	public static void unZipIt(String zipFile, String outputFolder)
 	{
 		byte[] buffer = new byte[1024];
+		
 		try
 		{
 			// create output directory is not exists
 			File fileFolder = new File(outputFolder);
+			
 			if (!fileFolder.exists())
 			{
 				fileFolder.mkdir();
 			}
+			
 			// get the zip file content
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+			
 			// get the zipped file list entry
 			ZipEntry ze = zis.getNextEntry();
+			
 			while (ze != null)
 			{
 				String fileName = ze.getName();
 				File newFile = new File(outputFolder + File.separator + fileName);
+				
 				Logger.log(Logger.TAG_UNZIP, "file unzip : " + newFile.getAbsoluteFile());
-				// create all non exists folders
-				// else you will hit FileNotFoundException for
-				// compressed fileFolder
+				
+				// create all non exists folders else you will hit FileNotFoundException for compressed fileFolder
 				new File(newFile.getParent()).mkdirs();
 				FileOutputStream fos = new FileOutputStream(newFile);
 				int len;
+				
 				while ((len = zis.read(buffer)) > 0)
 				{
 					fos.write(buffer, 0, len);
 				}
+				
 				fos.close();
 				ze = zis.getNextEntry();
 			}
+			
 			zis.closeEntry();
 			zis.close();
+			
 			Logger.log(Logger.TAG_UNZIP, zipFile + " extraction succeful\n");
 		}
 		catch (IOException ex)

@@ -110,7 +110,6 @@ public class CustomFilterItem
 	 */
 	public String runFilter(String path)
 	{
-		// Regex config
 		Matcher matcher;
 		Pattern pattern;
 		mares = "";
@@ -127,20 +126,24 @@ public class CustomFilterItem
 		Logger.log(Logger.TAG_CUSTOMFILTER, "radio: " + radio);
 		Logger.log(Logger.TAG_CUSTOMFILTER, "bugreport: " + bugreport);
 		Logger.log(Logger.TAG_CUSTOMFILTER, "routput: " + routput);
+		
 		// File path
 		String file = "";
 		header = header.replace("\\n", "\n");
 		res = header + "\n";
+		
 		if (main)
 		{
 			// Find log file
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
+			
 			if (!folder.isDirectory())
 			{
 				mares = "Not a directory";
 				res = res + "\n********From main log:\n" + mares;
 			}
+			
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
 				if (listOfFiles[i].getName().endsWith(".txt")
@@ -149,13 +152,16 @@ public class CustomFilterItem
 					file = path + listOfFiles[i].getName();
 				}
 			}
+			
 			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
 			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			
 			try
 			{
 				reader = new BufferedReader(new FileReader(file));
 				pattern = Pattern.compile(regex);
 				String currentLine;
+				
 				while ((currentLine = reader.readLine()) != null)
 				{
 					matcher = pattern.matcher(currentLine);
@@ -164,6 +170,7 @@ public class CustomFilterItem
 						mares = mares + currentLine + "\n";
 					}
 				}
+				
 				reader.close();
 				res = res + "\n********From main log:\n" + mares;
 			}
@@ -182,16 +189,19 @@ public class CustomFilterItem
 				res = res + "\n********From main log:\n" + mares;
 			}
 		}
+		
 		if (system)
 		{
 			// Find log file
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
+			
 			if (!folder.isDirectory())
 			{
 				syres = "Not a directory";
 				res = res + "\n********From system log:\n" + syres;
 			}
+			
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
 				if (listOfFiles[i].getName().endsWith(".txt")
@@ -200,21 +210,26 @@ public class CustomFilterItem
 					file = path + listOfFiles[i].getName();
 				}
 			}
+			
 			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
 			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			
 			try
 			{
 				reader = new BufferedReader(new FileReader(file));
 				pattern = Pattern.compile(regex);
 				String currentLine;
+				
 				while ((currentLine = reader.readLine()) != null)
 				{
 					matcher = pattern.matcher(currentLine);
+					
 					if (matcher.matches())
 					{
 						syres = syres + currentLine + "\n";
 					}
 				}
+				
 				reader.close();
 				res = res + "\n********From system log:\n" + syres;
 			}
@@ -233,17 +248,20 @@ public class CustomFilterItem
 				res = res + "\n********From system log:\n" + syres;
 			}
 		}
+		
 		if (kernel)
 		{
 			// Find log file
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 			keres = "";
+			
 			if (!folder.isDirectory())
 			{
 				keres = "Not a directory";
 				res = res + "\n********From kernel log:\n" + keres;
 			}
+			
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
 				if (listOfFiles[i].getName().endsWith(".txt")
@@ -252,16 +270,20 @@ public class CustomFilterItem
 					file = path + listOfFiles[i].getName();
 				}
 			}
+			
 			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
 			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			
 			try
 			{
 				reader = new BufferedReader(new FileReader(file));
 				pattern = Pattern.compile(regex);
 				String currentLine;
+				
 				while ((currentLine = reader.readLine()) != null)
 				{
 					matcher = pattern.matcher(currentLine);
+					
 					if (matcher.matches())
 					{
 						keres = keres + currentLine + "\n";
@@ -285,17 +307,20 @@ public class CustomFilterItem
 				res = res + "\n********From kernel log:\n" + keres;
 			}
 		}
+		
 		if (radio)
 		{
 			// Find log file
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 			rares = "";
+			
 			if (!folder.isDirectory())
 			{
 				rares = "Not a directory";
 				res = res + "\n********From radio log:\n" + rares;
 			}
+			
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
 				if (listOfFiles[i].getName().endsWith(".txt")
@@ -304,13 +329,16 @@ public class CustomFilterItem
 					file = path + listOfFiles[i].getName();
 				}
 			}
+			
 			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
 			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			
 			try
 			{
 				reader = new BufferedReader(new FileReader(file));
 				pattern = Pattern.compile(regex);
 				String currentLine;
+				
 				while ((currentLine = reader.readLine()) != null)
 				{
 					matcher = pattern.matcher(currentLine);
@@ -319,6 +347,7 @@ public class CustomFilterItem
 						rares = rares + currentLine + "\n";
 					}
 				}
+				
 				reader.close();
 				res = res + "\n********From radio log:\n" + rares;
 			}
@@ -337,17 +366,20 @@ public class CustomFilterItem
 				res = res + "\n********From radio log:\n" + rares;
 			}
 		}
+		
 		if (bugreport)
 		{
 			// Find log file
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 			bures = "";
+			
 			if (!folder.isDirectory())
 			{
 				bures = "Not a directory";
 				res = res + "\n********From bugreport log:\n" + bures;
 			}
+			
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
 				if (listOfFiles[i].getName().endsWith(".txt")
@@ -356,21 +388,26 @@ public class CustomFilterItem
 					file = path + listOfFiles[i].getName();
 				}
 			}
+			
 			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
 			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			
 			try
 			{
 				reader = new BufferedReader(new FileReader(file));
 				pattern = Pattern.compile(regex);
 				String currentLine;
+				
 				while ((currentLine = reader.readLine()) != null)
 				{
 					matcher = pattern.matcher(currentLine);
+					
 					if (matcher.matches())
 					{
 						bures = bures + currentLine + "\n";
 					}
 				}
+				
 				reader.close();
 				res = res + "\n********From bugreport log:\n" + bures;
 			}
@@ -389,17 +426,20 @@ public class CustomFilterItem
 				res = res + "\n********From bugreport log:\n" + bures;
 			}
 		}
+		
 		if (routput)
 		{
 			// Find log file
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 			rores = "";
+			
 			if (!folder.isDirectory())
 			{
 				rores = "Not a directory";
 				res = res + "\n********From report output log:********\n" + rores;
 			}
+			
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
 				if (listOfFiles[i].getName().endsWith(".txt")
@@ -408,13 +448,16 @@ public class CustomFilterItem
 					file = path + listOfFiles[i].getName();
 				}
 			}
+			
 			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
 			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			
 			try
 			{
 				reader = new BufferedReader(new FileReader(file));
 				pattern = Pattern.compile(regex);
 				String currentLine;
+				
 				while ((currentLine = reader.readLine()) != null)
 				{
 					matcher = pattern.matcher(currentLine);
@@ -423,6 +466,7 @@ public class CustomFilterItem
 						rores = rores + currentLine + "\n";
 					}
 				}
+				
 				reader.close();
 				res = res + "\n********From report output log:********\n" + rores;
 			}
@@ -441,6 +485,7 @@ public class CustomFilterItem
 				res = res + "\n********From report output log:********\n" + rores;
 			}
 		}
+		
 		return res;
 	}
 	

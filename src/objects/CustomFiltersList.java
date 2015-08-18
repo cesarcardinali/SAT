@@ -9,10 +9,9 @@ import java.util.Comparator;
 /**
  * Defines a filters list
  */
+@SuppressWarnings("serial")
 public class CustomFiltersList extends ArrayList<CustomFilterItem>
 {
-	private static final long serialVersionUID = -170544270549969807L;
-	
 	public CustomFiltersList()
 	{
 		super();
@@ -33,6 +32,7 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 				return i;
 			}
 		}
+		
 		return -1;
 	}
 	
@@ -51,6 +51,7 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 				return i;
 			}
 		}
+		
 		return -1;
 	}
 	
@@ -71,6 +72,7 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 				yourFilters.add(this.get(i));
 			}
 		}
+		
 		return yourFilters;
 	}
 	

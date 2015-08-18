@@ -65,23 +65,25 @@ public class FileTree extends JPanel
 		setLocation(350, 200);
 		root = new DefaultMutableTreeNode();
 		fileSystemView = FileSystemView.getFileSystemView();
+		
 		// initializing rootFolderPath variable
 		initRootFolder();
 		buildTree();
 		lastDirectory = "";
 		fileTree = new JTree(root);
+		
 		// Select the first child of the root node
 		fileTree.setSelectionPath(new TreePath(root.getFirstChild()));
+		
 		// Node selection listener.
 		fileTree.addTreeSelectionListener(new TreeSelectionListener()
 		{
-			// When user clicks on the folder, the files from that
-			// folder will be loaded
+			// When user clicks on the folder, the files from that folder will be loaded
 			public void valueChanged(TreeSelectionEvent e)
 			{
-				// BaseWindow.getParser().rootNode.removeAllChildren();
-				// //reseting the result tree
+				// BaseWindow.getParser().rootNode.removeAllChildren(); // reseting the result tree
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+				
 				if (node != null)
 				{
 					File file = (File) node.getUserObject();
@@ -100,6 +102,7 @@ public class FileTree extends JPanel
 						}
 					}
 				}
+				
 				// Calling updateUI causes the tree's UI to be
 				// uninstalled and then a new one installed. The
 				// developer
@@ -128,6 +131,7 @@ public class FileTree extends JPanel
 				});
 			}
 		});
+		
 		fileTree.addTreeWillExpandListener(new TreeWillExpandListener()
 		{
 			@Override
@@ -139,9 +143,9 @@ public class FileTree extends JPanel
 			@Override
 			public void treeWillExpand(TreeExpansionEvent arg0) throws ExpandVetoException
 			{
-				// TODO Auto-generated method stub
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 				initializeNode(node);
+				
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
@@ -154,37 +158,37 @@ public class FileTree extends JPanel
 				});
 			}
 		});
+		
 		// Mouse listener
 		fileTree.addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked(MouseEvent event)
 			{
-				// if left click, double click opens the file with the
-				// default system program
+				// if left click, double click opens the file with the default system program
 				if (event.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(event))
 				{
 					DefaultMutableTreeNode nodeSelected = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 					openFile((File) nodeSelected.getUserObject());
 				}
-				// if right click was detected, get the node where the
-				// right click happened
+				
+				// if right click was detected, get the node where the right click happened
 				if (SwingUtilities.isRightMouseButton(event)
 					&& fileTree.getPathForLocation(event.getX(), event.getY()) != null)
 				{
 					if (fileTree.getSelectionPaths() == null || fileTree.getSelectionPaths().length == 1)
 					{
 						fileTree.setSelectionPath(fileTree.getPathForLocation(event.getX(), event.getY()));
-						// DefaultMutableTreeNode node =
-						// (DefaultMutableTreeNode)
-						// fileTree.getLastSelectedPathComponent();
+						// DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 						// File file = (File) node.getUserObject();
 					}
 					getPopup(event.getX(), event.getY());
 				}
 			}
 		});
+		
 		// Key listener
 		fileTree.addKeyListener(new KeyAdapter()
+		
 		{
 			public void keyPressed(KeyEvent event)
 			{
@@ -194,6 +198,7 @@ public class FileTree extends JPanel
 				}
 			}
 		});
+		
 		setLayout(new GridLayout(0, 1, 0, 0));
 		fileTree.setCellRenderer(new FileTreeNodeRenderer());
 		fileTree.expandRow(1);
@@ -211,6 +216,7 @@ public class FileTree extends JPanel
 		{
 			File file = (File) node.getUserObject();
 			node.removeAllChildren();
+			
 			for (File f : file.listFiles())
 			{
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(f);
@@ -241,13 +247,14 @@ public class FileTree extends JPanel
 		JMenuItem open = new JMenuItem("Open");
 		JMenuItem delete = new JMenuItem("Delete");
 		JMenuItem rename = new JMenuItem("Rename");
+		
 		open.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent event)
 			{
-				// TODO Auto-generated method stub
 				TreePath paths[] = fileTree.getSelectionPaths();
+				
 				for (TreePath p : paths)
 				{
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
@@ -257,21 +264,21 @@ public class FileTree extends JPanel
 					}
 					catch (IOException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 			}
 		});
+		
 		delete.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent event)
 			{
-				// TODO Auto-generated method stub
 				deleteFilesSelected();
 			}
 		});
+		
 		rename.addActionListener(new ActionListener()
 		{
 			@Override
@@ -290,25 +297,19 @@ public class FileTree extends JPanel
 					String newNameParentDirs = oldName.getParent();
 					String extension = "";
 					if (oldName.getName().contains("."))
-						extension = oldName.getName().split("\\.")[1]; // aaaa.zip
-					// -->
-					// zip
-					// else
-					// Selected item doesn't have an extension
+						extension = oldName.getName().split("\\.")[1]; // aaaa.zip --> zip else Selected item doesn't have an extension
+
 					// Asking user for a new name
 					String newNameString = JOptionPane.showInputDialog(null,
 																	   "Insert a new name for " + "the file:",
 																	   "New name", JOptionPane.PLAIN_MESSAGE);
 					if (newNameString != null)
-					{ // newNameString == null --> user cancelled
-					  // dialog
+					{ // newNameString == null --> user cancelled dialog
 						File newName = new File(newNameParentDirs + "\\" + newNameString + "." + extension);
+						
 						try
 						{
-							if (!oldName.renameTo(newName)) // renameTo
-								// returns
-								// true if
-								// successful
+							if (!oldName.renameTo(newName)) // renameTo: returns true if successful
 								JOptionPane.showMessageDialog(null,
 															  "Could not rename.\nThis action may not be"
 																	+ " allowed for this file/folder.",
@@ -322,20 +323,23 @@ public class FileTree extends JPanel
 							JOptionPane.showMessageDialog(null, "An error occurred while renaming file",
 														  "Error", JOptionPane.ERROR_MESSAGE);
 						}
-					} // end if
-				} // end else
-			} // end actionPerformed
+					}
+				}
+			}
 		});
+		
 		delete.setIcon(Icons.recycleBin);
 		rename.setIcon(Icons.rename);
 		popup.add(open);
 		popup.add(rename);
+		
 		if (fileTree.getSelectionPaths().length == 1 && isSelectedNodesFolder(fileTree.getSelectionPaths()))
 		{
 			JMenu rootFolder = new JMenu("Root");
 			JMenuItem root = new JMenuItem("Set as root");
 			JMenuItem rootParent = new JMenuItem("Set parent as root");
 			JMenuItem reset = new JMenuItem("Reset root folder");
+			
 			root.addActionListener(new ActionListener()
 			{
 				@Override
@@ -348,6 +352,7 @@ public class FileTree extends JPanel
 					buildTree();
 				}
 			});
+			
 			rootParent.addActionListener(new ActionListener()
 			{
 				@Override
@@ -364,6 +369,7 @@ public class FileTree extends JPanel
 					buildTree();
 				}
 			});
+			
 			reset.addActionListener(new ActionListener()
 			{
 				@Override
@@ -375,33 +381,36 @@ public class FileTree extends JPanel
 					buildTree();
 				}
 			});
+			
 			rootFolder.add(root);
 			rootFolder.add(rootParent);
 			rootFolder.add(reset);
 			popup.add(rootFolder);
 		}
+		
 		if (isSelectedNodesFolder(fileTree.getSelectionPaths()))
 		{
 			JMenuItem runScript = new JMenuItem("Run build-report");
+			
 			runScript.addActionListener(new ActionListener()
 			{
 				@Override
 				public void actionPerformed(ActionEvent event)
 				{
-					// TODO Auto-generated method stub
 					Thread thread = new Thread(new Runnable()
 					{
 						@Override
 						public void run()
 						{
-							// TODO Auto-generated method stub
 							int count = 0;
 							ProgressDialog dialog = new ProgressDialog(SharedObjs.satFrame,
 																	   fileTree.getSelectionPaths().length);
+							
 							for (TreePath p : fileTree.getSelectionPaths())
 							{
 								DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
 								File file = (File) node.getUserObject();
+								
 								try
 								{
 									SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
@@ -415,19 +424,22 @@ public class FileTree extends JPanel
 							}
 						}
 					});
+					
 					thread.start();
 				}
 			});
+			
 			runScript.setIcon(fileSystemView.getSystemIcon(new File("Data\\scripts\\build_report.pl")));
 			popup.add(runScript);
 		}
-		// if the it's a txt file, show the popup to select the text
-		// editor
+		
+		// if the it's a txt file, show the popup to select the text editor
 		if (checkFileExtension(fileTree.getSelectionPaths()).equals("txt"))
 		{
 			JMenu openWith = new JMenu("Open with");
 			JMenuItem textTool = new JMenuItem("Text Analysis Tool");
 			JMenuItem notepad = new JMenuItem("Notepad++");
+			
 			// Get the file selected and open with TextAnalysisTool
 			textTool.addActionListener(new ActionListener()
 			{
@@ -436,6 +448,7 @@ public class FileTree extends JPanel
 					File file;
 					DefaultMutableTreeNode node;
 					TreePath[] paths = fileTree.getSelectionPaths();
+					
 					for (int i = 0; i < paths.length; i++)
 					{
 						node = (DefaultMutableTreeNode) paths[i].getLastPathComponent();
@@ -454,6 +467,7 @@ public class FileTree extends JPanel
 					}
 				}
 			});
+			
 			// Get the file selected and open with Notepad++
 			notepad.addActionListener(new ActionListener()
 			{
@@ -462,6 +476,7 @@ public class FileTree extends JPanel
 					File file;
 					DefaultMutableTreeNode node;
 					TreePath[] paths = fileTree.getSelectionPaths();
+					
 					for (int i = 0; i < paths.length; i++)
 					{
 						node = (DefaultMutableTreeNode) paths[i].getLastPathComponent();
@@ -480,6 +495,7 @@ public class FileTree extends JPanel
 					}
 				}
 			});
+			
 			// Get the icons for the executable programs
 			textTool.setIcon(fileSystemView.getSystemIcon(new File("Data\\complements\\TextAnalysisTool.exe")));
 			notepad.setIcon(fileSystemView.getSystemIcon(new File("C:\\Program Files (x86)\\Notepad++\\notepad++.exe")));
@@ -492,6 +508,7 @@ public class FileTree extends JPanel
 		{
 			JMenuItem unzip = new JMenuItem("Unzip");
 			JMenuItem unzipRun = new JMenuItem("Unzip and run build-report");
+			
 			// Get the files selected and unzip them
 			unzip.addActionListener(new ActionListener()
 			{
@@ -500,8 +517,8 @@ public class FileTree extends JPanel
 					unZipFiles(false);
 				}
 			});
-			// Get the files selected, unzip them and run the
-			// build-report
+			
+			// Get the files selected, unzip them and run the build-report
 			unzipRun.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent arg0)
@@ -509,13 +526,16 @@ public class FileTree extends JPanel
 					unZipFiles(true);
 				}
 			});
+			
 			unzip.setIcon(Icons.zip);
 			unzipRun.setIcon(fileSystemView.getSystemIcon(new File("Data\\scripts\\build_report.pl")));
 			popup.add(unzip);
 			popup.add(unzipRun);
 		}
+		
 		popup.add(delete);
 		popup.show(fileTree, posX, posY);
+		
 		return popup;
 	}
 	
@@ -539,12 +559,13 @@ public class FileTree extends JPanel
 				try
 				{
 					TreePath paths[] = fileTree.getSelectionPaths();
+					
 					for (TreePath p : paths)
 					{
 						DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
 						deleteFile((File) node.getUserObject());
-						// if file is removed, node needs to be
-						// removed
+						
+						// if file is removed, node needs to be removed
 						node.removeFromParent();
 						SwingUtilities.invokeLater(new Runnable()
 						{
@@ -556,14 +577,14 @@ public class FileTree extends JPanel
 								fileTree.updateUI();
 							}
 						});
-					} // end for
+					}
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
 					Logger.log(Logger.TAG_FILETREE, "Error while deleting file(s)");
 				}
-			} // end run
+			}
 		}).start();
 	}
 	
@@ -572,9 +593,11 @@ public class FileTree extends JPanel
 	{
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) paths[0].getLastPathComponent();
 		File file = (File) node.getUserObject();
+		
 		if (file.isDirectory())
 			return "Selection contains at least one folder";
 		String fileExtension = FilenameUtils.getExtension(file.getAbsolutePath());
+		
 		for (int i = 1; i < paths.length; i++)
 		{
 			node = (DefaultMutableTreeNode) paths[i].getLastPathComponent();
@@ -582,6 +605,7 @@ public class FileTree extends JPanel
 			if (!FilenameUtils.getExtension(file.getAbsolutePath()).equals(fileExtension))
 				return "Different file extensions";
 		}
+		
 		return fileExtension;
 	}
 	
@@ -590,13 +614,16 @@ public class FileTree extends JPanel
 	{
 		DefaultMutableTreeNode node;
 		File file;
+		
 		for (TreePath p : fileTree.getSelectionPaths())
 		{
 			node = (DefaultMutableTreeNode) p.getLastPathComponent();
 			file = (File) node.getUserObject();
+			
 			if (!file.isDirectory())
 				return false;
 		}
+		
 		return true;
 	}
 	
@@ -604,18 +631,19 @@ public class FileTree extends JPanel
 	public void unZipFiles(boolean runScript)
 	{
 		final boolean run = runScript;
+		
 		Thread thread = new Thread(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				// TODO Auto-generated method stub
 				File file;
 				File newFile;
 				DefaultMutableTreeNode node;
 				TreePath[] paths = fileTree.getSelectionPaths();
 				ProgressDialog dialog = new ProgressDialog(SharedObjs.satFrame, paths.length);
 				int length = 0;
+				
 				for (TreePath p : paths)
 				{
 					node = (DefaultMutableTreeNode) p.getLastPathComponent();
@@ -626,6 +654,7 @@ public class FileTree extends JPanel
 					newFile = new File(file.getAbsolutePath()
 										   .substring(0, file.getAbsolutePath().length() - 28));
 					Logger.log(Logger.TAG_FILETREE, newFile.getAbsolutePath());
+					
 					if (newFile != null)
 					{
 						node.add(new DefaultMutableTreeNode(newFile));
@@ -642,11 +671,13 @@ public class FileTree extends JPanel
 							}
 						}
 					}
+					
 					fileTree.updateUI();
 					dialog.updateDialogView(++length);
 				}
 			}
 		});
+		
 		thread.start();
 	}
 	
@@ -660,9 +691,11 @@ public class FileTree extends JPanel
 		DefaultMutableTreeNode Node = node;
 		File aux = (File) Node.getUserObject();
 		int Length;
+		
 		if (aux.isDirectory())
 		{
 			Length = Node.getChildCount();
+			
 			for (int i = 0; i < Length; i++)
 			{
 				if (Node.getChildAt(i).toString().toLowerCase().contains("report_info")
@@ -672,12 +705,14 @@ public class FileTree extends JPanel
 					return true;
 				}
 			}
+			
 			return false;
 		}
 		else
 		{
 			Node = (DefaultMutableTreeNode) Node.getParent();
 			Length = Node.getChildCount();
+			
 			for (int i = 0; i < Length; i++)
 			{
 				if (Node.getChildAt(i).toString().toLowerCase().contains("report_info")
@@ -687,6 +722,7 @@ public class FileTree extends JPanel
 					return true;
 				}
 			}
+			
 			return false;
 		}
 	}
@@ -696,28 +732,20 @@ public class FileTree extends JPanel
 	{
 		try
 		{
-			// Abre o arquivo XML
 			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			// Cria o builder da estrutura XML
 			SAXBuilder builder = new SAXBuilder();
-			// Cria documento formatado de acordo com a lib XML
 			Document document = (Document) builder.build(xmlFile);
-			// Pega o nó raiz do XML
 			Element satNode = document.getRootElement();
-			// Gera lista de filhos do nó root
-			// List<Element> satElements = satNode.getChildren();
-			// Pega o nó referente ao option pane
 			Element crs_jira_paneNode = satNode.getChild("parser_pane");
+			
 			for (Element e : crs_jira_paneNode.getChildren())
 			{
 				if (e.getName().equals("path"))
 				{
 					rootFolderPath = (e.getValue());
-					// selecionar na JTree o último arquivo que estava
-					// selecionado
-					// folder.setText(getRootPath());
 				}
 			}
+			
 			Logger.log(Logger.TAG_FILETREE, "Options Loaded");
 		}
 		catch (IOException | JDOMException e)
@@ -729,16 +757,18 @@ public class FileTree extends JPanel
 	public void buildTree()
 	{
 		File rootFolder = new File(rootFolderPath.replace("\\", "\\\\"));
-		// Initialize the file tree based on the folder root
-		// predefined if it exists
+
+		// Initialize the file tree based on the folder root predefined if it exists
 		if (rootFolder.exists())
 		{
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(rootFolder);
+	
 			for (File file : rootFolder.listFiles())
 			{
 				DefaultMutableTreeNode node = new DefaultMutableTreeNode(file);
 				newNode.add(node);
 			}
+			
 			root.removeAllChildren();
 			root.add(newNode);
 		}
@@ -748,6 +778,7 @@ public class FileTree extends JPanel
 			for (File file : fileSystemView.getRoots())
 			{
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(file);
+				
 				if (file.isDirectory())
 				{
 					for (File f : file.listFiles())
@@ -756,6 +787,7 @@ public class FileTree extends JPanel
 						newNode.add(node);
 					}
 				}
+				
 				root.removeAllChildren();
 				root.add(newNode);
 			}

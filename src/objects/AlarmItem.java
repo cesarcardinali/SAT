@@ -9,11 +9,9 @@ import java.util.Date;
  */
 public class AlarmItem
 {
-	private Date   begin, end, last; // Keeps the initial, end and
-	// last detected date
+	private Date   begin, end, last; // Keeps the initial, end and last detected date
 	private String type;			 // Alarm type
-	private String process;			 // Process that triggered the
-	// alarm
+	private String process;			 // Process that triggered the alarm
 	private String action;			 // Action triggered
 	private String log;				 // Log lines
 	private int	   occurences;		 // Total occurrences
@@ -54,6 +52,7 @@ public class AlarmItem
 		last = end;
 		end = parsedDate;
 		long difTempo = end.getTime() - last.getTime();
+		
 		if (difTempo < 20000)
 		{
 			warning = warning + 10;
@@ -66,6 +65,7 @@ public class AlarmItem
 		{
 			warning = warning + 1;
 		}
+		
 		warning = warning / 2;
 	}
 	
@@ -134,6 +134,7 @@ public class AlarmItem
 			long diffSeconds = diff / 1000 % 60;
 			long diffMinutes = diff / (60 * 1000) % 60;
 			long diffHours = diff / (60 * 60 * 1000);
+			
 			return diffHours + "h" + diffMinutes + "m" + diffSeconds + "s";
 		}
 		catch (Exception e)

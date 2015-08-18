@@ -11,11 +11,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 
+@SuppressWarnings("serial")
 public class FileTreeNodeRenderer extends DefaultTreeCellRenderer
 {
-	private static final long serialVersionUID = 6608252004318979840L;
-	private FileSystemView	  fileSystemView;
-	private JLabel			  nodeLabel;
+	private FileSystemView fileSystemView;
+	private JLabel		   nodeLabel;
 	
 	public FileTreeNodeRenderer()
 	{
@@ -32,6 +32,7 @@ public class FileTreeNodeRenderer extends DefaultTreeCellRenderer
 		File file = (File) node.getUserObject();
 		nodeLabel.setIcon(fileSystemView.getSystemIcon(file));
 		nodeLabel.setText(fileSystemView.getSystemDisplayName(file));
+		
 		if (sel)
 		{
 			nodeLabel.setBackground(backgroundSelectionColor);
@@ -42,6 +43,7 @@ public class FileTreeNodeRenderer extends DefaultTreeCellRenderer
 			nodeLabel.setBackground(backgroundNonSelectionColor);
 			nodeLabel.setForeground(textNonSelectionColor);
 		}
+		
 		return nodeLabel;
 	}
 }

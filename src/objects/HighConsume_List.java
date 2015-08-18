@@ -9,10 +9,9 @@ import java.util.Comparator;
 /**
  * Class that defines a list of apps and its consumption
  */
+@SuppressWarnings("serial")
 public class HighConsume_List extends ArrayList<HighConsumeItem>
 {
-	private static final long serialVersionUID = -170544270549969807L;
-	
 	public HighConsume_List()
 	{
 		super();
@@ -27,6 +26,7 @@ public class HighConsume_List extends ArrayList<HighConsumeItem>
 				return i;
 			}
 		}
+		
 		return -1;
 	}
 	
@@ -39,6 +39,7 @@ public class HighConsume_List extends ArrayList<HighConsumeItem>
 				return i;
 			}
 		}
+		
 		return -1;
 	}
 	
