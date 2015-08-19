@@ -43,16 +43,24 @@ public class JiraSatApi
 	/**
 	 * Create a new instance of jira rest interface
 	 * 
-	 * @param url Base url to jira (ending with /)
+	 * @param url Base url to jira (http://idart.com/)
 	 * @param username Your username
 	 * @param passwd Your password
 	 */
 	public JiraSatApi(String url, String username, String passwd)
 	{
 		this.username = username;
-		this.baseURL = url;
+		if (url.charAt(url.length()) == '/')
+		{
+			this.baseURL = url + "rest/api/2/issue/";
+		}
+		else
+		{
+			this.baseURL = url + "/rest/api/2/issue/";
+		}
+		
 		this.password = passwd;
-		client = Client.create();
+		this.client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(username, passwd));
 	}
 	
@@ -72,7 +80,7 @@ public class JiraSatApi
 											 
 		String output = response.getEntity(String.class);
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "Add comment: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -98,24 +106,17 @@ public class JiraSatApi
 		for (int i = 0; i < comments.size(); i++)
 		{
 			jsonObj = (JSONObject) comments.get(i);
-			
 			aux = (JSONObject) jsonObj.get("author");
 			
 			if (aux.get("name").equals(username))
 			{
 				id = "/" + (String) jsonObj.get("id");
-				System.out.println(id);
-				System.out.println(jsonObj.get("body"));
-				;
 			}
-			
-			// System.out.println(comments.get(i));
 		}
 		
 		if (!id.equals(""))
 		{
 			WebResource webResource = client.resource(baseURL + key + COMMENT_TAG + id);
-			
 			ClientResponse response = webResource.type("application/json")
 												 .put(ClientResponse.class,
 													  "{\"body\": \"" + newComment + "\"}");
@@ -129,7 +130,7 @@ public class JiraSatApi
 				output = response.toString();
 			}
 			
-			Logger.log(TAG, "Output from Server ...\n" + output);
+			Logger.log(TAG, "Edit last comment: Output from Server:\n" + output);
 		}
 		
 		return output;
@@ -144,12 +145,10 @@ public class JiraSatApi
 	public String getComments(String key)
 	{
 		WebResource webResource = client.resource(baseURL + key + COMMENT_TAG);
-		
 		ClientResponse response = webResource.type("application/json").get(ClientResponse.class);
-		
 		String output = response.getEntity(String.class);
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "Get comments: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -164,12 +163,9 @@ public class JiraSatApi
 	public String addLabel(String key, String label)
 	{
 		WebResource webResource = client.resource(baseURL + key);
-		
-		String input = prepareInputFromFile("addLabel");
 		String output = "";
+		String input = prepareInputFromFile("addLabel");
 		input = input.replace("#given_label#", label);
-		System.out.println("Input:\n" + input);
-		
 		ClientResponse response = webResource.type("application/json").put(ClientResponse.class, input);
 		
 		if (response.getStatus() != 204)
@@ -181,7 +177,7 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "Add label: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -196,7 +192,6 @@ public class JiraSatApi
 	public String addLabel(String key, String[] labels)
 	{
 		WebResource webResource = client.resource(baseURL + key);
-		
 		String input = prepareInputFromFile("addLabel");
 		String output;
 		
@@ -206,8 +201,6 @@ public class JiraSatApi
 		}
 		
 		input = input.replace("#given_label#", labels[0]);
-		System.out.println("Input:\n" + input + labels.length);
-		
 		ClientResponse response = webResource.type("application/json").put(ClientResponse.class, input);
 		
 		if (response.getStatus() != 204)
@@ -219,7 +212,7 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "Add many labels: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -234,14 +227,9 @@ public class JiraSatApi
 	public String removeLabel(String key, String label)
 	{
 		WebResource webResource = client.resource(baseURL + key);
-		
-		String input = prepareInputFromFile("deleteLabel");
 		String output = "";
-		
+		String input = prepareInputFromFile("deleteLabel");
 		input = input.replace("#given_label#", label);
-		
-		System.out.println("Input:\n" + input);
-		
 		ClientResponse response = webResource.type("application/json").put(ClientResponse.class, input);
 		
 		if (response.getStatus() != 204)
@@ -253,7 +241,7 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "Remove label: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -268,7 +256,6 @@ public class JiraSatApi
 	public String removeLabel(String key, String labels[])
 	{
 		WebResource webResource = client.resource(baseURL + key);
-		
 		String input = prepareInputFromFile("deleteLabel");
 		String output;
 		
@@ -291,7 +278,7 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "Remove many labels: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -305,14 +292,12 @@ public class JiraSatApi
 	public String assignIssue(String key, String user)
 	{
 		WebResource webResource = client.resource(baseURL + key + ASSIGN_TAG);
-		
-		String input = prepareInputFromFile("assignCR");
 		String output;
-		
+		String input = prepareInputFromFile("assignCR");
 		input = input.replace("#given_coreid#", user);
-		System.out.println("Input:\n" + input);
-		
 		ClientResponse response = webResource.type("application/json").put(ClientResponse.class, input);
+		
+		System.out.println("Input:\n" + input);
 		
 		if (response.getStatus() != 204)
 		{
@@ -323,7 +308,7 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "Assign issue: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -336,14 +321,12 @@ public class JiraSatApi
 	public String unassignIssue(String key)
 	{
 		WebResource webResource = client.resource(baseURL + key + ASSIGN_TAG);
-		
-		String input = prepareInputFromFile("assignCR");
 		String output;
-		
+		String input = prepareInputFromFile("assignCR");
 		input = input.replace("\"#given_coreid#\"", "null");
-		System.out.println("Input:\n" + input);
-		
 		ClientResponse response = webResource.type("application/json").put(ClientResponse.class, input);
+		
+		System.out.println("Input:\n" + input);
 		
 		if (response.getStatus() != 204)
 		{
@@ -354,7 +337,7 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "Unassign issue: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -369,12 +352,9 @@ public class JiraSatApi
 	public String editSummary(String key, String summary)
 	{
 		WebResource webResource = client.resource(baseURL + key);
-		
-		String input = prepareInputFromFile("editSummary");
 		String output;
-		
+		String input = prepareInputFromFile("editSummary");
 		input = input.replace("#given_summary#", summary);
-		
 		ClientResponse response = webResource.type("application/json").put(ClientResponse.class, input);
 		
 		if (response.getStatus() != 204)
@@ -386,7 +366,8 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "HTTP Request input: " + input);
+		Logger.log(TAG, "Edit summary: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -402,14 +383,10 @@ public class JiraSatApi
 	public String dupIssue(String key, String dupkey, String comment)
 	{
 		WebResource webResource = client.resource(baseURL + key + TRANSITION_TAG);
-		
 		String output;
 		String input = prepareInputFromFile("dupCr");
 		input = input.replace("#given_dup#", dupkey);
 		input = input.replace("#given_comment#", comment);
-		
-		System.out.println(input);
-		
 		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, input);
 		
 		if (response.getStatus() != 204)
@@ -421,7 +398,8 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "HTTP Request input: " + input);
+		Logger.log(TAG, "Duplicate issue: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -437,15 +415,10 @@ public class JiraSatApi
 	public String closeIssue(String key, String as, String comment)
 	{
 		WebResource webResource = client.resource(baseURL + key + TRANSITION_TAG);
-		
 		String output;
 		String input = prepareInputFromFile("closeCr");
-		
 		input = input.replace("#given_as#", as);
 		input = input.replace("#given_comment#", comment);
-		
-		System.out.println(input);
-		
 		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, input);
 		
 		if (response.getStatus() != 204)
@@ -457,7 +430,8 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "HTTP Request input: " + input);
+		Logger.log(TAG, "Close issue: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -471,12 +445,8 @@ public class JiraSatApi
 	public String reopenIssue(String key)
 	{
 		WebResource webResource = client.resource(baseURL + key + TRANSITION_TAG);
-		
 		String output;
 		String input = prepareInputFromFile("reopenCr");
-		
-		System.out.println(input);
-		
 		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, input);
 		
 		if (response.getStatus() != 204)
@@ -488,7 +458,8 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "Output from Server ...\n" + output);
+		Logger.log(TAG, "HTTP Request input: " + input);
+		Logger.log(TAG, "Reopen issue: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -498,7 +469,6 @@ public class JiraSatApi
 		CrItem cr = new CrItem();
 		
 		WebResource webResource = client.resource(baseURL + key);
-		
 		ClientResponse response = webResource.type("application/json").get(ClientResponse.class);
 		
 		String output = response.getEntity(String.class);
@@ -511,9 +481,7 @@ public class JiraSatApi
 		cr.setJiraID(jsonObj.get("key").toString()); // Get CR key
 		
 		aux = (JSONObject) fields.get("status"); // Get CR status
-		
 		cr.setStatus(aux.get("name").toString());
-		
 		if (cr.getStatus().equals("New"))
 		{
 			cr.setResolution("");
@@ -526,15 +494,14 @@ public class JiraSatApi
 		
 		cr.setSummary(fields.get("summary").toString()); // Get CR summary
 		
-		aux = (JSONObject) fields.get("assignee"); // Get CR resolution
-		
+		aux = (JSONObject) fields.get("assignee"); // Get CR assignee
 		if (aux == null) // Check if it is unassigned
 		{
 			cr.setAssignee("");
 		}
 		else
 		{
-			cr.setAssignee(aux.get("name").toString()); // Get CR assignee
+			cr.setAssignee(aux.get("name").toString());
 		}
 		
 		if (fields.get("customfield_10622") == null
@@ -547,7 +514,15 @@ public class JiraSatApi
 			cr.setDup(fields.get("customfield_10622").toString()); // Get CR dups
 		}
 		
-		//System.out.println(cr);
+		Logger.log(TAG, "HTTP Request input: " + "GET " + key);
+		if (output.contains("{\"errorMessages\":"))
+		{
+			Logger.log(TAG, "Get CR data: Output from Server: \n" + output);
+		}
+		else
+		{
+			Logger.log(TAG, "Get CR data: Output from Server: (Parsed CR data)\n" + cr);
+		}
 		
 		return cr;
 	}
