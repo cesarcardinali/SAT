@@ -199,18 +199,21 @@ public class CustomFiltersPane extends JDialog
 				{
 					filtersList = SharedObjs.getCustomFiltersList();
 					CustomFilterItem aux = null;
+					
 					for (CustomFilterItem item : filtersList)
 					{
 						if (comboBox.getSelectedItem().equals(item.getName()))
 						{
 							aux = item;
 							SharedObjs.parserPane.getFiltersResultsTree().removeCustomNode(item.getName());
+							
 							break;
 						}
 					}
 					if (aux != null)
 					{
 						Logger.log(Logger.TAG_CUSTOMFILTER, aux.getName());
+						
 						filtersList.remove(aux);
 						comboBox.removeItem(aux.getName());
 					}

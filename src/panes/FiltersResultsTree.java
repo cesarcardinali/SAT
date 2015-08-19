@@ -43,7 +43,7 @@ public class FiltersResultsTree extends JTree
 		setToggleClickCount(1);
 		
 		// Setting up initial tree (needs to change for when custom filters enabled)
-		rootNode.setUserObject("FilterItem and Results");
+		rootNode.setUserObject("Filters and Results");
 		rootNode.removeAllChildren();
 		initializeTree();
 		
@@ -68,6 +68,7 @@ public class FiltersResultsTree extends JTree
 					{
 						case 0: // Root selected
 							SharedObjs.parserPane.showAllLogResults();
+							Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Showing all results.");
 							break;
 						case 1: // Leaf filter selected
 							if (selectedNode.toString().contains("Alarms"))
@@ -795,7 +796,7 @@ public class FiltersResultsTree extends JTree
 		else
 		{
 			addBug2go("Result");
-			SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.parserPane.getResultsTxtPane()
+			SharedObjs.setResult(SharedObjs.getResult()
 													+ "\n\n\n========================= Bug2Go =========================\n"
 													+ b2gResult);
 			x = ("Bug2Go - Done");
@@ -851,7 +852,7 @@ public class FiltersResultsTree extends JTree
 		else
 		{
 			addDiag("Result");
-			SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.parserPane.getResultsTxtPane()
+			SharedObjs.setResult(SharedObjs.getResult()
 													+ "\n\n\n======================= Diag Wake locks =======================\n"
 													+ diagResult);
 			x = ("Diag - Done");
@@ -899,7 +900,7 @@ public class FiltersResultsTree extends JTree
 		else
 		{
 			addIssues("Result");
-			SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.parserPane.getResultsTxtPane()
+			SharedObjs.setResult(SharedObjs.getResult()
 													+ "\n\n\n========================= Wakelocks =========================\n"
 													+ wakelocksResult);
 			x = ("WakeLocks - Done");
@@ -952,7 +953,7 @@ public class FiltersResultsTree extends JTree
 			}
 			if (Consume.getHCList().size() == 0)
 				addConsumeNode("Nothing found in logs");
-			SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.parserPane.getResultsTxtPane()
+			SharedObjs.setResult(SharedObjs.getResult()
 													+ "\n\n\n========================= High Consumption Apps =========================\n"
 													+ consumptionResult);
 			x = ("High Consumption - Done");
@@ -1000,7 +1001,7 @@ public class FiltersResultsTree extends JTree
 		else
 		{
 			addSummary("Result");
-			SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.parserPane.getResultsTxtPane()
+			SharedObjs.setResult(SharedObjs.getResult()
 													+ "\n\n\n========================= Summary =========================\n"
 													+ summaryResult);
 			x = ("Summary - Done");
@@ -1058,7 +1059,7 @@ public class FiltersResultsTree extends JTree
 			{
 				addWakeLocksNode("No suspicious found");
 			}
-			SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.parserPane.getResultsTxtPane()
+			SharedObjs.setResult(SharedObjs.getResult()
 													+ "\n\n\n========================= Suspicious =========================\n"
 													+ suspiciousResult);
 			x = ("Suspicious - Done");
@@ -1106,7 +1107,7 @@ public class FiltersResultsTree extends JTree
 		else
 		{
 			addTether("Result");
-			SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.parserPane.getResultsTxtPane()
+			SharedObjs.setResult(SharedObjs.getResult()
 													+ "\n\n\n========================= Tethering =========================\n"
 													+ tetherResult);
 			x = ("Tethering - Done");
@@ -1160,7 +1161,7 @@ public class FiltersResultsTree extends JTree
 			{
 				addCustomResult(nodeName, "Result");
 				result = result + SharedObjs.getCustomFiltersList().get(index).getHeader() + "\n";
-				SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.parserPane.getResultsTxtPane()
+				SharedObjs.setResult(SharedObjs.getResult()
 														+ "\n\n\n========================= Tethering =========================\n"
 														+ result);
 				x = (nodeName + " - Done");

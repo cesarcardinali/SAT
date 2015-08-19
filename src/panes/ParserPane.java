@@ -288,7 +288,12 @@ public class ParserPane extends JPanel
 	 */
 	public void showAllLogResults()
 	{
+		while (SharedObjs.getResult().charAt(0) == '\n')
+		{
+			SharedObjs.setResult(SharedObjs.getResult().substring(1));
+		}
 		resultTxtPane.setText(SharedObjs.getResult());
+		resultTxtPane.setCaretPosition(0);
 		lblTitle.setText("All Results:");
 	}
 	
