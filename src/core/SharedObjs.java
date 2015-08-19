@@ -41,6 +41,7 @@ public class SharedObjs
 	public static final File		  messageCfgFile = new File(contentFolder + "cfgs/message.xml");
 	public static final File		  pwdFile		 = new File(contentFolder + "cfgs/pass.pwd");
 	private static String			  crPath;
+	private static String			  rootFolderPath;
 	private static String			  result;
 	private static String			  user;
 	private static String			  pass;
@@ -63,9 +64,10 @@ public class SharedObjs
 	public static void initClass()
 	{
 		// Initialize variables
+		crPath = "";
 		updateFolder1 = XmlMngr.getSystemValueOf(new String[] {"configs", "update_path1"});
 		updateFolder2 = XmlMngr.getSystemValueOf(new String[] {"configs", "update_path2"});
-		crPath = XmlMngr.getUserValueOf(new String[] {"parser_pane", "path"});
+		rootFolderPath = XmlMngr.getUserValueOf(new String[] {"parser_pane", "rootPath"});
 		unzipSemaphore = new Semaphore(1, true);
 		customFiltersList = new CustomFiltersList();
 		customFiltersPane = new CustomFiltersPane();
@@ -181,6 +183,11 @@ public class SharedObjs
 		return null;
 	}
 	
+	public static String getRootFolderPath()
+	{
+		return rootFolderPath;
+	}
+	
 	// Setters:
 	public static void setUser(String user)
 	{
@@ -217,6 +224,11 @@ public class SharedObjs
 		SharedObjs.customFiltersPane = customFiltersPane;
 	}
 	
+	public static void setRootFolderPath(String rootFolderPath)
+	{
+		SharedObjs.rootFolderPath = rootFolderPath;
+	}
+	
 	// Static General Methods
 	public static void copyScript(File source, File dest) throws IOException
 	{
@@ -232,4 +244,5 @@ public class SharedObjs
 	{
 		unzipSemaphore.release();
 	}
+	
 }

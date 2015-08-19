@@ -9,14 +9,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -31,13 +30,10 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
-import core.SharedObjs;
 import core.Logger;
-import supportive.NonWrappingTextPane;
-
+import core.SharedObjs;
+import core.XmlMngr;
 import filters.Alarm;
 import filters.B2G;
 import filters.Consume;
@@ -46,8 +42,7 @@ import filters.Issue;
 import filters.Normal;
 import filters.Suspicious;
 import filters.Tether;
-
-import javax.swing.JSplitPane;
+import supportive.NonWrappingTextPane;
 
 
 @SuppressWarnings("serial")
@@ -209,31 +204,9 @@ public class ParserPane extends JPanel
 	 */
 	public void savePaneData()
 	{
-		try
-		{
-			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			SAXBuilder builder = new SAXBuilder();
-			Document document = (Document) builder.build(xmlFile);
-			Element satNode = document.getRootElement();
-			Element optionPaneNode = satNode.getChild("parser_pane");
-			
-			for (Element e : optionPaneNode.getChildren())
-			{
-				if (e.getName().equals("path"))
-				{
-					e.setText(fileTree.getRootFolderPath());
-				}
-			}
-			
-			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-			xmlOutputter.output(document, new FileOutputStream(xmlFile));
-			
-			Logger.log(Logger.TAG_PARSER, "Options Saved");
-		}
-		catch (JDOMException | IOException e)
-		{
-			e.printStackTrace();
-		}
+		XmlMngr.setUserValueOf(new String[] {"parser_pane","rootPath"}, SharedObjs.getRootFolderPath());
+		
+		Logger.log(Logger.TAG_PARSER, "Parser data saved");
 	}
 	
 	/**

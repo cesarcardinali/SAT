@@ -10,7 +10,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -35,17 +34,11 @@ import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-
-import core.SharedObjs;
 import core.Icons;
 import core.Logger;
-import supportive.UnZip;
-
+import core.SharedObjs;
 import style.FileTreeNodeRenderer;
+import supportive.UnZip;
 
 
 @SuppressWarnings("serial")
@@ -56,7 +49,6 @@ public class FileTree extends JPanel
 	private DefaultMutableTreeNode root;
 	private FileSystemView		   fileSystemView;
 	private String				   lastDirectory;
-	private String				   rootFolderPath;
 	
 	// File Tree constructor. It will initialize the file tree
 	public FileTree()
@@ -137,7 +129,6 @@ public class FileTree extends JPanel
 			@Override
 			public void treeWillCollapse(TreeExpansionEvent arg0) throws ExpandVetoException
 			{
-				// TODO Auto-generated method stub
 			}
 			
 			@Override
@@ -235,7 +226,6 @@ public class FileTree extends JPanel
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -298,7 +288,7 @@ public class FileTree extends JPanel
 					String extension = "";
 					if (oldName.getName().contains("."))
 						extension = oldName.getName().split("\\.")[1]; // aaaa.zip --> zip else Selected item doesn't have an extension
-
+						
 					// Asking user for a new name
 					String newNameString = JOptionPane.showInputDialog(null,
 																	   "Insert a new name for " + "the file:",
@@ -345,10 +335,9 @@ public class FileTree extends JPanel
 				@Override
 				public void actionPerformed(ActionEvent arg0)
 				{
-					// TODO Auto-generated method stub
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 					File file = (File) node.getUserObject();
-					rootFolderPath = file.getAbsolutePath();
+					SharedObjs.setRootFolderPath(file.getAbsolutePath());
 					buildTree();
 				}
 			});
@@ -358,14 +347,14 @@ public class FileTree extends JPanel
 				@Override
 				public void actionPerformed(ActionEvent arg0)
 				{
-					// TODO Auto-generated method stub
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 					File file = (File) node.getUserObject();
 					file = file.getParentFile();
+					
 					if (file != null)
-						rootFolderPath = file.getAbsolutePath();
+						SharedObjs.setRootFolderPath(file.getAbsolutePath());
 					else
-						rootFolderPath = "";
+						SharedObjs.setRootFolderPath("");
 					buildTree();
 				}
 			});
@@ -375,9 +364,8 @@ public class FileTree extends JPanel
 				@Override
 				public void actionPerformed(ActionEvent arg0)
 				{
-					// TODO Auto-generated method stub
-					rootFolderPath = "";
-					Logger.log(Logger.TAG_FILETREE, rootFolderPath);
+					SharedObjs.setRootFolderPath("");
+					Logger.log(Logger.TAG_FILETREE, SharedObjs.getRootFolderPath());
 					buildTree();
 				}
 			});
@@ -405,7 +393,7 @@ public class FileTree extends JPanel
 							int count = 0;
 							ProgressDialog dialog = new ProgressDialog(SharedObjs.satFrame,
 																	   fileTree.getSelectionPaths().length);
-							
+																	   
 							for (TreePath p : fileTree.getSelectionPaths())
 							{
 								DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
@@ -418,7 +406,6 @@ public class FileTree extends JPanel
 								}
 								catch (IOException e)
 								{
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
@@ -461,7 +448,6 @@ public class FileTree extends JPanel
 						}
 						catch (IOException e)
 						{
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -489,7 +475,6 @@ public class FileTree extends JPanel
 						}
 						catch (IOException e)
 						{
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -666,7 +651,6 @@ public class FileTree extends JPanel
 							}
 							catch (IOException e)
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -730,39 +714,27 @@ public class FileTree extends JPanel
 	// Initialize the variable rootFolderPath
 	public void initRootFolder()
 	{
-		try
-		{
-			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			SAXBuilder builder = new SAXBuilder();
-			Document document = (Document) builder.build(xmlFile);
-			Element satNode = document.getRootElement();
-			Element crs_jira_paneNode = satNode.getChild("parser_pane");
-			
-			for (Element e : crs_jira_paneNode.getChildren())
-			{
-				if (e.getName().equals("path"))
-				{
-					rootFolderPath = (e.getValue());
-				}
-			}
-			
-			Logger.log(Logger.TAG_FILETREE, "Options Loaded");
-		}
-		catch (IOException | JDOMException e)
-		{
-			e.printStackTrace();
-		}
+		Logger.log(Logger.TAG_FILETREE, "Loading Root: It should be made by SharedObjs.initClass()");
+		/*
+		 * try { File xmlFile = new File("Data/cfgs/user_cfg.xml"); SAXBuilder builder = new SAXBuilder(); Document document = (Document)
+		 * builder.build(xmlFile); Element satNode = document.getRootElement(); Element crs_jira_paneNode = satNode.getChild("parser_pane");
+		 * 
+		 * for (Element e : crs_jira_paneNode.getChildren()) { if (e.getName().equals("path")) { rootFolderPath = (e.getValue()); } }
+		 * 
+		 * 
+		 * } catch (IOException | JDOMException e) { e.printStackTrace(); }
+		 */
 	}
 	
 	public void buildTree()
 	{
-		File rootFolder = new File(rootFolderPath.replace("\\", "\\\\"));
-
+		File rootFolder = new File(SharedObjs.getRootFolderPath().replace("\\", "\\\\"));
+		
 		// Initialize the file tree based on the folder root predefined if it exists
 		if (rootFolder.exists())
 		{
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(rootFolder);
-	
+			
 			for (File file : rootFolder.listFiles())
 			{
 				DefaultMutableTreeNode node = new DefaultMutableTreeNode(file);
@@ -803,10 +775,5 @@ public class FileTree extends JPanel
 				fileTree.expandRow(0);
 			}
 		});
-	}
-	
-	public String getRootFolderPath()
-	{
-		return rootFolderPath;
 	}
 }
