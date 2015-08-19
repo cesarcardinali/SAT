@@ -39,6 +39,8 @@ public class Logger
 	public static final String	  TAG_TETHER			 = "TETHER";
 	public static final String	  TAG_ALARMITEM			 = "ALARM ITEM";
 	public static final String	  TAG_UNZIP				 = "UNZIP";
+	public static final String	  TAG_BUG2GOITEM		 = "BUG2GO ITEM";
+	public static final String	  TAG_BUG2GODOWNLOADER	 = "BUG2GO DOWNLOADER";
 	
 	/**
 	 * Initialize class variables
