@@ -12,13 +12,10 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -48,7 +45,6 @@ import supportive.NonWrappingTextPane;
 @SuppressWarnings("serial")
 public class ParserPane extends JPanel
 {
-	private JLabel				lblTitle;
 	private UndoManager			undoManager;
 	private JSplitPane			splitPane;
 	private FileTree			fileTree;
@@ -63,47 +59,10 @@ public class ParserPane extends JPanel
 		setMinimumSize(new Dimension(800, 600));
 		GridBagLayout layout = new GridBagLayout();
 		layout.columnWidths = new int[] {250, 600};
-		layout.rowHeights = new int[] {40, 300};
-		layout.rowWeights = new double[] {1.0, 1.0};
+		layout.rowHeights = new int[] {30, 300};
+		layout.rowWeights = new double[] {0.0, 1.0};
 		layout.columnWeights = new double[] {1.0, 1.0};
 		setLayout(layout);
-		
-		JPanel topright = new JPanel();
-		topright.setPreferredSize(new Dimension(10, 30));
-		topright.setMaximumSize(new Dimension(32767, 31));
-		topright.setBorder(new LineBorder(UIManager.getColor("Button.light")));
-		topright.setMinimumSize(new Dimension(35, 30));
-		
-		GridBagLayout tr = new GridBagLayout();
-		tr.rowWeights = new double[] {0.0};
-		tr.rowHeights = new int[] {0};
-		topright.setLayout(tr);
-		
-		GridBagConstraints g1 = new GridBagConstraints();
-		g1.fill = GridBagConstraints.HORIZONTAL;
-		g1.weightx = 20.0;
-		g1.weighty = 1.0;
-		g1.insets = new Insets(5, 10, 5, 10);
-		g1.gridx = 1;
-		g1.gridy = 0;
-		add(topright, g1);
-		
-		lblTitle = new JLabel("Select a result folder on the left panel");
-		lblTitle.setMaximumSize(new Dimension(2000, 31));
-		lblTitle.setHorizontalTextPosition(SwingConstants.LEFT);
-		lblTitle.setHorizontalAlignment(SwingConstants.LEFT);
-		lblTitle.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 20));
-		lblTitle.setPreferredSize(new Dimension(35, 30));
-		lblTitle.setMinimumSize(new Dimension(400, 30));
-		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
-		gbc_lblTitle.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblTitle.insets = new Insets(0, 0, 0, 5);
-		gbc_lblTitle.anchor = GridBagConstraints.WEST;
-		gbc_lblTitle.weighty = 1.0;
-		gbc_lblTitle.weightx = 5.0;
-		gbc_lblTitle.gridy = 0;
-		gbc_lblTitle.gridx = 0;
-		topright.add(lblTitle, gbc_lblTitle);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setToolTipText("Result of the selected parser item on the left");
@@ -118,14 +77,19 @@ public class ParserPane extends JPanel
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		
 		splitPane = new JSplitPane();
+		splitPane.setDividerSize(8);
+		splitPane.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		
 		fileTree = new FileTree();
+		fileTree.setBorder(new LineBorder(new Color(192, 192, 192)));
 		splitPane.setRightComponent(fileTree);
 		JScrollPane scrollFiltersResults = new JScrollPane();
+		scrollFiltersResults.setBorder(null);
 		filtersResultsTree = new FiltersResultsTree();
+		filtersResultsTree.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		scrollFiltersResults.setViewportView(filtersResultsTree);
-		scrollFiltersResults.setMinimumSize(new Dimension(200, 150));
+		scrollFiltersResults.setMinimumSize(new Dimension(150, 150));
 		splitPane.setLeftComponent(scrollFiltersResults);
 		GridBagConstraints gbc_splitPane = new GridBagConstraints();
 		gbc_splitPane.insets = new Insets(0, 0, 0, 5);
@@ -133,9 +97,10 @@ public class ParserPane extends JPanel
 		gbc_splitPane.gridx = 0;
 		gbc_splitPane.gridy = 1;
 		add(splitPane, gbc_splitPane);
+		splitPane.setDividerLocation(300);
 		
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.insets = new Insets(2, 10, 10, 10);
+		gbc_scrollPane.insets = new Insets(0, 10, 10, 10);
 		gbc_scrollPane.weighty = 22.0;
 		gbc_scrollPane.weightx = 15.0;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
@@ -144,6 +109,7 @@ public class ParserPane extends JPanel
 		add(scrollPane, gbc_scrollPane);
 		
 		resultTxtPane = new NonWrappingTextPane();
+		resultTxtPane.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		resultTxtPane.setToolTipText("Result of the selected parser item on the left");
 		resultTxtPane.setContentType("text/plain");
 		resultTxtPane.setMargin(new Insets(7, 2, 7, 2));
@@ -194,7 +160,6 @@ public class ParserPane extends JPanel
 		scrollPane.setViewportView(resultTxtPane);
 		SharedObjs.setResult("");
 		resultTxtPane.setText("");
-		lblTitle.setText("Run a parser or select a result on the left");
 		
 		loadPaneData();
 	}
@@ -204,7 +169,7 @@ public class ParserPane extends JPanel
 	 */
 	public void savePaneData()
 	{
-		XmlMngr.setUserValueOf(new String[] {"parser_pane","rootPath"}, SharedObjs.getRootFolderPath());
+		XmlMngr.setUserValueOf(new String[] {"parser_pane", "rootPath"}, SharedObjs.getRootFolderPath());
 		
 		Logger.log(Logger.TAG_PARSER, "Parser data saved");
 	}
@@ -280,7 +245,6 @@ public class ParserPane extends JPanel
 		filtersResultsTree.clearTree();
 		resultTxtPane.setText(""); // reset the text pane
 		SharedObjs.setResult(""); // reset the result for the filters
-		lblTitle.setText("Run a parser or select a result on the left");
 	}
 	
 	/**
@@ -294,7 +258,6 @@ public class ParserPane extends JPanel
 		}
 		resultTxtPane.setText(SharedObjs.getResult());
 		resultTxtPane.setCaretPosition(0);
-		lblTitle.setText("All Results:");
 	}
 	
 	// Getters and Setters
@@ -312,10 +275,5 @@ public class ParserPane extends JPanel
 	public NonWrappingTextPane getResultsTxtPane()
 	{
 		return resultTxtPane;
-	}
-	
-	public void setTitle(String text)
-	{
-		lblTitle.setText(text);
 	}
 }

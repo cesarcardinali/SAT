@@ -39,6 +39,8 @@ import core.Logger;
 import core.SharedObjs;
 import style.FileTreeNodeRenderer;
 import supportive.UnZip;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
 
 
 @SuppressWarnings("serial")
@@ -53,6 +55,7 @@ public class FileTree extends JPanel
 	// File Tree constructor. It will initialize the file tree
 	public FileTree()
 	{
+		setBorder(null);
 		setPreferredSize(new Dimension(1000, 800));
 		setLocation(350, 200);
 		root = new DefaultMutableTreeNode();
@@ -63,6 +66,7 @@ public class FileTree extends JPanel
 		buildTree();
 		lastDirectory = "";
 		fileTree = new JTree(root);
+		fileTree.setBorder(null);
 		
 		// Select the first child of the root node
 		fileTree.setSelectionPath(new TreePath(root.getFirstChild()));
@@ -196,6 +200,7 @@ public class FileTree extends JPanel
 		fileTree.setRootVisible(false);
 		fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		scrollPaneTree = new JScrollPane(fileTree);
+		scrollPaneTree.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		scrollPaneTree.setPreferredSize(new Dimension(1080, 780));
 		add(scrollPaneTree);
 	}
