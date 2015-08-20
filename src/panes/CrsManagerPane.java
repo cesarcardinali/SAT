@@ -4,7 +4,6 @@ package panes;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,8 +14,24 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -37,31 +52,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-
-import java.net.URI;
-
-import java.sql.Timestamp;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
-
 import org.apache.commons.io.FileUtils;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -69,14 +60,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
-import core.SharedObjs;
-import core.XmlMngr;
 import core.Icons;
 import core.Logger;
+import core.SharedObjs;
+import core.XmlMngr;
 import supportive.CrsCloser;
-import supportive.Encryptation;
-import supportive.UnZip;
 import supportive.DiagCrsCloser;
+import supportive.Encryptation;
 
 
 @SuppressWarnings("serial")
@@ -94,11 +84,7 @@ public class CrsManagerPane extends JPanel
 	private JCheckBox				 chkbxRemember;
 	private JCheckBox				 chckbxAssign;
 	private JCheckBox				 chckbxLabels;
-	private JCheckBox				 chkBoxSelectCRs;
-	private JCheckBox				 chkBoxSelectZips;
 	private JList<String>			 listDiag;
-	private JList<String>			 listCRs;
-	private JList<String>			 listZips;
 	private DefaultListModel<String> listModel;
 	private WebDriver				 driver;
 	private FirefoxProfile			 profile;
@@ -613,329 +599,6 @@ public class CrsManagerPane extends JPanel
 		contentPane.add(separator_1, gbc_separator_1);
 		
 		separator_1.setForeground(SystemColor.activeCaptionText);
-		JPanel panel_2 = new JPanel();
-		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
-		gbc_panel_2.gridheight = 2;
-		gbc_panel_2.insets = new Insets(0, 5, 5, 5);
-		gbc_panel_2.fill = GridBagConstraints.BOTH;
-		gbc_panel_2.gridx = 0;
-		gbc_panel_2.gridy = 4;
-		contentPane.add(panel_2, gbc_panel_2);
-		
-		GridBagLayout gbl_panel_2 = new GridBagLayout();
-		gbl_panel_2.columnWidths = new int[] {0};
-		gbl_panel_2.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};
-		gbl_panel_2.columnWeights = new double[] {1.0};
-		gbl_panel_2.rowWeights = new double[] {1.0, 0.0, 1.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel_2.setLayout(gbl_panel_2);
-		JPanel panel_10 = new JPanel();
-		GridBagConstraints gbc_panel_10 = new GridBagConstraints();
-		gbc_panel_10.insets = new Insets(0, 0, 5, 0);
-		gbc_panel_10.gridx = 0;
-		gbc_panel_10.gridy = 0;
-		panel_2.add(panel_10, gbc_panel_10);
-		
-		GridBagLayout gbl_panel_10 = new GridBagLayout();
-		gbl_panel_10.columnWidths = new int[] {41, 0, 0, 0};
-		gbl_panel_10.rowHeights = new int[] {22, 0};
-		gbl_panel_10.columnWeights = new double[] {0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_panel_10.rowWeights = new double[] {0.0, Double.MIN_VALUE};
-		panel_10.setLayout(gbl_panel_10);
-		JLabel lblCrs = new JLabel("CRs:");
-		GridBagConstraints gbc_lblCrs = new GridBagConstraints();
-		gbc_lblCrs.insets = new Insets(0, 0, 0, 5);
-		gbc_lblCrs.anchor = GridBagConstraints.NORTHWEST;
-		gbc_lblCrs.gridx = 0;
-		gbc_lblCrs.gridy = 0;
-		panel_10.add(lblCrs, gbc_lblCrs);
-		
-		lblCrs.setHorizontalAlignment(SwingConstants.CENTER);
-		lblCrs.setFont(new Font("Tahoma", Font.BOLD, 18));
-		final JLabel btnSelectAllCRs = new JLabel("select");
-		btnSelectAllCRs.setFont(new Font("Tahoma", Font.PLAIN, 9));
-		btnSelectAllCRs.setToolTipText("Select all CRs");
-		btnSelectAllCRs.setIcon(null);
-		btnSelectAllCRs.setMaximumSize(new Dimension(24, 24));
-		btnSelectAllCRs.setPreferredSize(new Dimension(24, 24));
-		btnSelectAllCRs.setMinimumSize(new Dimension(24, 24));
-		GridBagConstraints gbc_btnSelectAllCRs = new GridBagConstraints();
-		gbc_btnSelectAllCRs.insets = new Insets(0, 25, 0, 1);
-		gbc_btnSelectAllCRs.gridx = 1;
-		gbc_btnSelectAllCRs.gridy = 0;
-		panel_10.add(btnSelectAllCRs, gbc_btnSelectAllCRs);
-		
-		chkBoxSelectCRs = new JCheckBox("");
-		chkBoxSelectCRs.addItemListener(new ItemListener()
-		{
-			public void itemStateChanged(ItemEvent arg0)
-			{
-				if (chkBoxSelectCRs.isSelected())
-				{
-					// Number of items
-					int size = listCRs.getHeight();
-					// Indexes of all items: [0, 1, 2, ...]
-					int indexes[] = new int[size];
-					// Filling indexes
-					for (int i = 0; i < size; i++)
-						indexes[i] = i;
-					// Select All
-					listCRs.setSelectedIndices(indexes);
-				}
-				else
-				{
-					// Select none
-					listCRs.setSelectedIndices(new int[] {});
-				}
-			}
-		});
-		chkBoxSelectCRs.setToolTipText("Select none");
-		chkBoxSelectCRs.setPreferredSize(new Dimension(24, 24));
-		chkBoxSelectCRs.setMinimumSize(new Dimension(24, 24));
-		chkBoxSelectCRs.setMaximumSize(new Dimension(24, 24));
-		GridBagConstraints gbc_chkBoxSelectCRs = new GridBagConstraints();
-		gbc_chkBoxSelectCRs.anchor = GridBagConstraints.SOUTH;
-		gbc_chkBoxSelectCRs.gridx = 2;
-		gbc_chkBoxSelectCRs.gridy = 0;
-		panel_10.add(chkBoxSelectCRs, gbc_chkBoxSelectCRs);
-		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBorder(new LineBorder(SystemColor.activeCaption));
-		scrollPane_1.setPreferredSize(new Dimension(140, 150));
-		scrollPane_1.setMinimumSize(new Dimension(140, 150));
-		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
-		gbc_scrollPane_1.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane_1.fill = GridBagConstraints.VERTICAL;
-		gbc_scrollPane_1.gridx = 0;
-		gbc_scrollPane_1.gridy = 1;
-		panel_2.add(scrollPane_1, gbc_scrollPane_1);
-		
-		listCRs = new JList<String>();
-		listCRs.setToolTipText("CRs in Root Path folder");
-		listCRs.setVisibleRowCount(30);
-		scrollPane_1.setViewportView(listCRs);
-		listCRs.setBorder(null);
-		listCRs.setMinimumSize(new Dimension(100, 100));
-		listCRs.setModel(new DefaultListModel<String>());
-		
-		JPanel panel_6 = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel_6.getLayout();
-		flowLayout.setVgap(0);
-		GridBagConstraints gbc_panel_6 = new GridBagConstraints();
-		gbc_panel_6.anchor = GridBagConstraints.NORTH;
-		gbc_panel_6.insets = new Insets(0, 0, 5, 0);
-		gbc_panel_6.gridx = 0;
-		gbc_panel_6.gridy = 2;
-		panel_2.add(panel_6, gbc_panel_6);
-		
-		JButton btnDeleteFolder = new JButton("Delete");
-		btnDeleteFolder.setToolTipText("Delete selected folders");
-		btnDeleteFolder.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				for (String s : listCRs.getSelectedValuesList())
-					delFolder(textPath.getText() + "\\" + s);
-				updateAllDataUI();
-				chkBoxSelectCRs.setSelected(false);
-			}
-		});
-		panel_6.add(btnDeleteFolder);
-		
-		JButton btnRunScript = new JButton("RunScript");
-		btnRunScript.setToolTipText("Run build_report.pl on selected folders");
-		btnRunScript.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				Thread t = new Thread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						List<String> selectedCRs = listCRs.getSelectedValuesList();
-						chkBoxSelectCRs.setSelected(false);
-						for (String s : selectedCRs)
-							try
-							{
-								runScript(textPath.getText() + "\\" + s);
-							}
-							catch (IOException e)
-							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-					}
-				});
-				t.start();
-			}
-		});
-		panel_6.add(btnRunScript);
-		
-		JPanel panel_8 = new JPanel();
-		GridBagConstraints gbc_panel_8 = new GridBagConstraints();
-		gbc_panel_8.insets = new Insets(0, 0, 5, 0);
-		gbc_panel_8.gridx = 0;
-		gbc_panel_8.gridy = 3;
-		panel_2.add(panel_8, gbc_panel_8);
-		
-		GridBagLayout gbl_panel_8 = new GridBagLayout();
-		gbl_panel_8.columnWidths = new int[] {43, 24, 0, 24, 0};
-		gbl_panel_8.rowHeights = new int[] {24, 0};
-		gbl_panel_8.columnWeights = new double[] {0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_panel_8.rowWeights = new double[] {0.0, Double.MIN_VALUE};
-		panel_8.setLayout(gbl_panel_8);
-		JLabel label = new JLabel("Zips:");
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		label.setFont(new Font("Tahoma", Font.BOLD, 18));
-		GridBagConstraints gbc_label = new GridBagConstraints();
-		gbc_label.anchor = GridBagConstraints.WEST;
-		gbc_label.insets = new Insets(0, 0, 0, 5);
-		gbc_label.gridx = 0;
-		gbc_label.gridy = 0;
-		panel_8.add(label, gbc_label);
-		
-		JLabel label_1 = new JLabel("select");
-		label_1.setToolTipText("Select all CRs");
-		label_1.setPreferredSize(new Dimension(24, 24));
-		label_1.setMinimumSize(new Dimension(24, 24));
-		label_1.setMaximumSize(new Dimension(24, 24));
-		label_1.setFont(new Font("Tahoma", Font.PLAIN, 9));
-		GridBagConstraints gbc_label_1 = new GridBagConstraints();
-		gbc_label_1.insets = new Insets(0, 0, 0, 5);
-		gbc_label_1.gridx = 2;
-		gbc_label_1.gridy = 0;
-		panel_8.add(label_1, gbc_label_1);
-		
-		chkBoxSelectZips = new JCheckBox("");
-		chkBoxSelectZips.addItemListener(new ItemListener()
-		{
-			public void itemStateChanged(ItemEvent arg0)
-			{
-				if (chkBoxSelectZips.isSelected())
-				{
-					// Number of items
-					int size = listZips.getHeight();
-					// Indexes of all items: [0, 1, 2, ...]
-					int indexes[] = new int[size];
-					// Filling indexes
-					for (int i = 0; i < size; i++)
-						indexes[i] = i;
-					// Select All
-					listZips.setSelectedIndices(indexes);
-				}
-				else
-				{
-					// Select none
-					listZips.setSelectedIndices(new int[] {});
-				}
-			}
-		});
-		chkBoxSelectZips.setToolTipText("Select none");
-		chkBoxSelectZips.setPreferredSize(new Dimension(24, 24));
-		chkBoxSelectZips.setMinimumSize(new Dimension(24, 24));
-		chkBoxSelectZips.setMaximumSize(new Dimension(24, 24));
-		GridBagConstraints gbc_chkBoxSelectZips = new GridBagConstraints();
-		gbc_chkBoxSelectZips.gridx = 3;
-		gbc_chkBoxSelectZips.gridy = 0;
-		panel_8.add(chkBoxSelectZips, gbc_chkBoxSelectZips);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBorder(new LineBorder(SystemColor.activeCaption));
-		scrollPane.setPreferredSize(new Dimension(140, 150));
-		scrollPane.setMinimumSize(new Dimension(140, 150));
-		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane.fill = GridBagConstraints.VERTICAL;
-		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 4;
-		panel_2.add(scrollPane, gbc_scrollPane);
-		
-		listZips = new JList<String>();
-		listZips.setToolTipText("Zip files in Root Path folder");
-		listZips.setVisibleRowCount(30);
-		listZips.setMaximumSize(new Dimension(200, 999999));
-		scrollPane.setViewportView(listZips);
-		listZips.setBorder(null);
-		listZips.setMinimumSize(new Dimension(100, 100));
-		listZips.setModel(new DefaultListModel<String>());
-		
-		JPanel panel_7 = new JPanel();
-		FlowLayout flowLayout_1 = (FlowLayout) panel_7.getLayout();
-		flowLayout_1.setVgap(0);
-		GridBagConstraints gbc_panel_7 = new GridBagConstraints();
-		gbc_panel_7.fill = GridBagConstraints.BOTH;
-		gbc_panel_7.gridx = 0;
-		gbc_panel_7.gridy = 5;
-		panel_2.add(panel_7, gbc_panel_7);
-		
-		JButton btnDeleteZip = new JButton("Delete");
-		btnDeleteZip.setToolTipText("Delete selected zip files");
-		btnDeleteZip.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				for (String s : listZips.getSelectedValuesList())
-					delFile(textPath.getText() + "\\" + s);
-				updateAllDataUI();
-				chkBoxSelectZips.setSelected(false);
-			}
-		});
-		panel_7.add(btnDeleteZip);
-		
-		JButton btnUnzip = new JButton("Unzip");
-		btnUnzip.setToolTipText("Unzip selected zip files and run build_report.pl");
-		btnUnzip.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				// Making Unzip process sequencial
-				new Thread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						// push test
-						Object[] aux = listZips.getSelectedValuesList().toArray();
-						chkBoxSelectZips.setSelected(false);
-						Logger.log(Logger.TAG_CRSMANAGER,
-								   "Unzipping " + aux.length + " files and running build_report.pl\n"
-														  + "Please wait, it may take some minutes to finish."
-														  + "A message alerting you that the process is complete will be showed here.");
-						SharedObjs.crsManagerPane.addLogLine("Unzipping " + aux.length
-															 + " files and running build_report.pl\n"
-															 + "Please wait, it may take some minutes to finish.\n"
-															 + "A message alerting you that the process is complete will be showed here.\n");
-						for (Object s : aux)
-						{
-							try
-							{
-								SharedObjs.acquireSemaphore();
-								Logger.log(Logger.TAG_CRSMANAGER, "Sending file: " + getRootPath() + s);
-								// new Thread(new UnZip(getRootPath()
-								// + s, BaseWindow)).start();
-								// UnZip unzipper = new
-								// UnZip(getRootPath() + s,
-								// BaseWindow);*
-								new UnZip(getRootPath() + s).unzipFile();
-								// Thread.sleep(12);
-							}
-							catch (InterruptedException e)
-							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-						SharedObjs.crsManagerPane.addLogLine("\nUnzipping process completed");
-						Logger.log(Logger.TAG_CRSMANAGER, "Unzipping process completed");
-					}
-				}).start();
-				JOptionPane.showMessageDialog(null,
-											  "The unziping and build_report running processes are running.\n"
-													+ "You can see the status on the Status window at the bottom part of this screen.\n"
-													+ "\nThis window can be closed anytime :D");
-			}
-		});
-		panel_7.add(btnUnzip);
 		
 		JButton btnUpdateAll = new JButton("Click to Update everything");
 		btnUpdateAll.setToolTipText("Update UI information");
@@ -1544,8 +1207,6 @@ public class CrsManagerPane extends JPanel
 			listZipNames.toArray(aux1);
 			String[] aux2 = new String[listFoldersNames.size()];
 			listFoldersNames.toArray(aux2);
-			listZips.setListData(aux1);
-			listCRs.setListData(aux2);
 		}
 	}
 	
@@ -1577,20 +1238,6 @@ public class CrsManagerPane extends JPanel
 	public void updateAllDataUI()
 	{
 		updateZipAndFoldersList();
-		// updateDiagList(); Diag disabled
-		// Solving --> CRs get unselected when window loses focus
-		
-		if (chkBoxSelectCRs.isSelected())
-		{
-			chkBoxSelectCRs.setSelected(false);
-			chkBoxSelectCRs.setSelected(true);
-		}
-		
-		if (chkBoxSelectZips.isSelected())
-		{
-			chkBoxSelectZips.setSelected(false);
-			chkBoxSelectZips.setSelected(true);
-		}
 	}
 	
 	private void clearUIData()
@@ -1712,35 +1359,6 @@ public class CrsManagerPane extends JPanel
 		chckbxLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		
 		Logger.log(Logger.TAG_CRSMANAGER, "CrsManagerPane variables Loaded");
-	}
-	
-	private void delFolder(String folder)
-	{
-		File file = new File(folder);
-		
-		try
-		{
-			if (file.isDirectory())
-			{
-				Logger.log(Logger.TAG_CRSMANAGER, "Deleting " + folder);
-				FileUtils.deleteDirectory(file);
-			}
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	private void delFile(String folder)
-	{
-		File file = new File(folder);
-		
-		if (file.isFile())
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Deleting " + folder);
-			file.delete();
-		}
 	}
 	
 	public void runScript(String folder) throws IOException
