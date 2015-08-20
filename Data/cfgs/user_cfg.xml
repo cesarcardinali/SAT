@@ -24,7 +24,7 @@
     <java_wl>- *Continuous JAVA wakelock:*</java_wl>
     <alarms>- The process *#pname#* is triggering too many alarm wake-ups.\n{panel}\n#log#\n{panel}</alarms>
     <b2g>- *Bug2Go* held the PowerManagerService, contributing to the high current. This is a WAD behavior, since Bug2Go won't be delivered to the end user.\n{panel}\n#log#\n{panel}</b2g>
-    <tether>- The user is *tethering a Wifi* network. Thus, this CR can be considered invalid for current drain analysis.\n{noformat}\n#log#\n{noformat}</tether>
+    <tether>- The user is *tethering a Wifi* network. Thus, this CR can be considered invalid for current drain analysis.\n#log#\n</tether>
     <diag>- The DIAG_WS wakelock:\n{panel}\n#log#\n{panel}\n\nDuplicated of #dupcr#</diag>
     <editor>0</editor>
     <wwrap>0</wwrap>

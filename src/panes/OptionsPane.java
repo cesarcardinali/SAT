@@ -1,43 +1,35 @@
 package panes;
 
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.JSeparator;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JRadioButton;
-import javax.swing.JCheckBox;
-import javax.swing.JScrollPane;
-
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.Font;
-import java.awt.Dimension;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.ActionEvent;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
 import core.Logger;
 import core.SharedObjs;
+import core.XmlMngr;
 
 
 @SuppressWarnings("serial")
@@ -660,19 +652,9 @@ public class OptionsPane extends JPanel
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				try
-				{
-					setComments();
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-				catch (JDOMException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				Logger.log(Logger.TAG_OPTIONS, "Saving comments ...");
+				setComments();
+				Logger.log(Logger.TAG_OPTIONS, "Comments saved");
 			}
 		});
 		btnSalvar.setToolTipText("Save comment headers");
@@ -770,6 +752,7 @@ public class OptionsPane extends JPanel
 		gbc_label_40.gridx = 0;
 		gbc_label_40.gridy = 31;
 		panel.add(label_40, gbc_label_40);
+		
 		JPanel panel_4 = new JPanel();
 		FlowLayout flowLayout_1 = (FlowLayout) panel_4.getLayout();
 		flowLayout_1.setVgap(1);
@@ -858,194 +841,71 @@ public class OptionsPane extends JPanel
 		editorSelector.add(rdbtnNotepad);
 		breakdownSelector.add(rdbtnDouble);
 		breakdownSelector.add(rdbtnSingleclick);
-		try
-		{
-			getComments();
-			loadDataPane();
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		catch (JDOMException e)
-		{
-			e.printStackTrace();
-		}
+		
+		loadDataPane();
 	}
 	
-	public void getComments() throws IOException, JDOMException
+	public void getComments()
 	{
-		File xmlFile = new File("Data/cfgs/user_cfg.xml");
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(xmlFile);
-		Element satNode = document.getRootElement();
-		Element optionPaneNode = satNode.getChild("option_pane");
+		textConsumeFull.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "full_log"}));
+		textConsumeOff.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "screen_off"}));
+		textConsumeOn.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "screen_on"}));
+		textHighCurrent.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "high_current"}));
+		textKernelWake.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "krnl_wkl"}));
+		textJavaWake.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "java_wkl"}));
+		textSuspiciousHeader.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "suspicious_header"}));
+		textSuspicious.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "suspicious"}));
+		textAlarms.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "alarms"}));
+		textB2g.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "b2g"}));
+		textTether.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "tether"}));
+		textDiag.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "diag"}));
 		
-		for (Element e : optionPaneNode.getChildren())
-		{
-			if (e.getName().equals("full_log"))
-			{
-				textConsumeFull.setText(e.getValue());
-			}
-			else if (e.getName().equals("screen_off"))
-			{
-				textConsumeOff.setText(e.getValue());
-			}
-			else if (e.getName().equals("screen_on"))
-			{
-				textConsumeOn.setText(e.getValue());
-			}
-			else if (e.getName().equals("high_current"))
-			{
-				textHighCurrent.setText(e.getValue());
-			}
-			else if (e.getName().equals("krnl_wkl"))
-			{
-				textKernelWake.setText(e.getValue());
-			}
-			else if (e.getName().equals("java_wkl"))
-			{
-				textJavaWake.setText(e.getValue());
-			}
-			else if (e.getName().equals("suspicious_header"))
-			{
-				textSuspiciousHeader.setText(e.getValue());
-			}
-			else if (e.getName().equals("suspicious"))
-			{
-				textSuspicious.setText(e.getValue());
-			}
-			else if (e.getName().equals("alarms"))
-			{
-				textAlarms.setText(e.getValue());
-			}
-			else if (e.getName().equals("b2g"))
-			{
-				textB2g.setText(e.getValue());
-			}
-			else if (e.getName().equals("tether"))
-			{
-				textTether.setText(e.getValue());
-			}
-			else if (e.getName().equals("diag"))
-			{
-				textDiag.setText(e.getValue());
-			}
-		}
-		
-		Logger.log(Logger.TAG_OPTIONS, "Options Loaded");
+		// Logger.log(Logger.TAG_OPTIONS, "Comments Loaded");
 	}
 	
-	public void loadDataPane() throws IOException, JDOMException
+	public void loadDataPane()
 	{
-		File xmlFile = new File("Data/cfgs/user_cfg.xml");
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(xmlFile);
-		Element satNode = document.getRootElement();
-		Element optionPaneNode = satNode.getChild("option_pane");
-		for (Element e : optionPaneNode.getChildren())
-		
+		if (XmlMngr.getUserValueOf(new String[] {"option_pane", "tree_breakdown"}).equals("1"))
 		{
-			if (e.getName().equals("tree_breakdown"))
-			{
-				if (e.getValue().equals("1"))
-				{
-					rdbtnSingleclick.setSelected(true);
-					SharedObjs.parserPane.getFiltersResultsTree().setToggleClickCount(1);
-				}
-				else
-				{
-					SharedObjs.parserPane.getFiltersResultsTree().setToggleClickCount(2);
-					rdbtnDouble.setSelected(true);
-				}
-			}
-			else if (e.getName().equals("wwrap"))
-			{
-				if (e.getValue().equals("0"))
-					chkTextWrap.setSelected(false);
-				else
-					chkTextWrap.setSelected(true);
-			}
-			else if (e.getName().equals("editor"))
-			{
-				if (e.getValue().equals("0"))
-					rdbtnTAnalisys.setSelected(true);
-				else
-					rdbtnNotepad.setSelected(true);
-			}
+			rdbtnSingleclick.setSelected(true);
+			SharedObjs.parserPane.getFiltersResultsTree().setToggleClickCount(1);
 		}
+		else
+		{
+			SharedObjs.parserPane.getFiltersResultsTree().setToggleClickCount(2);
+			rdbtnDouble.setSelected(true);
+		}
+
+		if (XmlMngr.getUserValueOf(new String[] {"option_pane", "wwrap"}).equals("0"))
+			chkTextWrap.setSelected(false);
+		else
+			chkTextWrap.setSelected(true);
 		
-		Logger.log(Logger.TAG_OPTIONS, "Options Loaded");
+		if (XmlMngr.getUserValueOf(new String[] {"option_pane", "editor"}).equals("0"))
+			rdbtnTAnalisys.setSelected(true);
+		else
+			rdbtnNotepad.setSelected(true);
+		
+		getComments();
+
+		Logger.log(Logger.TAG_OPTIONS, "Option pane values loaded");
 	}
 	
-	public void setComments() throws IOException, JDOMException
+	public void setComments()
 	{
-		File xmlFile = new File("Data/cfgs/user_cfg.xml");
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(xmlFile);
-		Element satNode = document.getRootElement();
-		Element optionPaneNode = satNode.getChild("option_pane");
-		
-		for (Element e : optionPaneNode.getChildren())
-		{
-			if (e.getName().equals("full_log"))
-			{
-				e.setText(textConsumeFull.getText());
-			}
-			else if (e.getName().equals("screen_off"))
-			{
-				e.setText(textConsumeOff.getText());
-			}
-			else if (e.getName().equals("screen_on"))
-			{
-				e.setText(textConsumeOn.getText());
-			}
-			else if (e.getName().equals("high_current"))
-			{
-				e.setText(textHighCurrent.getText());
-			}
-			else if (e.getName().equals("krnl_wkl"))
-			{
-				e.setText(textKernelWake.getText());
-			}
-			else if (e.getName().equals("java_wkl"))
-			{
-				e.setText(textJavaWake.getText());
-			}
-			else if (e.getName().equals("suspicious_header"))
-			{
-				e.setText(textSuspiciousHeader.getText());
-			}
-			else if (e.getName().equals("suspicious"))
-			{
-				e.setText(textSuspicious.getText());
-			}
-			else if (e.getName().equals("alarms"))
-			{
-				e.setText(textAlarms.getText());
-			}
-			else if (e.getName().equals("b2g"))
-			{
-				e.setText(textB2g.getText());
-			}
-			else if (e.getName().equals("tether"))
-			{
-				e.setText(textTether.getText());
-			}
-			else if (e.getName().equals("diag"))
-			{
-				e.setText(textDiag.getText());
-			}
-		}
-		
-		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-		xmlOutputter.output(document, new FileOutputStream(xmlFile));
-		
-		Logger.log(Logger.TAG_OPTIONS, "Options Saved");
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "full_log"}, textConsumeFull.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "screen_off"}, textConsumeOff.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "screen_on"}, textConsumeOn.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "high_current"}, textHighCurrent.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "krnl_wkl"}, textKernelWake.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "java_wkl"}, textJavaWake.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "suspicious_header"},
+							   textSuspiciousHeader.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "suspicious"}, textSuspicious.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "alarms"}, textAlarms.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "b2g"}, textB2g.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "tether"}, textTether.getText());
+		XmlMngr.setUserValueOf(new String[] {"option_pane", "diag"}, textDiag.getText());
 	}
 	
 	/**
@@ -1054,43 +914,26 @@ public class OptionsPane extends JPanel
 	 * @throws JDOMException
 	 * @throws IOException
 	 */
-	public void savePaneData() throws JDOMException, IOException
+	public void savePaneData()
 	{
-		File xmlFile = new File("Data/cfgs/user_cfg.xml");
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(xmlFile);
-		Element satNode = document.getRootElement();
-		Element optionPaneNode = satNode.getChild("option_pane");
+		if (rdbtnNotepad.isSelected())
+			XmlMngr.setUserValueOf(new String[] {"option_pane", "editor"}, "1");
+		else
+			XmlMngr.setUserValueOf(new String[] {"option_pane", "editor"}, "0");
+			
+		if (chkTextWrap.isSelected())
+			XmlMngr.setUserValueOf(new String[] {"option_pane", "wwrap"}, "1");
+		else
+			XmlMngr.setUserValueOf(new String[] {"option_pane", "wwrap"}, "0");
+			
+		if (rdbtnSingleclick.isSelected())
+			XmlMngr.setUserValueOf(new String[] {"option_pane", "tree_breakdown"}, "1");
+		else
+			XmlMngr.setUserValueOf(new String[] {"option_pane", "tree_breakdown"}, "2");
 		
-		for (Element e : optionPaneNode.getChildren())
-		{
-			if (e.getName().equals("editor"))
-			{
-				if (rdbtnNotepad.isSelected())
-					e.setText("1");
-				else
-					e.setText("0");
-			}
-			else if (e.getName().equals("wwrap"))
-			{
-				if (chkTextWrap.isSelected())
-					e.setText("1");
-				else
-					e.setText("0");
-			}
-			else if (e.getName().equals("tree_breakdown"))
-			{
-				if (rdbtnSingleclick.isSelected())
-					e.setText("1");
-				else
-					e.setText("2");
-			}
-		}
-		
-		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-		xmlOutputter.output(document, new FileOutputStream(xmlFile));
-		
-		Logger.log(Logger.TAG_OPTIONS, "Options Saved");
+		setComments();
+			
+		Logger.log(Logger.TAG_OPTIONS, "Option pane values saved");
 	}
 	
 	// Getters

@@ -6,7 +6,6 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -14,13 +13,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
-import org.jdom2.JDOMException;
 
 import core.Icons;
 import core.Logger;
 import core.SharedObjs;
-import core.XmlMngr;
 import core.Strings;
+import core.XmlMngr;
 
 
 /**
@@ -202,24 +200,12 @@ public class SAT extends JFrame
 			
 			while (run == 0)
 			{
-				try
-				{
-					SharedObjs.crsManagerPane.saveUserData();
-					SharedObjs.parserPane.savePaneData();
-					SharedObjs.optionsPane.savePaneData();
-					run = 1;
-				}
-				catch (JDOMException | IOException e1)
-				{
-					e1.printStackTrace();
-					Logger.log(Logger.TAG_SAT, "finished3");
-					run = 1;
-				}
-				finally
-				{
-					Logger.log(Logger.TAG_SAT, "finished1");
-					run = 1;
-				}
+				Logger.log(Logger.TAG_SAT, "Saving all user data ...");
+				SharedObjs.crsManagerPane.saveUserData();
+				SharedObjs.parserPane.savePaneData();
+				SharedObjs.optionsPane.savePaneData();
+				run = 1;
+				Logger.log(Logger.TAG_SAT, "Done");
 			}
 			
 			XmlMngr.closeXmls();
