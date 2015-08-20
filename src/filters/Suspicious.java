@@ -129,7 +129,7 @@ public class Suspicious
 						process = "userId=\"" + uid + "\"";
 					}
 					
-					Logger.log(Logger.TAG_SUSPICIOUS, "uid: " + uid);
+					//Logger.log(Logger.TAG_SUSPICIOUS, "uid: " + uid);
 					
 					// Create new wake lock item
 					WakelockItem wl = new WakelockItem(uid, tag, lock, parsedDate, sCurrentLine);
@@ -164,7 +164,7 @@ public class Suspicious
 							
 							if (file_report.contains("bugreport"))
 							{
-								Logger.log(Logger.TAG_SUSPICIOUS, "File opened: " + file_report);
+								//Logger.log(Logger.TAG_SUSPICIOUS, "File opened: " + file_report);
 								BufferedReader aux = new BufferedReader(new FileReader(file_report));
 								aux.skip(1850000);
 								String str;
@@ -187,6 +187,7 @@ public class Suspicious
 							}
 							else
 							{
+								file_report = "";
 								for (int i = 0; i < listOfFiles.length; i++)
 								{
 									if (listOfFiles[i].isFile())
