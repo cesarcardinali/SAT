@@ -113,11 +113,9 @@ public class OptionsPane extends JPanel
 										  0,
 										  0,
 										  0,
-										  0,
 										  0};
 		gbl_panel.columnWeights = new double[] {0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[] {0.0,
-											 0.0,
 											 0.0,
 											 0.0,
 											 0.0,
@@ -647,24 +645,6 @@ public class OptionsPane extends JPanel
 		gbc_button_23.gridy = 26;
 		panel.add(button_23, gbc_button_23);
 		
-		JButton btnSalvar = new JButton("Save");
-		btnSalvar.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				Logger.log(Logger.TAG_OPTIONS, "Saving comments ...");
-				setComments();
-				Logger.log(Logger.TAG_OPTIONS, "Comments saved");
-			}
-		});
-		btnSalvar.setToolTipText("Save comment headers");
-		GridBagConstraints gbc_btnSalvar = new GridBagConstraints();
-		gbc_btnSalvar.gridwidth = 3;
-		gbc_btnSalvar.insets = new Insets(0, 0, 5, 0);
-		gbc_btnSalvar.gridx = 0;
-		gbc_btnSalvar.gridy = 27;
-		panel.add(btnSalvar, gbc_btnSalvar);
-		
 		JLabel label_37 = new JLabel("Parser options:");
 		label_37.setFont(new Font("Tahoma", Font.BOLD, 16));
 		label_37.setAlignmentX(0.5f);
@@ -674,7 +654,7 @@ public class OptionsPane extends JPanel
 		gbc_label_37.gridwidth = 2;
 		gbc_label_37.insets = new Insets(15, 5, 5, 5);
 		gbc_label_37.gridx = 0;
-		gbc_label_37.gridy = 28;
+		gbc_label_37.gridy = 27;
 		panel.add(label_37, gbc_label_37);
 		
 		JLabel label_38 = new JLabel("Text editor:");
@@ -684,7 +664,7 @@ public class OptionsPane extends JPanel
 		gbc_label_38.anchor = GridBagConstraints.EAST;
 		gbc_label_38.insets = new Insets(0, 0, 5, 5);
 		gbc_label_38.gridx = 0;
-		gbc_label_38.gridy = 29;
+		gbc_label_38.gridy = 28;
 		panel.add(label_38, gbc_label_38);
 		
 		JPanel panel_3 = new JPanel();
@@ -701,7 +681,7 @@ public class OptionsPane extends JPanel
 		gbc_panel_3.fill = GridBagConstraints.BOTH;
 		gbc_panel_3.insets = new Insets(0, 0, 5, 5);
 		gbc_panel_3.gridx = 1;
-		gbc_panel_3.gridy = 29;
+		gbc_panel_3.gridy = 28;
 		panel.add(panel_3, gbc_panel_3);
 		
 		rdbtnTAnalisys = new JRadioButton("TextAnalysis");
@@ -722,7 +702,7 @@ public class OptionsPane extends JPanel
 		gbc_label_39.fill = GridBagConstraints.HORIZONTAL;
 		gbc_label_39.insets = new Insets(0, 0, 5, 5);
 		gbc_label_39.gridx = 0;
-		gbc_label_39.gridy = 30;
+		gbc_label_39.gridy = 29;
 		panel.add(label_39, gbc_label_39);
 		
 		chkTextWrap = new JCheckBox("");
@@ -741,7 +721,7 @@ public class OptionsPane extends JPanel
 		gbc_chkTextWrap.anchor = GridBagConstraints.WEST;
 		gbc_chkTextWrap.insets = new Insets(0, 0, 5, 5);
 		gbc_chkTextWrap.gridx = 1;
-		gbc_chkTextWrap.gridy = 30;
+		gbc_chkTextWrap.gridy = 29;
 		panel.add(chkTextWrap, gbc_chkTextWrap);
 		
 		JLabel label_40 = new JLabel("Tree Breakdown:");
@@ -750,7 +730,7 @@ public class OptionsPane extends JPanel
 		gbc_label_40.anchor = GridBagConstraints.EAST;
 		gbc_label_40.insets = new Insets(0, 0, 5, 5);
 		gbc_label_40.gridx = 0;
-		gbc_label_40.gridy = 31;
+		gbc_label_40.gridy = 30;
 		panel.add(label_40, gbc_label_40);
 		
 		JPanel panel_4 = new JPanel();
@@ -765,7 +745,7 @@ public class OptionsPane extends JPanel
 		gbc_panel_4.fill = GridBagConstraints.BOTH;
 		gbc_panel_4.insets = new Insets(0, 0, 5, 5);
 		gbc_panel_4.gridx = 1;
-		gbc_panel_4.gridy = 31;
+		gbc_panel_4.gridy = 30;
 		panel.add(panel_4, gbc_panel_4);
 		
 		rdbtnDouble = new JRadioButton("DoubleClick");
@@ -801,7 +781,7 @@ public class OptionsPane extends JPanel
 		gbc_label_41.anchor = GridBagConstraints.EAST;
 		gbc_label_41.insets = new Insets(0, 0, 0, 5);
 		gbc_label_41.gridx = 0;
-		gbc_label_41.gridy = 32;
+		gbc_label_41.gridy = 31;
 		panel.add(label_41, gbc_label_41);
 		
 		JPanel panel_5 = new JPanel();
@@ -810,7 +790,7 @@ public class OptionsPane extends JPanel
 		gbc_panel_5.fill = GridBagConstraints.VERTICAL;
 		gbc_panel_5.insets = new Insets(0, 0, 0, 5);
 		gbc_panel_5.gridx = 1;
-		gbc_panel_5.gridy = 32;
+		gbc_panel_5.gridy = 31;
 		panel.add(panel_5, gbc_panel_5);
 		
 		btnManageFilters = new JButton("Manage filters");
