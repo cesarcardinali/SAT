@@ -388,7 +388,7 @@ public class FiltersResultsTree extends JTree
 								}
 							}
 							break;
-						
+							
 						case 3: // A filter child derivation selected
 							parentNode = (DefaultMutableTreeNode) selectedNode.getParent().getParent();
 							int nodeIndex = parentNode.getIndex(selectedNode.getParent());
@@ -712,6 +712,9 @@ public class FiltersResultsTree extends JTree
 		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Alarms thread finished");
 		updateResultTreeUI();
 		// expandPath(new TreePath(selectedNode.getPath()));
+		
+		showResultOnTextPane(selectedNode);
+		
 	}
 	
 	public void bug2goThread(DefaultMutableTreeNode selectedNode)
@@ -752,14 +755,16 @@ public class FiltersResultsTree extends JTree
 		{
 			addBug2go("Result");
 			SharedObjs.setResult(SharedObjs.getResult()
-													+ "\n\n\n========================= Bug2Go =========================\n"
-													+ b2gResult);
+								 + "\n\n\n========================= Bug2Go =========================\n"
+								 + b2gResult);
 			x = ("Bug2Go - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
 			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Bug2go thread finished");
 		}
 		// expandPath(new TreePath(selectedNode.getPath()));
+		
+		showResultOnTextPane(selectedNode);
 	}
 	
 	public void diagThread(DefaultMutableTreeNode selectedNode)
@@ -808,14 +813,16 @@ public class FiltersResultsTree extends JTree
 		{
 			addDiag("Result");
 			SharedObjs.setResult(SharedObjs.getResult()
-													+ "\n\n\n======================= Diag Wake locks =======================\n"
-													+ diagResult);
+								 + "\n\n\n======================= Diag Wake locks =======================\n"
+								 + diagResult);
 			x = ("Diag - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
 			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Diag thread finished");
 		}
 		// expandPath(new TreePath(selectedNode.getPath()));
+		
+		showResultOnTextPane(selectedNode);
 	}
 	
 	public void wakelocksThread(DefaultMutableTreeNode selectedNode)
@@ -856,14 +863,16 @@ public class FiltersResultsTree extends JTree
 		{
 			addIssues("Result");
 			SharedObjs.setResult(SharedObjs.getResult()
-													+ "\n\n\n========================= Wakelocks =========================\n"
-													+ wakelocksResult);
+								 + "\n\n\n========================= Wakelocks =========================\n"
+								 + wakelocksResult);
 			x = ("WakeLocks - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
 			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread finished");
 		}
 		// expandPath(new TreePath(selectedNode.getPath()));
+		
+		showResultOnTextPane(selectedNode);
 	}
 	
 	public void comsumptionThread(DefaultMutableTreeNode selectedNode)
@@ -909,14 +918,16 @@ public class FiltersResultsTree extends JTree
 			if (Consume.getHCList().size() == 0)
 				addConsumeNode("Nothing found in logs");
 			SharedObjs.setResult(SharedObjs.getResult()
-													+ "\n\n\n========================= High Consumption Apps =========================\n"
-													+ consumptionResult);
+								 + "\n\n\n========================= High Consumption Apps =========================\n"
+								 + consumptionResult);
 			x = ("High Consumption - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
 			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Consumption thread finished");
 		}
 		// expandPath(new TreePath(selectedNode.getPath()));
+		
+		showResultOnTextPane(selectedNode);
 	}
 	
 	public void summaryThread(DefaultMutableTreeNode selectedNode)
@@ -957,14 +968,16 @@ public class FiltersResultsTree extends JTree
 		{
 			addSummary("Result");
 			SharedObjs.setResult(SharedObjs.getResult()
-													+ "\n\n\n========================= Summary =========================\n"
-													+ summaryResult);
+								 + "\n\n\n========================= Summary =========================\n"
+								 + summaryResult);
 			x = ("Summary - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
 			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Summary thread finished");
 		}
 		// expandPath(new TreePath(selectedNode.getPath()));
+		
+		showResultOnTextPane(selectedNode);
 	}
 	
 	public void suspiciousThread(DefaultMutableTreeNode selectedNode)
@@ -1015,14 +1028,16 @@ public class FiltersResultsTree extends JTree
 				addWakeLocksNode("No suspicious found");
 			}
 			SharedObjs.setResult(SharedObjs.getResult()
-													+ "\n\n\n========================= Suspicious =========================\n"
-													+ suspiciousResult);
+								 + "\n\n\n========================= Suspicious =========================\n"
+								 + suspiciousResult);
 			x = ("Suspicious - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
 			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Suspicious thread finished");
 		}
 		// expandPath(new TreePath(selectedNode.getPath()));
+		
+		showResultOnTextPane(selectedNode);
 	}
 	
 	public void tetherThread(DefaultMutableTreeNode selectedNode)
@@ -1063,8 +1078,8 @@ public class FiltersResultsTree extends JTree
 		{
 			addTether("Result");
 			SharedObjs.setResult(SharedObjs.getResult()
-													+ "\n\n\n========================= Tethering =========================\n"
-													+ tetherResult);
+								 + "\n\n\n========================= Tethering =========================\n"
+								 + tetherResult);
 			x = ("Tethering - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
@@ -1072,6 +1087,8 @@ public class FiltersResultsTree extends JTree
 		}
 		
 		// expandPath(new TreePath(selectedNode.getPath()));
+		
+		showResultOnTextPane(selectedNode);
 	}
 	
 	public void customThread(DefaultMutableTreeNode selectedNode)
@@ -1117,14 +1134,16 @@ public class FiltersResultsTree extends JTree
 				addCustomResult(nodeName, "Result");
 				result = result + SharedObjs.getCustomFiltersList().get(index).getHeader() + "\n";
 				SharedObjs.setResult(SharedObjs.getResult()
-														+ "\n\n\n========================= Tethering =========================\n"
-														+ result);
+									 + "\n\n\n========================= Tethering =========================\n"
+									 + result);
 				x = (nodeName + " - Done");
 				selectedNode.setUserObject(x);
 				updateResultTreeUI();
 				Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + "thread finished");
 			}
 			// expandPath(new TreePath(selectedNode.getPath()));
+			
+			showResultOnTextPane(selectedNode);
 		}
 		else
 		{
@@ -1241,5 +1260,92 @@ public class FiltersResultsTree extends JTree
 				updateResultTreeUI();
 			}
 		}
+	}
+	
+	private boolean showResultOnTextPane(DefaultMutableTreeNode node)
+	{
+		if (!SharedObjs.parserPane.getResultsTxtPane().isFocusOwner()
+			|| SharedObjs.parserPane.getResultsTxtPane().getText().isEmpty())
+		{
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE,
+					   "ResultsTxtPane on focus? " + SharedObjs.parserPane.getResultsTxtPane()
+																		  .isFocusOwner());
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE,
+					   "ResultsTxtPane is empty? " + SharedObjs.parserPane.getResultsTxtPane().getText()
+																		  .isEmpty());
+																		  
+			DefaultMutableTreeNode nodeSelected = (DefaultMutableTreeNode) SharedObjs.parserPane.getFiltersResultsTree()
+																								.getLastSelectedPathComponent();
+			
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Node received by the method: " + node.toString());
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Node selected on the result tree: " + nodeSelected.toString());
+			
+			if (node.toString().equals(nodeSelected.toString()))
+			{
+				
+				if (((String) node.getUserObject()).toLowerCase().contains("alarm"))
+				{
+					SharedObjs.parserPane.setResultsPaneTxt(Alarm.getResult());
+					return true;
+				}
+				
+				else if (((String) node.getUserObject()).toLowerCase().contains("bug2go"))
+				{
+					SharedObjs.parserPane.setResultsPaneTxt(B2G.getResult());
+					return true;
+				}
+				
+				else if (((String) node.getUserObject()).toLowerCase().contains("diag"))
+				{
+					SharedObjs.parserPane.setResultsPaneTxt(Diag.getResult());
+					return true;
+				}
+				
+				else if (((String) node.getUserObject()).toLowerCase().contains("wakelock"))
+				{
+					SharedObjs.parserPane.setResultsPaneTxt(Issue.getResult());
+					return true;
+				}
+				
+				else if (((String) node.getUserObject()).toLowerCase().contains("consumption"))
+				{
+					SharedObjs.parserPane.setResultsPaneTxt(Consume.getResult());
+					return true;
+				}
+				
+				else if (((String) node.getUserObject()).toLowerCase().contains("summary"))
+				{
+					SharedObjs.parserPane.setResultsPaneTxt(Normal.getResult());
+					return true;
+				}
+				
+				else if (((String) node.getUserObject()).toLowerCase().contains("suspicious"))
+				{
+					SharedObjs.parserPane.setResultsPaneTxt(Suspicious.getResult());
+					return true;
+				}
+				
+				else if (((String) node.getUserObject()).toLowerCase().contains("tether"))
+				{
+					SharedObjs.parserPane.setResultsPaneTxt(Tether.getResult());
+					return true;
+				}
+				
+				else
+				{
+					int index = SharedObjs.getCustomFiltersList()
+										  .indexOf(node.toString().replace(" - Done", "").replace(" - Error",
+																								  ""));
+					if (index > -1)
+					{
+						SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getCustomFiltersList().get(index)
+																		  .getResult());
+						return true;
+					}
+				}
+				
+			}
+		}
+		return false;
 	}
 }
