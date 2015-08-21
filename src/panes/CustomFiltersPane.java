@@ -243,8 +243,7 @@ public class CustomFiltersPane extends JDialog
 				else if (!txtName.getText().equals(""))
 				{
 					CustomFilterItem auxItem = new CustomFilterItem(chckbxPublic.isSelected() ? " "
-																							  : SharedObjs.crsManagerPane.getTextUsername()
-																														 .getText(),
+																							  : SharedObjs.getUser(),
 																	txtName.getText(),
 																	txtRegex.getText(),
 																	txtHeader.getText(),

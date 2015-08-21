@@ -30,9 +30,8 @@ public class Bug2goItem implements Runnable
 	
 	private String buildCommand()
 	{
-		command = genericCommand.replace("USER", SharedObjs.crsManagerPane.getTextUsername().getText());
-		command = command.replace("PASSWD", String.copyValueOf(SharedObjs.crsManagerPane.getTextPassword()
-																						.getPassword()));
+		command = genericCommand.replace("USER", SharedObjs.getUser());
+		command = command.replace("PASSWD", SharedObjs.getPass());
 		command = command.replace("BUGID", bugId);
 		
 		running = true;

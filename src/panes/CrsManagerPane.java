@@ -15,13 +15,11 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -40,7 +38,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
@@ -66,7 +63,6 @@ import core.SharedObjs;
 import core.XmlMngr;
 import supportive.CrsCloser;
 import supportive.DiagCrsCloser;
-import supportive.Encryptation;
 
 
 @SuppressWarnings("serial")
@@ -77,11 +73,8 @@ public class CrsManagerPane extends JPanel
 	 */
 	private JTextArea				 textDownload;
 	private JTextField				 textPath;
-	private JTextField				 textUsername;
 	private JTextPane				 textLog;
 	private JTextPane				 textPane;
-	private JPasswordField			 textPassword;
-	private JCheckBox				 chkbxRemember;
 	private JCheckBox				 chckbxAssign;
 	private JCheckBox				 chckbxLabels;
 	private JList<String>			 listDiag;
@@ -124,84 +117,60 @@ public class CrsManagerPane extends JPanel
 												 Double.MIN_VALUE};
 		contentPane.setLayout(gridBagLayout);
 		
-		JPanel panel_1 = new JPanel();
-		panel_1.setMinimumSize(new Dimension(150, 100));
-		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
-		gbc_panel_1.insets = new Insets(10, 5, 5, 5);
-		gbc_panel_1.fill = GridBagConstraints.BOTH;
-		gbc_panel_1.gridx = 0;
-		gbc_panel_1.gridy = 0;
-		contentPane.add(panel_1, gbc_panel_1);
+		JPanel panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(10, 5, 5, 5);
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 0;
+		contentPane.add(panel, gbc_panel);
 		
-		GridBagLayout gbl_panel_1 = new GridBagLayout();
-		gbl_panel_1.columnWidths = new int[] {0, 0, 0};
-		gbl_panel_1.rowHeights = new int[] {14, 0, 0, 0, 0, 0};
-		gbl_panel_1.columnWeights = new double[] {0.0, 1.0, Double.MIN_VALUE};
-		gbl_panel_1.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-		panel_1.setLayout(gbl_panel_1);
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[] {30, 0};
+		gbl_panel.rowHeights = new int[] {22, 0, 0};
+		gbl_panel.columnWeights = new double[] {0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
+		panel.setLayout(gbl_panel);
+		JLabel lblRootPath = new JLabel("Download path:");
+		GridBagConstraints gbc_lblRootPath = new GridBagConstraints();
+		gbc_lblRootPath.insets = new Insets(0, 0, 5, 0);
+		gbc_lblRootPath.gridx = 0;
+		gbc_lblRootPath.gridy = 0;
+		panel.add(lblRootPath, gbc_lblRootPath);
 		
-		JLabel lblNewLabel = new JLabel("User Data:");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.gridwidth = 2;
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel.gridx = 0;
-		gbc_lblNewLabel.gridy = 0;
-		panel_1.add(lblNewLabel, gbc_lblNewLabel);
+		lblRootPath.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRootPath.setFont(new Font("Tahoma", Font.BOLD, 18));
+		textPath = new JTextField();
+		textPath.setToolTipText("Path to stock and read your CRs");
+		GridBagConstraints gbc_textPath = new GridBagConstraints();
+		gbc_textPath.insets = new Insets(0, 5, 0, 5);
+		gbc_textPath.gridx = 0;
+		gbc_textPath.gridy = 1;
+		panel.add(textPath, gbc_textPath);
 		
-		JLabel lblUsername = new JLabel("Username");
-		lblUsername.setPreferredSize(new Dimension(60, 14));
-		lblUsername.setMinimumSize(new Dimension(60, 14));
-		lblUsername.setMaximumSize(new Dimension(60, 14));
-		lblUsername.setHorizontalAlignment(SwingConstants.RIGHT);
-		GridBagConstraints gbc_lblUsername = new GridBagConstraints();
-		gbc_lblUsername.weighty = 1.0;
-		gbc_lblUsername.weightx = 1.0;
-		gbc_lblUsername.anchor = GridBagConstraints.EAST;
-		gbc_lblUsername.gridx = 0;
-		gbc_lblUsername.gridy = 1;
-		panel_1.add(lblUsername, gbc_lblUsername);
-		
-		textUsername = new JTextField();
-		textUsername.setToolTipText("Motorola username");
-		textUsername.setPreferredSize(new Dimension(90, 20));
-		textUsername.setMinimumSize(new Dimension(90, 20));
-		GridBagConstraints gbc_textUsername = new GridBagConstraints();
-		gbc_textUsername.anchor = GridBagConstraints.WEST;
-		gbc_textUsername.gridx = 1;
-		gbc_textUsername.gridy = 1;
-		panel_1.add(textUsername, gbc_textUsername);
-		
-		JLabel lblPassword = new JLabel("Password");
-		lblPassword.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblPassword.setPreferredSize(new Dimension(60, 14));
-		lblPassword.setMinimumSize(new Dimension(60, 14));
-		lblPassword.setMaximumSize(new Dimension(60, 14));
-		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
-		gbc_lblPassword.anchor = GridBagConstraints.EAST;
-		gbc_lblPassword.gridx = 0;
-		gbc_lblPassword.gridy = 2;
-		panel_1.add(lblPassword, gbc_lblPassword);
-		
-		textPassword = new JPasswordField();
-		textPassword.setToolTipText("Motorola password");
-		textPassword.setPreferredSize(new Dimension(90, 20));
-		textPassword.setMinimumSize(new Dimension(90, 20));
-		GridBagConstraints gbc_textPassword = new GridBagConstraints();
-		gbc_textPassword.anchor = GridBagConstraints.WEST;
-		gbc_textPassword.gridx = 1;
-		gbc_textPassword.gridy = 2;
-		panel_1.add(textPassword, gbc_textPassword);
-		
-		chkbxRemember = new JCheckBox("Remember?");
-		chkbxRemember.setToolTipText("Remember your login and password");
-		chkbxRemember.setSelected(true);
-		GridBagConstraints gbc_chkbxRemember = new GridBagConstraints();
-		gbc_chkbxRemember.gridwidth = 2;
-		gbc_chkbxRemember.gridx = 0;
-		gbc_chkbxRemember.gridy = 3;
-		panel_1.add(chkbxRemember, gbc_chkbxRemember);
+		textPath.setHorizontalAlignment(SwingConstants.CENTER);
+		textPath.setBorder(new LineBorder(SystemColor.activeCaption));
+		textPath.setMinimumSize(new Dimension(130, 20));
+		textPath.setPreferredSize(new Dimension(150, 20));
+		textPath.getDocument().addDocumentListener(new DocumentListener()
+		{
+			@Override
+			public void removeUpdate(DocumentEvent arg0)
+			{
+				updateAllDataUI();
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent arg0)
+			{
+				updateAllDataUI();
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent arg0)
+			{
+			}
+		});
 		
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setOrientation(SwingConstants.VERTICAL);
@@ -555,51 +524,6 @@ public class CrsManagerPane extends JPanel
 		gbc_separator.gridy = 1;
 		contentPane.add(separator, gbc_separator);
 		
-		JPanel panel = new JPanel();
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.insets = new Insets(0, 5, 5, 5);
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 2;
-		contentPane.add(panel, gbc_panel);
-		
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] {30, 0};
-		gbl_panel.rowHeights = new int[] {22, 0, 0};
-		gbl_panel.columnWeights = new double[] {0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
-		panel.setLayout(gbl_panel);
-		JLabel lblRootPath = new JLabel("Root path:");
-		GridBagConstraints gbc_lblRootPath = new GridBagConstraints();
-		gbc_lblRootPath.insets = new Insets(0, 0, 5, 0);
-		gbc_lblRootPath.gridx = 0;
-		gbc_lblRootPath.gridy = 0;
-		panel.add(lblRootPath, gbc_lblRootPath);
-		
-		lblRootPath.setHorizontalAlignment(SwingConstants.CENTER);
-		lblRootPath.setFont(new Font("Tahoma", Font.BOLD, 18));
-		textPath = new JTextField();
-		textPath.setToolTipText("Path to stock and read your CRs");
-		GridBagConstraints gbc_textPath = new GridBagConstraints();
-		gbc_textPath.insets = new Insets(0, 5, 0, 5);
-		gbc_textPath.gridx = 0;
-		gbc_textPath.gridy = 1;
-		panel.add(textPath, gbc_textPath);
-		
-		textPath.setHorizontalAlignment(SwingConstants.CENTER);
-		textPath.setBorder(new LineBorder(SystemColor.activeCaption));
-		textPath.setMinimumSize(new Dimension(130, 20));
-		textPath.setPreferredSize(new Dimension(150, 20));
-		JSeparator separator_1 = new JSeparator();
-		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
-		gbc_separator_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_1.insets = new Insets(0, 1, 5, 5);
-		gbc_separator_1.gridx = 0;
-		gbc_separator_1.gridy = 3;
-		contentPane.add(separator_1, gbc_separator_1);
-		
-		separator_1.setForeground(SystemColor.activeCaptionText);
-		
 		JButton btnUpdateAll = new JButton("Click to Update everything");
 		btnUpdateAll.setToolTipText("Update UI information");
 		btnUpdateAll.setPreferredSize(new Dimension(159, 20));
@@ -698,25 +622,6 @@ public class CrsManagerPane extends JPanel
 		
 		// Initialization
 		uiConfiguration();
-		textPath.getDocument().addDocumentListener(new DocumentListener()
-		{
-			@Override
-			public void removeUpdate(DocumentEvent arg0)
-			{
-				updateAllDataUI();
-			}
-			
-			@Override
-			public void insertUpdate(DocumentEvent arg0)
-			{
-				updateAllDataUI();
-			}
-			
-			@Override
-			public void changedUpdate(DocumentEvent arg0)
-			{
-			}
-		});
 	}
 	
 	/**
@@ -749,8 +654,6 @@ public class CrsManagerPane extends JPanel
 		profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
 		driver = new FirefoxDriver(profile);
 		
-		// Setup motorola user account
-		updateUserdata();
 	}
 	
 	private boolean openBrowser()
@@ -1272,12 +1175,6 @@ public class CrsManagerPane extends JPanel
 	/**
 	 * Aux functions --------------------------------------------------------------- ---------------------------------
 	 */
-	private void updateUserdata()
-	{
-		SharedObjs.setUser(textUsername.getText());
-		SharedObjs.setPass(String.copyValueOf(textPassword.getPassword()));
-	}
-	
 	private void sleep(int millis)
 	{
 		try
@@ -1293,28 +1190,9 @@ public class CrsManagerPane extends JPanel
 	public void saveUserData()
 	{
 		String xmlPath[] = new String[] {"crs_jira_pane", ""};
+		
 		xmlPath[1] = "path";
 		XmlMngr.setUserValueOf(xmlPath, textPath.getText());
-		xmlPath[1] = "uname";
-		XmlMngr.setUserValueOf(xmlPath, textUsername.getText());
-		xmlPath[1] = "encrypt_len";
-		BufferedOutputStream bout;
-		
-		try
-		{
-			bout = new BufferedOutputStream(new FileOutputStream(SharedObjs.pwdFile));
-			byte[] encPass = Encryptation.encrypt(String.copyValueOf(textPassword.getPassword()));
-			bout.write(encPass);
-			bout.close();
-			XmlMngr.setUserValueOf(xmlPath, "" + encPass.length);
-		}
-		catch (Exception e2)
-		{
-			e2.printStackTrace();
-		}
-		
-		xmlPath[1] = "remember";
-		XmlMngr.setUserValueOf(xmlPath, chkbxRemember.isSelected() + "");
 		xmlPath[1] = "assign";
 		XmlMngr.setUserValueOf(xmlPath, chckbxAssign.isSelected() + "");
 		xmlPath[1] = "label";
@@ -1329,7 +1207,6 @@ public class CrsManagerPane extends JPanel
 		xmlPath[1] = "path";
 		textPath.setText(XmlMngr.getUserValueOf(xmlPath));
 		xmlPath[1] = "uname";
-		textUsername.setText(XmlMngr.getUserValueOf(xmlPath));
 		xmlPath[1] = "encrypt_len";
 		
 		try
@@ -1341,7 +1218,6 @@ public class CrsManagerPane extends JPanel
 			Logger.log(Logger.TAG_CRSMANAGER, "Lenght: " + XmlMngr.getUserValueOf(xmlPath) + " - "
 											  + Integer.parseInt(XmlMngr.getUserValueOf(xmlPath)));
 			bin.read(toDecrypt);
-			textPassword.setText("" + Encryptation.decrypt(toDecrypt));
 			bin.close();
 			// Logger.log(Logger.TAG_CRSMANAGER, "File
 			// saved\nDecrypted: " + Encryptation.decrypt(toDecrypt));
@@ -1351,8 +1227,6 @@ public class CrsManagerPane extends JPanel
 			e2.printStackTrace();
 		}
 		
-		xmlPath[1] = "remember";
-		chkbxRemember.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		xmlPath[1] = "assign";
 		chckbxAssign.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		xmlPath[1] = "label";
@@ -1492,21 +1366,6 @@ public class CrsManagerPane extends JPanel
 	public JTextField getTextPath()
 	{
 		return textPath;
-	}
-	
-	public JTextField getTextUsername()
-	{
-		return textUsername;
-	}
-	
-	public JPasswordField getTextPassword()
-	{
-		return textPassword;
-	}
-	
-	public JCheckBox getChkbxRemember()
-	{
-		return chkbxRemember;
 	}
 	
 	public JCheckBox getChckbxAssign()

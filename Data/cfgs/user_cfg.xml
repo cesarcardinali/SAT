@@ -5,9 +5,6 @@
   </parser_pane>
   <crs_jira_pane>
     <path>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs\callisto\testes</path>
-    <uname>cesarc</uname>
-    <encrypt_len>16</encrypt_len>
-    <remember>true</remember>
     <assign>true</assign>
     <label>true</label>
   </crs_jira_pane>
@@ -29,6 +26,9 @@
     <editor>0</editor>
     <wwrap>0</wwrap>
     <tree_breakdown>2</tree_breakdown>
+    <uname>cesarc</uname>
+    <encrypt_len>16</encrypt_len>
+    <remember>true</remember>
   </option_pane>
   <bat_cap>
     <clark>3000</clark>
