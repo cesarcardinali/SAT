@@ -16,6 +16,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import core.Logger;
+import core.SharedObjs;
 import objects.CrItem;
 
 
@@ -32,6 +33,7 @@ public class JiraSatApi
 	private final String	   COMMENT_TAG					   = "/comment";
 	private final String	   ASSIGN_TAG					   = "/assignee";
 	private final String	   TRANSITION_TAG				   = "/transitions";
+	public static final String DEFAULT_JIRA_URL				   = "http://idart.mot.com/";
 	public static final String CANCELLED					   = "7";
 	public static final String INVALID						   = "13";
 	public static final String INCOMPLETE					   = "4";
@@ -50,7 +52,7 @@ public class JiraSatApi
 	public JiraSatApi(String url, String username, String passwd)
 	{
 		this.username = username;
-		if (url.charAt(url.length()) == '/')
+		if (url.charAt(url.length()-1) == '/')
 		{
 			this.baseURL = url + "rest/api/2/issue/";
 		}
@@ -314,6 +316,35 @@ public class JiraSatApi
 	}
 	
 	/**
+	 * Assign issue
+	 * @param key Jira issue key
+	 * @return Server response
+	 */
+	public String assignIssue(String key)
+	{
+		WebResource webResource = client.resource(baseURL + key + ASSIGN_TAG);
+		String output;
+		String input = prepareInputFromFile("assignCR");
+		input = input.replace("#given_coreid#", SharedObjs.getUser());
+		ClientResponse response = webResource.type("application/json").put(ClientResponse.class, input);
+		
+		System.out.println("Input:\n" + input);
+		
+		if (response.getStatus() != 204)
+		{
+			output = response.getEntity(String.class);
+		}
+		else
+		{
+			output = response.toString();
+		}
+		
+		Logger.log(TAG, "Assign issue: Output from Server:\n" + output);
+		
+		return output;
+	}
+	
+	/**
 	 * Unassigns an issue
 	 * @param key Jira issue key
 	 * @return Server response
@@ -472,6 +503,10 @@ public class JiraSatApi
 		ClientResponse response = webResource.type("application/json").get(ClientResponse.class);
 		
 		String output = response.getEntity(String.class);
+
+		if(output.contains("Unauthorized (401)")){
+			return null;
+		}
 		
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObj = (JSONObject) jsonParser.parse(output);

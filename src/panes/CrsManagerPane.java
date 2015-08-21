@@ -14,11 +14,9 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -49,20 +47,16 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
+import org.json.simple.parser.ParseException;
 
-import core.Icons;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
+import objects.CrItem;
+import supportive.Bug2goDownloader;
 import supportive.CrsCloser;
 import supportive.DiagCrsCloser;
+import supportive.JiraSatApi;
 
 
 @SuppressWarnings("serial")
@@ -71,23 +65,14 @@ public class CrsManagerPane extends JPanel
 	/**
 	 * Global Variables
 	 */
-	private JTextArea				 textDownload;
-	private JTextField				 textPath;
-	private JTextPane				 textLog;
-	private JTextPane				 textPane;
-	private JCheckBox				 chckbxAssign;
-	private JCheckBox				 chckbxLabels;
-	private JList<String>			 listDiag;
-	private DefaultListModel<String> listModel;
-	private WebDriver				 driver;
-	private FirefoxProfile			 profile;
-	private String					 CRs[];
-	private String					 b2glink  = "";
-	private String					 actualCR = "";
-	private HashMap<String, String>	 b2g_crid;
-	private HashMap<String, String>	 b2g_analyzed;
-	private ArrayList<String>		 listZipNames;
-	private ArrayList<String>		 listFoldersNames;
+	private JTextArea	  textDownload;
+	private JTextField	  textPath;
+	private JTextPane	  textLog;
+	private JTextPane	  textPane;
+	private JCheckBox	  chckbxAssign;
+	private JCheckBox	  chckbxLabels;
+	private JList<String> listDiag;
+	private String		  CRs[];
 	
 	/**
 	 * Create the panel.
@@ -142,12 +127,6 @@ public class CrsManagerPane extends JPanel
 		lblRootPath.setFont(new Font("Tahoma", Font.BOLD, 18));
 		textPath = new JTextField();
 		textPath.setToolTipText("Path to stock and read your CRs");
-		GridBagConstraints gbc_textPath = new GridBagConstraints();
-		gbc_textPath.insets = new Insets(0, 5, 0, 5);
-		gbc_textPath.gridx = 0;
-		gbc_textPath.gridy = 1;
-		panel.add(textPath, gbc_textPath);
-		
 		textPath.setHorizontalAlignment(SwingConstants.CENTER);
 		textPath.setBorder(new LineBorder(SystemColor.activeCaption));
 		textPath.setMinimumSize(new Dimension(130, 20));
@@ -157,13 +136,13 @@ public class CrsManagerPane extends JPanel
 			@Override
 			public void removeUpdate(DocumentEvent arg0)
 			{
-				updateAllDataUI();
+				SharedObjs.setDownloadPath(textPath.getText());
 			}
 			
 			@Override
 			public void insertUpdate(DocumentEvent arg0)
 			{
-				updateAllDataUI();
+				SharedObjs.setDownloadPath(textPath.getText());
 			}
 			
 			@Override
@@ -171,6 +150,11 @@ public class CrsManagerPane extends JPanel
 			{
 			}
 		});
+		GridBagConstraints gbc_textPath = new GridBagConstraints();
+		gbc_textPath.insets = new Insets(0, 5, 0, 5);
+		gbc_textPath.gridx = 0;
+		gbc_textPath.gridy = 1;
+		panel.add(textPath, gbc_textPath);
 		
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setOrientation(SwingConstants.VERTICAL);
@@ -524,19 +508,6 @@ public class CrsManagerPane extends JPanel
 		gbc_separator.gridy = 1;
 		contentPane.add(separator, gbc_separator);
 		
-		JButton btnUpdateAll = new JButton("Click to Update everything");
-		btnUpdateAll.setToolTipText("Update UI information");
-		btnUpdateAll.setPreferredSize(new Dimension(159, 20));
-		btnUpdateAll.setIcon(Icons.refresh);
-		btnUpdateAll.setFont(new Font("Consolas", Font.BOLD, 12));
-		btnUpdateAll.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				updateAllDataUI();
-			}
-		});
-		
 		JSeparator separator_4 = new JSeparator();
 		separator_4.setForeground(new Color(0, 0, 0));
 		GridBagConstraints gbc_separator_4 = new GridBagConstraints();
@@ -546,14 +517,6 @@ public class CrsManagerPane extends JPanel
 		gbc_separator_4.gridx = 0;
 		gbc_separator_4.gridy = 6;
 		contentPane.add(separator_4, gbc_separator_4);
-		
-		GridBagConstraints gbc_btnUpdateAll = new GridBagConstraints();
-		gbc_btnUpdateAll.insets = new Insets(10, 10, 10, 10);
-		gbc_btnUpdateAll.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnUpdateAll.gridwidth = 5;
-		gbc_btnUpdateAll.gridx = 0;
-		gbc_btnUpdateAll.gridy = 7;
-		contentPane.add(btnUpdateAll, gbc_btnUpdateAll);
 		
 		JPanel panel_5 = new JPanel();
 		panel_5.setBorder(new LineBorder(new Color(240, 128, 128), 1, true));
@@ -620,375 +583,71 @@ public class CrsManagerPane extends JPanel
 		textPane.setPreferredSize(new Dimension(100, 82));
 		textPane.setMinimumSize(new Dimension(50, 42));
 		
-		// Initialization
-		uiConfiguration();
+		loadUserData();
 	}
 	
 	/**
-	 * Download functions -----------------------------------
-	 */
-	private void initialize()
-	{
-		Logger.log(Logger.TAG_CRSMANAGER, "Generating Firefox profile");
-		
-		// Configure download local
-		String content;
-		Scanner scanner;
-		
-		try
-		{
-			scanner = new Scanner(new File("Data\\complements\\profiles\\y2fvgaq0.bot\\prefs_base.js"));
-			content = scanner.useDelimiter("\\Z").next();
-			content = content.replace("#path#",
-									  textPath.getText().replace("\\", "\\\\").replace("/", "\\\\"));
-			PrintWriter out = new PrintWriter("Data\\complements\\profiles\\y2fvgaq0.bot\\prefs.js");
-			out.println(content);
-			out.close();
-		}
-		catch (FileNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
-		driver = new FirefoxDriver(profile);
-		
-	}
-	
-	private boolean openBrowser()
-	{
-		// Open up a browser
-		Logger.log(Logger.TAG_CRSMANAGER, "Starting browser");
-		
-		driver.navigate().to("http://google.com");
-		
-		Logger.log(Logger.TAG_CRSMANAGER, "Done.");
-		
-		return true;
-	}
-	
-	private boolean jiraLogin()
-	{
-		if (driver.getTitle().contains("Log"))
-		{
-			// Logger.log(Logger.TAG_CRSMANAGER, "Trying to Log in");
-			driver.findElement(By.name("os_username")).sendKeys(SharedObjs.getUser());
-			driver.findElement(By.name("os_password")).sendKeys(SharedObjs.getPass());
-			driver.findElement(By.name("os_cookie")).click();
-			driver.findElement(By.name("login")).click();
-			// sleep(1500);
-			
-			if (driver.getTitle().contains("Log"))
-			{
-				return false;
-			}
-			else
-			{
-				// Logger.log(Logger.TAG_CRSMANAGER, "Done.");
-				return true;
-			}
-		}
-		else
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Already logged in");
-			
-			return true;
-		}
-	}
-	
-	private boolean assignCR()
-	{
-		try
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Trying to assign");
-			
-			driver.findElement(By.className("issueaction-assign-to-me")).click();
-			
-			Logger.log(Logger.TAG_CRSMANAGER, "Done.");
-			
-			int error = 0;
-			
-			while (!driver.getPageSource().contains("<span class=\"user-hover\" id=\"issue_summary_assignee_"
-													+ SharedObjs.getUser() + " rel=\""))
-			{
-				error++;
-				Logger.log(Logger.TAG_CRSMANAGER, "Not assignned yet. Retrying");
-				sleep(750);
-				driver.findElement(By.className("issueaction-assign-to-me")).click();
-				
-				if (error > 3)
-				{
-					JOptionPane.showMessageDialog(this, "Error trying to assign. Canceling process.");
-					driver.close();
-					break;
-				}
-				
-				sleep(2000);
-			}
-		}
-		catch (Exception e1)
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "CR assigned already");
-		}
-		
-		return true;
-	}
-	
-	private boolean addLabel()
-	{
-		try
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Trying to insert label");
-			
-			if (!driver.getPageSource().contains("ll_prodteam_analyzed"))
-			{
-				driver.findElement(By.cssSelector("body")).sendKeys(Keys.ESCAPE);
-				sleep(500);
-				driver.findElement(By.cssSelector("body")).sendKeys(".");
-				sleep(800);
-				driver.findElement(By.id("shifter-dialog-field")).sendKeys("label");
-				sleep(800);
-				driver.findElement(By.id("shifter-dialog-field")).sendKeys(Keys.ENTER);
-				sleep(1100);
-				driver.findElement(By.id("labels-textarea")).sendKeys("ll_prodteam_analyzed");
-				sleep(1100);
-				driver.findElement(By.id("labels-textarea")).sendKeys(Keys.ENTER);
-				sleep(1010);
-				driver.findElement(By.id("issue-workflow-transition-submit")).click();
-				Logger.log(Logger.TAG_CRSMANAGER, "Label inserted");
-				sleep(1010);
-				return true;
-			}
-			else
-			{
-				Logger.log(Logger.TAG_CRSMANAGER, "Label already applied");
-				return true;
-			}
-		}
-		catch (Exception e1)
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Label error");
-			e1.printStackTrace();
-			return false;
-		}
-	}
-	
-	private boolean openB2G()
-	{
-		try
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Opening Bug2Go");
-			Logger.log(Logger.TAG_CRSMANAGER, "Previous B2g page: " + b2glink);
-			WebElement Element = driver.findElement(By.partialLinkText("b2gadm-mcloud101-blur"));
-			String b2gID = Element.getText().substring(Element.getText().indexOf('=') + 1);
-			Logger.log(Logger.TAG_CRSMANAGER,
-					   "\n-> B2g id clicked: " + b2gID + "\n-> CR being downlod: " + actualCR + "\n");
-			b2g_crid.put(b2gID, actualCR);
-			b2g_analyzed.put(b2gID, "Not analyzed");
-			b2glink = Element.getText();
-			Logger.log(Logger.TAG_CRSMANAGER, "New B2g link: " + b2glink);
-			Element.click();
-			// driver.navigate().to(b2glink);
-			sleep(1000);
-			
-			while (driver.getTitle().contains("MOTOROLA"))
-			{
-				Logger.log(Logger.TAG_CRSMANAGER, "Login to Bug2Go");
-				driver.findElement(By.id("username")).sendKeys(SharedObjs.getUser());
-				driver.findElement(By.id("password")).sendKeys(SharedObjs.getPass());
-				driver.findElement(By.className("input_submit")).click();
-				sleep(1000);
-			}
-			
-			sleep(2000);
-			
-			return true;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			driver.navigate().back();
-			return false;
-		}
-	}
-	
-	private boolean downloadCR()
-	{
-		while (!verifyDownloadPage())
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Verify download - 1");
-		}
-		
-		Logger.log(Logger.TAG_CRSMANAGER, "B2G page loaded");
-		Logger.log(Logger.TAG_CRSMANAGER, "Clicking download");
-		driver.findElement(By.className("bg_btn")).click();
-		sleep(2500);
-		
-		while (driver.getTitle().contains("MOTOROLA"))
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Login to Bug2Go");
-			driver.findElement(By.id("username")).sendKeys(SharedObjs.getUser());
-			driver.findElement(By.id("password")).sendKeys(SharedObjs.getPass());
-			driver.findElement(By.className("input_submit")).click();
-			sleep(1000);
-		}
-		
-		if (driver.getTitle().contains("Bug2Go--"))
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Download failed\nRetry...");
-			
-			return false;
-		}
-		
-		Logger.log(Logger.TAG_CRSMANAGER, "Downloading");
-		
-		return true;
-	}
-	
-	private boolean verifyDownloadPage()
-	{
-		Logger.log(Logger.TAG_CRSMANAGER, "Verifying download page");
-		
-		if (driver.getTitle().contains("Bug2Go--"))
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "B2G page failed. Retrying ...");
-			
-			try
-			{
-				Logger.log(Logger.TAG_CRSMANAGER, "Refreshing page");
-				driver.navigate().to(b2glink);
-				
-				return false;
-			}
-			catch (Exception e)
-			{
-				Logger.log(Logger.TAG_CRSMANAGER, "Driver Error");
-				
-				return false;
-			}
-		}
-		
-		sleep(1000);
-		
-		return true;
-	}
-	
-	/**
+	 * Download CRs
+	 * 
 	 * main download function
+	 * @throws ParseException
 	 */
-	private void downloadCRs()
+	private void downloadCRs() throws ParseException
 	{
-		// Initialize variables
-		initialize();
-		
-		// Open up browser
-		openBrowser();
-		
-		// Clean up the hashmaps
-		b2g_crid = new HashMap<String, String>();
-		b2g_analyzed = new HashMap<String, String>();
-		
-		// Start the download process
+		// Setup jira connection
+		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
+										 SharedObjs.getUser(),
+										 SharedObjs.getPass());
+										 
+		// Get the CRs list
 		CRs = textDownload.getText().replaceAll(" ", "").split("\n");
 		
 		Logger.log(Logger.TAG_CRSMANAGER, "CRs List:" + CRs.length);
 		
-		for (int i = 0; i < CRs.length; i++)
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "-" + CRs[i] + "-");
-		}
+		ArrayList<String> b2gList = new ArrayList<String>();
 		
-		// boolean login=false, assign=false, label=false,
-		// download=false;
-		int flow = 0;
-		
-		for (int i = 0; i < CRs.length; i++)
+		// Manage CR
+		for (String crKey : CRs)
 		{
-			// Open page
-			Logger.log(Logger.TAG_CRSMANAGER, "Opening CR page");
-			driver.navigate().to("http://idart.mot.com/browse/" + CRs[i]);
-			Logger.log(Logger.TAG_CRSMANAGER, "Done.");
+			Logger.log(Logger.TAG_CRSMANAGER, "-" + crKey + "-");
 			
-			// Log in
-			Logger.log(Logger.TAG_CRSMANAGER, "Trying to login.");
-			jiraLogin();
+			CrItem crItem = jira.getCrData(crKey);
 			
-			// Check if login successful
-			while (driver.getTitle().contains("Log"))
+			if (crItem != null)
 			{
-				Logger.log(Logger.TAG_CRSMANAGER, "Checking for log in error");
-				if (driver.getPageSource()
-						  .contains("Sorry, your username and password are incorrect - please try again."))
-				{
-					JOptionPane.showMessageDialog(this,
-												  "Username and password are incorrect.\nPlease correct them and try again\n");
-												  
-					Logger.log(Logger.TAG_CRSMANAGER, "An error occurred. Canceling process.");
-					flow++;
-					
-					break;
-				}
-				else
-				{
-					Logger.log(Logger.TAG_CRSMANAGER, "No login errors");
-					// login = true;
-				}
+				SharedObjs.addCrToList(crItem);
 				
-				Logger.log(Logger.TAG_CRSMANAGER, "Browser still loading at login page. Waiting a sec ...");
-				sleep(1000);
-			}
-			
-			if (flow != 0)
-			{
-				driver.close();
-				break;
-			}
-			
-			Logger.log(Logger.TAG_CRSMANAGER, "Done.");
-			
-			// Label
-			if (chckbxLabels.isSelected())
-			{
-				while (!addLabel())
-				{
-				}
-				Logger.log(Logger.TAG_CRSMANAGER, "Label Done");
+				if (chckbxAssign.isSelected())
+					jira.assignIssue(crKey);
+					
+				if (chckbxLabels.isSelected())
+					jira.addLabel(crKey, "ll_prodteam_analyzed");
+					
+				b2gList.add(crItem.getB2gID());
 			}
 			else
 			{
-				Logger.log(Logger.TAG_CRSMANAGER, "Skipping Label Inserting");
+				Logger.log(Logger.TAG_CRSMANAGER,
+						   "CR KEY: " + crKey + " seems not to exist. Or your user/password is wrong");
 			}
-			sleep(1000);
-			
-			// Assign
-			while (chckbxAssign.isSelected() && !assignCR())
-			{
-			}
-			
-			Logger.log(Logger.TAG_CRSMANAGER, "Assign Done");
-			actualCR = CRs[i];
-			
-			while (!openB2G())
-			{
-			}
-			
-			Logger.log(Logger.TAG_CRSMANAGER, "Open B2G Done");
-			
-			while (!downloadCR())
-			{
-			}
-			
-			Logger.log(Logger.TAG_CRSMANAGER, "Going back to jira");
-			sleep(300);
-			driver.navigate().to("http://idart.mot.com/browse/" + CRs[i]);
-			sleep(500);
-			driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "t");
-			sleep(1000);
 		}
 		
-		driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "w");
-		updateAllDataUI();
+		if (b2gList.size() > 0)
+		{
+			// Configure the B2gDownloader
+			Bug2goDownloader b2gDownloader = new Bug2goDownloader(b2gList, SharedObjs.getDownloadPath());
+			
+			// Start download thread
+			new Thread(b2gDownloader).start();
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane,
+										  "There were errors during the b2g collection."
+															   + "\nWe could not get CRs data from Jira."
+															   + "\nYour pass or username may be wrong or "
+															   + "the CRs sent does not exist.");
+		}
 	}
 	
 	/**
@@ -1025,11 +684,14 @@ public class CrsManagerPane extends JPanel
 	
 	private void btnDownloadAction()
 	{
-		// Clear UI data
-		clearUIData();
-		
-		// Open and download the CRs
-		downloadCRs();
+		try
+		{
+			downloadCRs();
+		}
+		catch (ParseException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	private void btnOpenAction()
@@ -1053,98 +715,13 @@ public class CrsManagerPane extends JPanel
 	
 	private void btnRunDiag()
 	{
-		Object[] options = {"Go!", "Cancel"};
-		b2g_analyzed = new HashMap<String, String>();
-		
-		if (b2g_crid == null || b2g_crid.size() < 1)
-		{
-			b2g_crid = new HashMap<String, String>();
-		}
-		
-		int n = JOptionPane.showOptionDialog(null,
-											 "Please, make sure that the following path is your CRs path. Otherwise, cancel this window and "
-												   + "put the correct path on \"CRs path\" located on the main window.\n"
-												   + textPath.getText(),
-											 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
-											 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-											 
-		if (n == 0)
-		{
-			new ClosingDiagDialog();
-		}
-		else
-		{
-			// JOptionPane.showMessageDialog(null,"Selected option: " + n);
-			Logger.log(Logger.TAG_CRSMANAGER, "Action cancelled");
-		}
-	}
-	
-	private void updateZipAndFoldersList()
-	{
-		listZipNames = new ArrayList<String>();
-		listFoldersNames = new ArrayList<String>();
-		String rootFolder = getRootPath();
-		File rootPath = new File(rootFolder);
-		
-		if (rootPath.isDirectory())
-		{
-			for (String itemName : rootPath.list())
-			{
-				File actualFile = new File(rootFolder + itemName);
-				
-				if (actualFile.isDirectory())
-				{
-					// Logger.log(Logger.TAG_CRSMANAGER, "CR Folder: "
-					// + itemName);
-					listFoldersNames.add(actualFile.getName());
-				}
-				else if (actualFile.getName().endsWith(".zip"))
-				{
-					// Logger.log(Logger.TAG_CRSMANAGER, "Zip file: "
-					// + itemName);
-					listZipNames.add(actualFile.getName());
-				}
-			}
-			
-			String[] aux1 = new String[listZipNames.size()];
-			listZipNames.toArray(aux1);
-			String[] aux2 = new String[listFoldersNames.size()];
-			listFoldersNames.toArray(aux2);
-		}
 	}
 	
 	public void updateDiagList()
 	{
-		listModel = (DefaultListModel<String>) listDiag.getModel();
-		listModel.removeAllElements();
-		
-		if (b2g_crid != null && b2g_crid.size() > 0)
-		{
-			for (String key : b2g_crid.keySet())
-			{
-				listModel.addElement(b2g_crid.get(key) + " - " + key + " - " + b2g_analyzed.get(key));
-			}
-		}
-		else
-		{
-			for (Object key : listFoldersNames.toArray())
-			{
-				listModel.addElement((String) key + " - " + "Unknown" + " - " + b2g_analyzed.get(key));
-			}
-		}
-		
 		updateUI();
 		repaint();
 		revalidate();
-	}
-	
-	public void updateAllDataUI()
-	{
-		updateZipAndFoldersList();
-	}
-	
-	private void clearUIData()
-	{
 	}
 	
 	public void addLogLine(String line)
@@ -1173,20 +750,8 @@ public class CrsManagerPane extends JPanel
 	}
 	
 	/**
-	 * Aux functions --------------------------------------------------------------- ---------------------------------
+	 * Aux functions --------------------------------------------------------
 	 */
-	private void sleep(int millis)
-	{
-		try
-		{
-			Thread.sleep(millis);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	public void saveUserData()
 	{
 		String xmlPath[] = new String[] {"crs_jira_pane", ""};
@@ -1204,31 +769,14 @@ public class CrsManagerPane extends JPanel
 	private void loadUserData()
 	{
 		String xmlPath[] = new String[] {"crs_jira_pane", ""};
+		
 		xmlPath[1] = "path";
 		textPath.setText(XmlMngr.getUserValueOf(xmlPath));
-		xmlPath[1] = "uname";
-		xmlPath[1] = "encrypt_len";
-		
-		try
-		{
-			BufferedInputStream bin;
-			bin = new BufferedInputStream(new FileInputStream(SharedObjs.pwdFile));
-			byte[] toDecrypt = new byte[Integer.parseInt(XmlMngr.getUserValueOf(xmlPath))];
-			
-			Logger.log(Logger.TAG_CRSMANAGER, "Lenght: " + XmlMngr.getUserValueOf(xmlPath) + " - "
-											  + Integer.parseInt(XmlMngr.getUserValueOf(xmlPath)));
-			bin.read(toDecrypt);
-			bin.close();
-			// Logger.log(Logger.TAG_CRSMANAGER, "File
-			// saved\nDecrypted: " + Encryptation.decrypt(toDecrypt));
-		}
-		catch (Exception e2)
-		{
-			e2.printStackTrace();
-		}
+		SharedObjs.setDownloadPath(textPath.getText());
 		
 		xmlPath[1] = "assign";
 		chckbxAssign.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		
 		xmlPath[1] = "label";
 		chckbxLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		
@@ -1244,6 +792,7 @@ public class CrsManagerPane extends JPanel
 		File f = new File(folder);
 		File[] filesList = f.listFiles();
 		String reportFile = null, sCurrentLine;
+		
 		// Look for the file
 		for (int j = 0; j < filesList.length; j++)
 		{
@@ -1278,8 +827,10 @@ public class CrsManagerPane extends JPanel
 				sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
 				sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
 				Logger.log(Logger.TAG_CRSMANAGER, sCurrentLine);
-				copyScript(new File("Data\\scripts\\_Base.pl"), new File(folder + "\\build_report.pl"));
 				
+				SharedObjs.copyScript(new File("Data\\scripts\\_Base.pl"),
+									  new File(folder + "\\build_report.pl"));
+									  
 				// Configure build report battery capacity
 				try
 				{
@@ -1322,28 +873,10 @@ public class CrsManagerPane extends JPanel
 		addLogLine("Done running at: " + folder);
 	}
 	
-	public void copyScript(File source, File dest) throws IOException
-	{
-		FileUtils.copyFile(source, dest);
-	}
-	
-	// UI Initialization
-	private void uiConfiguration()
-	{
-		b2g_analyzed = new HashMap<String, String>();
-		b2g_crid = new HashMap<String, String>();
-		loadUserData();
-	}
-	
 	/**
 	 * Getters ---------------------------------------------------
 	 */
-	public HashMap<String, String> getB2g_crid()
-	{
-		return b2g_crid;
-	}
-	
-	public String getRootPath()
+	public String getDownloadPath()
 	{
 		return textPath.getText().replace("\\", "\\\\").concat("\\\\");
 	}
@@ -1351,11 +884,6 @@ public class CrsManagerPane extends JPanel
 	public String[] getCrsToDownload()
 	{
 		return textDownload.getText().replace(" ", "").replace("\r", "").split("\n");
-	}
-	
-	public HashMap<String, String> getB2g_analyzed()
-	{
-		return b2g_analyzed;
 	}
 	
 	public JTextArea getTextDownload()
@@ -1376,10 +904,5 @@ public class CrsManagerPane extends JPanel
 	public JCheckBox getChckbxLabels()
 	{
 		return chckbxLabels;
-	}
-	
-	public String getActualCR()
-	{
-		return actualCR;
 	}
 }

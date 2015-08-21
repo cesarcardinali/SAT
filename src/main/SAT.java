@@ -228,7 +228,6 @@ public class SAT extends JFrame
 		public void windowGainedFocus(WindowEvent e)
 		{
 			Logger.log(Logger.TAG_SAT, "Window focus gained ");
-			SharedObjs.crsManagerPane.updateAllDataUI();
 		}
 	};
 	

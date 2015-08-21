@@ -47,8 +47,8 @@ public class DiagCrsCloser implements Runnable
 	
 	private static void checkDiag()
 	{
-		String path = SharedObjs.crsManagerPane.getRootPath();
-		HashMap<String, String> b2g_analyzed = SharedObjs.crsManagerPane.getB2g_analyzed();
+		String path = SharedObjs.getDownloadPath();
+		HashMap<String, String> b2g_analyzed = null; //SharedObjs.crsManagerPane.getB2g_analyzed();
 		Logger.log(Logger.TAG_DIAGCRSCLOSER, "Path: " + path);
 		String sCurrentLine, result, crPath;
 		BufferedReader br = null;
@@ -625,7 +625,7 @@ public class DiagCrsCloser implements Runnable
 										 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 		if (n == 0)
 		{
-			String path = SharedObjs.crsManagerPane.getRootPath();
+			String path = SharedObjs.getDownloadPath();
 			String folder = null;
 			// Look for the file
 			File rFolder = new File(path);
@@ -659,12 +659,12 @@ public class DiagCrsCloser implements Runnable
 						   + "Is recommended you wait them to be finished before doing something else.\n\n"
 						   + "\n\nRunning build report at:");
 			String crFolder;
-			File folder = new File(SharedObjs.crsManagerPane.getRootPath());
+			File folder = new File(SharedObjs.getDownloadPath());
 			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Folder: " + folder);
 			File[] listOfFiles = folder.listFiles();
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
-				folder = new File(SharedObjs.crsManagerPane.getRootPath());
+				folder = new File(SharedObjs.getDownloadPath());
 				listOfFiles = folder.listFiles();
 				if (listOfFiles[i].isDirectory())
 				{
@@ -836,7 +836,7 @@ public class DiagCrsCloser implements Runnable
 	
 	private static void delCRs(String dir)
 	{
-		String folder = SharedObjs.crsManagerPane.getRootPath() + dir;
+		String folder = SharedObjs.getDownloadPath() + dir;
 		Logger.log(Logger.TAG_DIAGCRSCLOSER, "Trying to delete " + dir);
 		File file = new File(folder);
 		try
@@ -875,6 +875,7 @@ public class DiagCrsCloser implements Runnable
 	@Override
 	public void run()
 	{
+		/*
 		int step = 1;
 		while (step != 10)
 		{
@@ -956,6 +957,7 @@ public class DiagCrsCloser implements Runnable
 		dialog.setVisible(false);
 		SharedObjs.crsManagerPane.updateAllDataUI();
 		Logger.log(Logger.TAG_DIAGCRSCLOSER, ">>>>DiagList Updated");
+		*/
 	}
 	
 	public static ArrayList<String> getDiagCRs()

@@ -1,8 +1,10 @@
 package core;
 
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.jdom2.Document;
@@ -275,6 +277,21 @@ public class XmlMngr
 		}
 		catch (IOException e)
 		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static void savePass(String pass)
+	{
+		try
+		{
+			BufferedWriter writer = new BufferedWriter(new FileWriter(SharedObjs.pwdFile));
+			writer.write(pass);
+			writer.close();
+		}
+		catch (IOException e)
+		{
+			Logger.log(Logger.TAG_XMLMNGR, "Error saving password");
 			e.printStackTrace();
 		}
 	}

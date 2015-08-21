@@ -2,6 +2,7 @@ package supportive;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -56,18 +57,35 @@ public class Bug2goItem implements Runnable
 	public void run()
 	{
 		status = "downloading";
+		
+		try
+		{
+			SharedObjs.copyScript(new File("Data/complements/b2g_script/getbug.py"),
+								  new File(SharedObjs.getDownloadPath() + "\\getbug.py"));
+			SharedObjs.copyScript(new File("Data/complements/b2g_script/__init__.py"),
+								  new File(SharedObjs.getDownloadPath() + "\\__init__.py"));
+		}
+		catch (IOException e1)
+		{
+			e1.printStackTrace();
+			Logger.log(Logger.TAG_BUG2GOITEM, "Error trying to copy getbug.py");
+			return;
+		}
+		
 		ProcessBuilder builder = new ProcessBuilder("cmd.exe",
 													"/c",
-													"cd \"" + "C:\\Users\\amaciel\\Desktop\\Test_Downloader"
-														  + "\" && " + command);
+													"cd \"" + SharedObjs.getDownloadPath() + "\" && "
+														  + command);
 		builder.redirectErrorStream(true);
 		Process p;
+		
 		try
 		{
 			p = builder.start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			
 			String line;
-			Logger.log(Logger.TAG_BUG2GOITEM, "Thread started");
+			Logger.log(Logger.TAG_BUG2GOITEM, bugId + " Thread started");
 			
 			while ((line = r.readLine()) != null)
 			{
@@ -77,7 +95,7 @@ public class Bug2goItem implements Runnable
 				{
 					Logger.log(Logger.TAG_BUG2GOITEM, "Error: CR couldn't be downloaded. Failed to login");
 					running = false;
-					status = "failed";
+					status = "error: login failed";
 				}
 				else if (line.contains("DEBUG") && line.contains("POST /bugreport/report/downloadlog")
 						 && Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1)) != 0)
@@ -98,9 +116,12 @@ public class Bug2goItem implements Runnable
 			e.printStackTrace();
 		}
 		
-		Logger.log(Logger.TAG_BUG2GOITEM, "Thread dead");
+		if(status.equals("downloading"))
+			status = "done";
 		running = false;
-		status = "done";
+		
+		SharedObjs.crsManagerPane.addLogLine(bugId + " status: " + status);
+		Logger.log(Logger.TAG_BUG2GOITEM, bugId + " Thread dead");
 	}
 	
 	public String getBugId()
@@ -152,5 +173,4 @@ public class Bug2goItem implements Runnable
 	{
 		this.running = run;
 	}
-	
 }

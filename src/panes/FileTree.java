@@ -639,10 +639,13 @@ public class FileTree extends JPanel
 					node = (DefaultMutableTreeNode) p.getLastPathComponent();
 					file = (File) node.getUserObject();
 					node = (DefaultMutableTreeNode) node.getParent();
+					
 					UnZip.unZipIt(file.getAbsolutePath(),
 								  file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
+					
 					newFile = new File(file.getAbsolutePath()
 										   .substring(0, file.getAbsolutePath().length() - 28));
+					
 					Logger.log(Logger.TAG_FILETREE, newFile.getAbsolutePath());
 					
 					if (newFile != null)

@@ -68,7 +68,7 @@ public class OptionsPane extends JPanel
 	private JTextField	   textUsername;
 	private JPasswordField textPassword;
 	private JCheckBox	   chkbxRemember;
-	private JPanel panel_2;
+	private JPanel		   panel_2;
 	
 	/**
 	 * Create the panel.
@@ -195,6 +195,7 @@ public class OptionsPane extends JPanel
 			
 			}
 		});
+		
 		GridBagConstraints gbc_textPassword = new GridBagConstraints();
 		gbc_textPassword.insets = new Insets(0, 0, 0, 5);
 		gbc_textPassword.fill = GridBagConstraints.HORIZONTAL;
@@ -260,7 +261,7 @@ public class OptionsPane extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				if(panel_2.isVisible())
+				if (panel_2.isVisible())
 					panel_2.setVisible(false);
 				else
 					panel_2.setVisible(true);
@@ -1061,6 +1062,7 @@ public class OptionsPane extends JPanel
 			rdbtnNotepad.setSelected(true);
 			
 		textUsername.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "uname"}));
+		SharedObjs.setPass("" + textUsername.getText());
 		
 		try
 		{
@@ -1073,16 +1075,16 @@ public class OptionsPane extends JPanel
 					   "Lenght: " + encrypt_len + " - " + Integer.parseInt(encrypt_len));
 			bin.read(toDecrypt);
 			textPassword.setText("" + Encryptation.decrypt(toDecrypt));
+			SharedObjs.setPass("" + Encryptation.decrypt(toDecrypt));
 			bin.close();
-			// Logger.log(Logger.TAG_CRSMANAGER, "File
-			// saved\nDecrypted: " + Encryptation.decrypt(toDecrypt));
 		}
 		catch (Exception e2)
 		{
 			e2.printStackTrace();
 		}
 		
-		chkbxRemember.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(new String[] {"option_pane", "remember"})));
+		chkbxRemember.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(new String[] {"option_pane",
+																							"remember"})));
 		
 		getComments();
 		
@@ -1141,6 +1143,7 @@ public class OptionsPane extends JPanel
 			byte[] encPass = Encryptation.encrypt(String.copyValueOf(textPassword.getPassword()));
 			bout.write(encPass);
 			bout.close();
+			
 			XmlMngr.setUserValueOf(new String[] {"option_pane", "encrypt_len"}, "" + encPass.length);
 		}
 		catch (Exception e2)

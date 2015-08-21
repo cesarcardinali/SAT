@@ -3,7 +3,6 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
@@ -16,15 +15,13 @@ import javax.swing.event.ChangeListener;
 import org.apache.commons.io.FileUtils;
 
 import main.SAT;
-
 import objects.CrItem;
 import objects.CustomFiltersList;
-
 import panes.AdvancedOptionsPane;
 import panes.CrsManagerPane;
 import panes.CustomFiltersPane;
-import panes.ParserPane;
 import panes.OptionsPane;
+import panes.ParserPane;
 
 
 /**
@@ -42,6 +39,7 @@ public class SharedObjs
 	public static final File		  pwdFile		 = new File(contentFolder + "cfgs/pass.pwd");
 	private static String			  crPath;
 	private static String			  rootFolderPath;
+	private static String			  downloadPath;
 	private static String			  result;
 	private static String			  user;
 	private static String			  pass;
@@ -96,8 +94,6 @@ public class SharedObjs
 			@Override
 			public void stateChanged(ChangeEvent e)
 			{
-				if (tabbedPane.getSelectedIndex() == 1)
-					crsManagerPane.updateAllDataUI();
 			}
 		});
 		
@@ -142,6 +138,11 @@ public class SharedObjs
 	public static String getResult()
 	{
 		return result;
+	}
+	
+	public static String getDownloadPath()
+	{
+		return downloadPath;
 	}
 	
 	public static CustomFiltersList getCustomFiltersList()
@@ -214,6 +215,11 @@ public class SharedObjs
 		SharedObjs.crsList = crsList;
 	}
 	
+	public static void addCrToList(CrItem cr)
+	{
+		crsList.add(cr);
+	}
+	
 	public void setCustomFiltersList(CustomFiltersList customFiltersList)
 	{
 		SharedObjs.customFiltersList = customFiltersList;
@@ -227,6 +233,11 @@ public class SharedObjs
 	public static void setRootFolderPath(String rootFolderPath)
 	{
 		SharedObjs.rootFolderPath = rootFolderPath;
+	}
+	
+	public static void setDownloadPath(String downloadPath)
+	{
+		SharedObjs.downloadPath = downloadPath;
 	}
 	
 	// Static General Methods

@@ -4,9 +4,9 @@
     <rootPath />
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs\callisto\testes</path>
-    <assign>true</assign>
-    <label>true</label>
+    <path>C:\Users\cesar.cardinali\Desktop\CRs</path>
+    <assign>false</assign>
+    <label>false</label>
   </crs_jira_pane>
   <option_pane>
     <full_log>- The process *#pname#* was consuming *~#avgconsume#* of CPU processing power.\n{noformat}\n#logfull#\n{noformat}</full_log>
