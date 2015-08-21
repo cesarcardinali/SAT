@@ -40,7 +40,7 @@ public class CustomFilterItem
 	private boolean		   shared;
 	private boolean		   editable;
 	
-	public CustomFilterItem(SAT parent)
+	public CustomFilterItem()
 	{
 		// BaseWindow = parent;
 		name = "";
