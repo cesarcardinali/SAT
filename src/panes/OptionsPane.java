@@ -69,6 +69,7 @@ public class OptionsPane extends JPanel
 	private JPasswordField textPassword;
 	private JCheckBox	   chkbxRemember;
 	private JPanel		   panel_2;
+	private JLabel		   lblServerStatus;
 	
 	/**
 	 * Create the panel.
@@ -111,11 +112,21 @@ public class OptionsPane extends JPanel
 		gbc_label_3.gridy = 0;
 		panel.add(label_3, gbc_label_3);
 		
+		lblServerStatus = new JLabel("Server Status");
+		lblServerStatus.setFont(new Font("Cambria Math", Font.BOLD, 11));
+		lblServerStatus.setHorizontalAlignment(SwingConstants.RIGHT);
+		GridBagConstraints gbc_lblServerStatus = new GridBagConstraints();
+		gbc_lblServerStatus.anchor = GridBagConstraints.EAST;
+		gbc_lblServerStatus.insets = new Insets(0, 0, 5, 15);
+		gbc_lblServerStatus.gridx = 1;
+		gbc_lblServerStatus.gridy = 0;
+		panel.add(lblServerStatus, gbc_lblServerStatus);
+		
 		JPanel panel_7 = new JPanel();
 		panel_7.setBorder(new LineBorder(Color.LIGHT_GRAY, 1, true));
 		GridBagConstraints gbc_panel_7 = new GridBagConstraints();
 		gbc_panel_7.gridwidth = 2;
-		gbc_panel_7.insets = new Insets(0, 15, 0, 15);
+		gbc_panel_7.insets = new Insets(0, 15, 5, 15);
 		gbc_panel_7.fill = GridBagConstraints.BOTH;
 		gbc_panel_7.gridx = 0;
 		gbc_panel_7.gridy = 1;
@@ -281,7 +292,7 @@ public class OptionsPane extends JPanel
 		panel_2.setBorder(new LineBorder(new Color(192, 192, 192), 1, true));
 		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
 		gbc_panel_2.fill = GridBagConstraints.BOTH;
-		gbc_panel_2.insets = new Insets(0, 15, 0, 15);
+		gbc_panel_2.insets = new Insets(0, 15, 5, 15);
 		gbc_panel_2.gridwidth = 2;
 		gbc_panel_2.gridx = 0;
 		gbc_panel_2.gridy = 3;
@@ -1062,7 +1073,7 @@ public class OptionsPane extends JPanel
 			rdbtnNotepad.setSelected(true);
 			
 		textUsername.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "uname"}));
-		SharedObjs.setPass("" + textUsername.getText());
+		SharedObjs.setUser("" + textUsername.getText());
 		
 		try
 		{
@@ -1085,7 +1096,7 @@ public class OptionsPane extends JPanel
 		
 		chkbxRemember.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(new String[] {"option_pane",
 																							"remember"})));
-		
+																							
 		getComments();
 		
 		Logger.log(Logger.TAG_OPTIONS, "Option pane values loaded");
@@ -1251,5 +1262,19 @@ public class OptionsPane extends JPanel
 	public JPasswordField getTextPassword()
 	{
 		return textPassword;
+	}
+	
+	public void setServerStatus(boolean status)
+	{
+		if (status)
+		{
+			lblServerStatus.setForeground(style.Colors.verdeEscuro);
+			lblServerStatus.setText("Connected to SAT DB");
+		}
+		else
+		{
+			lblServerStatus.setForeground(style.Colors.vermelhoEscuro);
+			lblServerStatus.setText("Not connected to SAT DB");
+		}
 	}
 }

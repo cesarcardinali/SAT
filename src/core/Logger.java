@@ -42,6 +42,7 @@ public class Logger
 	public static final String	  TAG_BUG2GOITEM		 = "BUG2GO ITEM";
 	public static final String	  TAG_BUG2GODOWNLOADER	 = "BUG2GO DOWNLOADER";
 	public static final String	  TAG_XMLMNGR			 = "XML MANAGER";
+	public static final String	  TAG_SHAREDOBJS		 = "SHARED OBJS";
 	
 	/**
 	 * Initialize class variables

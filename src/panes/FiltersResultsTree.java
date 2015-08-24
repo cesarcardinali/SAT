@@ -217,7 +217,7 @@ public class FiltersResultsTree extends JTree
 							}
 							else
 							{
-								int index = SharedObjs.getCustomFiltersList()
+								int index = SharedObjs.getUserFiltersList()
 													  .indexOf(selectedNode.toString().replace(" - Done", "")
 																		   .replace(" - Error", ""));
 								if (index >= 0)
@@ -236,7 +236,7 @@ public class FiltersResultsTree extends JTree
 									}
 									else
 									{
-										SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getCustomFiltersList()
+										SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getUserFiltersList()
 																						  .get(index)
 																						  .getResult());
 									}
@@ -376,13 +376,13 @@ public class FiltersResultsTree extends JTree
 							}
 							else
 							{
-								int index = SharedObjs.getCustomFiltersList()
+								int index = SharedObjs.getUserFiltersList()
 													  .indexOf(parentNode.toString().replace(" - Done", "")
 																		 .replace(" - Error", ""));
 																		 
 								if (index >= 0)
 								{
-									SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getCustomFiltersList()
+									SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getUserFiltersList()
 																					  .get(index)
 																					  .getResult());
 								}
@@ -1100,11 +1100,11 @@ public class FiltersResultsTree extends JTree
 		x = (nodeName + " - Running");
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
-		int index = SharedObjs.getCustomFiltersList().indexOf(nodeName);
+		int index = SharedObjs.getUserFiltersList().indexOf(nodeName);
 		
 		if (index >= 0)
 		{
-			result = SharedObjs.getCustomFiltersList().get(index).runFilter(SharedObjs.getCrPath());
+			result = SharedObjs.getUserFiltersList().get(index).runFilter(SharedObjs.getCrPath());
 			if (result.contains(" log missing"))
 			{
 				x = (nodeName + " - Error");
@@ -1132,7 +1132,7 @@ public class FiltersResultsTree extends JTree
 			else
 			{
 				addCustomResult(nodeName, "Result");
-				result = result + SharedObjs.getCustomFiltersList().get(index).getHeader() + "\n";
+				result = result + SharedObjs.getUserFiltersList().get(index).getHeader() + "\n";
 				SharedObjs.setResult(SharedObjs.getResult()
 									 + "\n\n\n========================= Tethering =========================\n"
 									 + result);
@@ -1229,7 +1229,7 @@ public class FiltersResultsTree extends JTree
 		{
 			rootNode.add(new DefaultMutableTreeNode("Tethering"));
 		}
-		for (CustomFilterItem item : SharedObjs.getCustomFiltersList())
+		for (CustomFilterItem item : SharedObjs.getUserFiltersList())
 		{
 			rootNode.add(new DefaultMutableTreeNode(item.getName()));
 		}
@@ -1239,7 +1239,7 @@ public class FiltersResultsTree extends JTree
 	public void addCustomFilters(String name)
 	{
 		/*
-		 * for(CustomFilterItem item : SharedObjs.getCustomFiltersList()){ if(findNode(item.getName()) == null){ rootNode.add(new
+		 * for(CustomFilterItem item : SharedObjs.getUserFiltersList()){ if(findNode(item.getName()) == null){ rootNode.add(new
 		 * DefaultMutableTreeNode(item.getName())); updateResultTreeUI(); } }
 		 */
 		rootNode.add(new DefaultMutableTreeNode(name));
@@ -1333,12 +1333,12 @@ public class FiltersResultsTree extends JTree
 				
 				else
 				{
-					int index = SharedObjs.getCustomFiltersList()
+					int index = SharedObjs.getUserFiltersList()
 										  .indexOf(node.toString().replace(" - Done", "").replace(" - Error",
 																								  ""));
 					if (index > -1)
 					{
-						SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getCustomFiltersList().get(index)
+						SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getUserFiltersList().get(index)
 																		  .getResult());
 						return true;
 					}

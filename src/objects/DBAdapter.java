@@ -11,18 +11,17 @@ import core.SharedObjs;
 
 
 /**
- * DataBase Connection Class
- * It has a constructor to create a connection and auxiliary methods to automatically generate query on database.
+ * DataBase Connection Class It has a constructor to create a connection and auxiliary methods to automatically generate query on database.
  *
  */
 public class DBAdapter
 {
-	private static final String DB_DRIVER		 = "com.mysql.jdbc.Driver";
-	private String			  DB_CONNECTION	 = null;
-	private String			  DB_USER		   = null;
-	private String			  DB_PASSWORD	   = null;
-	private Connection		  dbConnection	  = null;
-	private PreparedStatement   preparedStatement = null;
+	private static final String	DB_DRIVER		  = "com.mysql.jdbc.Driver";
+	private String				DB_CONNECTION	  = null;
+	private String				DB_USER			  = null;
+	private String				DB_PASSWORD		  = null;
+	private Connection			dbConnection	  = null;
+	private PreparedStatement	preparedStatement = null;
 	
 	/**
 	 * Constructor with connection parameter. For special cases when database connections will not be the default. Write the full path to
@@ -59,6 +58,19 @@ public class DBAdapter
 		this.DB_CONNECTION = "jdbc:mysql://172.16.20.15/sat_db"; // change hardcoded line to a default config in a xml file
 		this.DB_USER = user;
 		this.DB_PASSWORD = password;
+		
+		this.dbConnection = getDBConnection();
+		
+	}
+	
+	/**
+	 * @throws SQLException
+	 */
+	public DBAdapter() throws SQLException
+	{
+		this.DB_CONNECTION = "jdbc:mysql://172.16.20.15/sat_db"; // change hardcoded line to a default config in a xml file
+		this.DB_USER = "user";
+		this.DB_PASSWORD = "user";
 		
 		this.dbConnection = getDBConnection();
 		
@@ -107,6 +119,7 @@ public class DBAdapter
 		fitem.setRegex(rs.getString("regex"));
 		fitem.setOwner(rs.getString("user_key"));
 		fitem.setKernel(byteToBool(rs.getByte("w_krnl")));
+		fitem.setRadio(byteToBool(rs.getByte("w_radio")));
 		fitem.setMain(byteToBool(rs.getByte("w_main")));
 		fitem.setBugreport(byteToBool(rs.getByte("w_bugr")));
 		fitem.setShared(byteToBool(rs.getByte("shared")));
@@ -140,7 +153,7 @@ public class DBAdapter
 		boolean boolVar = false;
 		if (bVar == 1)
 			boolVar = true;
-		
+			
 		return boolVar;
 	}
 	
@@ -381,9 +394,9 @@ public class DBAdapter
 		String insertSQL = "INSERT INTO Filters VALUES (" + 0 + ", '" + filter.getName() + "', '"
 						   + filter.getHeader() + "', '" + filter.getRegex() + "', "
 						   + boolToByte(filter.isMain()) + ", " + boolToByte(filter.isSystem()) + ", "
-						   + boolToByte(filter.isKernel()) + ", " + boolToByte(filter.isBugreport()) + ", "
-						   + boolToByte(filter.isRoutput()) + ", " + boolToByte(filter.isShared()) + ", '"
-						   + filter.getOwner() + "');";
+						   + boolToByte(filter.isKernel()) + ", " + boolToByte(filter.isRadio()) + ", "
+						   + boolToByte(filter.isBugreport()) + ", " + boolToByte(filter.isRoutput()) + ", "
+						   + boolToByte(filter.isShared()) + ", '" + filter.getOwner() + "');";
 		int insertDone = 0;
 		
 		try
@@ -424,7 +437,8 @@ public class DBAdapter
 						   + editedFilter.getHeader() + "', regex = '" + editedFilter.getRegex()
 						   + "', w_main = " + boolToByte(editedFilter.isMain()) + ", w_syst = "
 						   + boolToByte(editedFilter.isSystem()) + ", w_krnl = "
-						   + boolToByte(editedFilter.isKernel()) + ", w_bugr = "
+						   + boolToByte(editedFilter.isKernel()) + ", w_radio = "
+						   + boolToByte(editedFilter.isRadio()) + ", w_bugr = "
 						   + boolToByte(editedFilter.isBugreport()) + ", w_rout = "
 						   + boolToByte(editedFilter.isRoutput()) + ", shared = "
 						   + boolToByte(editedFilter.isShared()) + ", user_key = '" + editedFilter.getOwner()
@@ -464,7 +478,7 @@ public class DBAdapter
 		// DELETE from Filters where name = 'Test_Filter';
 		String deleteSQL = "DELETE from Filters where name = '" + filterName + "' AND user_key = '"
 						   + SharedObjs.getUser() + "';";
-		
+						   
 		int deleteDone = 0;
 		
 		try

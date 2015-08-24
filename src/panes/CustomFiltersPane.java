@@ -1,44 +1,31 @@
 package panes;
 
 
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JComboBox;
-import javax.swing.SwingConstants;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JCheckBox;
-
-import java.awt.GridBagLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FlowLayout;
-import java.awt.Color;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import java.util.List;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import core.Icons;
 import core.Logger;
 import core.SharedObjs;
-
+import core.XmlMngr;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;;
 
@@ -161,7 +148,7 @@ public class CustomFiltersPane extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				filtersList = SharedObjs.getCustomFiltersList();
+				filtersList = SharedObjs.getUserFiltersList();
 				String aux = (String) comboBox.getSelectedItem();
 				for (CustomFilterItem item : filtersList)
 				{
@@ -197,7 +184,7 @@ public class CustomFiltersPane extends JDialog
 			{
 				if (comboBox.getSelectedIndex() >= 0)
 				{
-					filtersList = SharedObjs.getCustomFiltersList();
+					filtersList = SharedObjs.getUserFiltersList();
 					CustomFilterItem aux = null;
 					
 					for (CustomFilterItem item : filtersList)
@@ -255,7 +242,7 @@ public class CustomFiltersPane extends JDialog
 																	chckbxRoutput.isSelected(),
 																	chckbxShared.isSelected(),
 																	chckbxPublic.isSelected());
-					filtersList = SharedObjs.getCustomFiltersList();
+					filtersList = SharedObjs.getUserFiltersList();
 					int index = filtersList.indexOf(auxItem.getName());
 					
 					if (index >= 0)
@@ -270,7 +257,7 @@ public class CustomFiltersPane extends JDialog
 					}
 					else
 					{
-						SharedObjs.getCustomFiltersList().add(auxItem);
+						SharedObjs.getUserFiltersList().add(auxItem);
 						comboBox.insertItemAt(txtName.getText(), comboBox.getItemCount());
 						SharedObjs.parserPane.getFiltersResultsTree().addCustomFilters(txtName.getText());
 					}
@@ -766,84 +753,37 @@ public class CustomFiltersPane extends JDialog
 	 */
 	public void loadFilters()
 	{
-		try
+		comboBox.removeAllItems();
+		filtersList = SharedObjs.getUserFiltersList();
+		
+		for (CustomFilterItem filter : XmlMngr.getAllMyFiltersValueOf())
 		{
-			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			filtersList = SharedObjs.getCustomFiltersList();
-			SAXBuilder builder = new SAXBuilder();
-			Document document = (Document) builder.build(xmlFile);
-			Element filtersNode = document.getRootElement().getChild("custom_filters");
-			List<Element> filtersElements = filtersNode.getChildren();
-			comboBox.removeAllItems();
-			filtersList.clear();
-			
-			if (!filtersElements.isEmpty())
+			filtersList.add(filter);
+			comboBox.insertItemAt(filter.getName().replace("_", " "), comboBox.getItemCount());
+		}
+		
+		Logger.log(Logger.TAG_CUSTOMFILTER, "My filters from DB: " + SharedObjs.satDB.myFilters().size() + "\nMyUsername: " + SharedObjs.getUser());
+		for (CustomFilterItem filter : SharedObjs.satDB.myFilters())
+		{
+			if (filtersList.indexOf(filter) == -1)
 			{
-				for (Element filter : filtersElements)
-				{
-					filtersList.add(new CustomFilterItem(filter.getChildText("owner"),
-														 filter.getName().replace("_", " "),
-														 filter.getChildText("regex"),
-														 filter.getChildText("header"),
-														 Boolean.parseBoolean(filter.getChildText("main")),
-														 Boolean.parseBoolean(filter.getChildText("system")),
-														 Boolean.parseBoolean(filter.getChildText("kernel")),
-														 Boolean.parseBoolean(filter.getChildText("radio")),
-														 Boolean.parseBoolean(filter.getChildText("bugreport")),
-														 Boolean.parseBoolean(filter.getChildText("routput")),
-														 Boolean.parseBoolean(filter.getChildText("shared")),
-														 Boolean.parseBoolean(filter.getChildText("editable"))));
-					comboBox.insertItemAt(filter.getName().replace("_", " "), comboBox.getItemCount());
-				}
+				filtersList.add(filter);
+				comboBox.insertItemAt(filter.getName().replace("_", " "), comboBox.getItemCount());
 			}
 		}
-		catch (IOException | JDOMException e)
+		
+		for (CustomFilterItem filter : XmlMngr.getAllSharedFiltersValueOf())
 		{
-			e.printStackTrace();
-			Logger.log(Logger.TAG_CUSTOMFILTER, e.getMessage());
+			filtersList.add(filter);
+			comboBox.insertItemAt(filter.getName().replace("_", " "), comboBox.getItemCount());
 		}
 	}
 	
 	public void saveFilters()
 	{
-		try
+		for (CustomFilterItem filter : filtersList)
 		{
-			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			filtersList = SharedObjs.getCustomFiltersList();
-			SAXBuilder builder = new SAXBuilder();
-			Document document = (Document) builder.build(xmlFile);
-			Element filtersNode = document.getRootElement().getChild("custom_filters");
-			filtersNode.removeContent();
-			
-			for (CustomFilterItem e : filtersList)
-			{
-				Element filter = new Element("" + e.getName().replace(" ", "_"));
-				filter.addContent(new Element("regex").setText(e.getRegex()));
-				filter.addContent(new Element("header").setText(e.getHeader()));
-				filter.addContent(new Element("owner").setText(e.getOwner()));
-				filter.addContent(new Element("main").setText("" + e.isMain()));
-				filter.addContent(new Element("system").setText("" + e.isSystem()));
-				filter.addContent(new Element("kernel").setText("" + e.isKernel()));
-				filter.addContent(new Element("radio").setText("" + e.isRadio()));
-				filter.addContent(new Element("bugreport").setText("" + e.isBugreport()));
-				filter.addContent(new Element("routput").setText("" + e.isRoutput()));
-				filter.addContent(new Element("shared").setText("" + e.isShared()));
-				filter.addContent(new Element("editable").setText("" + e.isEditable()));
-				filtersNode.addContent(filter);
-			}
-			
-			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-			// For output generated xml to console for debugging
-			// xmlOutputter.output(doc, System.out);
-			
-			xmlOutputter.output(document, new FileOutputStream(xmlFile));
-			
-			Logger.log(Logger.TAG_CUSTOMFILTER, "Options Saved");
-			loadFilters();
-		}
-		catch (JDOMException | IOException e)
-		{
-			e.printStackTrace();
+			XmlMngr.setMyFiltersValueOf(filter);
 		}
 	}
 	
@@ -851,9 +791,9 @@ public class CustomFiltersPane extends JDialog
 	public void open()
 	{
 		clearfields();
-		loadFilters();
 		setLocationRelativeTo(SharedObjs.satFrame);
 		setVisible(true);
+		loadFilters();
 	}
 	
 	private void clearfields()

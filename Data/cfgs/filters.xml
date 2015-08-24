@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SAT>
+  <myFilters>
+    <Errors>
+      <regex>.*error.*</regex>
+      <header>- Errors signal detected</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>true</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>true</active>
+    </Errors>
+    <Active_Wakeup>
+      <regex>.*active.*</regex>
+      <header>- Active wakeups from kernel log</header>
+      <owner>cesarc</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>true</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>true</active>
+    </Active_Wakeup>
+    <SFPerfTracer>
+      <regex>.*SFPerfTracer.*</regex>
+      <header>aweee</header>
+      <owner />
+      <main>false</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>true</active>
+    </SFPerfTracer>
+    <aweaw>
+      <regex>waewa</regex>
+      <header>ewaewa</header>
+      <owner />
+      <main>false</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>true</editable>
+    </aweaw>
+  </myFilters>
+  <sharedFilters />
+</SAT>

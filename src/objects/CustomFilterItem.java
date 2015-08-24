@@ -10,7 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import core.Logger;
-import main.SAT;
 
 
 /**
@@ -39,10 +38,11 @@ public class CustomFilterItem
 	private boolean		   routput;
 	private boolean		   shared;
 	private boolean		   editable;
+	private boolean		   active;
+	private boolean		   modified;
 	
 	public CustomFilterItem()
 	{
-		// BaseWindow = parent;
 		name = "";
 		regex = "";
 		header = "";
@@ -60,6 +60,8 @@ public class CustomFilterItem
 		radio = false;
 		bugreport = false;
 		routput = false;
+		active = true;
+		modified = true;
 	}
 	
 	/**
@@ -100,6 +102,8 @@ public class CustomFilterItem
 		routput = ro;
 		shared = share;
 		editable = edit;
+		active = true;
+		modified = true;
 	}
 	
 	/**
@@ -683,5 +687,43 @@ public class CustomFilterItem
 	public String getResult()
 	{
 		return res;
+	}
+	
+	public boolean isActive()
+	{
+		return active;
+	}
+	
+	public void setActive(boolean active)
+	{
+		this.active = active;
+	}
+	
+	public String getRes()
+	{
+		return res;
+	}
+
+	public boolean isModified()
+	{
+		return modified;
+	}
+
+	public void setRes(String res)
+	{
+		this.res = res;
+	}
+
+	public void setModified(boolean modified)
+	{
+		this.modified = modified;
+	}
+
+	public String toString()
+	{
+		return "Filter: " + name + "\nRegex: " + regex + "\nHeader: " + header + "\nOwner: " + owner
+			   + "\nMain: " + main + "\nSystem: " + system + "\nKernel: " + kernel + "\nRadio: " + radio
+			   + "\nBugreport: " + bugreport + "\nRepOutput: " + routput + "\nShared: " + shared
+			   + "\nEditable: " + editable + "\nActive: " + active;
 	}
 }

@@ -3,6 +3,7 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
@@ -17,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import main.SAT;
 import objects.CrItem;
 import objects.CustomFiltersList;
+import objects.DBAdapter;
 import panes.AdvancedOptionsPane;
 import panes.CrsManagerPane;
 import panes.CustomFiltersPane;
@@ -36,6 +38,7 @@ public class SharedObjs
 	public static final File		  sytemCfgFile	 = new File(contentFolder + "cfgs/system_cfg.xml");
 	public static final File		  userCfgFile	 = new File(contentFolder + "cfgs/user_cfg.xml");
 	public static final File		  messageCfgFile = new File(contentFolder + "cfgs/message.xml");
+	public static final File		  filtersFile	 = new File(contentFolder + "cfgs/filters.xml");
 	public static final File		  pwdFile		 = new File(contentFolder + "cfgs/pass.pwd");
 	private static String			  crPath;
 	private static String			  rootFolderPath;
@@ -47,7 +50,9 @@ public class SharedObjs
 	public static String			  updateFolder2;
 	private static ArrayList<CrItem>  crsList;
 	private static Semaphore		  unzipSemaphore;
-	private static CustomFiltersList  customFiltersList;
+	private static CustomFiltersList  userFiltersList;
+	private static CustomFiltersList  sharedFiltersList;
+	private static CustomFiltersList  activeFiltersList;
 	private static CustomFiltersPane  customFiltersPane;
 	public static JTabbedPane		  tabbedPane;
 	public static ParserPane		  parserPane;
@@ -55,23 +60,13 @@ public class SharedObjs
 	public static OptionsPane		  optionsPane;
 	public static AdvancedOptionsPane advOptions;
 	public static SAT				  satFrame;
+	public static DBAdapter			  satDB;
 	
 	/**
 	 * Initialize class variables
 	 */
 	public static void initClass()
 	{
-		// Initialize variables
-		crPath = "";
-		updateFolder1 = XmlMngr.getSystemValueOf(new String[] {"configs", "update_path1"});
-		updateFolder2 = XmlMngr.getSystemValueOf(new String[] {"configs", "update_path2"});
-		rootFolderPath = XmlMngr.getUserValueOf(new String[] {"parser_pane", "rootPath"});
-		unzipSemaphore = new Semaphore(1, true);
-		customFiltersList = new CustomFiltersList();
-		customFiltersPane = new CustomFiltersPane();
-		customFiltersPane.loadFilters();
-		crsList = new ArrayList<CrItem>();
-		
 		// Set UI theme
 		try
 		{
@@ -82,6 +77,18 @@ public class SharedObjs
 		{
 			e.printStackTrace();
 		}
+		
+		// Initialize variables
+		crPath = "";
+		updateFolder1 = XmlMngr.getSystemValueOf(new String[] {"configs", "update_path1"});
+		updateFolder2 = XmlMngr.getSystemValueOf(new String[] {"configs", "update_path2"});
+		rootFolderPath = XmlMngr.getUserValueOf(new String[] {"parser_pane", "rootPath"});
+		unzipSemaphore = new Semaphore(1, true);
+		userFiltersList = new CustomFiltersList();
+		sharedFiltersList = new CustomFiltersList();
+		activeFiltersList = new CustomFiltersList();
+		customFiltersPane = new CustomFiltersPane();
+		crsList = new ArrayList<CrItem>();
 		
 		// Create Panes
 		parserPane = new ParserPane();
@@ -106,6 +113,19 @@ public class SharedObjs
 						  crsManagerPane);
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Options</body></html>",
 						  optionsPane);
+						  
+		// Try to connect to DB
+		try
+		{
+			satDB = new DBAdapter();
+			optionsPane.setServerStatus(true);
+		}
+		catch (SQLException e1)
+		{
+			e1.printStackTrace();
+			optionsPane.setServerStatus(false);
+			Logger.log(Logger.TAG_SHAREDOBJS, "could not connect to SQL DB");
+		}
 	}
 	
 	/**
@@ -145,9 +165,19 @@ public class SharedObjs
 		return downloadPath;
 	}
 	
-	public static CustomFiltersList getCustomFiltersList()
+	public static CustomFiltersList getUserFiltersList()
 	{
-		return customFiltersList;
+		return userFiltersList;
+	}
+	
+	public static CustomFiltersList getSharedFiltersList()
+	{
+		return sharedFiltersList;
+	}
+	
+	public static CustomFiltersList getActiveFiltersList()
+	{
+		return activeFiltersList;
 	}
 	
 	public static CustomFiltersPane getCustomFiltersPane()
@@ -222,7 +252,17 @@ public class SharedObjs
 	
 	public void setCustomFiltersList(CustomFiltersList customFiltersList)
 	{
-		SharedObjs.customFiltersList = customFiltersList;
+		SharedObjs.userFiltersList = customFiltersList;
+	}
+	
+	public static void setSharedFiltersList(CustomFiltersList sharedFiltersList)
+	{
+		SharedObjs.sharedFiltersList = sharedFiltersList;
+	}
+	
+	public static void setActiveFiltersList(CustomFiltersList activeFiltersList)
+	{
+		SharedObjs.activeFiltersList = activeFiltersList;
 	}
 	
 	public void setCustomFiltersPane(CustomFiltersPane customFiltersPane)

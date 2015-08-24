@@ -18,7 +18,7 @@ public class CrItemList extends ArrayList<CrItem>
 	 * Return the index of a CR with same JiraID of given CR
 	 * 
 	 * @param obj Cr item
-	 * @return Index of a CR with same JiraID of given CR
+	 * @return Index of a CR with same JiraID of given CR. Return -1 if not found
 	 */
 	public int indexOf(CrItem obj)
 	{
