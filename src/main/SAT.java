@@ -8,6 +8,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -19,6 +21,7 @@ import core.Logger;
 import core.SharedObjs;
 import core.Strings;
 import core.XmlMngr;
+import supportive.GetBug;
 
 
 /**
@@ -47,6 +50,20 @@ public class SAT extends JFrame
 				Logger.initClass();
 				// Start UI
 				SharedObjs.satFrame.setVisible(true);
+				
+				List<String> bugs = new ArrayList<String>();
+				bugs.add("77411481");
+				bugs.add("76901491");
+				GetBug bug = new GetBug(bugs);
+				try
+				{
+					bug.getBug();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 	}
