@@ -22,6 +22,7 @@ hs_err_pid*
 *.btd
 *.log
 src/tests/*.java
+Data/cfgs/pass.pwd
 BatTracer.jar
 Updater.jar
 TestDataCRs/

@@ -61,7 +61,7 @@ public class CustomFilterItem
 		bugreport = false;
 		routput = false;
 		active = true;
-		modified = true;
+		modified = false;
 	}
 	
 	/**
@@ -103,7 +103,7 @@ public class CustomFilterItem
 		shared = share;
 		editable = edit;
 		active = true;
-		modified = true;
+		modified = false;
 	}
 	
 	/**

@@ -261,7 +261,6 @@ public class DBAdapter
 		}
 		
 		return flist;
-		
 	}
 	
 	/**
@@ -297,7 +296,36 @@ public class DBAdapter
 		}
 		
 		return flist;
+	}
+	
+	public CustomFiltersList publicFilters()
+	{
+		String selectSQL = "SELECT * FROM Filters WHERE user_key = '';";
+		CustomFilterItem aux = new CustomFilterItem();
+		CustomFiltersList flist = new CustomFiltersList();
 		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			while (rs.next())
+			{
+				aux = new CustomFilterItem();
+				flist.add(setAllFilterFields(aux, rs));
+			}
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return flist;
 	}
 	
 	/**
@@ -418,6 +446,24 @@ public class DBAdapter
 	}
 	
 	/**
+	 * @param filtersList
+	 * @return Filters inserted {@link int}
+	 */
+	public int insertFilters(CustomFiltersList filtersList)
+	{
+		// Visual query example for reference:
+		// INSERT INTO Filters VALUES (0, 'Test_Filter', '- TestHeader' , '[A-z]', 1, 1, 0, 0, 1, 1, 'testuser');
+		int inserted = 0;
+		
+		for (CustomFilterItem filter : filtersList)
+		{
+			inserted = inserted + insertFilter(filter);
+		}
+		
+		return inserted;
+	}
+	
+	/**
 	 * This method will update filters only under the name of the user. If the user is not the owner he won't be able to edit it. <b>Uses
 	 * SharedObjs.getUser() to determine username.</b> Also, this method attempts to update every field on Filters table whether it has
 	 * changed or not.
@@ -473,7 +519,6 @@ public class DBAdapter
 	 */
 	public int deleteFilter(String filterName)
 	{
-		
 		// Visual query example for reference:
 		// DELETE from Filters where name = 'Test_Filter';
 		String deleteSQL = "DELETE from Filters where name = '" + filterName + "' AND user_key = '"
@@ -496,8 +541,34 @@ public class DBAdapter
 			
 		}
 		
-		return deleteDone;
+		return deleteDone;	
+	}
+	
+	public int deleteAllMyFilters()
+	{
+		// Visual query example for reference:
+		// DELETE from Filters where name = 'Test_Filter';
+		String deleteSQL = "DELETE from Filters where user_key = '"
+						   + SharedObjs.getUser() + "';";
+						   
+		int deleteDone = 0;
 		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(deleteSQL);
+			
+			// Execute delete SQL statement
+			deleteDone = preparedStatement.executeUpdate();
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return deleteDone;	
 	}
 	
 	/**

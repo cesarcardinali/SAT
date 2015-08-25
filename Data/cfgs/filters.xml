@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SAT>
+  <!-- User defined filters: !-->
   <myFilters>
     <Errors>
       <regex>.*error.*</regex>
@@ -29,10 +30,41 @@
       <editable>false</editable>
       <active>true</active>
     </Active_Wakeup>
+    <teste>
+      <regex>teste</regex>
+      <header>teste</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>true</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>true</active>
+    </teste>
+    <lalal>
+      <regex>lalalala</regex>
+      <header>lalalal</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>true</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>true</active>
+    </lalal>
+  </myFilters>
+  <!-- Users shared filters: !-->
+  <sharedFilters>
     <SFPerfTracer>
       <regex>.*SFPerfTracer.*</regex>
-      <header>aweee</header>
-      <owner />
+      <header />
+      <owner>cesarc</owner>
       <main>false</main>
       <system>true</system>
       <kernel>false</kernel>
@@ -43,19 +75,5 @@
       <editable>false</editable>
       <active>true</active>
     </SFPerfTracer>
-    <aweaw>
-      <regex>waewa</regex>
-      <header>ewaewa</header>
-      <owner />
-      <main>false</main>
-      <system>true</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>true</shared>
-      <editable>true</editable>
-    </aweaw>
-  </myFilters>
-  <sharedFilters />
+  </sharedFilters>
 </SAT>

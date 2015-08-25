@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -17,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 
 import main.SAT;
 import objects.CrItem;
+import objects.CustomFilterItem;
 import objects.CustomFiltersList;
 import objects.DBAdapter;
 import panes.AdvancedOptionsPane;
@@ -89,6 +91,21 @@ public class SharedObjs
 		activeFiltersList = new CustomFiltersList();
 		customFiltersPane = new CustomFiltersPane();
 		crsList = new ArrayList<CrItem>();
+		user = XmlMngr.getUserValueOf(new String[] {"option_pane", "uname"});
+		
+		// Try to connect to DB
+		try
+		{
+			satDB = new DBAdapter();
+		}
+		catch (SQLException e1)
+		{
+			e1.printStackTrace();
+			Logger.log(Logger.TAG_SHAREDOBJS, "Could not connect to SQL DB");
+		}
+		
+		// Load Filters
+		loadFilters();
 		
 		// Create Panes
 		parserPane = new ParserPane();
@@ -104,6 +121,7 @@ public class SharedObjs
 			}
 		});
 		
+		// Start SAT UI
 		satFrame = new SAT();
 		
 		// Inserting tabs
@@ -113,19 +131,12 @@ public class SharedObjs
 						  crsManagerPane);
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Options</body></html>",
 						  optionsPane);
-						  
-		// Try to connect to DB
-		try
-		{
-			satDB = new DBAdapter();
+
+		// Setup connection status
+		if (satDB != null)
 			optionsPane.setServerStatus(true);
-		}
-		catch (SQLException e1)
-		{
-			e1.printStackTrace();
+		else
 			optionsPane.setServerStatus(false);
-			Logger.log(Logger.TAG_SHAREDOBJS, "could not connect to SQL DB");
-		}
 	}
 	
 	/**
@@ -134,6 +145,122 @@ public class SharedObjs
 	public void checkFolder()
 	{
 		// TODO
+	}
+	
+	private static void loadFilters()
+	{
+		syncMyFilters();
+		sharedFiltersList = XmlMngr.getAllSharedFilters();
+		activeFiltersList.addAll(sharedFiltersList.getActiveFilters());
+		activeFiltersList.addAll(userFiltersList.getActiveFilters());
+	}
+	
+	private static boolean syncMyFilters()
+	{
+		boolean synced = false;
+		
+		if (satDB != null)
+		{
+			CustomFiltersList dbFilters = satDB.myFilters();
+			CustomFiltersList xmlFilters = XmlMngr.getAllMyFilters();
+			
+			Logger.log(Logger.TAG_SHAREDOBJS,
+					   "Your filters in DB: " + dbFilters.size() + "\nYour filters in XML: "
+											  + xmlFilters.size() + "\nPublic filters: "
+											  + satDB.publicFilters().size());
+											  
+			if (dbFilters.size() != xmlFilters.size())
+			{
+				int ans = JOptionPane.showOptionDialog(SharedObjs.satFrame,
+													   "We noticed differences between your\n"
+																			+ "local and your cloud filters file.\n"
+																			+ "\n    - Your filters in DB: "
+																			+ dbFilters.size()
+																			+ "\n    - Your filters in XML: "
+																			+ xmlFilters.size()
+																			+ "\n\nWhat do you prefer to do?",
+													   "Filters files conflict", JOptionPane.YES_NO_OPTION,
+													   JOptionPane.QUESTION_MESSAGE, null,
+													   new Object[] {"Merge files",
+																	 "Use local file",
+																	 "Use cloud file"},
+													   null);
+													   
+				Logger.log(Logger.TAG_SHAREDOBJS, "Syncing filters between Cloud and XML");
+				
+				if (ans == 0)
+				{
+					Logger.log(Logger.TAG_SHAREDOBJS, "Merging filters");
+					
+					CustomFiltersList aux = new CustomFiltersList();
+					
+					for (CustomFilterItem filter : xmlFilters)
+					{
+						if (dbFilters.indexOf(filter) == -1)
+						{
+							aux.add(filter);
+							satDB.insertFilter(filter);
+						}
+					}
+					
+					for (CustomFilterItem filter : dbFilters)
+					{
+						if (xmlFilters.indexOf(filter) == -1)
+						{
+							xmlFilters.add(filter);
+							XmlMngr.setMyFiltersValueOf(filter);
+						}
+					}
+					
+					dbFilters.addAll(aux);
+					
+					userFiltersList = dbFilters;
+					
+					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
+													  + "\nYour filters in XML: " + xmlFilters.size());
+				}
+				else if (ans == 1)
+				{
+					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing with local xml file");
+					
+					dbFilters = xmlFilters;
+					satDB.deleteAllMyFilters();
+					satDB.insertFilters(dbFilters);
+					
+					userFiltersList = xmlFilters;
+					
+					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
+													  + "\nYour filters in XML: " + xmlFilters.size());
+				}
+				else
+				{
+					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing with cloud data");
+					
+					xmlFilters = dbFilters;
+					XmlMngr.removeAllMyFilters();
+					XmlMngr.addMyFilters(xmlFilters);
+					
+					userFiltersList = dbFilters;
+					
+					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
+													  + "\nYour filters in XML: " + xmlFilters.size());
+				}
+			}
+			
+			userFiltersList = dbFilters;
+			
+			synced = true;
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(satFrame,
+										  "Could not connect to SAT DB.\nClick ok to keep using SAT anyway.\n"
+													+ "You will be able to sync your data next time you use SAT connected to DB.");
+													
+			userFiltersList = XmlMngr.getAllMyFilters();
+		}
+		
+		return synced;
 	}
 	
 	/**
@@ -295,5 +422,4 @@ public class SharedObjs
 	{
 		unzipSemaphore.release();
 	}
-	
 }

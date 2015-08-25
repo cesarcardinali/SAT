@@ -754,28 +754,25 @@ public class CustomFiltersPane extends JDialog
 	public void loadFilters()
 	{
 		comboBox.removeAllItems();
-		filtersList = SharedObjs.getUserFiltersList();
+		comboBox_1.removeAllItems();
+		comboBox_2.removeAllItems();
 		
-		for (CustomFilterItem filter : XmlMngr.getAllMyFiltersValueOf())
+		// Load MyFilters
+		for (CustomFilterItem filter : SharedObjs.getUserFiltersList())
 		{
-			filtersList.add(filter);
 			comboBox.insertItemAt(filter.getName().replace("_", " "), comboBox.getItemCount());
 		}
 		
-		Logger.log(Logger.TAG_CUSTOMFILTER, "My filters from DB: " + SharedObjs.satDB.myFilters().size() + "\nMyUsername: " + SharedObjs.getUser());
-		for (CustomFilterItem filter : SharedObjs.satDB.myFilters())
+		// Load SharedFilters
+		for (CustomFilterItem filter : SharedObjs.getSharedFiltersList())
 		{
-			if (filtersList.indexOf(filter) == -1)
-			{
-				filtersList.add(filter);
-				comboBox.insertItemAt(filter.getName().replace("_", " "), comboBox.getItemCount());
-			}
+			comboBox_1.insertItemAt(filter.getName().replace("_", " "), comboBox_1.getItemCount());
 		}
 		
-		for (CustomFilterItem filter : XmlMngr.getAllSharedFiltersValueOf())
+		// Load ActiveFilters
+		for (CustomFilterItem filter : SharedObjs.getActiveFiltersList())
 		{
-			filtersList.add(filter);
-			comboBox.insertItemAt(filter.getName().replace("_", " "), comboBox.getItemCount());
+			comboBox_2.insertItemAt(filter.getName().replace("_", " "), comboBox_2.getItemCount());
 		}
 	}
 	

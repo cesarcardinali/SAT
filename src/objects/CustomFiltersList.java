@@ -56,24 +56,19 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	}
 	
 	/**
-	 * Get the list of filters you own
-	 * 
-	 * @param user Your username (owner)
-	 * @return List of filters that belongs to user
+	 * @return
 	 */
-	public ArrayList<CustomFilterItem> myfilters(String user)
-	{
-		ArrayList<CustomFilterItem> yourFilters = new ArrayList<CustomFilterItem>();
-		
-		for (int i = 0; i < this.size(); i++)
+	public CustomFiltersList getActiveFilters(){
+		CustomFiltersList aux = new CustomFiltersList();
+		for (CustomFilterItem filter : this)
 		{
-			if (user.equals(this.get(i).getOwner()))
+			if (filter.isActive())
 			{
-				yourFilters.add(this.get(i));
+				aux.add(filter);
 			}
 		}
 		
-		return yourFilters;
+		return aux;
 	}
 	
 	/**
@@ -94,5 +89,15 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	{
 		Collections.sort(this, new itensComparator());
 		Collections.reverse(this);
+	}
+	
+	public String toString()
+	{
+		String toString = "";
+		for (CustomFilterItem filter : this)
+		{
+			toString = toString + "--------------" + filter.toString() + "\n--------------\n";
+		}
+		return toString;
 	}
 }
