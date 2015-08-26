@@ -571,7 +571,7 @@ public class JiraSatApi
 		
 		try
 		{
-			br = new BufferedReader(new FileReader("Data/complements/jira/" + file + ".txt"));
+			br = new BufferedReader(new FileReader("Data/complements/jira/" + file + ".tmpl"));
 			
 			while ((currentLine = br.readLine()) != null)
 			{
