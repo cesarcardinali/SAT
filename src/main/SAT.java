@@ -19,7 +19,6 @@ import core.Logger;
 import core.SharedObjs;
 import core.Strings;
 import core.XmlMngr;
-import panes.CustomFiltersPane2;
 
 
 /**

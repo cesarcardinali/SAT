@@ -72,9 +72,9 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	}
 	
 	/**
-	 * FilterItem comparator
+	 * FilterItem comparator by name
 	 */
-	public class itensComparator implements Comparator<CustomFilterItem>
+	public class itensNameComparator implements Comparator<CustomFilterItem>
 	{
 		public int compare(CustomFilterItem p1, CustomFilterItem p2)
 		{
@@ -83,11 +83,51 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	}
 	
 	/**
-	 * Sort list
+	 * FilterItem comparator by date
 	 */
-	public void sortItens()
+	public class itensDateComparator implements Comparator<CustomFilterItem>
 	{
-		Collections.sort(this, new itensComparator());
+		public int compare(CustomFilterItem p1, CustomFilterItem p2)
+		{
+			return (int) p1.getLastUpdate().compareTo(p2.getLastUpdate());
+		}
+	}
+	
+	/**
+	 * FilterItem comparator by date
+	 */
+	public class itensOwnerComparator implements Comparator<CustomFilterItem>
+	{
+		public int compare(CustomFilterItem p1, CustomFilterItem p2)
+		{
+			return (int) p1.getOwner().compareTo(p2.getOwner());
+		}
+	}
+	
+	/**
+	 * Sort list by name
+	 */
+	public void sortByName()
+	{
+		Collections.sort(this, new itensNameComparator());
+		Collections.reverse(this);
+	}
+	
+	/**
+	 * Sort list by date
+	 */
+	public void sortByDate()
+	{
+		Collections.sort(this, new itensDateComparator());
+		Collections.reverse(this);
+	}
+	
+	/**
+	 * Sort list by date
+	 */
+	public void sortByOwner()
+	{
+		Collections.sort(this, new itensOwnerComparator());
 		Collections.reverse(this);
 	}
 	

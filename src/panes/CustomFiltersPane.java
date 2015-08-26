@@ -815,7 +815,6 @@ public class CustomFiltersPane extends JDialog
 		}
 		
 		tabbedPane.updateUI();
-		new CustomFiltersPane2().setVisible(true);
 	}
 	
 	public void saveFilters()

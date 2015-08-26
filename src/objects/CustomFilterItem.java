@@ -30,6 +30,7 @@ public class CustomFilterItem
 	private String		   bures;
 	private String		   rores;
 	private String		   res;
+	private String		   lastUpdate;
 	private boolean		   main;
 	private boolean		   system;
 	private boolean		   kernel;
@@ -54,6 +55,7 @@ public class CustomFilterItem
 		rores = "";
 		owner = "";
 		res = "";
+		lastUpdate = "";
 		main = false;
 		system = false;
 		kernel = false;
@@ -93,6 +95,7 @@ public class CustomFilterItem
 		bures = "";
 		rores = "";
 		res = "";
+		lastUpdate = "";
 		owner = own;
 		main = m;
 		system = s;
@@ -639,6 +642,11 @@ public class CustomFilterItem
 		return rares;
 	}
 	
+	public String getLastUpdate()
+	{
+		return lastUpdate;
+	}
+	
 	public void setRares(String rares)
 	{
 		this.rares = rares;
@@ -717,6 +725,11 @@ public class CustomFilterItem
 	public void setModified(boolean modified)
 	{
 		this.modified = modified;
+	}
+	
+	public void setLastUpdate(String date)
+	{
+		lastUpdate = date;
 	}
 
 	public String toString()

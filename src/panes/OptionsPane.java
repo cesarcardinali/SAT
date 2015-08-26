@@ -87,6 +87,7 @@ public class OptionsPane extends JPanel
 		ButtonGroup breakdownSelector = new ButtonGroup();
 		
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
@@ -1003,6 +1004,8 @@ public class OptionsPane extends JPanel
 				SharedObjs.advOptions.setLocation(SharedObjs.satFrame.getLocation().x + 200,
 												  SharedObjs.satFrame.getLocation().y + 200);
 				SharedObjs.advOptions.setVisible(true);
+				
+				SharedObjs.teste.open();
 			}
 		});
 		btnAdvanced.setToolTipText("Click to see advanced options");

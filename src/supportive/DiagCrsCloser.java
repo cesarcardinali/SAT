@@ -19,14 +19,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.support.ui.Select;
-
 import core.Logger;
 import core.SharedObjs;
 
@@ -330,182 +322,7 @@ public class DiagCrsCloser implements Runnable
 		Logger.log(Logger.TAG_DIAGCRSCLOSER, "Resposta: " + n);
 		if (n == 0)
 		{
-			try
-			{
-				WebDriver driver;
-				FirefoxProfile profile;
-				String user, pass;
-				// Configuring Firefox
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Generating Firefox profile");
-				profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
-				driver = new FirefoxDriver(profile);
-				user = SharedObjs.getUser();
-				pass = SharedObjs.getPass();
-				// Open up a browser
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Starting browser");
-				driver.navigate().to("http://google.com");
-				Object[] option = {"Yes", "No"};
-				n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
-												 "Put DIAG_WS and krnl_wkl labels?", "Warning",
-												 JOptionPane.YES_NO_CANCEL_OPTION,
-												 JOptionPane.QUESTION_MESSAGE, null, option, option[0]);
-				for (int i = 0; i < diagCRs.size(); i++)
-				{
-					if (diagCRs.size() == 0)
-						break;
-					// Open CR page
-					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Opening CR page");
-					Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR: " + b2g_crid.get(diagCRs.get(i)));
-					driver.navigate().to("http://idart.mot.com/browse/" + b2g_crid.get(diagCRs.get(i)));
-					// Jira Login
-					while (driver.getTitle().contains("Log"))
-					{
-						Logger.log(Logger.TAG_DIAGCRSCLOSER, "Trying to Log in");
-						Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR: " + "Trying to Log in");
-						driver.findElement(By.name("os_username")).sendKeys(user);
-						driver.findElement(By.name("os_password")).sendKeys(pass);
-						// driver.findElement(By.name("os_cookie")).click();
-						driver.findElement(By.name("login")).click();
-						sleep(500);
-					}
-					// If New Projects, add labels
-					if (n == 0)
-					{
-						Exception e = new Exception();
-						while (e != null)
-						{
-							e = null;
-							try
-							{
-								Logger.log(Logger.TAG_DIAGCRSCLOSER, "Trying to insert label");
-								Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR: " + "Trying to insert label");
-								while (!driver.getPageSource().contains("<span>krnl_wkl</span>")
-									   && !driver.getPageSource().contains("<span>DIAG_WS</span>"))
-								{
-									driver.findElement(By.cssSelector("body")).sendKeys(Keys.ESCAPE);
-									sleep(100);
-									driver.findElement(By.cssSelector("body")).sendKeys(Keys.ESCAPE);
-									sleep(100);
-									driver.findElement(By.cssSelector("body")).sendKeys(Keys.ESCAPE);
-									sleep(500);
-									driver.findElement(By.cssSelector("body")).sendKeys(".");
-									sleep(800);
-									driver.findElement(By.id("shifter-dialog-field")).sendKeys("label");
-									sleep(1500);
-									driver.findElement(By.id("shifter-dialog-field")).sendKeys(Keys.ENTER);
-									sleep(1500);
-									if (!driver.getPageSource().contains("<span>krnl_wkl</span>"))
-									{
-										sleep(100);
-										driver.findElement(By.id("labels-textarea")).sendKeys("krnl_wkl");
-										sleep(250);
-										driver.findElement(By.id("labels-textarea")).sendKeys(Keys.TAB);
-										sleep(250);
-									}
-									if (!driver.getPageSource().contains("<span>DIAG_WS</span>"))
-									{
-										driver.findElement(By.id("labels-textarea")).sendKeys("DIAG_WS");
-										sleep(250);
-										driver.findElement(By.id("labels-textarea")).sendKeys(Keys.TAB);
-										sleep(2000);
-									}
-									driver.findElement(By.id("issue-workflow-transition-submit")).click();
-									Logger.log(Logger.TAG_DIAGCRSCLOSER, "Label inserted");
-									driver.get(driver.getCurrentUrl());
-									sleep(2000);
-								}
-							}
-							catch (Exception e1)
-							{
-								Logger.log(Logger.TAG_DIAGCRSCLOSER, "Label error");
-								driver.get(driver.getCurrentUrl());
-								e1.printStackTrace();
-								e = e1;
-							}
-						}
-					}
-					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Clicking CLOSE");
-					driver.findElement(By.id("action_id_21")).click();
-					sleep(2000);
-					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Setting as DUP");
-					Exception e = new Exception();
-					while (e != null)
-					{
-						e = null;
-						try
-						{
-							Select select = new Select(driver.findElement(By.id("resolution")));
-							select.selectByVisibleText("Duplicate");
-							sleep(600);
-						}
-						catch (Exception e1)
-						{
-							e1.printStackTrace();
-							e = e1;
-						}
-					}
-					e = new Exception();
-					while (e != null)
-					{
-						e = null;
-						try
-						{
-							Logger.log(Logger.TAG_DIAGCRSCLOSER,
-									   "Inserting root CR on Duplicated field: "
-																 + b2gs_results.get(diagCRs.get(i))
-																			   .substring(b2gs_results.get(diagCRs.get(i))
-																									  .indexOf(" IK"),
-																						  b2gs_results.get(diagCRs.get(i))
-																									  .length()));
-							driver.findElement(By.id("customfield_10622")).clear();
-							sleep(600);
-							driver.findElement(By.id("customfield_10622"))
-								  .sendKeys("" + b2gs_results.get(diagCRs.get(i))
-															 .substring(b2gs_results.get(diagCRs.get(i))
-																					.indexOf(" IK"),
-																		b2gs_results.get(diagCRs.get(i))
-																					.length()));
-							sleep(600);
-							driver.findElement(By.id("customfield_10622")).sendKeys(Keys.TAB);
-						}
-						catch (Exception e1)
-						{
-							e1.printStackTrace();
-							e = e1;
-						}
-					}
-					e = new Exception();
-					while (e != null)
-					{
-						e = null;
-						try
-						{
-							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Inserting comment");
-							driver.findElement(By.xpath("//div[@id=\"workflow-transition-21-dialog\"]//textarea[@id='comment']"))
-								  .sendKeys("" + b2gs_results.get(diagCRs.get(i)).replace("\t", ""));
-							sleep(500);
-							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing");
-							driver.findElement(By.id("issue-workflow-transition-submit")).submit();
-							sleep(500);
-						}
-						catch (Exception e1)
-						{
-							e1.printStackTrace();
-							e = e1;
-						}
-					}
-					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Opening new tab");
-					sleep(500);
-					driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "t");
-				}
-				driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "w");
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Done");
-				finalizeCRs(driver);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			
 		}
 		else
 		{
@@ -518,62 +335,10 @@ public class DiagCrsCloser implements Runnable
 	 */
 	private static void connectB2gidToJiraid()
 	{
-		try
-		{
-			WebDriver driver;
-			FirefoxProfile profile;
-			String user, pass;
-			String[] CRs = SharedObjs.crsManagerPane.getCrsToDownload();
-			Logger.log(Logger.TAG_DIAGCRSCLOSER, "CRs: " + CRs.length);
-			// Configuring Firefox
-			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Generating Firefox profile");
-			profile = new FirefoxProfile(new File("Data\\complements\\profiles\\y2fvgaq0.bot"));
-			driver = new FirefoxDriver(profile);
-			user = SharedObjs.getUser();
-			pass = SharedObjs.getPass();
-			// Open up a browser
-			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Starting browser");
-			driver.navigate().to("http://google.com");
-			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Done.");
-			for (int i = 0; i < CRs.length; i++)
-			{
-				// Open CR page
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Opening CR page");
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR: " + CRs[i]);
-				driver.navigate().to("http://idart.mot.com/browse/" + CRs[i]);
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Done.");
-				// Jira Login
-				while (driver.getTitle().contains("Log"))
-				{
-					// Logger.log(Logger.TAG_DIAGCRSCLOSER, "Trying to
-					// Log in");
-					driver.findElement(By.name("os_username")).sendKeys(user);
-					driver.findElement(By.name("os_password")).sendKeys(pass);
-					driver.findElement(By.name("os_cookie")).click();
-					driver.findElement(By.name("login")).click();
-					sleep(500);
-				}
-				String crID = driver.getTitle().substring(1, 12);
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "CR id: " + crID);
-				WebElement Element = driver.findElement(By.partialLinkText("b2gadm-mcloud101-blur"));
-				String b2gID = Element.getText().substring(Element.getText().indexOf('=') + 1);
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "B2G id: " + b2gID);
-				b2g_crid.put(b2gID, crID);
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "\n\nOpening new tab");
-				sleep(500);
-				driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "t");
-			}
-			driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL + "w");
-			driver.close();
-			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Done");
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		
 	}
 	
-	private static void finalizeCRs(WebDriver driver)
+	private static void finalizeCRs()
 	{
 		Object[] options = new Object[] {"Close Firefox",
 										 "Close Firefox and Open CRs on Chrome",
@@ -582,10 +347,10 @@ public class DiagCrsCloser implements Runnable
 											 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
 											 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 		if (n == 0)
-		{
+		{/*
 			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing Firefox");
 			if (driver != null)
-				driver.close();
+				driver.close();*/
 		}
 		else if (n == 1)
 		{
@@ -593,7 +358,7 @@ public class DiagCrsCloser implements Runnable
 			b2g_crid.values().toArray();
 			try
 			{
-				driver.close();
+				//driver.close();
 			}
 			catch (NullPointerException e)
 			{
