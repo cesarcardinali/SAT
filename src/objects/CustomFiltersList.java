@@ -96,7 +96,7 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 		String toString = "";
 		for (CustomFilterItem filter : this)
 		{
-			toString = toString + "--------------" + filter.toString() + "\n--------------\n";
+			toString = toString + "--------------\n" + filter.toString() + "\n--------------\n";
 		}
 		return toString;
 	}

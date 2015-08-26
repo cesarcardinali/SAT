@@ -60,7 +60,7 @@ public class CustomFilterItem
 		radio = false;
 		bugreport = false;
 		routput = false;
-		active = true;
+		active = false;
 		modified = false;
 	}
 	
@@ -81,7 +81,7 @@ public class CustomFilterItem
 	 * @param edit If filter is editable
 	 */
 	public CustomFilterItem(String own, String name, String regex, String header, boolean m, boolean s,
-							boolean k, boolean r, boolean b, boolean ro, boolean share, boolean edit)
+							boolean k, boolean r, boolean b, boolean ro, boolean share, boolean edit, boolean active)
 	{
 		this.name = name;
 		this.regex = regex;
@@ -102,7 +102,7 @@ public class CustomFilterItem
 		routput = ro;
 		shared = share;
 		editable = edit;
-		active = true;
+		this.active = active;
 		modified = false;
 	}
 	

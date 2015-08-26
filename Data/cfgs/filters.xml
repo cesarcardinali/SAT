@@ -63,17 +63,115 @@
   <sharedFilters>
     <SFPerfTracer>
       <regex>.*SFPerfTracer.*</regex>
-      <header />
-      <owner>cesarc</owner>
+      <header>aweee</header>
+      <owner />
       <main>false</main>
       <system>true</system>
       <kernel>false</kernel>
       <radio>false</radio>
       <bugreport>false</bugreport>
       <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
+      <shared>true</shared>
+      <editable>true</editable>
       <active>true</active>
     </SFPerfTracer>
+    <Test_Adapter>
+      <regex>[A-z]</regex>
+      <header>- Header corrigido2</header>
+      <owner>wmarques</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>true</radio>
+      <bugreport>false</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </Test_Adapter>
+    <Test_Adapter2>
+      <regex>- Esse teste deu certo</regex>
+      <header>[A-z]</header>
+      <owner>wmarques</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </Test_Adapter2>
+    <Test_Adapter3>
+      <regex>- Esse teste deu certo</regex>
+      <header>[A-z]</header>
+      <owner>wmarques</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>true</radio>
+      <bugreport>false</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </Test_Adapter3>
+    <Test_Adapter4>
+      <regex>- Esse teste deu certo</regex>
+      <header>[A-z]</header>
+      <owner>czao</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </Test_Adapter4>
+    <aaaaaa>
+      <regex>[A-z]</regex>
+      <header>- TestHeader</header>
+      <owner>testuser</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </aaaaaa>
+    <aweaw>
+      <regex>waewa</regex>
+      <header>ewaewa</header>
+      <owner />
+      <main>false</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>true</editable>
+      <active>false</active>
+    </aweaw>
+    <teste>
+      <regex>teste</regex>
+      <header>teste</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>true</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </teste>
   </sharedFilters>
 </SAT>

@@ -1229,7 +1229,7 @@ public class FiltersResultsTree extends JTree
 		{
 			rootNode.add(new DefaultMutableTreeNode("Tethering"));
 		}
-		for (CustomFilterItem item : SharedObjs.getUserFiltersList())
+		for (CustomFilterItem item : SharedObjs.getActiveFiltersList())
 		{
 			rootNode.add(new DefaultMutableTreeNode(item.getName()));
 		}

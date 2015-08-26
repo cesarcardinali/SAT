@@ -125,6 +125,10 @@ public class DBAdapter
 		fitem.setShared(byteToBool(rs.getByte("shared")));
 		fitem.setSystem(byteToBool(rs.getByte("w_syst")));
 		fitem.setRoutput(byteToBool(rs.getByte("w_rout")));
+		if(rs.getString("user_key").equals(""))
+			fitem.setEditable(true);
+		else
+			fitem.setEditable(false);
 		
 		return fitem;
 	}

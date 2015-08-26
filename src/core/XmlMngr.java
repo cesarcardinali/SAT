@@ -166,7 +166,8 @@ public class XmlMngr
 										  Boolean.parseBoolean(requestedElement.getChildText("bugreport")),
 										  Boolean.parseBoolean(requestedElement.getChildText("routput")),
 										  Boolean.parseBoolean(requestedElement.getChildText("shared")),
-										  Boolean.parseBoolean(requestedElement.getChildText("editable")));
+										  Boolean.parseBoolean(requestedElement.getChildText("editable")),
+										  Boolean.parseBoolean(requestedElement.getChildText("active")));
 			return filter;
 		}
 		
@@ -199,7 +200,8 @@ public class XmlMngr
 										  Boolean.parseBoolean(requestedElement.getChildText("bugreport")),
 										  Boolean.parseBoolean(requestedElement.getChildText("routput")),
 										  Boolean.parseBoolean(requestedElement.getChildText("shared")),
-										  Boolean.parseBoolean(requestedElement.getChildText("editable")));
+										  Boolean.parseBoolean(requestedElement.getChildText("editable")),
+										  Boolean.parseBoolean(requestedElement.getChildText("active")));
 			return filter;
 		}
 		
@@ -230,7 +232,8 @@ public class XmlMngr
 										  Boolean.parseBoolean(filterElement.getChildText("bugreport")),
 										  Boolean.parseBoolean(filterElement.getChildText("routput")),
 										  Boolean.parseBoolean(filterElement.getChildText("shared")),
-										  Boolean.parseBoolean(filterElement.getChildText("editable"))));
+										  Boolean.parseBoolean(filterElement.getChildText("editable")),
+										  Boolean.parseBoolean(filterElement.getChildText("active"))));
 		}
 		Logger.log(Logger.TAG_XMLMNGR, "MyFilters loaded: " + filters.size());
 		
@@ -261,7 +264,8 @@ public class XmlMngr
 										  Boolean.parseBoolean(filterElement.getChildText("bugreport")),
 										  Boolean.parseBoolean(filterElement.getChildText("routput")),
 										  Boolean.parseBoolean(filterElement.getChildText("shared")),
-										  Boolean.parseBoolean(filterElement.getChildText("editable"))));
+										  Boolean.parseBoolean(filterElement.getChildText("editable")),
+										  Boolean.parseBoolean(filterElement.getChildText("active"))));
 		}
 		
 		return filters;
@@ -374,7 +378,7 @@ public class XmlMngr
 			requestedElement.getChild("routput").setText("" + filter.isRoutput());
 			requestedElement.getChild("shared").setText("" + filter.isShared());
 			requestedElement.getChild("editable").setText("" + filter.isEditable());
-			requestedElement.getChild("active").setText("" + filter.isActive());
+			//requestedElement.getChild("active").setText("" + filter.isActive());
 		}
 		else
 		{
@@ -409,7 +413,6 @@ public class XmlMngr
 		
 		if (requestedElement != null)
 		{
-			requestedElement = requestedElement.getChild(filter.getName());
 			requestedElement.getChild("regex").setText(filter.getRegex());
 			requestedElement.getChild("header").setText(filter.getHeader());
 			requestedElement.getChild("owner").setText(filter.getOwner());
@@ -421,7 +424,7 @@ public class XmlMngr
 			requestedElement.getChild("routput").setText("" + filter.isRoutput());
 			requestedElement.getChild("shared").setText("" + filter.isShared());
 			requestedElement.getChild("editable").setText("" + filter.isEditable());
-			requestedElement.getChild("active").setText("" + filter.isActive());
+			//requestedElement.getChild("active").setText("" + filter.isActive());
 		}
 		else
 		{
@@ -437,7 +440,7 @@ public class XmlMngr
 			xmlElement.addContent(new Element("routput").setText("" + filter.isRoutput()));
 			xmlElement.addContent(new Element("shared").setText("" + filter.isShared()));
 			xmlElement.addContent(new Element("editable").setText("" + filter.isEditable()));
-			xmlElement.addContent(new Element("active").setText("" + filter.isActive()));
+			xmlElement.addContent(new Element("active").setText("false"));
 			sharedFiltersElement.addContent(xmlElement);
 		}
 		

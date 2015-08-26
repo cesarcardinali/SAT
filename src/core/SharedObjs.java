@@ -150,11 +150,14 @@ public class SharedObjs
 	private static void loadFilters()
 	{
 		syncMyFilters();
-		sharedFiltersList = XmlMngr.getAllSharedFilters();
+		syncSharedFilters();
 		activeFiltersList.addAll(sharedFiltersList.getActiveFilters());
 		activeFiltersList.addAll(userFiltersList.getActiveFilters());
 	}
 	
+	/**
+	 * @return
+	 */
 	private static boolean syncMyFilters()
 	{
 		boolean synced = false;
@@ -214,7 +217,7 @@ public class SharedObjs
 					
 					dbFilters.addAll(aux);
 					
-					userFiltersList = dbFilters;
+					userFiltersList = XmlMngr.getAllMyFilters();
 					
 					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
 													  + "\nYour filters in XML: " + xmlFilters.size());
@@ -247,12 +250,14 @@ public class SharedObjs
 				}
 			}
 			
-			userFiltersList = dbFilters;
+			userFiltersList = XmlMngr.getAllMyFilters();
 			
 			synced = true;
 		}
 		else
 		{
+			Logger.log(Logger.TAG_SHAREDOBJS, "Loading user filters from XML. Could not connect to SQL DB.");
+			
 			JOptionPane.showMessageDialog(satFrame,
 										  "Could not connect to SAT DB.\nClick ok to keep using SAT anyway.\n"
 													+ "You will be able to sync your data next time you use SAT connected to DB.");
@@ -262,10 +267,30 @@ public class SharedObjs
 		
 		return synced;
 	}
-	
+
 	/**
-	 * Getters and Setter
+	 * @return
 	 */
+	private static boolean syncSharedFilters()
+	{
+		if (satDB != null)
+		{	
+			Logger.log(Logger.TAG_SHAREDOBJS, "Loading shared filters from SQL DB");
+			
+			XmlMngr.addSharedFilters(satDB.sharedFilters());
+			sharedFiltersList = XmlMngr.getAllSharedFilters();
+			System.out.println(sharedFiltersList);
+		}
+		else
+		{
+			Logger.log(Logger.TAG_SHAREDOBJS, "Loading shared filters from XML");
+			
+			sharedFiltersList = XmlMngr.getAllSharedFilters();
+		}
+		
+		return true;
+	}
+	
 	// Getters:
 	public static String getUser()
 	{
