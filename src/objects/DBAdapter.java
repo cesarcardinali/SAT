@@ -114,6 +114,7 @@ public class DBAdapter
 	 */
 	private CustomFilterItem setAllFilterFields(CustomFilterItem fitem, ResultSet rs) throws SQLException
 	{
+		fitem.setId(rs.getInt("f_id"));
 		fitem.setName(rs.getString("name"));
 		fitem.setHeader(rs.getString("header"));
 		fitem.setRegex(rs.getString("regex"));
@@ -127,7 +128,7 @@ public class DBAdapter
 		fitem.setShared(byteToBool(rs.getByte("shared")));
 		fitem.setActive(byteToBool(rs.getByte("active")));
 		fitem.setLastUpdate(rs.getTimestamp("last_modified").toString());
-		if (rs.getString("user_key").equals(""))
+		if (rs.getString("user_key") == null)
 			fitem.setEditable(true);
 		else
 			fitem.setEditable(false);
@@ -276,7 +277,7 @@ public class DBAdapter
 	 */
 	public CustomFiltersList sharedFilters()
 	{
-		String selectSQL = "SELECT * FROM Filters WHERE shared = " + 1 + ";";
+		String selectSQL = "SELECT * FROM Filters WHERE shared = " + 1 + " AND user_key != '" + SharedObjs.getUser() + "';";
 		CustomFilterItem aux = new CustomFilterItem();
 		CustomFiltersList flist = new CustomFiltersList();
 		
@@ -389,7 +390,7 @@ public class DBAdapter
 	{
 		
 		// Visual query example for reference:
-		// INSERT INTO Filters VALUES (0, 'Test_Filter', '[A-z]', 1, 1, 0, 0, 1, 1, 'testuser');
+		// INSERT INTO Filters VALUES (0, 'Test_Filter', '', '[A-z]', 1, 1, 0, 0, 1, 1, 0, 1, 'testuser', null);
 		
 		String insertSQL = "INSERT INTO Filters VALUES ( null, '" + filterName + "', '" + header + "', '"
 						   + regex + "', " + boolToByte(wMain) + ", " + boolToByte(wSyst) + ", "
@@ -432,8 +433,8 @@ public class DBAdapter
 						   + boolToByte(filter.isMain()) + ", " + boolToByte(filter.isSystem()) + ", "
 						   + boolToByte(filter.isKernel()) + ", " + boolToByte(filter.isRadio()) + ", "
 						   + boolToByte(filter.isBugreport()) + ", " + boolToByte(filter.isRoutput()) + ", "
-						   + boolToByte(filter.isShared()) + ", '" + boolToByte(filter.isActive()) + ", '"
-						   + filter.getOwner() + "', null);";
+						   + boolToByte(filter.isShared()) + ", " + boolToByte(filter.isActive()) + ", '"
+						   + (filter.isEditable() ? "" : SharedObjs.getUser()) + "', null);";
 		int insertDone = 0;
 		
 		try
@@ -449,6 +450,8 @@ public class DBAdapter
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
+		
+		// TODO Modify this method to return the index of inserted filter on DB
 		
 		return insertDone;
 		
@@ -482,7 +485,7 @@ public class DBAdapter
 	 * @return [0] if update failed (User is not the owner or filter name does not exist or a field has an invalid value) [1] if update
 	 *         succeeded.
 	 */
-	public int updateFilter(String oldFilterName, CustomFilterItem editedFilter)
+	public int updateFilter(CustomFilterItem editedFilter)
 	{
 		// Visual query example for reference:
 		// UPDATE Filters SET name = 'Test_Filter', header = '- TestHeader', regex = '[A-z]', w_main = 1, w_syst = 1, w_krnl = 0, w_radio =
@@ -498,8 +501,7 @@ public class DBAdapter
 						   + boolToByte(editedFilter.isRoutput()) + ", shared = "
 						   + boolToByte(editedFilter.isShared()) + ", active= "
 						   + boolToByte(editedFilter.isActive()) + ", user_key = '" + editedFilter.getOwner()
-						   + "' WHERE name = '" + oldFilterName + "' AND user_key = '" + SharedObjs.getUser()
-						   + "';";
+						   + "' WHERE f_id = " + editedFilter.getId() + ";";
 		int updateDone = 0;
 		
 		try
@@ -527,12 +529,11 @@ public class DBAdapter
 	 * @param filterName The filter name that will be deleted
 	 * @return [0] if delete failed (User is not the owner or filter name does not exist) [1] if delete succeeded.
 	 */
-	public int deleteFilter(String filterName)
+	public int deleteFilter(CustomFilterItem filter)
 	{
 		// Visual query example for reference:
 		// DELETE from Filters where name = 'Test_Filter';
-		String deleteSQL = "DELETE from Filters where name = '" + filterName + "' AND user_key = '"
-						   + SharedObjs.getUser() + "';";
+		String deleteSQL = "DELETE from Filters where f_id = " + filter.getId() + ";";
 		
 		int deleteDone = 0;
 		

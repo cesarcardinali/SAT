@@ -31,6 +31,7 @@ public class CustomFilterItem
 	private String		   rores;
 	private String		   res;
 	private String		   lastUpdate;
+	private String		   modified;
 	private boolean		   main;
 	private boolean		   system;
 	private boolean		   kernel;
@@ -40,10 +41,11 @@ public class CustomFilterItem
 	private boolean		   shared;
 	private boolean		   editable;
 	private boolean		   active;
-	private boolean		   modified;
+	private int			   id;
 	
 	public CustomFilterItem()
 	{
+		id = -1;
 		name = "";
 		regex = "";
 		header = "";
@@ -56,6 +58,7 @@ public class CustomFilterItem
 		owner = "";
 		res = "";
 		lastUpdate = "";
+		modified = "";
 		main = false;
 		system = false;
 		kernel = false;
@@ -63,7 +66,6 @@ public class CustomFilterItem
 		bugreport = false;
 		routput = false;
 		active = false;
-		modified = false;
 	}
 	
 	/**
@@ -83,8 +85,10 @@ public class CustomFilterItem
 	 * @param edit If filter is editable
 	 */
 	public CustomFilterItem(String own, String name, String regex, String header, boolean m, boolean s,
-							boolean k, boolean r, boolean b, boolean ro, boolean share, boolean edit, boolean active)
+							boolean k, boolean r, boolean b, boolean ro, boolean share, boolean edit,
+							boolean active)
 	{
+		id = -1;
 		this.name = name;
 		this.regex = regex;
 		this.header = header;
@@ -96,6 +100,7 @@ public class CustomFilterItem
 		rores = "";
 		res = "";
 		lastUpdate = "";
+		modified = "";
 		owner = own;
 		main = m;
 		system = s;
@@ -106,7 +111,6 @@ public class CustomFilterItem
 		shared = share;
 		editable = edit;
 		this.active = active;
-		modified = false;
 	}
 	
 	/**
@@ -711,18 +715,18 @@ public class CustomFilterItem
 	{
 		return res;
 	}
-
-	public boolean isModified()
+	
+	public String getModified()
 	{
 		return modified;
 	}
-
+	
 	public void setRes(String res)
 	{
 		this.res = res;
 	}
-
-	public void setModified(boolean modified)
+	
+	public void setModified(String modified)
 	{
 		this.modified = modified;
 	}
@@ -731,12 +735,22 @@ public class CustomFilterItem
 	{
 		lastUpdate = date;
 	}
-
+	
+	public int getId()
+	{
+		return id;
+	}
+	
+	public void setId(int id)
+	{
+		this.id = id;
+	}
+	
 	public String toString()
 	{
 		return "Filter: " + name + "\nRegex: " + regex + "\nHeader: " + header + "\nOwner: " + owner
 			   + "\nMain: " + main + "\nSystem: " + system + "\nKernel: " + kernel + "\nRadio: " + radio
 			   + "\nBugreport: " + bugreport + "\nRepOutput: " + routput + "\nShared: " + shared
-			   + "\nEditable: " + editable + "\nActive: " + active;
+			   + "\nEditable: " + editable + "\nActive: " + active + "\nUpdated: " + lastUpdate + "\nModified: " + modified;
 	}
 }

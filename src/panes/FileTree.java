@@ -242,6 +242,7 @@ public class FileTree extends JPanel
 		JMenuItem open = new JMenuItem("Open");
 		JMenuItem delete = new JMenuItem("Delete");
 		JMenuItem rename = new JMenuItem("Rename");
+		JMenuItem setDownloadPath = new JMenuItem("Set as download path");
 		
 		open.addActionListener(new ActionListener()
 		{
@@ -323,10 +324,33 @@ public class FileTree extends JPanel
 			}
 		});
 		
+		setDownloadPath.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				File selectedPath = new File(getFileTree().getLastSelectedPathComponent().toString());
+				
+				if (selectedPath.isDirectory())
+				{	
+					// The setText method below will also "call" textPath's insertUpdate (Document listener)	
+					SharedObjs.crsManagerPane.getTextPath().setText(selectedPath.toString());
+					
+					Logger.log(Logger.TAG_FILETREE, "Changing download path to " + selectedPath);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "Only folders can be set as download paths",
+												  "Not a folder", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		
 		delete.setIcon(Icons.recycleBin);
 		rename.setIcon(Icons.rename);
 		popup.add(open);
 		popup.add(rename);
+		popup.add(setDownloadPath);
 		
 		if (fileTree.getSelectionPaths().length == 1 && isSelectedNodesFolder(fileTree.getSelectionPaths()))
 		{
@@ -642,10 +666,10 @@ public class FileTree extends JPanel
 					
 					UnZip.unZipIt(file.getAbsolutePath(),
 								  file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
-					
+								  
 					newFile = new File(file.getAbsolutePath()
 										   .substring(0, file.getAbsolutePath().length() - 28));
-					
+										   
 					Logger.log(Logger.TAG_FILETREE, newFile.getAbsolutePath());
 					
 					if (newFile != null)

@@ -152,8 +152,8 @@ public class SharedObjs
 	
 	private static void loadFilters()
 	{
-		syncMyFilters();
-		syncSharedFilters();
+		checkMyFilters();
+		checkSharedFilters();
 		activeFiltersList.addAll(sharedFiltersList.getActiveFilters());
 		activeFiltersList.addAll(userFiltersList.getActiveFilters());
 	}
@@ -161,7 +161,7 @@ public class SharedObjs
 	/**
 	 * @return
 	 */
-	private static boolean syncMyFilters()
+	private static void checkMyFilters()
 	{
 		boolean synced = false;
 		
@@ -171,95 +171,54 @@ public class SharedObjs
 			CustomFiltersList xmlFilters = XmlMngr.getAllMyFilters();
 			
 			Logger.log(Logger.TAG_SHAREDOBJS,
-					   "Your filters in DB: " + dbFilters.size() + "\nYour filters in XML: "
-											  + xmlFilters.size() + "\nPublic filters: "
-											  + satDB.publicFilters().size());
-											  
+					   "Verifying filters consistency between local files and remote DB ...");
+					   
 			if (dbFilters.size() != xmlFilters.size())
 			{
-				int ans = JOptionPane.showOptionDialog(SharedObjs.satFrame,
-													   "We noticed differences between your\n"
-																			+ "local and your cloud filters file.\n"
-																			+ "\n    - Your filters in DB: "
-																			+ dbFilters.size()
-																			+ "\n    - Your filters in XML: "
-																			+ xmlFilters.size()
-																			+ "\n\nWhat do you prefer to do?",
-													   "Filters files conflict", JOptionPane.YES_NO_OPTION,
-													   JOptionPane.QUESTION_MESSAGE, null,
-													   new Object[] {"Merge files",
-																	 "Use local file",
-																	 "Use cloud file"},
-													   null);
-													   
-				Logger.log(Logger.TAG_SHAREDOBJS, "Syncing filters between Cloud and XML");
+				Logger.log(Logger.TAG_SHAREDOBJS,
+								   "Inconsistencies found ...");
+				syncMyFilters(dbFilters, xmlFilters);
+				synced = true;
+			}
+			else
+			{
+				boolean hasItem = true;
+				for (CustomFilterItem filter : dbFilters)
+				{
+					if (xmlFilters.indexOf(filter) < 0)
+					{
+						hasItem = false;
+						break;
+					}
+				}
+				for (CustomFilterItem filter : xmlFilters)
+				{
+					if (dbFilters.indexOf(filter) < 0)
+					{
+						hasItem = false;
+						break;
+					}
+				}
 				
-				if (ans == 0)
+				if (hasItem == false)
 				{
-					Logger.log(Logger.TAG_SHAREDOBJS, "Merging filters");
-					
-					CustomFiltersList aux = new CustomFiltersList();
-					
-					for (CustomFilterItem filter : xmlFilters)
-					{
-						if (dbFilters.indexOf(filter) == -1)
-						{
-							aux.add(filter);
-							satDB.insertFilter(filter);
-						}
-					}
-					
-					for (CustomFilterItem filter : dbFilters)
-					{
-						if (xmlFilters.indexOf(filter) == -1)
-						{
-							xmlFilters.add(filter);
-							XmlMngr.setMyFiltersValueOf(filter);
-						}
-					}
-					
-					dbFilters.addAll(aux);
-					
-					userFiltersList = XmlMngr.getAllMyFilters();
-					
-					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
-													  + "\nYour filters in XML: " + xmlFilters.size());
-				}
-				else if (ans == 1)
-				{
-					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing with local xml file");
-					
-					dbFilters = xmlFilters;
-					satDB.deleteAllMyFilters();
-					satDB.insertFilters(dbFilters);
-					
-					userFiltersList = xmlFilters;
-					
-					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
-													  + "\nYour filters in XML: " + xmlFilters.size());
-				}
-				else
-				{
-					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing with cloud data");
-					
-					xmlFilters = dbFilters;
-					XmlMngr.removeAllMyFilters();
-					XmlMngr.addMyFilters(xmlFilters);
-					
-					userFiltersList = dbFilters;
-					
-					Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
-													  + "\nYour filters in XML: " + xmlFilters.size());
+					Logger.log(Logger.TAG_SHAREDOBJS,
+									   "Inconsistencies found ...");
+					syncMyFilters(dbFilters, xmlFilters);
+					synced = true;
 				}
 			}
 			
-			userFiltersList = XmlMngr.getAllMyFilters();
-			
-			synced = true;
+			if (synced == false)
+			{
+				Logger.log(Logger.TAG_SHAREDOBJS,
+								   "Inconsistencies not found ...");
+				userFiltersList = satDB.myFilters();
+			}
 		}
 		else
 		{
-			Logger.log(Logger.TAG_SHAREDOBJS, "Loading user filters from XML. Could not connect to SQL DB.");
+			Logger.log(Logger.TAG_SHAREDOBJS, "Could not connect to SQL DB. Loading user filters from XML.");
 			
 			JOptionPane.showMessageDialog(satFrame,
 										  "Could not connect to SAT DB.\nClick ok to keep using SAT anyway.\n"
@@ -267,21 +226,98 @@ public class SharedObjs
 													
 			userFiltersList = XmlMngr.getAllMyFilters();
 		}
+	}
+	
+	private static void syncMyFilters(CustomFiltersList dbFilters, CustomFiltersList xmlFilters)
+	{
+		Logger.log(Logger.TAG_SHAREDOBJS, "Syncing filters between Cloud and XML");
 		
-		return synced;
+		int ans = JOptionPane.showOptionDialog(SharedObjs.satFrame,
+											   "We noticed differences between your\n"
+																	+ "local and your cloud filters file.\n"
+																	+ "\n    - Your filters in DB: "
+																	+ dbFilters.size()
+																	+ "\n    - Your filters in XML: "
+																	+ xmlFilters.size()
+																	+ "\n\nWhat do you prefer to do?",
+											   "Filters files conflict", JOptionPane.YES_NO_OPTION,
+											   JOptionPane.QUESTION_MESSAGE, null,
+											   new String[] {"Merge files",
+															 "Use local file",
+															 "Use cloud file"},
+											   "Merge files");
+											   
+		if (ans == 0)
+		{
+			Logger.log(Logger.TAG_SHAREDOBJS, "Merging filters");
+			
+			CustomFiltersList aux = new CustomFiltersList();
+			
+			for (CustomFilterItem filter : xmlFilters)
+			{
+				if (dbFilters.indexOf(filter) == -1)
+				{
+					aux.add(filter);
+					satDB.insertFilter(filter);
+				}
+			}
+			
+			for (CustomFilterItem filter : dbFilters)
+			{
+				if (xmlFilters.indexOf(filter) == -1)
+				{
+					xmlFilters.add(filter);
+					XmlMngr.setMyFiltersValueOf(filter);
+				}
+			}
+			
+			dbFilters.addAll(aux);
+			
+			userFiltersList = satDB.myFilters();
+			
+			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
+											  + "\nYour filters in XML: " + xmlFilters.size());
+		}
+		else if (ans == 1)
+		{
+			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing with local xml file");
+			
+			dbFilters = xmlFilters;
+			satDB.deleteAllMyFilters();
+			satDB.insertFilters(dbFilters);
+			
+			userFiltersList = satDB.myFilters();
+			
+			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
+											  + "\nYour filters in XML: " + xmlFilters.size());
+		}
+		else
+		{
+			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing with cloud data");
+			
+			xmlFilters = dbFilters;
+			XmlMngr.removeAllMyFilters();
+			XmlMngr.addMyFilters(dbFilters);
+			
+			userFiltersList = dbFilters;
+			
+			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
+											  + "\nYour filters in XML: " + xmlFilters.size());
+		}
 	}
 	
 	/**
 	 * @return
 	 */
-	private static boolean syncSharedFilters()
+	public static void checkSharedFilters()
 	{
 		if (satDB != null)
 		{
 			Logger.log(Logger.TAG_SHAREDOBJS, "Loading shared filters from SQL DB");
 			
-			XmlMngr.addSharedFilters(satDB.sharedFilters());
-			sharedFiltersList = XmlMngr.getAllSharedFilters();
+			sharedFiltersList = satDB.sharedFilters();
+			XmlMngr.removeAllSharedFilters();
+			XmlMngr.addSharedFilters(sharedFiltersList);
 		}
 		else
 		{
@@ -289,8 +325,6 @@ public class SharedObjs
 			
 			sharedFiltersList = XmlMngr.getAllSharedFilters();
 		}
-		
-		return true;
 	}
 	
 	// Getters:

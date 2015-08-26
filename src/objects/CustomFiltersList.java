@@ -39,14 +39,31 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	/**
 	 * Return the index of a filter with the name
 	 * 
-	 * @param name String that contains the filter name
+	 * @param id SQL ID of this filter
 	 * @return Index as {@link int}. -1 if not found
 	 */
-	public int indexOf(String name)
+	public int indexOf(int id)
 	{
 		for (int i = 0; i < this.size(); i++)
 		{
-			if (name.equals(this.get(i).getName()))
+			if (id == this.get(i).getId())
+			{
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+	
+	/**
+	 * @param timestamp
+	 * @return Index
+	 */
+	public int indexOf(String timestamp)
+	{
+		for (int i = 0; i < this.size(); i++)
+		{
+			if (timestamp.equals(this.get(i).getLastUpdate()))
 			{
 				return i;
 			}

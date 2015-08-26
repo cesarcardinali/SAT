@@ -362,43 +362,48 @@ public class XmlMngr
 	 */
 	public static boolean setMyFiltersValueOf(CustomFilterItem filter)
 	{
-		Element myFiltersElement = filtersDocument.getRootElement().getChild("myFilters");
-		Element requestedElement = myFiltersElement.getChild(filter.getName().replace(" ", "_"));
-		
-		if (requestedElement != null)
+		if (!filter.getName().equals(""))
 		{
-			requestedElement.getChild("regex").setText(filter.getRegex());
-			requestedElement.getChild("header").setText(filter.getHeader());
-			requestedElement.getChild("owner").setText(filter.getOwner());
-			requestedElement.getChild("main").setText("" + filter.isMain());
-			requestedElement.getChild("system").setText("" + filter.isSystem());
-			requestedElement.getChild("kernel").setText("" + filter.isKernel());
-			requestedElement.getChild("radio").setText("" + filter.isRadio());
-			requestedElement.getChild("bugreport").setText("" + filter.isBugreport());
-			requestedElement.getChild("routput").setText("" + filter.isRoutput());
-			requestedElement.getChild("shared").setText("" + filter.isShared());
-			requestedElement.getChild("editable").setText("" + filter.isEditable());
-			//requestedElement.getChild("active").setText("" + filter.isActive());
-		}
-		else
-		{
-			Element xmlElement = new Element(filter.getName().replace(" ", "_"));
-			xmlElement.addContent(new Element("regex").setText(filter.getRegex()));
-			xmlElement.addContent(new Element("header").setText(filter.getHeader()));
-			xmlElement.addContent(new Element("owner").setText(filter.getOwner()));
-			xmlElement.addContent(new Element("main").setText("" + filter.isMain()));
-			xmlElement.addContent(new Element("system").setText("" + filter.isSystem()));
-			xmlElement.addContent(new Element("kernel").setText("" + filter.isKernel()));
-			xmlElement.addContent(new Element("radio").setText("" + filter.isRadio()));
-			xmlElement.addContent(new Element("bugreport").setText("" + filter.isBugreport()));
-			xmlElement.addContent(new Element("routput").setText("" + filter.isRoutput()));
-			xmlElement.addContent(new Element("shared").setText("" + filter.isShared()));
-			xmlElement.addContent(new Element("editable").setText("" + filter.isEditable()));
-			xmlElement.addContent(new Element("active").setText("" + filter.isActive()));
-			myFiltersElement.addContent(xmlElement);
+			Element myFiltersElement = filtersDocument.getRootElement().getChild("myFilters");
+			Element requestedElement = myFiltersElement.getChild(filter.getName().replace(" ", "_"));
+			
+			if (requestedElement != null)
+			{
+				requestedElement.getChild("regex").setText(filter.getRegex());
+				requestedElement.getChild("header").setText(filter.getHeader());
+				requestedElement.getChild("owner").setText(filter.getOwner());
+				requestedElement.getChild("main").setText("" + filter.isMain());
+				requestedElement.getChild("system").setText("" + filter.isSystem());
+				requestedElement.getChild("kernel").setText("" + filter.isKernel());
+				requestedElement.getChild("radio").setText("" + filter.isRadio());
+				requestedElement.getChild("bugreport").setText("" + filter.isBugreport());
+				requestedElement.getChild("routput").setText("" + filter.isRoutput());
+				requestedElement.getChild("shared").setText("" + filter.isShared());
+				requestedElement.getChild("editable").setText("" + filter.isEditable());
+				//requestedElement.getChild("active").setText("" + filter.isActive());
+			}
+			else
+			{
+				Element xmlElement = new Element(filter.getName().replace(" ", "_"));
+				xmlElement.addContent(new Element("regex").setText(filter.getRegex()));
+				xmlElement.addContent(new Element("header").setText(filter.getHeader()));
+				xmlElement.addContent(new Element("owner").setText(filter.getOwner()));
+				xmlElement.addContent(new Element("main").setText("" + filter.isMain()));
+				xmlElement.addContent(new Element("system").setText("" + filter.isSystem()));
+				xmlElement.addContent(new Element("kernel").setText("" + filter.isKernel()));
+				xmlElement.addContent(new Element("radio").setText("" + filter.isRadio()));
+				xmlElement.addContent(new Element("bugreport").setText("" + filter.isBugreport()));
+				xmlElement.addContent(new Element("routput").setText("" + filter.isRoutput()));
+				xmlElement.addContent(new Element("shared").setText("" + filter.isShared()));
+				xmlElement.addContent(new Element("editable").setText("" + filter.isEditable()));
+				xmlElement.addContent(new Element("active").setText("" + filter.isActive()));
+				myFiltersElement.addContent(xmlElement);
+			}
+			
+			return true;
 		}
 		
-		return true;
+		return false;
 	}
 	
 	/**

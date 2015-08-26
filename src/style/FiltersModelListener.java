@@ -23,7 +23,7 @@ public class FiltersModelListener implements TableModelListener
 			int column = evt.getColumn();
 			int row = evt.getFirstRow();
 			
-			//System.out.println("INSERT: row: " + row + " column: " + column);
+			System.out.println("INSERT: row: " + row + " column: " + column);
 		}
 		
 		if (evt.getType() == TableModelEvent.DELETE)
@@ -31,7 +31,7 @@ public class FiltersModelListener implements TableModelListener
 			int column = evt.getColumn();
 			int row = evt.getFirstRow();
 			
-			//System.out.println("DELETE: row: " + row + " column: " + column);
+			System.out.println("DELETE: row: " + row + " column: " + column);
 		}
 	}
 

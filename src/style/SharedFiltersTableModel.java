@@ -238,4 +238,9 @@ public class SharedFiltersTableModel extends AbstractTableModel
 		System.out.println(dataVector.indexOf(""));
 		return dataVector.indexOf("");
 	}
+	
+	public CustomFiltersList getFilterElements()
+	{
+		return dataVector;
+	}
 }

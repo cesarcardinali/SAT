@@ -2,34 +2,6 @@
 <SAT>
   <!-- User defined filters: !-->
   <myFilters>
-    <Errors>
-      <regex>.*error.*</regex>
-      <header>- Errors signal detected</header>
-      <owner>cesarc</owner>
-      <main>true</main>
-      <system>true</system>
-      <kernel>true</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>true</active>
-    </Errors>
-    <Active_Wakeup>
-      <regex>.*active.*</regex>
-      <header>- Active wakeups from kernel log</header>
-      <owner>cesarc</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>true</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>true</active>
-    </Active_Wakeup>
     <teste>
       <regex>teste</regex>
       <header>teste</header>
@@ -58,120 +30,92 @@
       <editable>false</editable>
       <active>true</active>
     </lalal>
-  </myFilters>
-  <!-- Users shared filters: !-->
-  <sharedFilters>
-    <SFPerfTracer>
-      <regex>.*SFPerfTracer.*</regex>
-      <header>aweee</header>
-      <owner />
-      <main>false</main>
-      <system>true</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>true</shared>
-      <editable>true</editable>
-      <active>true</active>
-    </SFPerfTracer>
-    <Test_Adapter>
-      <regex>[A-z]</regex>
-      <header>- Header corrigido2</header>
-      <owner>wmarques</owner>
-      <main>true</main>
-      <system>true</system>
-      <kernel>false</kernel>
-      <radio>true</radio>
-      <bugreport>false</bugreport>
-      <routput>true</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-    </Test_Adapter>
-    <Test_Adapter2>
-      <regex>- Esse teste deu certo</regex>
-      <header>[A-z]</header>
-      <owner>wmarques</owner>
-      <main>true</main>
-      <system>true</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>true</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-    </Test_Adapter2>
-    <Test_Adapter3>
-      <regex>- Esse teste deu certo</regex>
-      <header>[A-z]</header>
-      <owner>wmarques</owner>
-      <main>true</main>
-      <system>true</system>
-      <kernel>false</kernel>
-      <radio>true</radio>
-      <bugreport>false</bugreport>
-      <routput>true</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-    </Test_Adapter3>
-    <Test_Adapter4>
-      <regex>- Esse teste deu certo</regex>
-      <header>[A-z]</header>
-      <owner>czao</owner>
-      <main>true</main>
-      <system>true</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>true</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-    </Test_Adapter4>
-    <aaaaaa>
-      <regex>[A-z]</regex>
-      <header>- TestHeader</header>
-      <owner>testuser</owner>
-      <main>true</main>
-      <system>true</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>true</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-    </aaaaaa>
-    <aweaw>
-      <regex>waewa</regex>
-      <header>ewaewa</header>
-      <owner />
-      <main>false</main>
-      <system>true</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>true</shared>
-      <editable>true</editable>
-      <active>false</active>
-    </aweaw>
-    <teste>
-      <regex>teste</regex>
-      <header>teste</header>
+    <old_new_filter>
+      <regex>new filter</regex>
+      <header>old new filter</header>
       <owner>cesarc</owner>
       <main>true</main>
       <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>true</active>
+    </old_new_filter>
+    <wow>
+      <regex>uol</regex>
+      <header>uou</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </wow>
+    <just_insert>
+      <regex />
+      <header />
+      <owner>cesarc</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </just_insert>
+  </myFilters>
+  <!-- Users shared filters: !-->
+  <sharedFilters>
+    <abc1abc>
+      <regex>tem q ler e escrever</regex>
+      <header>toda crianca</header>
+      <owner>wmarques</owner>
+      <main>false</main>
+      <system>false</system>
       <kernel>true</kernel>
       <radio>false</radio>
-      <bugreport>true</bugreport>
+      <bugreport>false</bugreport>
       <routput>false</routput>
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-    </teste>
+    </abc1abc>
+    <Public>
+      <regex>fdsafdsfa</regex>
+      <header>fdsgsdf</header>
+      <owner />
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </Public>
+    <insert_updated>
+      <regex />
+      <header>update</header>
+      <owner />
+      <main>false</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </insert_updated>
   </sharedFilters>
 </SAT>

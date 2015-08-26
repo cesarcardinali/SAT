@@ -241,4 +241,9 @@ public class MyFiltersTableModel extends AbstractTableModel
 	{
 		return dataVector.get(row);
 	}
+	
+	public CustomFiltersList getFilterElements()
+	{
+		return dataVector;
+	}
 }
