@@ -29,11 +29,13 @@ import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
 import objects.CustomFilterItem;
-import objects.CustomFiltersList;;
+import objects.CustomFiltersList;
+import javax.swing.JList;
+import javax.swing.JTable;;
 
 
 @SuppressWarnings("serial")
-public class CustomFiltersPane extends JDialog
+public class CustomFiltersPane2 extends JDialog
 {
 	private JTextField		  txtName;
 	private JTextField		  txtRegex;
@@ -97,15 +99,17 @@ public class CustomFiltersPane extends JDialog
 	private JLabel			  label_12;
 	private JCheckBox		  chckbxActiveS;
 	private JButton button;
+	private JTable table;
+	private JCheckBox chckbxNewCheckBox;
 	
 	// Create the dialog.
-	public CustomFiltersPane()
+	public CustomFiltersPane2()
 	{
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setVisible(false);
 		setTitle("Filters Manager");
-		setBounds(100, 100, 965, 344);
+		setBounds(100, 100, 965, 575);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {0, 0};
@@ -134,26 +138,25 @@ public class CustomFiltersPane extends JDialog
 		myFiltersPane = new JPanel();
 		tabbedPane.addTab("My filters", null, myFiltersPane, null);
 		GridBagLayout gbl_myFiltersPane = new GridBagLayout();
-		gbl_myFiltersPane.columnWidths = new int[] {0, 0, 0, 0, 0, 0};
-		gbl_myFiltersPane.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_myFiltersPane.columnWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 1.0};
-		gbl_myFiltersPane.rowWeights = new double[] {0.0,
-													 0.0,
+		gbl_myFiltersPane.columnWidths = new int[] {0, 0, 0, 0, 0, 0, 0};
+		gbl_myFiltersPane.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_myFiltersPane.columnWeights = new double[] {1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0};
+		gbl_myFiltersPane.rowWeights = new double[] {1.0,
+													 1.0,
 													 0.0,
 													 0.0,
 													 1.0,
 													 0.0,
 													 0.0,
-													 0.0,
+													 0.0, 0.0,
 													 Double.MIN_VALUE};
 		myFiltersPane.setLayout(gbl_myFiltersPane);
 		
-		JLabel lblFiltersList = new JLabel("filters list:");
+		JLabel lblFiltersList = new JLabel("Filters list:");
 		lblFiltersList.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblFiltersList.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblFiltersList.setPreferredSize(new Dimension(70, 23));
 		GridBagConstraints gbc_lblFiltersList = new GridBagConstraints();
-		gbc_lblFiltersList.anchor = GridBagConstraints.EAST;
 		gbc_lblFiltersList.insets = new Insets(5, 10, 5, 5);
 		gbc_lblFiltersList.gridx = 0;
 		gbc_lblFiltersList.gridy = 0;
@@ -175,7 +178,7 @@ public class CustomFiltersPane extends JDialog
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(5, 0, 5, 5);
 		gbc_comboBox.anchor = GridBagConstraints.WEST;
-		gbc_comboBox.gridx = 1;
+		gbc_comboBox.gridx = 2;
 		gbc_comboBox.gridy = 0;
 		myFiltersPane.add(comboBox, gbc_comboBox);
 		
@@ -215,7 +218,7 @@ public class CustomFiltersPane extends JDialog
 		btnDel.setMargin(new Insets(2, 2, 2, 2));
 		GridBagConstraints gbc_btnDel = new GridBagConstraints();
 		gbc_btnDel.insets = new Insets(5, 0, 5, 5);
-		gbc_btnDel.gridx = 2;
+		gbc_btnDel.gridx = 3;
 		gbc_btnDel.gridy = 0;
 		myFiltersPane.add(btnDel, gbc_btnDel);
 		
@@ -302,7 +305,7 @@ public class CustomFiltersPane extends JDialog
 		btnAdd.setIcon(Icons.add);
 		GridBagConstraints gbc_btnAdd = new GridBagConstraints();
 		gbc_btnAdd.insets = new Insets(5, 0, 5, 5);
-		gbc_btnAdd.gridx = 3;
+		gbc_btnAdd.gridx = 4;
 		gbc_btnAdd.gridy = 0;
 		myFiltersPane.add(btnAdd, gbc_btnAdd);
 		
@@ -320,15 +323,24 @@ public class CustomFiltersPane extends JDialog
 		btnNew.setPreferredSize(new Dimension(36, 25));
 		GridBagConstraints gbc_btnNew = new GridBagConstraints();
 		gbc_btnNew.insets = new Insets(5, 0, 5, 5);
-		gbc_btnNew.gridx = 4;
+		gbc_btnNew.gridx = 5;
 		gbc_btnNew.gridy = 0;
 		myFiltersPane.add(btnNew, gbc_btnNew);
+		
+		table = new JTable();
+		GridBagConstraints gbc_table = new GridBagConstraints();
+		gbc_table.gridheight = 8;
+		gbc_table.insets = new Insets(0, 0, 0, 5);
+		gbc_table.fill = GridBagConstraints.BOTH;
+		gbc_table.gridx = 0;
+		gbc_table.gridy = 1;
+		myFiltersPane.add(table, gbc_table);
 		
 		JLabel lblFilterName = new JLabel("Filter Name:");
 		GridBagConstraints gbc_lblFilterName = new GridBagConstraints();
 		gbc_lblFilterName.anchor = GridBagConstraints.EAST;
 		gbc_lblFilterName.insets = new Insets(0, 0, 5, 5);
-		gbc_lblFilterName.gridx = 0;
+		gbc_lblFilterName.gridx = 1;
 		gbc_lblFilterName.gridy = 1;
 		myFiltersPane.add(lblFilterName, gbc_lblFilterName);
 		
@@ -339,7 +351,7 @@ public class CustomFiltersPane extends JDialog
 		gbc_txtName.anchor = GridBagConstraints.WEST;
 		gbc_txtName.gridwidth = 5;
 		gbc_txtName.insets = new Insets(0, 0, 5, 0);
-		gbc_txtName.gridx = 1;
+		gbc_txtName.gridx = 2;
 		gbc_txtName.gridy = 1;
 		myFiltersPane.add(txtName, gbc_txtName);
 		
@@ -348,7 +360,7 @@ public class CustomFiltersPane extends JDialog
 		GridBagConstraints gbc_lblRegex = new GridBagConstraints();
 		gbc_lblRegex.anchor = GridBagConstraints.EAST;
 		gbc_lblRegex.insets = new Insets(0, 0, 5, 5);
-		gbc_lblRegex.gridx = 0;
+		gbc_lblRegex.gridx = 1;
 		gbc_lblRegex.gridy = 2;
 		myFiltersPane.add(lblRegex, gbc_lblRegex);
 		
@@ -360,7 +372,7 @@ public class CustomFiltersPane extends JDialog
 		gbc_txtRegex.anchor = GridBagConstraints.WEST;
 		gbc_txtRegex.gridwidth = 5;
 		gbc_txtRegex.insets = new Insets(0, 0, 5, 0);
-		gbc_txtRegex.gridx = 1;
+		gbc_txtRegex.gridx = 2;
 		gbc_txtRegex.gridy = 2;
 		myFiltersPane.add(txtRegex, gbc_txtRegex);
 		
@@ -368,7 +380,7 @@ public class CustomFiltersPane extends JDialog
 		GridBagConstraints gbc_lblHeader = new GridBagConstraints();
 		gbc_lblHeader.anchor = GridBagConstraints.EAST;
 		gbc_lblHeader.insets = new Insets(0, 0, 5, 5);
-		gbc_lblHeader.gridx = 0;
+		gbc_lblHeader.gridx = 1;
 		gbc_lblHeader.gridy = 3;
 		myFiltersPane.add(lblHeader, gbc_lblHeader);
 		
@@ -381,7 +393,7 @@ public class CustomFiltersPane extends JDialog
 		gbc_txtHeader.anchor = GridBagConstraints.WEST;
 		gbc_txtHeader.gridwidth = 5;
 		gbc_txtHeader.insets = new Insets(0, 0, 5, 0);
-		gbc_txtHeader.gridx = 1;
+		gbc_txtHeader.gridx = 2;
 		gbc_txtHeader.gridy = 3;
 		myFiltersPane.add(txtHeader, gbc_txtHeader);
 		
@@ -389,7 +401,7 @@ public class CustomFiltersPane extends JDialog
 		GridBagConstraints gbc_lblWhere = new GridBagConstraints();
 		gbc_lblWhere.anchor = GridBagConstraints.EAST;
 		gbc_lblWhere.insets = new Insets(0, 0, 5, 5);
-		gbc_lblWhere.gridx = 0;
+		gbc_lblWhere.gridx = 1;
 		gbc_lblWhere.gridy = 4;
 		myFiltersPane.add(lblWhere, gbc_lblWhere);
 		
@@ -398,7 +410,7 @@ public class CustomFiltersPane extends JDialog
 		gbc_chkbxPanel.anchor = GridBagConstraints.WEST;
 		gbc_chkbxPanel.gridwidth = 5;
 		gbc_chkbxPanel.insets = new Insets(0, 0, 5, 0);
-		gbc_chkbxPanel.gridx = 1;
+		gbc_chkbxPanel.gridx = 2;
 		gbc_chkbxPanel.gridy = 4;
 		myFiltersPane.add(chkbxPanel, gbc_chkbxPanel);
 		
@@ -420,7 +432,7 @@ public class CustomFiltersPane extends JDialog
 		GridBagConstraints gbc_lblShared = new GridBagConstraints();
 		gbc_lblShared.anchor = GridBagConstraints.EAST;
 		gbc_lblShared.insets = new Insets(0, 0, 5, 5);
-		gbc_lblShared.gridx = 0;
+		gbc_lblShared.gridx = 1;
 		gbc_lblShared.gridy = 5;
 		myFiltersPane.add(lblShared, gbc_lblShared);
 		
@@ -428,7 +440,7 @@ public class CustomFiltersPane extends JDialog
 		GridBagConstraints gbc_chckbxShared = new GridBagConstraints();
 		gbc_chckbxShared.anchor = GridBagConstraints.WEST;
 		gbc_chckbxShared.insets = new Insets(0, 0, 5, 5);
-		gbc_chckbxShared.gridx = 1;
+		gbc_chckbxShared.gridx = 2;
 		gbc_chckbxShared.gridy = 5;
 		myFiltersPane.add(chckbxShared, gbc_chckbxShared);
 		
@@ -436,7 +448,7 @@ public class CustomFiltersPane extends JDialog
 		GridBagConstraints gbc_lblPublic = new GridBagConstraints();
 		gbc_lblPublic.anchor = GridBagConstraints.EAST;
 		gbc_lblPublic.insets = new Insets(0, 0, 5, 5);
-		gbc_lblPublic.gridx = 0;
+		gbc_lblPublic.gridx = 1;
 		gbc_lblPublic.gridy = 6;
 		myFiltersPane.add(lblPublic, gbc_lblPublic);
 		
@@ -444,25 +456,32 @@ public class CustomFiltersPane extends JDialog
 		GridBagConstraints gbc_chckbxPublic = new GridBagConstraints();
 		gbc_chckbxPublic.anchor = GridBagConstraints.WEST;
 		gbc_chckbxPublic.insets = new Insets(0, 0, 5, 5);
-		gbc_chckbxPublic.gridx = 1;
+		gbc_chckbxPublic.gridx = 2;
 		gbc_chckbxPublic.gridy = 6;
 		myFiltersPane.add(chckbxPublic, gbc_chckbxPublic);
 		
 		label_4 = new JLabel("Active:");
 		GridBagConstraints gbc_label_4 = new GridBagConstraints();
 		gbc_label_4.anchor = GridBagConstraints.EAST;
-		gbc_label_4.insets = new Insets(0, 0, 0, 5);
-		gbc_label_4.gridx = 0;
+		gbc_label_4.insets = new Insets(0, 0, 5, 5);
+		gbc_label_4.gridx = 1;
 		gbc_label_4.gridy = 7;
 		myFiltersPane.add(label_4, gbc_label_4);
 		
 		chckbxActiveM = new JCheckBox("");
 		GridBagConstraints gbc_chckbxActiveM = new GridBagConstraints();
 		gbc_chckbxActiveM.anchor = GridBagConstraints.WEST;
-		gbc_chckbxActiveM.insets = new Insets(0, 0, 0, 5);
-		gbc_chckbxActiveM.gridx = 1;
+		gbc_chckbxActiveM.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxActiveM.gridx = 2;
 		gbc_chckbxActiveM.gridy = 7;
 		myFiltersPane.add(chckbxActiveM, gbc_chckbxActiveM);
+		
+		chckbxNewCheckBox = new JCheckBox("New check box");
+		GridBagConstraints gbc_chckbxNewCheckBox = new GridBagConstraints();
+		gbc_chckbxNewCheckBox.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxNewCheckBox.gridx = 2;
+		gbc_chckbxNewCheckBox.gridy = 8;
+		myFiltersPane.add(chckbxNewCheckBox, gbc_chckbxNewCheckBox);
 		
 		sharedPane = new JPanel();
 		tabbedPane.addTab("Shared filters", null, sharedPane, null);
@@ -815,7 +834,6 @@ public class CustomFiltersPane extends JDialog
 		}
 		
 		tabbedPane.updateUI();
-		new CustomFiltersPane2().setVisible(true);
 	}
 	
 	public void saveFilters()
