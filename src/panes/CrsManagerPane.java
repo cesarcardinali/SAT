@@ -635,18 +635,27 @@ public class CrsManagerPane extends JPanel
 		if (b2gList.size() > 0)
 		{
 			// Configure the B2gDownloader
-			Bug2goDownloader b2gDownloader = new Bug2goDownloader(b2gList, SharedObjs.getDownloadPath());
+			Bug2goDownloader b2gDownloader = Bug2goDownloader.getInstance();
+			try
+			{
+				b2gDownloader.addBugIdList(b2gList);
+				b2gDownloader.setOverwrite(false);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 			
 			// Start download thread
-			new Thread(b2gDownloader).start();
+			b2gDownloader.execute();
 		}
 		else
 		{
 			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane,
 										  "There were errors during the b2g collection."
-															   + "\nWe could not get CRs data from Jira."
-															   + "\nYour pass or username may be wrong or "
-															   + "the CRs sent does not exist.");
+																	 + "\nWe could not get CRs data from Jira."
+																	 + "\nYour pass or username may be wrong or "
+																	 + "the CRs sent does not exist.");
 		}
 	}
 	

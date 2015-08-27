@@ -3,7 +3,15 @@ package supportive;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JOptionPane;
 
@@ -11,61 +19,249 @@ import core.Logger;
 import core.SharedObjs;
 
 
+/**
+ * This class monitor the files being downloaded.
+ */
 public class Bug2goDownloader implements Runnable
 {
-	private ArrayList<Bug2goItem> bug2goList;
-	private boolean				  alldone = false;
-	private String				  downloadPath;
+	/**
+	 * Variables
+	 */
+	private static final String	  BASE_LOGIN_LINK = "https://b2gadm-mcloud101-blur.svcmot.com/bugreport/report/verify.action";
+	private static final String	  LOGIN_PARAM	  = "username=COREID&password=PASSWRD";
+	private HttpURLConnection	  connection;
+	private OutputStream		  out;
+	private ArrayList<Bug2goItem> bug2goListSubmitted;
+	private ArrayList<Bug2goItem> bug2goListInProgress;
+	private ArrayList<Bug2goItem> bug2goListDone;
+	private ArrayList<Bug2goItem> bug2goListFailed;
 	private int					  errors;
+	private boolean				  overwrite;
+	private Semaphore			  semaphore;
+	private ExecutorService		  executor;
 	
-	public Bug2goDownloader(ArrayList<String> bugIdList, String downloadPath)
+	/**
+	 * Initialize class variables. The constructor is private in order to implement the Singleton design pattern
+	 */
+	private Bug2goDownloader()
 	{
-		bug2goList = new ArrayList<Bug2goItem>();
-		this.downloadPath = downloadPath;
+		overwrite = true;
+		semaphore = new Semaphore(1);
+		bug2goListSubmitted = new ArrayList<Bug2goItem>();
+		bug2goListInProgress = new ArrayList<Bug2goItem>();
+		bug2goListDone = new ArrayList<Bug2goItem>();
+		bug2goListFailed = new ArrayList<Bug2goItem>();
 		errors = 0;
 		
+		// Used to avoid the error: Security: Server SSL Error-handshake alert:unrecognized_name
+		
+		// You may get this SSL error if the server you are trying to access has not been properly configured.
+		// For security reasons SNI extension has been enabled by default in Java 7. However, if you trust the server you are trying to
+		// connect you may want to disable SNI extension.
+		// Reference: http://forums.visokio.com/discussion/2614/security-server-ssl-error-handshake-alertunrecognized_name
+		System.setProperty("jsse.enableSNIExtension", "false");
+		
+		// Used to maintain the session
+		
+		// CookieManager provides a concrete implementation of CookieHandler, which separates the storage of cookies from the policy
+		// surrounding accepting and rejecting cookies.
+		CookieManager cookieManager = new CookieManager();
+		// CookieHandler is at the core of cookie management. User can call CookieHandler.setDefault to set a concrete CookieHanlder
+		// implementation to be used.
+		CookieHandler.setDefault(cookieManager);
+		
+	}
+	
+	/**
+	 * Private inner static class
+	 */
+	private static class Bug2goDownloaderHolder
+	{
+		private static final Bug2goDownloader INSTANCE = new Bug2goDownloader();
+	}
+	
+	/**
+	 * Returns the unique instance of Bug2goDownloader
+	 */
+	public static Bug2goDownloader getInstance()
+	{
+		return Bug2goDownloaderHolder.INSTANCE;
+	}
+	
+	/**
+	 * Add Bug2go itens in the list to be downloaded
+	 */
+	public boolean addBugId(String[] bugIdList) throws InterruptedException
+	{
+		semaphore.acquire();
 		for (String s : bugIdList)
 		{
-			bug2goList.add(new Bug2goItem(s));
+			if (!bug2goListSubmitted.add(new Bug2goItem(s)))
+			{
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Failed to add bugID " + s + " on BugIdList.");
+			}
+		}
+		semaphore.release();
+		return true;
+	}
+	
+	/**
+	 * Add Bug2go itens in the list to be downloaded
+	 */
+	public boolean addBugIdList(ArrayList<String> bugIdList) throws InterruptedException
+	{
+		semaphore.acquire();
+		for (String s : bugIdList)
+		{
+			if (!bug2goListSubmitted.add(new Bug2goItem(s)))
+			{
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Failed to add bugID " + s + " on BugIdList.");
+			}
+		}
+		semaphore.release();
+		return true;
+	}
+	
+	/**
+	 * Remove a Bug2go item from one of the lists
+	 */
+	public boolean removeBugItem(Bug2goItem item)
+	{
+		boolean removed;
+		
+		removed = bug2goListInProgress.remove(item);
+		if (removed)
+		{
+			if (item.getStatus() == Bug2goItem.DownloadStatus.DONE)
+			{
+				bug2goListDone.add(item);
+			}
+			
+			else if (item.getStatus() == Bug2goItem.DownloadStatus.FAILED)
+			{
+				bug2goListFailed.add(item);
+			}
+			
+		}
+		
+		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Was the item removed? " + removed);
+		return removed;
+	}
+	
+	/**
+	 * Initiate the download execution
+	 */
+	public void execute()
+	{
+		if (executor == null)
+		{
+			new Thread(this).start();
+		}
+		else if (executor.isTerminated())
+		{
+			new Thread(this).start();
 		}
 	}
 	
-	public Bug2goDownloader(String[] bugIdList, String downloadPath)
+	/**
+	 * Try to login
+	 */
+	private boolean login() throws IOException
 	{
-		bug2goList = new ArrayList<Bug2goItem>();
-		this.downloadPath = downloadPath;
-		errors = 0;
+		String login;
 		
-		for (String s : bugIdList)
+		// Create the login string
+		login = LOGIN_PARAM.replace("COREID", SharedObjs.getUser());
+		login = login.replace("PASSWRD", SharedObjs.getPass());
+		
+		// Open the connection with request method = POST
+		URL url = new URL(BASE_LOGIN_LINK);
+		connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("POST");
+		
+		// For POST only - START
+		// Use the URL connection for output
+		connection.setDoOutput(true);
+		out = connection.getOutputStream();
+		out.write(login.getBytes());
+		out.flush();
+		out.close();
+		// For POST only - END
+		
+		int responseCode = connection.getResponseCode();
+		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "POST Response Code :: " + responseCode);
+		
+		if (responseCode == HttpURLConnection.HTTP_OK)
 		{
-			bug2goList.add(new Bug2goItem(s));
+			// If URL equals to https://b2gadm-mcloud101-blur.svcmot.com/bugreport/report/verify.action, it means that login failed.
+			if (connection.getURL().toString().equals(BASE_LOGIN_LINK))
+			{
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Login Failed!");
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "URL after login POST: " + connection.getURL());
+				return false;
+			}
 		}
+		else
+		{
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "POST request did not work");
+			return false;
+		}
+		
+		return true;
 	}
 	
+	/**
+	 * Monitor the downloads
+	 */
 	@Override
 	public void run()
 	{
-		for (Bug2goItem b : bug2goList)
+		try
 		{
-			new Thread(b, b.getBugId()).start();
+			if (!login())
+			{
+				return;
+			}
+		}
+		catch (IOException e1)
+		{
+			e1.printStackTrace();
 		}
 		
-		while (alldone == false)
+		executor = Executors.newFixedThreadPool(5);
+		
+		while (!bug2goListSubmitted.isEmpty() || !bug2goListInProgress.isEmpty())
 		{
-			alldone = true;
-			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking...");
-			
-			for (Bug2goItem b : bug2goList)
+			if (!bug2goListSubmitted.isEmpty())
 			{
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-						   b.getBugId() + ": status > " + b.getStatus() + " | running > " + b.isRunning());
-						   
-				if (b.isRunning() == true && alldone == true)
+				try
 				{
-					alldone = false;
+					semaphore.acquire();
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+				for (Bug2goItem b : bug2goListSubmitted)
+				{
+					executor.execute(b);
+					bug2goListInProgress.add(b);
 				}
 				
-				if (b.getStatus().contains("error") && errors == 0)
+				bug2goListSubmitted.clear();
+				semaphore.release();
+			}
+			
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking...");
+			
+			for (Bug2goItem b : bug2goListInProgress)
+			{
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+						   b.getBugId() + ": status > " + b.getStatus() + " | size > " + b.getSizeOfFile()
+														+ " | downloaded > " + b.getDownloadProgress()
+														+ " | running > " + b.isRunning());
+														
+				if (b.getStatus() == Bug2goItem.DownloadStatus.FAILED && errors == 0)
 				{
 					errors = 1;
 				}
@@ -79,14 +275,48 @@ public class Bug2goDownloader implements Runnable
 			{
 				e.printStackTrace();
 			}
+			
+		}
+		
+		executor.shutdown();
+		
+		if (bug2goListInProgress.isEmpty())
+		{
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList In Progress is Empty.");
+		}
+		else
+		{
+			for (Bug2goItem i : bug2goListInProgress)
+			{
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList In Progress: " + i.getBugId());
+			}
+		}
+		
+		if (bug2goListDone.isEmpty())
+		{
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList Done is Empty.");
+		}
+		else
+		{
+			for (Bug2goItem i : bug2goListDone)
+			{
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList Done: " + i.getBugId());
+			}
+		}
+		
+		if (bug2goListFailed.isEmpty())
+		{
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList Failed is Empty.");
+		}
+		else
+		{
+			for (Bug2goItem i : bug2goListFailed)
+			{
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList Failed: " + i.getBugId());
+			}
 		}
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Downloads finished");
-		
-		for (Bug2goItem b : bug2goList)
-		{
-			Logger.log(Logger.TAG_BUG2GODOWNLOADER, b.getBugId() + ": " + b.getStatus());
-		}
 		
 		if (errors == 1)
 			JOptionPane.showMessageDialog(SharedObjs.satFrame,
@@ -102,7 +332,7 @@ public class Bug2goDownloader implements Runnable
 											   null);
 		if (ans == 0)
 		{
-			File[] filesName = new File(downloadPath).listFiles();
+			File[] filesName = new File(SharedObjs.getDownloadPath()).listFiles();
 			
 			for (File file : filesName)
 			{
@@ -132,7 +362,7 @@ public class Bug2goDownloader implements Runnable
 		}
 		else if (ans == 1)
 		{
-			File[] filesName = new File(downloadPath).listFiles();
+			File[] filesName = new File(SharedObjs.getDownloadPath()).listFiles();
 			
 			for (File file : filesName)
 			{
@@ -152,24 +382,26 @@ public class Bug2goDownloader implements Runnable
 		}
 	}
 	
-	public boolean isAlldone()
+	/**
+	 * Getters and Setters
+	 */
+	public Semaphore getSemaphore()
 	{
-		return alldone;
+		return semaphore;
 	}
 	
-	public void setAlldone(boolean alldone)
+	public void setSemaphore(Semaphore semaphore)
 	{
-		this.alldone = alldone;
+		this.semaphore = semaphore;
 	}
 	
-	public String getDownloadPath()
+	public boolean isOverwrite()
 	{
-		return downloadPath;
+		return overwrite;
 	}
 	
-	public void setDownloadPath(String downloadPath)
+	public void setOverwrite(boolean overwrite)
 	{
-		this.downloadPath = downloadPath;
+		this.overwrite = overwrite;
 	}
-	
 }
