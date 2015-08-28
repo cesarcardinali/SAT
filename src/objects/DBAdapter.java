@@ -554,10 +554,16 @@ public class DBAdapter
 		return deleteDone;
 	}
 	
+	/**
+	 * Delete all filters from user.
+	 * This is only a support method and should be used only for tests purposes
+	 * 
+	 * @return [0] if delete failed [1] if delete succeeded.
+	 */
 	public int deleteAllMyFilters()
 	{
 		// Visual query example for reference:
-		// DELETE from Filters where name = 'Test_Filter';
+		// DELETE from Filters where user_key = 'testuser';
 		String deleteSQL = "DELETE from Filters where user_key = '" + SharedObjs.getUser() + "';";
 		
 		int deleteDone = 0;
