@@ -16,12 +16,12 @@ import core.SharedObjs;
  */
 public class DBAdapter
 {
-	private static final String	DB_DRIVER		  = "com.mysql.jdbc.Driver";
-	private String				DB_CONNECTION	  = null;
-	private String				DB_USER			  = null;
-	private String				DB_PASSWORD		  = null;
-	private Connection			dbConnection	  = null;
-	private PreparedStatement	preparedStatement = null;
+	private static final String DB_DRIVER		 = "com.mysql.jdbc.Driver";
+	private String			  DB_CONNECTION	 = null;
+	private String			  DB_USER		   = null;
+	private String			  DB_PASSWORD	   = null;
+	private Connection		  dbConnection	  = null;
+	private PreparedStatement   preparedStatement = null;
 	
 	/**
 	 * Constructor with connection parameter. For special cases when database connections will not be the default. Write the full path to
@@ -122,10 +122,12 @@ public class DBAdapter
 		fitem.setRadio(byteToBool(rs.getByte("w_radio")));
 		fitem.setMain(byteToBool(rs.getByte("w_main")));
 		fitem.setBugreport(byteToBool(rs.getByte("w_bugr")));
-		fitem.setShared(byteToBool(rs.getByte("shared")));
 		fitem.setSystem(byteToBool(rs.getByte("w_syst")));
 		fitem.setRoutput(byteToBool(rs.getByte("w_rout")));
-		if(rs.getString("user_key").equals(""))
+		fitem.setShared(byteToBool(rs.getByte("shared")));
+		fitem.setActive(byteToBool(rs.getByte("active")));
+		fitem.setLastUpdate(rs.getTimestamp("last_modified").toString());
+		if (rs.getString("user_key").equals(""))
 			fitem.setEditable(true);
 		else
 			fitem.setEditable(false);
@@ -157,7 +159,7 @@ public class DBAdapter
 		boolean boolVar = false;
 		if (bVar == 1)
 			boolVar = true;
-			
+		
 		return boolVar;
 	}
 	
@@ -382,16 +384,18 @@ public class DBAdapter
 	 * @return [0] if insert failed (Invalid fields) [1] if insert succeeded.
 	 */
 	public int insertFilter(String filterName, String header, String regex, boolean wMain, boolean wSyst,
-							boolean wKrnl, boolean wBugr, boolean wRout, boolean shared, String userName)
+							boolean wKrnl, boolean wRadio, boolean wBugr, boolean wRout, boolean shared,
+							boolean active, String userName)
 	{
 		
 		// Visual query example for reference:
 		// INSERT INTO Filters VALUES (0, 'Test_Filter', '[A-z]', 1, 1, 0, 0, 1, 1, 'testuser');
 		
-		String insertSQL = "INSERT INTO Filters VALUES (" + 0 + ", '" + filterName + "', '" + header + "', '"
+		String insertSQL = "INSERT INTO Filters VALUES ( null, '" + filterName + "', '" + header + "', '"
 						   + regex + "', " + boolToByte(wMain) + ", " + boolToByte(wSyst) + ", "
-						   + boolToByte(wKrnl) + ", " + boolToByte(wBugr) + ", " + boolToByte(wRout) + ", "
-						   + boolToByte(shared) + ", '" + userName + "');";
+						   + boolToByte(wKrnl) + ", " + boolToByte(wRadio) + ", " + boolToByte(wBugr) + ", "
+						   + boolToByte(wRout) + ", " + boolToByte(shared) + ", " + boolToByte(active)
+						   + ", '" + userName + "', null);";
 		int insertDone = 0;
 		
 		try
@@ -421,14 +425,15 @@ public class DBAdapter
 	public int insertFilter(CustomFilterItem filter)
 	{
 		// Visual query example for reference:
-		// INSERT INTO Filters VALUES (0, 'Test_Filter', '- TestHeader' , '[A-z]', 1, 1, 0, 0, 1, 1, 'testuser');
+		// INSERT INTO Filters VALUES (null, 'Test_Filter', '- TestHeader' , '[A-z]', 1, 1, 0, 0, 1, 1, 1, 0, 'testuser', null);
 		
-		String insertSQL = "INSERT INTO Filters VALUES (" + 0 + ", '" + filter.getName() + "', '"
+		String insertSQL = "INSERT INTO Filters VALUES ( null, '" + filter.getName() + "', '"
 						   + filter.getHeader() + "', '" + filter.getRegex() + "', "
 						   + boolToByte(filter.isMain()) + ", " + boolToByte(filter.isSystem()) + ", "
 						   + boolToByte(filter.isKernel()) + ", " + boolToByte(filter.isRadio()) + ", "
 						   + boolToByte(filter.isBugreport()) + ", " + boolToByte(filter.isRoutput()) + ", "
-						   + boolToByte(filter.isShared()) + ", '" + filter.getOwner() + "');";
+						   + boolToByte(filter.isShared()) + ", '" + boolToByte(filter.isActive()) + ", '"
+						   + filter.getOwner() + "', null);";
 		int insertDone = 0;
 		
 		try
@@ -456,7 +461,7 @@ public class DBAdapter
 	public int insertFilters(CustomFiltersList filtersList)
 	{
 		// Visual query example for reference:
-		// INSERT INTO Filters VALUES (0, 'Test_Filter', '- TestHeader' , '[A-z]', 1, 1, 0, 0, 1, 1, 'testuser');
+		// INSERT INTO Filters VALUES (null, 'Test_Filter', '- TestHeader' , '[A-z]', 1, 1, 0, 0, 1, 1, 1, 0, 'testuser', null);
 		int inserted = 0;
 		
 		for (CustomFilterItem filter : filtersList)
@@ -480,8 +485,8 @@ public class DBAdapter
 	public int updateFilter(String oldFilterName, CustomFilterItem editedFilter)
 	{
 		// Visual query example for reference:
-		// UPDATE Filters SET name = 'Test_Filter', header = '- TestHeader', regex = '[A-z]', w_main = 1, w_syst = 1, w_krnl = 0,
-		// w_bugr = 0, w_rout = 1, shared = 1, user_key = 'testuser' WHERE name = 'Test_Adapter' AND user_key = 'testuser';
+		// UPDATE Filters SET name = 'Test_Filter', header = '- TestHeader', regex = '[A-z]', w_main = 1, w_syst = 1, w_krnl = 0, w_radio =
+		// 1, w_bugr = 0, w_rout = 1, shared = 1, active = 0, user_key = 'testuser' WHERE name = 'Test_Adapter' AND user_key = 'testuser';
 		
 		String updateSQL = "UPDATE Filters SET name = '" + editedFilter.getName() + "', header = '"
 						   + editedFilter.getHeader() + "', regex = '" + editedFilter.getRegex()
@@ -491,7 +496,8 @@ public class DBAdapter
 						   + boolToByte(editedFilter.isRadio()) + ", w_bugr = "
 						   + boolToByte(editedFilter.isBugreport()) + ", w_rout = "
 						   + boolToByte(editedFilter.isRoutput()) + ", shared = "
-						   + boolToByte(editedFilter.isShared()) + ", user_key = '" + editedFilter.getOwner()
+						   + boolToByte(editedFilter.isShared()) + ", active= "
+						   + boolToByte(editedFilter.isActive()) + ", user_key = '" + editedFilter.getOwner()
 						   + "' WHERE name = '" + oldFilterName + "' AND user_key = '" + SharedObjs.getUser()
 						   + "';";
 		int updateDone = 0;
@@ -527,7 +533,7 @@ public class DBAdapter
 		// DELETE from Filters where name = 'Test_Filter';
 		String deleteSQL = "DELETE from Filters where name = '" + filterName + "' AND user_key = '"
 						   + SharedObjs.getUser() + "';";
-						   
+		
 		int deleteDone = 0;
 		
 		try
@@ -545,16 +551,15 @@ public class DBAdapter
 			
 		}
 		
-		return deleteDone;	
+		return deleteDone;
 	}
 	
 	public int deleteAllMyFilters()
 	{
 		// Visual query example for reference:
 		// DELETE from Filters where name = 'Test_Filter';
-		String deleteSQL = "DELETE from Filters where user_key = '"
-						   + SharedObjs.getUser() + "';";
-						   
+		String deleteSQL = "DELETE from Filters where user_key = '" + SharedObjs.getUser() + "';";
+		
 		int deleteDone = 0;
 		
 		try
@@ -572,7 +577,7 @@ public class DBAdapter
 			
 		}
 		
-		return deleteDone;	
+		return deleteDone;
 	}
 	
 	/**
