@@ -41,11 +41,6 @@ public class FiltersTableCheckboxCellRenderer extends JCheckBox implements Table
 			}
 		}
 		
-		if (isSelected && hasFocus)
-		{
-			System.out.println("Checkbox: " + MyFiltersTableModel.HIDDEN_INDEX + " - " + column);
-		}
-		
 		setSelected((value != null && ((Boolean) value).booleanValue()));
 		
 		return this;

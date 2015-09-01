@@ -1004,8 +1004,6 @@ public class OptionsPane extends JPanel
 				SharedObjs.advOptions.setLocation(SharedObjs.satFrame.getLocation().x + 200,
 												  SharedObjs.satFrame.getLocation().y + 200);
 				SharedObjs.advOptions.setVisible(true);
-				
-				SharedObjs.teste.open();
 			}
 		});
 		btnAdvanced.setToolTipText("Click to see advanced options");

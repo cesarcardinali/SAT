@@ -16,7 +16,7 @@
       <editable>false</editable>
       <active>true</active>
     </teste>
-    <lalal>
+    <lalál>
       <regex>lalalala</regex>
       <header>lalalal</header>
       <owner>cesarc</owner>
@@ -29,7 +29,7 @@
       <shared>false</shared>
       <editable>false</editable>
       <active>true</active>
-    </lalal>
+    </lalál>
     <old_new_filter>
       <regex>new filter</regex>
       <header>old new filter</header>
@@ -89,7 +89,7 @@
       <editable>false</editable>
       <active>false</active>
     </abc1abc>
-    <Public>
+    <Public_filter>
       <regex>fdsafdsfa</regex>
       <header>fdsgsdf</header>
       <owner />
@@ -102,7 +102,7 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-    </Public>
+    </Public_filter>
     <insert_updated>
       <regex />
       <header>update</header>
@@ -117,5 +117,19 @@
       <editable>false</editable>
       <active>false</active>
     </insert_updated>
+    <Bubo>
+      <regex />
+      <header />
+      <owner>amaciel</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+    </Bubo>
   </sharedFilters>
 </SAT>

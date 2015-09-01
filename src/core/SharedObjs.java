@@ -24,7 +24,6 @@ import objects.DBAdapter;
 import panes.AdvancedOptionsPane;
 import panes.CrsManagerPane;
 import panes.CustomFiltersPane;
-import panes.CustomFiltersPane2;
 import panes.OptionsPane;
 import panes.ParserPane;
 
@@ -64,7 +63,6 @@ public class SharedObjs
 	public static AdvancedOptionsPane advOptions;
 	public static SAT				  satFrame;
 	public static DBAdapter			  satDB;
-	public static CustomFiltersPane2  teste;
 	
 	/**
 	 * Initialize class variables
@@ -106,6 +104,8 @@ public class SharedObjs
 			Logger.log(Logger.TAG_SHAREDOBJS, "Could not connect to SQL DB");
 		}
 		
+		loadFilters();
+		
 		// Create Panes
 		parserPane = new ParserPane();
 		crsManagerPane = new CrsManagerPane();
@@ -136,10 +136,6 @@ public class SharedObjs
 			optionsPane.setServerStatus(true);
 		else
 			optionsPane.setServerStatus(false);
-			
-		loadFilters();
-		
-		teste = new CustomFiltersPane2();
 	}
 	
 	/**
