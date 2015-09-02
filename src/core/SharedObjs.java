@@ -141,9 +141,23 @@ public class SharedObjs
 	/**
 	 * Check if all folders exists. If any of them does not exist, create it.
 	 */
-	public void checkFolder()
+	public static void checkFolder()
 	{
-		// TODO
+		String[] folders = {"Data/cfgs", "Data/complements", "Data/logs", "Data/pics", "Data/scripts"};
+		
+		for (String s : folders)
+		{
+			File f = new File(s);
+			if (!f.exists())
+			{
+				f.mkdir();
+				Logger.log(Logger.TAG_SHAREDOBJS, "Creating folder " + s);
+			}
+			else
+			{
+				Logger.log(Logger.TAG_SHAREDOBJS, "Folder " + s + " already exists.");
+			}
+		}
 	}
 	
 	private static void loadFilters()
@@ -171,8 +185,7 @@ public class SharedObjs
 					   
 			if (dbFilters.size() != xmlFilters.size())
 			{
-				Logger.log(Logger.TAG_SHAREDOBJS,
-								   "Inconsistencies found ...");
+				Logger.log(Logger.TAG_SHAREDOBJS, "Inconsistencies found ...");
 				syncMyFilters(dbFilters, xmlFilters);
 				synced = true;
 			}
@@ -198,8 +211,7 @@ public class SharedObjs
 				
 				if (hasItem == false)
 				{
-					Logger.log(Logger.TAG_SHAREDOBJS,
-									   "Inconsistencies found ...");
+					Logger.log(Logger.TAG_SHAREDOBJS, "Inconsistencies found ...");
 					syncMyFilters(dbFilters, xmlFilters);
 					synced = true;
 				}
@@ -207,8 +219,7 @@ public class SharedObjs
 			
 			if (synced == false)
 			{
-				Logger.log(Logger.TAG_SHAREDOBJS,
-								   "Inconsistencies not found ...");
+				Logger.log(Logger.TAG_SHAREDOBJS, "Inconsistencies not found ...");
 				userFiltersList = satDB.myFilters();
 			}
 		}
