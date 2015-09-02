@@ -30,8 +30,39 @@ public class FileTreeNodeRenderer extends DefaultTreeCellRenderer
 	{
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 		File file = (File) node.getUserObject();
-		nodeLabel.setIcon(fileSystemView.getSystemIcon(file));
-		nodeLabel.setText(fileSystemView.getSystemDisplayName(file));
+		
+		if (file != null)
+		{
+			if (file.isFile())
+			{
+				long size;
+				String sizeOfFile;
+				
+				size = file.length();
+				sizeOfFile = String.valueOf(size) + " Bytes";
+				
+				if (size > 1024)
+				{
+					size = size / 1024;
+					sizeOfFile = String.valueOf(size) + " KB";
+					
+					if (size > 1024)
+					{
+						size = size / 1024;
+						sizeOfFile = String.valueOf(size) + " MB";
+					}
+				}
+				
+				String labelText = fileSystemView.getSystemDisplayName(file) + " - " + sizeOfFile;
+				nodeLabel.setText(labelText);
+			}
+			
+			else
+			{
+				nodeLabel.setText(fileSystemView.getSystemDisplayName(file));
+			}
+			nodeLabel.setIcon(fileSystemView.getSystemIcon(file));
+		}
 		
 		if (sel)
 		{
