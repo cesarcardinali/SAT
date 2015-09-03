@@ -149,10 +149,11 @@ public class CustomFilterItem
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 			
-			if (!folder.isDirectory())
+			if (!folder.isDirectory() || path.equals(""))
 			{
 				mares = "Not a directory";
 				res = res + "\n********From main log:\n" + mares;
+				return res;
 			}
 			
 			for (int i = 0; i < listOfFiles.length; i++)
@@ -207,10 +208,11 @@ public class CustomFilterItem
 			File folder = new File(path);
 			File[] listOfFiles = folder.listFiles();
 			
-			if (!folder.isDirectory())
+			if (!folder.isDirectory() || path.equals(""))
 			{
 				syres = "Not a directory";
 				res = res + "\n********From system log:\n" + syres;
+				return res;
 			}
 			
 			for (int i = 0; i < listOfFiles.length; i++)
@@ -267,10 +269,11 @@ public class CustomFilterItem
 			File[] listOfFiles = folder.listFiles();
 			keres = "";
 			
-			if (!folder.isDirectory())
+			if (!folder.isDirectory() || path.equals(""))
 			{
 				keres = "Not a directory";
 				res = res + "\n********From kernel log:\n" + keres;
+				return res;
 			}
 			
 			for (int i = 0; i < listOfFiles.length; i++)
@@ -326,10 +329,11 @@ public class CustomFilterItem
 			File[] listOfFiles = folder.listFiles();
 			rares = "";
 			
-			if (!folder.isDirectory())
+			if (!folder.isDirectory() || path.equals(""))
 			{
 				rares = "Not a directory";
 				res = res + "\n********From radio log:\n" + rares;
+				return res;
 			}
 			
 			for (int i = 0; i < listOfFiles.length; i++)
@@ -385,10 +389,11 @@ public class CustomFilterItem
 			File[] listOfFiles = folder.listFiles();
 			bures = "";
 			
-			if (!folder.isDirectory())
+			if (!folder.isDirectory() || path.equals(""))
 			{
 				bures = "Not a directory";
 				res = res + "\n********From bugreport log:\n" + bures;
+				return res;
 			}
 			
 			for (int i = 0; i < listOfFiles.length; i++)
@@ -445,10 +450,11 @@ public class CustomFilterItem
 			File[] listOfFiles = folder.listFiles();
 			rores = "";
 			
-			if (!folder.isDirectory())
+			if (!folder.isDirectory() || path.equals(""))
 			{
 				rores = "Not a directory";
 				res = res + "\n********From report output log:********\n" + rores;
+				return res;
 			}
 			
 			for (int i = 0; i < listOfFiles.length; i++)

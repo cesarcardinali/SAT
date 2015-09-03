@@ -53,426 +53,7 @@ public class FiltersResultsTree extends JTree
 			@Override
 			public void valueChanged(TreeSelectionEvent e)
 			{
-				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) getLastSelectedPathComponent();
-				
-				if (selectedNode != null)
-				{
-					if (!selectedNode.toString().contains("On Colors"))
-						ColorPrinter.resetPanelStyle(SharedObjs.parserPane.getResultsTxtPane());
-					
-					switch (selectedNode.getLevel())
-					{
-						case 0: // Root selected
-							SharedObjs.parserPane.showAllLogResults();
-							Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Showing all results.");
-							break;
-						case 1: // Leaf filter selected
-							if (selectedNode.toString().contains("Alarms"))
-							{
-								if (selectedNode.getChildCount() == 0)
-								{
-									new Thread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											alarmThread(selectedNode);
-										}
-									}).start();
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Alarm.getResult());
-								}
-							}
-							else if (selectedNode.toString().contains("Bug2Go"))
-							{
-								if (selectedNode.getChildCount() == 0)
-								{
-									new Thread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											bug2goThread(selectedNode);
-										}
-									}).start();
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(B2G.getResult());
-								}
-							}
-							else if (selectedNode.toString().contains("Diag"))
-							{
-								if (selectedNode.getChildCount() == 0)
-								{
-									new Thread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											diagThread(selectedNode);
-										}
-									}).start();
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Diag.getResult());
-								}
-							}
-							else if (selectedNode.toString().contains("WakeLocks"))
-							{
-								if (selectedNode.getChildCount() == 0)
-								{
-									new Thread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											wakelocksThread(selectedNode);
-										}
-									}).start();
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Issue.getResult());
-								}
-							}
-							else if (selectedNode.toString().contains("High Consumption"))
-							{
-								if (selectedNode.getChildCount() == 0)
-								{
-									new Thread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											comsumptionThread(selectedNode);
-										}
-									}).start();
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Consume.getResult());
-								}
-							}
-							else if (selectedNode.toString().contains("Summary"))
-							{
-								if (selectedNode.getChildCount() == 0)
-								{
-									new Thread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											summaryThread(selectedNode);
-										}
-									}).start();
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Normal.getResult());
-								}
-							}
-							else if (selectedNode.toString().contains("Suspicious"))
-							{
-								if (selectedNode.getChildCount() == 0)
-								{
-									new Thread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											suspiciousThread(selectedNode);
-										}
-									}).start();
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Suspicious.getResult());
-								}
-							}
-							else if (selectedNode.toString().contains("Tethering"))
-							{
-								if (selectedNode.getChildCount() == 0)
-								{
-									new Thread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											tetherThread(selectedNode);
-										}
-									}).start();
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Tether.getResult());
-								}
-							}
-							else
-							{
-								int index = SharedObjs.getUserFiltersList()
-													  .indexOf(selectedNode.toString().replace(" - Done", "")
-																		   .replace(" - Error", ""));
-								if (index >= 0)
-								{
-									if (selectedNode.getChildCount() == 0)
-									{
-										Logger.log(Logger.TAG_FILTERSRESULTSTREE, "3");
-										new Thread(new Runnable()
-										{
-											@Override
-											public void run()
-											{
-												customThread(selectedNode);
-											}
-										}).start();
-									}
-									else
-									{
-										SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getUserFiltersList()
-																						  .get(index)
-																						  .getResult());
-									}
-								}
-							}
-							break;
-						case 2: // A filter child selected
-							DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) selectedNode.getParent();
-							
-							if (parentNode.toString().contains("Alarm"))
-							{
-								if (parentNode.toString().contains("Error"))
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Alarm.getResult());
-								}
-								else
-								{
-									int nodeIndex = parentNode.getIndex(selectedNode);
-									
-									if (selectedNode.toString().contains("On Colors"))
-									{
-										SharedObjs.parserPane.getResultsTxtPane().setCaretPosition(0);
-										break;
-									}
-									else
-									{
-										SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.optionsPane.getTextAlarms()
-																									  .replace("#pname#",
-																											   Alarm.getList()
-																													.get(nodeIndex - 1)
-																													.getProcess())
-																									  .replace("#log#",
-																											   Alarm.getList()
-																													.get(nodeIndex - 1)
-																													.toString())
-																									  .replace("\\n",
-																											   "\n"));
-										break;
-									}
-								}
-							}
-							else if (parentNode.toString().contains("Bug2Go"))
-							{
-								if (parentNode.toString().contains("Error"))
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(B2G.getResult());
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(B2G.getResult());
-								}
-							}
-							else if (parentNode.toString().contains("Diag"))
-							{
-								if (parentNode.toString().contains("Error"))
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Diag.getResult());
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Diag.getResult());
-								}
-							}
-							else if (parentNode.toString().contains("WakeLocks"))
-							{
-								if (parentNode.toString().contains("Error"))
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Issue.getResult());
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Issue.getResult());
-								}
-							}
-							else if (parentNode.toString().contains("High Consumption"))
-							{
-								if (parentNode.toString().contains("Error"))
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Consume.getResult());
-								}
-								else
-								{
-									int nodeIndex = parentNode.getIndex(selectedNode);
-									
-									if (selectedNode.toString().contains("On Colors"))
-									{
-										ColorPrinter.colorsApps(SharedObjs.parserPane.getResultsTxtPane(),
-																Consume.getResult());
-									}
-									else
-									{
-										SharedObjs.parserPane.setResultsPaneTxt("{panel}\n"
-																				+ Consume.getHCList()
-																						 .get(nodeIndex - 1)
-																						 .toString()
-																				+ "{panel}");
-									}
-								}
-							}
-							else if (parentNode.toString().contains("Summary"))
-							{
-								if (parentNode.toString().contains("Error"))
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Normal.getResult());
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Normal.getResult());
-								}
-							}
-							else if (parentNode.toString().contains("Suspicious"))
-							{
-								if (parentNode.toString().contains("Error"))
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Suspicious.getResult());
-								}
-								else
-								{
-									int nodeIndex = parentNode.getIndex(selectedNode);
-									SharedObjs.parserPane.setResultsPaneTxt(Suspicious.getWakeLocks()
-																					  .get(nodeIndex)
-																					  .toString());
-								}
-							}
-							else if (parentNode.toString().contains("Tethering"))
-							{
-								if (parentNode.toString().contains("Error"))
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Tether.getResult());
-								}
-								else
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(Tether.getResult());
-								}
-							}
-							else
-							{
-								int index = SharedObjs.getUserFiltersList()
-													  .indexOf(parentNode.toString().replace(" - Done", "")
-																		 .replace(" - Error", ""));
-								
-								if (index >= 0)
-								{
-									SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getUserFiltersList()
-																					  .get(index).getResult());
-								}
-							}
-							break;
-						
-						case 3: // A filter child derivation selected
-							parentNode = (DefaultMutableTreeNode) selectedNode.getParent().getParent();
-							int nodeIndex = parentNode.getIndex(selectedNode.getParent());
-							
-							if (parentNode.toString().contains("Alarms"))
-							{
-								ColorPrinter.colorsAlarm(SharedObjs.parserPane.getResultsTxtPane(),
-														 SharedObjs.optionsPane.getTextAlarms()
-																			   .replace("#pname#",
-																						Alarm.getList()
-																							 .get(nodeIndex - 1)
-																							 .getProcess())
-																			   .replace("#log#",
-																						Alarm.getList()
-																							 .get(nodeIndex - 1)
-																							 .toString())
-																			   .replace("\\n", "\n"));
-							}
-							else if (parentNode.toString().contains("High Consumption"))
-							{
-								if (selectedNode.toString().contains("ON"))
-									SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.optionsPane.getTextConsumeOn()
-																								  .replaceAll("#pname#",
-																											  Consume.getHCList()
-																													 .get(nodeIndex - 1)
-																													 .getProcess())
-																								  .replaceAll("#sconconsume#",
-																											  String.valueOf(Consume.getHCList()
-																																	.get(nodeIndex - 1)
-																																	.getScOnConsume()))
-																								  .replaceAll("#logon#",
-																											  Consume.getHCList()
-																													 .get(nodeIndex - 1)
-																													 .getLogOn())
-																								  .replace("\\n",
-																										   "\n"));
-								else if (selectedNode.toString().contains("OFF"))
-									SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.optionsPane.getTextConsumeOff()
-																								  .replaceAll("#pname#",
-																											  Consume.getHCList()
-																													 .get(nodeIndex - 1)
-																													 .getProcess())
-																								  .replaceAll("#scoffconsume#",
-																											  String.valueOf(Consume.getHCList()
-																																	.get(nodeIndex - 1)
-																																	.getScOffConsume()))
-																								  .replaceAll("#logoff#",
-																											  Consume.getHCList()
-																													 .get(nodeIndex - 1)
-																													 .getLogOff())
-																								  .replace("\\n",
-																										   "\n"));
-								else if (selectedNode.toString().contains("Full"))
-									SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.optionsPane.getTextConsumeFull()
-																								  .replaceAll("#pname#",
-																											  Consume.getHCList()
-																													 .get(nodeIndex - 1)
-																													 .getProcess())
-																								  .replaceAll("#avgconsume#",
-																											  String.valueOf(Consume.getHCList()
-																																	.get(nodeIndex - 1)
-																																	.getConsumeAvg()))
-																								  .replaceAll("#logfull#",
-																											  Consume.getHCList()
-																													 .get(nodeIndex - 1)
-																													 .getLog())
-																								  .replace("\\n",
-																										   "\n"));
-								else
-									ColorPrinter.colorsApps(SharedObjs.parserPane.getResultsTxtPane(),
-															SharedObjs.optionsPane.getTextConsumeFull()
-																				  .replaceAll("#pname#",
-																							  Consume.getHCList()
-																									 .get(nodeIndex - 1)
-																									 .getProcess())
-																				  .replaceAll("#avgconsume#",
-																							  String.valueOf(Consume.getHCList()
-																													.get(nodeIndex - 1)
-																													.getConsumeAvg()))
-																				  .replaceAll("#logfull#",
-																							  Consume.getHCList()
-																									 .get(nodeIndex - 1)
-																									 .getLog())
-																				  .replace("\\n", "\n"));
-							}
-							break;
-						
-						default: // Something different happened
-							break;
-					}
-				}
+				treeSelectionAction();
 			}
 		});
 		
@@ -1076,16 +657,17 @@ public class FiltersResultsTree extends JTree
 	{
 		String result;
 		String nodeName = selectedNode.toString();
-		Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + " thread running");
 		String x = (String) selectedNode.getUserObject();
 		x = (nodeName + " - Running");
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
-		int index = SharedObjs.getUserFiltersList().indexOf(nodeName);
+		int index = SharedObjs.getActiveFiltersList().indexOfName(nodeName);
+		
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + " thread running");
 		
 		if (index >= 0)
 		{
-			result = SharedObjs.getUserFiltersList().get(index).runFilter(SharedObjs.getCrPath());
+			result = SharedObjs.getActiveFiltersList().get(index).runFilter(SharedObjs.getCrPath());
 			if (result.contains(" log missing"))
 			{
 				x = (nodeName + " - Error");
@@ -1113,7 +695,7 @@ public class FiltersResultsTree extends JTree
 			else
 			{
 				addCustomResult(nodeName, "Result");
-				result = result + SharedObjs.getUserFiltersList().get(index).getHeader() + "\n";
+				result = result + SharedObjs.getActiveFiltersList().get(index).getHeader() + "\n";
 				SharedObjs.setResult(SharedObjs.getResult()
 									 + "\n\n\n========================= Tethering =========================\n"
 									 + result);
@@ -1278,6 +860,7 @@ public class FiltersResultsTree extends JTree
 			
 			if (node.toString().equals(nodeSelected.toString()))
 			{
+				Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Node names match!");
 				
 				if (((String) node.getUserObject()).toLowerCase().contains("alarm"))
 				{
@@ -1329,12 +912,12 @@ public class FiltersResultsTree extends JTree
 				
 				else
 				{
-					int index = SharedObjs.getUserFiltersList().indexOf(node.toString()
+					int index = SharedObjs.getActiveFiltersList().indexOfName(node.toString()
 																			.replace(" - Done", "")
 																			.replace(" - Error", ""));
 					if (index > -1)
 					{
-						SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getUserFiltersList().get(index)
+						SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getActiveFiltersList().get(index)
 																		  .getResult());
 						return true;
 					}
@@ -1343,5 +926,429 @@ public class FiltersResultsTree extends JTree
 			}
 		}
 		return false;
+	}
+	
+	private void treeSelectionAction(){
+
+		final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) getLastSelectedPathComponent();
+		
+		if (selectedNode != null)
+		{
+			if (!selectedNode.toString().contains("On Colors"))
+				ColorPrinter.resetPanelStyle(SharedObjs.parserPane.getResultsTxtPane());
+			
+			switch (selectedNode.getLevel())
+			{
+				case 0: // Root selected
+					SharedObjs.parserPane.showAllLogResults();
+					Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Showing all results.");
+					break;
+				case 1: // Leaf filter selected
+					if (selectedNode.toString().contains("Alarms"))
+					{
+						if (selectedNode.getChildCount() == 0)
+						{
+							new Thread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									alarmThread(selectedNode);
+								}
+							}).start();
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Alarm.getResult());
+						}
+					}
+					else if (selectedNode.toString().contains("Bug2Go"))
+					{
+						if (selectedNode.getChildCount() == 0)
+						{
+							new Thread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									bug2goThread(selectedNode);
+								}
+							}).start();
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(B2G.getResult());
+						}
+					}
+					else if (selectedNode.toString().contains("Diag"))
+					{
+						if (selectedNode.getChildCount() == 0)
+						{
+							new Thread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									diagThread(selectedNode);
+								}
+							}).start();
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Diag.getResult());
+						}
+					}
+					else if (selectedNode.toString().contains("WakeLocks"))
+					{
+						if (selectedNode.getChildCount() == 0)
+						{
+							new Thread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									wakelocksThread(selectedNode);
+								}
+							}).start();
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Issue.getResult());
+						}
+					}
+					else if (selectedNode.toString().contains("High Consumption"))
+					{
+						if (selectedNode.getChildCount() == 0)
+						{
+							new Thread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									comsumptionThread(selectedNode);
+								}
+							}).start();
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Consume.getResult());
+						}
+					}
+					else if (selectedNode.toString().contains("Summary"))
+					{
+						if (selectedNode.getChildCount() == 0)
+						{
+							new Thread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									summaryThread(selectedNode);
+								}
+							}).start();
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Normal.getResult());
+						}
+					}
+					else if (selectedNode.toString().contains("Suspicious"))
+					{
+						if (selectedNode.getChildCount() == 0)
+						{
+							new Thread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									suspiciousThread(selectedNode);
+								}
+							}).start();
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Suspicious.getResult());
+						}
+					}
+					else if (selectedNode.toString().contains("Tethering"))
+					{
+						if (selectedNode.getChildCount() == 0)
+						{
+							new Thread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									tetherThread(selectedNode);
+								}
+							}).start();
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Tether.getResult());
+						}
+					}
+					else
+					{
+						int index = SharedObjs.getActiveFiltersList()
+											  .indexOfName(selectedNode.toString().replace(" - Done", "")
+																   .replace(" - Error", ""));
+						if (index >= 0)
+						{
+							if (selectedNode.getChildCount() == 0)
+							{
+								Logger.log(Logger.TAG_FILTERSRESULTSTREE, "3");
+								new Thread(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										customThread(selectedNode);
+									}
+								}).start();
+							}
+							else
+							{
+								SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getActiveFiltersList()
+																				  .get(index)
+																				  .getResult());
+							}
+						}
+					}
+					break;
+				case 2: // A filter child selected
+					DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) selectedNode.getParent();
+					
+					if (parentNode.toString().contains("Alarm"))
+					{
+						if (parentNode.toString().contains("Error"))
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Alarm.getResult());
+						}
+						else
+						{
+							int nodeIndex = parentNode.getIndex(selectedNode);
+							
+							if (selectedNode.toString().contains("On Colors"))
+							{
+								SharedObjs.parserPane.getResultsTxtPane().setCaretPosition(0);
+								break;
+							}
+							else
+							{
+								SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.optionsPane.getTextAlarms()
+																							  .replace("#pname#",
+																									   Alarm.getList()
+																											.get(nodeIndex - 1)
+																											.getProcess())
+																							  .replace("#log#",
+																									   Alarm.getList()
+																											.get(nodeIndex - 1)
+																											.toString())
+																							  .replace("\\n",
+																									   "\n"));
+								break;
+							}
+						}
+					}
+					else if (parentNode.toString().contains("Bug2Go"))
+					{
+						if (parentNode.toString().contains("Error"))
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(B2G.getResult());
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(B2G.getResult());
+						}
+					}
+					else if (parentNode.toString().contains("Diag"))
+					{
+						if (parentNode.toString().contains("Error"))
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Diag.getResult());
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Diag.getResult());
+						}
+					}
+					else if (parentNode.toString().contains("WakeLocks"))
+					{
+						if (parentNode.toString().contains("Error"))
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Issue.getResult());
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Issue.getResult());
+						}
+					}
+					else if (parentNode.toString().contains("High Consumption"))
+					{
+						if (parentNode.toString().contains("Error"))
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Consume.getResult());
+						}
+						else
+						{
+							int nodeIndex = parentNode.getIndex(selectedNode);
+							
+							if (selectedNode.toString().contains("On Colors"))
+							{
+								ColorPrinter.colorsApps(SharedObjs.parserPane.getResultsTxtPane(),
+														Consume.getResult());
+							}
+							else
+							{
+								SharedObjs.parserPane.setResultsPaneTxt("{panel}\n"
+																		+ Consume.getHCList()
+																				 .get(nodeIndex - 1)
+																				 .toString()
+																		+ "{panel}");
+							}
+						}
+					}
+					else if (parentNode.toString().contains("Summary"))
+					{
+						if (parentNode.toString().contains("Error"))
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Normal.getResult());
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Normal.getResult());
+						}
+					}
+					else if (parentNode.toString().contains("Suspicious"))
+					{
+						if (parentNode.toString().contains("Error"))
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Suspicious.getResult());
+						}
+						else
+						{
+							int nodeIndex = parentNode.getIndex(selectedNode);
+							SharedObjs.parserPane.setResultsPaneTxt(Suspicious.getWakeLocks()
+																			  .get(nodeIndex)
+																			  .toString());
+						}
+					}
+					else if (parentNode.toString().contains("Tethering"))
+					{
+						if (parentNode.toString().contains("Error"))
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Tether.getResult());
+						}
+						else
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(Tether.getResult());
+						}
+					}
+					else
+					{
+						int index = SharedObjs.getActiveFiltersList()
+											  .indexOfName(parentNode.toString().replace(" - Done", "")
+																 .replace(" - Error", ""));
+						
+						if (index >= 0)
+						{
+							SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getActiveFiltersList()
+																			  .get(index).getResult());
+						}
+					}
+					break;
+				
+				case 3: // A filter child derivation selected
+					parentNode = (DefaultMutableTreeNode) selectedNode.getParent().getParent();
+					int nodeIndex = parentNode.getIndex(selectedNode.getParent());
+					
+					if (parentNode.toString().contains("Alarms"))
+					{
+						ColorPrinter.colorsAlarm(SharedObjs.parserPane.getResultsTxtPane(),
+												 SharedObjs.optionsPane.getTextAlarms()
+																	   .replace("#pname#",
+																				Alarm.getList()
+																					 .get(nodeIndex - 1)
+																					 .getProcess())
+																	   .replace("#log#",
+																				Alarm.getList()
+																					 .get(nodeIndex - 1)
+																					 .toString())
+																	   .replace("\\n", "\n"));
+					}
+					else if (parentNode.toString().contains("High Consumption"))
+					{
+						if (selectedNode.toString().contains("ON"))
+							SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.optionsPane.getTextConsumeOn()
+																						  .replaceAll("#pname#",
+																									  Consume.getHCList()
+																											 .get(nodeIndex - 1)
+																											 .getProcess())
+																						  .replaceAll("#sconconsume#",
+																									  String.valueOf(Consume.getHCList()
+																															.get(nodeIndex - 1)
+																															.getScOnConsume()))
+																						  .replaceAll("#logon#",
+																									  Consume.getHCList()
+																											 .get(nodeIndex - 1)
+																											 .getLogOn())
+																						  .replace("\\n",
+																								   "\n"));
+						else if (selectedNode.toString().contains("OFF"))
+							SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.optionsPane.getTextConsumeOff()
+																						  .replaceAll("#pname#",
+																									  Consume.getHCList()
+																											 .get(nodeIndex - 1)
+																											 .getProcess())
+																						  .replaceAll("#scoffconsume#",
+																									  String.valueOf(Consume.getHCList()
+																															.get(nodeIndex - 1)
+																															.getScOffConsume()))
+																						  .replaceAll("#logoff#",
+																									  Consume.getHCList()
+																											 .get(nodeIndex - 1)
+																											 .getLogOff())
+																						  .replace("\\n",
+																								   "\n"));
+						else if (selectedNode.toString().contains("Full"))
+							SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.optionsPane.getTextConsumeFull()
+																						  .replaceAll("#pname#",
+																									  Consume.getHCList()
+																											 .get(nodeIndex - 1)
+																											 .getProcess())
+																						  .replaceAll("#avgconsume#",
+																									  String.valueOf(Consume.getHCList()
+																															.get(nodeIndex - 1)
+																															.getConsumeAvg()))
+																						  .replaceAll("#logfull#",
+																									  Consume.getHCList()
+																											 .get(nodeIndex - 1)
+																											 .getLog())
+																						  .replace("\\n",
+																								   "\n"));
+						else
+							ColorPrinter.colorsApps(SharedObjs.parserPane.getResultsTxtPane(),
+													SharedObjs.optionsPane.getTextConsumeFull()
+																		  .replaceAll("#pname#",
+																					  Consume.getHCList()
+																							 .get(nodeIndex - 1)
+																							 .getProcess())
+																		  .replaceAll("#avgconsume#",
+																					  String.valueOf(Consume.getHCList()
+																											.get(nodeIndex - 1)
+																											.getConsumeAvg()))
+																		  .replaceAll("#logfull#",
+																					  Consume.getHCList()
+																							 .get(nodeIndex - 1)
+																							 .getLog())
+																		  .replace("\\n", "\n"));
+					}
+					break;
+				
+				default: // Something different happened
+					break;
+			}
+		}
 	}
 }
