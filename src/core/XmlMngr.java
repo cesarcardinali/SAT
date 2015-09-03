@@ -89,189 +89,6 @@ public class XmlMngr
 	}
 	
 	/**
-	 * Returns value in system XML file.<br/>
-	 * Returns null if element not found.
-	 * <p>
-	 * <strong> Example: </strong> XmlMngr.getSystemValueOf(new String[] {"configs","tool_name"});
-	 * <p>
-	 * 
-	 * @param path Array of strings to following value<br/>
-	 * @return Return the value as a string <br/>
-	 */
-	public static String getSystemValueOf(String path[])
-	{
-		Element requestedElement = systemDocument.getRootElement();
-		
-		for (String item : path)
-		{
-			requestedElement = requestedElement.getChild(item);
-		}
-		
-		if (requestedElement != null)
-		{
-			return requestedElement.getText();
-		}
-		
-		return "null";
-	}
-	
-	/**
-	 * Returns value in message XML file.<br/>
-	 * Returns null if element not found.
-	 * <p>
-	 * <strong> Example: </strong> XmlMngr.getMessageValueOf(new String[] {"messages","error"});
-	 * <p>
-	 * 
-	 * @param path Array of {@link String} to following value<br/>
-	 * @return Return the value as a string <br/>
-	 */
-	public static String getMessageValueOf(String path[])
-	{
-		Element requestedElement = messageDocument.getRootElement();
-		
-		for (String item : path)
-		{
-			requestedElement = requestedElement.getChild(item);
-		}
-		
-		if (requestedElement != null)
-		{
-			return requestedElement.getText();
-		}
-		
-		return "null";
-	}
-	
-	/**
-	 * Get user filter item
-	 * 
-	 * @param name Name of the filter
-	 * @return Filter item as {@link CustomFilterItem}. Null if not found.
-	 */
-	public static CustomFilterItem getMyFiltersValueOf(String name)
-	{
-		Element requestedElement = filtersDocument.getRootElement().getChild("myFilters").getChild(name);
-		
-		if (requestedElement != null)
-		{
-			CustomFilterItem filter;
-			filter = new CustomFilterItem(requestedElement.getChildText("owner"),
-										  requestedElement.getText().replace("_", " "),
-										  requestedElement.getChildText("regex"),
-										  requestedElement.getChildText("header"),
-										  Boolean.parseBoolean(requestedElement.getChildText("main")),
-										  Boolean.parseBoolean(requestedElement.getChildText("system")),
-										  Boolean.parseBoolean(requestedElement.getChildText("kernel")),
-										  Boolean.parseBoolean(requestedElement.getChildText("radio")),
-										  Boolean.parseBoolean(requestedElement.getChildText("bugreport")),
-										  Boolean.parseBoolean(requestedElement.getChildText("routput")),
-										  Boolean.parseBoolean(requestedElement.getChildText("shared")),
-										  Boolean.parseBoolean(requestedElement.getChildText("editable")),
-										  Boolean.parseBoolean(requestedElement.getChildText("active")));
-			return filter;
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Get shared filter item
-	 * 
-	 * @param name Name of the filter
-	 * @param owner Filter owner name
-	 * @return Filter item as {@link CustomFilterItem}. Null if not found.
-	 */
-	public static CustomFilterItem getSharedFiltersValueOf(String name, String owner)
-	{
-		Element requestedElement = filtersDocument.getRootElement().getChild("sharedFilters").getChild(name);
-		
-		if (requestedElement != null && requestedElement.getText().equals(name)
-			&& requestedElement.getChildTextTrim("owner").equals(owner))
-		{
-			CustomFilterItem filter;
-			filter = new CustomFilterItem(requestedElement.getChildText("owner"),
-			                              requestedElement.getText().replace("_", " "),
-										  requestedElement.getChildText("regex"),
-										  requestedElement.getChildText("header"),
-										  Boolean.parseBoolean(requestedElement.getChildText("main")),
-										  Boolean.parseBoolean(requestedElement.getChildText("system")),
-										  Boolean.parseBoolean(requestedElement.getChildText("kernel")),
-										  Boolean.parseBoolean(requestedElement.getChildText("radio")),
-										  Boolean.parseBoolean(requestedElement.getChildText("bugreport")),
-										  Boolean.parseBoolean(requestedElement.getChildText("routput")),
-										  Boolean.parseBoolean(requestedElement.getChildText("shared")),
-										  Boolean.parseBoolean(requestedElement.getChildText("editable")),
-										  Boolean.parseBoolean(requestedElement.getChildText("active")));
-			return filter;
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Get all user filters
-	 * 
-	 * @return Array of {@link CustomFilterItem}
-	 */
-	public static CustomFiltersList getAllMyFilters()
-	{
-		Element requestedElement = filtersDocument.getRootElement().getChild("myFilters");
-		CustomFiltersList filters = new CustomFiltersList();
-		
-		for (int i=0; i < requestedElement.getChildren().size(); i++)
-		{
-			Element filterElement = requestedElement.getChildren().get(i);
-			filters.add(new CustomFilterItem(filterElement.getChildText("owner"),
-			                                  filterElement.getName().replace("_", " "),
-			                                  filterElement.getChildText("regex"),
-			                                  filterElement.getChildText("header"),
-										  Boolean.parseBoolean(filterElement.getChildText("main")),
-										  Boolean.parseBoolean(filterElement.getChildText("system")),
-										  Boolean.parseBoolean(filterElement.getChildText("kernel")),
-										  Boolean.parseBoolean(filterElement.getChildText("radio")),
-										  Boolean.parseBoolean(filterElement.getChildText("bugreport")),
-										  Boolean.parseBoolean(filterElement.getChildText("routput")),
-										  Boolean.parseBoolean(filterElement.getChildText("shared")),
-										  Boolean.parseBoolean(filterElement.getChildText("editable")),
-										  Boolean.parseBoolean(filterElement.getChildText("active"))));
-		}
-		Logger.log(Logger.TAG_XMLMNGR, "MyFilters loaded: " + filters.size());
-		
-		return filters;
-	}
-	
-	/**
-	 * Get all shared filters
-	 * 
-	 * @return Array of {@link CustomFilterItem}
-	 */
-	public static CustomFiltersList getAllSharedFilters()
-	{
-		Element requestedElement = filtersDocument.getRootElement().getChild("sharedFilters");
-		CustomFiltersList filters = new CustomFiltersList();
-		
-		for (int i=0; i < requestedElement.getChildren().size(); i++)
-		{
-			Element filterElement = requestedElement.getChildren().get(i);
-			filters.add(new CustomFilterItem(filterElement.getChildText("owner"),
-			                                  filterElement.getName().replace("_", " "),
-			                                  filterElement.getChildText("regex"),
-			                                  filterElement.getChildText("header"),
-										  Boolean.parseBoolean(filterElement.getChildText("main")),
-										  Boolean.parseBoolean(filterElement.getChildText("system")),
-										  Boolean.parseBoolean(filterElement.getChildText("kernel")),
-										  Boolean.parseBoolean(filterElement.getChildText("radio")),
-										  Boolean.parseBoolean(filterElement.getChildText("bugreport")),
-										  Boolean.parseBoolean(filterElement.getChildText("routput")),
-										  Boolean.parseBoolean(filterElement.getChildText("shared")),
-										  Boolean.parseBoolean(filterElement.getChildText("editable")),
-										  Boolean.parseBoolean(filterElement.getChildText("active"))));
-		}
-		
-		return filters;
-	}
-	
-	/**
 	 * Update value in user XML file
 	 * <p>
 	 * <strong> Example: </strong> XmlMngr.getUserValueOf(new String[] {"parser_pane","path"}, "Ops, fail!");
@@ -297,6 +114,33 @@ public class XmlMngr
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Returns value in system XML file.<br/>
+	 * Returns null if element not found.
+	 * <p>
+	 * <strong> Example: </strong> XmlMngr.getSystemValueOf(new String[] {"configs","tool_name"});
+	 * <p>
+	 * 
+	 * @param path Array of strings to following value<br/>
+	 * @return Return the value as a string <br/>
+	 */
+	public static String getSystemValueOf(String path[])
+	{
+		Element requestedElement = systemDocument.getRootElement();
+		
+		for (String item : path)
+		{
+			requestedElement = requestedElement.getChild(item);
+		}
+		
+		if (requestedElement != null)
+		{
+			return requestedElement.getText();
+		}
+		
+		return "null";
 	}
 	
 	/**
@@ -328,6 +172,33 @@ public class XmlMngr
 	}
 	
 	/**
+	 * Returns value in message XML file.<br/>
+	 * Returns null if element not found.
+	 * <p>
+	 * <strong> Example: </strong> XmlMngr.getMessageValueOf(new String[] {"messages","error"});
+	 * <p>
+	 * 
+	 * @param path Array of {@link String} to following value<br/>
+	 * @return Return the value as a string <br/>
+	 */
+	public static String getMessageValueOf(String path[])
+	{
+		Element requestedElement = messageDocument.getRootElement();
+		
+		for (String item : path)
+		{
+			requestedElement = requestedElement.getChild(item);
+		}
+		
+		if (requestedElement != null)
+		{
+			return requestedElement.getText();
+		}
+		
+		return "null";
+	}
+	
+	/**
 	 * Update value in message XML file.
 	 * <p>
 	 * <strong> Example: </strong> XmlMngr.setMessageValueOf(new String[] {"messages","error"}, "Ops, fail!");
@@ -356,6 +227,29 @@ public class XmlMngr
 	}
 	
 	/**
+	 * Get user filter item
+	 * 
+	 * @param name Name of the filter
+	 * @return Filter item as {@link CustomFilterItem}. Null if not found.
+	 */
+	public static CustomFilterItem getMyFiltersValueOf(String name)
+	{
+		for (Element requestedElement : filtersDocument.getRootElement().getChild("myFilters").getChildren())
+		{
+			if (requestedElement.getChildText("name").equals(name))
+			{
+				CustomFilterItem filter;
+				filter = new CustomFilterItem();
+				updateFilter(requestedElement, filter);
+				
+				return filter;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Set a user filter
 	 * @param filter {@link CustomFilterItem}
 	 * @return true if successful. false if not.
@@ -365,45 +259,48 @@ public class XmlMngr
 		if (!filter.getName().equals(""))
 		{
 			Element myFiltersElement = filtersDocument.getRootElement().getChild("myFilters");
-			Element requestedElement = myFiltersElement.getChild(filter.getName().replace(" ", "_"));
 			
-			if (requestedElement != null)
+			for (Element requestedElement : myFiltersElement.getChildren())
 			{
-				requestedElement.getChild("regex").setText(filter.getRegex());
-				requestedElement.getChild("header").setText(filter.getHeader());
-				requestedElement.getChild("owner").setText(filter.getOwner());
-				requestedElement.getChild("main").setText("" + filter.isMain());
-				requestedElement.getChild("system").setText("" + filter.isSystem());
-				requestedElement.getChild("kernel").setText("" + filter.isKernel());
-				requestedElement.getChild("radio").setText("" + filter.isRadio());
-				requestedElement.getChild("bugreport").setText("" + filter.isBugreport());
-				requestedElement.getChild("routput").setText("" + filter.isRoutput());
-				requestedElement.getChild("shared").setText("" + filter.isShared());
-				requestedElement.getChild("editable").setText("" + filter.isEditable());
-				//requestedElement.getChild("active").setText("" + filter.isActive());
+				if (requestedElement.getChildText("name").equals(filter.getName()))
+				{
+					updateElement(requestedElement, filter);
+					
+					return true;
+				}
 			}
-			else
-			{
-				Element xmlElement = new Element(filter.getName().replace(" ", "_"));
-				xmlElement.addContent(new Element("regex").setText(filter.getRegex()));
-				xmlElement.addContent(new Element("header").setText(filter.getHeader()));
-				xmlElement.addContent(new Element("owner").setText(filter.getOwner()));
-				xmlElement.addContent(new Element("main").setText("" + filter.isMain()));
-				xmlElement.addContent(new Element("system").setText("" + filter.isSystem()));
-				xmlElement.addContent(new Element("kernel").setText("" + filter.isKernel()));
-				xmlElement.addContent(new Element("radio").setText("" + filter.isRadio()));
-				xmlElement.addContent(new Element("bugreport").setText("" + filter.isBugreport()));
-				xmlElement.addContent(new Element("routput").setText("" + filter.isRoutput()));
-				xmlElement.addContent(new Element("shared").setText("" + filter.isShared()));
-				xmlElement.addContent(new Element("editable").setText("" + filter.isEditable()));
-				xmlElement.addContent(new Element("active").setText("" + filter.isActive()));
-				myFiltersElement.addContent(xmlElement);
-			}
+			
+			myFiltersElement.addContent(createElement(filter, myFiltersElement.getChildren().size() + 1));
 			
 			return true;
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Get shared filter item
+	 * 
+	 * @param name Name of the filter
+	 * @param owner Filter owner name
+	 * @return Filter item as {@link CustomFilterItem}. Null if not found.
+	 */
+	public static CustomFilterItem getSharedFiltersValueOf(String name, String owner)
+	{
+		for (Element requestedElement : filtersDocument.getRootElement().getChild("sharedFilters")
+													   .getChildren())
+		{
+			if (requestedElement.getName().equals(name))
+			{
+				CustomFilterItem filter;
+				filter = new CustomFilterItem();
+				updateFilter(requestedElement, filter);
+				
+				return filter;
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -414,42 +311,131 @@ public class XmlMngr
 	public static boolean setSharedFiltersValueOf(CustomFilterItem filter)
 	{
 		Element sharedFiltersElement = filtersDocument.getRootElement().getChild("sharedFilters");
-		Element requestedElement = sharedFiltersElement.getChild(filter.getName().replace(" ", "_"));
 		
-		if (requestedElement != null)
+		if (!filter.getName().equals(""))
 		{
-			requestedElement.getChild("regex").setText(filter.getRegex());
-			requestedElement.getChild("header").setText(filter.getHeader());
-			requestedElement.getChild("owner").setText(filter.getOwner());
-			requestedElement.getChild("main").setText("" + filter.isMain());
-			requestedElement.getChild("system").setText("" + filter.isSystem());
-			requestedElement.getChild("kernel").setText("" + filter.isKernel());
-			requestedElement.getChild("radio").setText("" + filter.isRadio());
-			requestedElement.getChild("bugreport").setText("" + filter.isBugreport());
-			requestedElement.getChild("routput").setText("" + filter.isRoutput());
-			requestedElement.getChild("shared").setText("" + filter.isShared());
-			requestedElement.getChild("editable").setText("" + filter.isEditable());
-			//requestedElement.getChild("active").setText("" + filter.isActive());
-		}
-		else
-		{
-			Element xmlElement = new Element(filter.getName().replace(" ", "_"));
-			xmlElement.addContent(new Element("regex").setText(filter.getRegex()));
-			xmlElement.addContent(new Element("header").setText(filter.getHeader()));
-			xmlElement.addContent(new Element("owner").setText(filter.getOwner()));
-			xmlElement.addContent(new Element("main").setText("" + filter.isMain()));
-			xmlElement.addContent(new Element("system").setText("" + filter.isSystem()));
-			xmlElement.addContent(new Element("kernel").setText("" + filter.isKernel()));
-			xmlElement.addContent(new Element("radio").setText("" + filter.isRadio()));
-			xmlElement.addContent(new Element("bugreport").setText("" + filter.isBugreport()));
-			xmlElement.addContent(new Element("routput").setText("" + filter.isRoutput()));
-			xmlElement.addContent(new Element("shared").setText("" + filter.isShared()));
-			xmlElement.addContent(new Element("editable").setText("" + filter.isEditable()));
-			xmlElement.addContent(new Element("active").setText("false"));
-			sharedFiltersElement.addContent(xmlElement);
+			for (Element requestedElement : sharedFiltersElement.getChildren())
+			{
+				if (requestedElement.getChildText("name").equals(filter.getName()))
+				{
+					updateElement(requestedElement, filter);
+					return true;
+				}
+			}
+			
+			sharedFiltersElement.addContent(createElement(filter,
+														  sharedFiltersElement.getChildren().size() + 1));
+			return true;
 		}
 		
-		return true;
+		return false;
+	}
+	
+	public static CustomFilterItem getActiveFiltersValueOf(String name, String owner)
+	{
+		for (Element requestedElement : filtersDocument.getRootElement().getChild("activeFilters")
+													   .getChildren())
+		{
+			if (requestedElement.getChildText("name").equals(name))
+			{
+				CustomFilterItem filter;
+				filter = new CustomFilterItem();
+				updateFilter(requestedElement, filter);
+				
+				return filter;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static boolean setActiveFiltersValueOf(CustomFilterItem filter)
+	{
+		if (!filter.getName().equals(""))
+		{
+			Element activeFiltersElement = filtersDocument.getRootElement().getChild("activeFilters");
+			
+			for (Element requestedElement : activeFiltersElement.getChildren())
+			{
+				if (requestedElement.getChildText("name").equals(filter.getName()))
+				{
+					updateElement(requestedElement, filter);
+					return true;
+				}
+			}
+			
+			activeFiltersElement.addContent(createElement(filter,
+														  activeFiltersElement.getChildren().size() + 1));
+														  
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Get all user filters
+	 * 
+	 * @return Array of {@link CustomFilterItem}
+	 */
+	public static CustomFiltersList getAllMyFilters()
+	{
+		Element requestedElement = filtersDocument.getRootElement().getChild("myFilters");
+		CustomFiltersList filters = new CustomFiltersList();
+		CustomFilterItem aux;
+		
+		for (Element filterElement : requestedElement.getChildren())
+		{
+			aux = new CustomFilterItem();
+			updateFilter(filterElement, aux);
+			filters.add(aux);
+		}
+		
+		return filters;
+	}
+	
+	/**
+	 * Get all shared filters
+	 * 
+	 * @return Array of {@link CustomFilterItem}
+	 */
+	public static CustomFiltersList getAllSharedFilters()
+	{
+		Element requestedElement = filtersDocument.getRootElement().getChild("sharedFilters");
+		CustomFiltersList filters = new CustomFiltersList();
+		CustomFilterItem aux;
+		
+		for (int i = 0; i < requestedElement.getChildren().size(); i++)
+		{
+			Element filterElement = requestedElement.getChildren().get(i);
+			aux = new CustomFilterItem();
+			updateFilter(filterElement, aux);
+			filters.add(aux);
+		}
+		
+		return filters;
+	}
+	
+	/**
+	 * Get all active shared filters
+	 * 
+	 * @return Array of {@link CustomFilterItem}
+	 */
+	public static CustomFiltersList getAllActiveFilters()
+	{
+		Element requestedElement = filtersDocument.getRootElement().getChild("activeFilters");
+		CustomFiltersList filters = new CustomFiltersList();
+		CustomFilterItem aux;
+		
+		for (int i = 0; i < requestedElement.getChildren().size(); i++)
+		{
+			Element filterElement = requestedElement.getChildren().get(i);
+			aux = new CustomFilterItem();
+			updateFilter(filterElement, aux);
+			filters.add(aux);
+		}
+		
+		return filters;
 	}
 	
 	/**
@@ -481,20 +467,37 @@ public class XmlMngr
 	}
 	
 	/**
+	 * @param filters
+	 * @return
+	 */
+	public static boolean addActiveFilters(CustomFiltersList filters)
+	{
+		for (CustomFilterItem filter : filters)
+		{
+			setActiveFiltersValueOf(filter);
+		}
+		
+		return true;
+	}
+	
+	/**
 	 * @param filter
 	 * @return
 	 */
 	public static boolean removeMyFiltersValueOf(CustomFilterItem filter)
 	{
 		Element myFiltersElement = filtersDocument.getRootElement().getChild("myFilters");
-		Element requestedElement = myFiltersElement.getChild(filter.getName().replace(" ", "_"));
 		
-		if(requestedElement != null)
-			myFiltersElement.removeChild(filter.getName().replace(" ", "_"));
-		else
-			return false;
+		for (Element requestedElement : myFiltersElement.getChildren())
+		{
+			if (requestedElement.getChildText("name").equals(filter.getName()))
+			{
+				myFiltersElement.removeChild(requestedElement.getName());
+				return true;
+			}
+		}
 		
-		return true;
+		return false;
 	}
 	
 	/**
@@ -504,11 +507,11 @@ public class XmlMngr
 	{
 		Element myFiltersElement = filtersDocument.getRootElement().getChild("myFilters");
 		
-		if(myFiltersElement != null)
+		if (myFiltersElement != null)
 			myFiltersElement.removeContent();
 		else
 			return false;
-							
+			
 		return true;
 	}
 	
@@ -518,15 +521,18 @@ public class XmlMngr
 	 */
 	public static boolean removeSharedFiltersValueOf(CustomFilterItem filter)
 	{
-		Element myFiltersElement = filtersDocument.getRootElement().getChild("sharedFilters");
-		Element requestedElement = myFiltersElement.getChild(filter.getName().replace(" ", "_"));
+		Element sharedFiltersElement = filtersDocument.getRootElement().getChild("sharedFilters");
+
+		for (Element requestedElement : sharedFiltersElement.getChildren())
+		{
+			if (requestedElement.getChildText("name").equals(filter.getName()))
+			{
+				sharedFiltersElement.removeChild(requestedElement.getName());
+				return true;
+			}
+		}
 		
-		if(requestedElement != null)
-			myFiltersElement.removeChild(filter.getName().replace(" ", "_"));
-		else
-			return false;
-		
-		return true;
+		return false;
 	}
 	
 	/**
@@ -534,46 +540,49 @@ public class XmlMngr
 	 */
 	public static boolean removeAllSharedFilters()
 	{
-		Element myFiltersElement = filtersDocument.getRootElement().getChild("sharedFilters");
+		Element sharedFiltersElement = filtersDocument.getRootElement().getChild("sharedFilters");
 		
-		if(myFiltersElement != null)
-			myFiltersElement.removeContent();
+		if (sharedFiltersElement != null)
+			sharedFiltersElement.removeContent();
 		else
 			return false;
-							
+			
 		return true;
 	}
 	
 	/**
-	 * Save all crsManager variables to its respective XML file.
+	 * @param filter
+	 * @return
 	 */
-	public static void saveParserData()
+	public static boolean removeActiveFiltersValueOf(CustomFilterItem filter)
 	{
-		// TODO
+		Element activeFiltersElement = filtersDocument.getRootElement().getChild("activeFilters");
+
+		for (Element requestedElement : activeFiltersElement.getChildren())
+		{
+			if (requestedElement.getChildText("name").equals(filter.getName()))
+			{
+				activeFiltersElement.removeChild(requestedElement.getName());
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
-	 * Save all crsManager variables to its respective XML file.
+	 * @return
 	 */
-	public static void saveCrsManagerData()
+	public static boolean removeAllActiveFilters()
 	{
-		// TODO
-	}
-	
-	/**
-	 * Save all crsManager variables to its respective XML file.
-	 */
-	public static void saveOptionsData()
-	{
-		// TODO
-	}
-	
-	/**
-	 * Save all variables to its respective XML file.
-	 */
-	public static void saveAllData()
-	{
-		// TODO
+		Element activeFiltersElement = filtersDocument.getRootElement().getChild("activeFilters");
+		
+		if (activeFiltersElement != null)
+			activeFiltersElement.removeContent();
+		else
+			return false;
+			
+		return true;
 	}
 	
 	/**
@@ -622,5 +631,58 @@ public class XmlMngr
 			e.printStackTrace();
 		}
 	}
-
+	
+	private static Element createElement(CustomFilterItem filter, int index)
+	{
+		Element xmlElement = new Element("item_" + index);
+		xmlElement.addContent(new Element("name").setText(filter.getName()));
+		xmlElement.addContent(new Element("regex").setText(filter.getRegex()));
+		xmlElement.addContent(new Element("header").setText(filter.getHeader()));
+		xmlElement.addContent(new Element("owner").setText(filter.getOwner()));
+		xmlElement.addContent(new Element("main").setText("" + filter.isMain()));
+		xmlElement.addContent(new Element("system").setText("" + filter.isSystem()));
+		xmlElement.addContent(new Element("kernel").setText("" + filter.isKernel()));
+		xmlElement.addContent(new Element("radio").setText("" + filter.isRadio()));
+		xmlElement.addContent(new Element("bugreport").setText("" + filter.isBugreport()));
+		xmlElement.addContent(new Element("routput").setText("" + filter.isRoutput()));
+		xmlElement.addContent(new Element("shared").setText("" + filter.isShared()));
+		xmlElement.addContent(new Element("editable").setText("" + filter.isPublic()));
+		xmlElement.addContent(new Element("active").setText("false"));
+		xmlElement.addContent(new Element("last_update").setText("" + filter.getLastUpdate()));
+		return xmlElement;
+	}
+	
+	private static void updateElement(Element requestedElement, CustomFilterItem filter)
+	{
+		requestedElement.getChild("name").setText(filter.getName());
+		requestedElement.getChild("regex").setText(filter.getRegex());
+		requestedElement.getChild("header").setText(filter.getHeader());
+		requestedElement.getChild("owner").setText(filter.getOwner());
+		requestedElement.getChild("main").setText("" + filter.isMain());
+		requestedElement.getChild("system").setText("" + filter.isSystem());
+		requestedElement.getChild("kernel").setText("" + filter.isKernel());
+		requestedElement.getChild("radio").setText("" + filter.isRadio());
+		requestedElement.getChild("bugreport").setText("" + filter.isBugreport());
+		requestedElement.getChild("routput").setText("" + filter.isRoutput());
+		requestedElement.getChild("shared").setText("" + filter.isShared());
+		requestedElement.getChild("editable").setText("" + filter.isPublic());
+		requestedElement.getChild("last_update").setText("" + filter.getLastUpdate());
+	}
+	
+	private static void updateFilter(Element requestedElement, CustomFilterItem filter)
+	{
+		filter.setName(requestedElement.getChildText("name"));
+		filter.setRegex(requestedElement.getChildText("regex"));
+		filter.setHeader(requestedElement.getChildText("header"));
+		filter.setOwner(requestedElement.getChildText("owner"));
+		filter.setMain(Boolean.parseBoolean(requestedElement.getChildText("main")));
+		filter.setSystem(Boolean.parseBoolean(requestedElement.getChildText("system")));
+		filter.setKernel(Boolean.parseBoolean(requestedElement.getChildText("kernel")));
+		filter.setRadio(Boolean.parseBoolean(requestedElement.getChildText("radio")));
+		filter.setBugreport(Boolean.parseBoolean(requestedElement.getChildText("bugreport")));
+		filter.setRoutput(Boolean.parseBoolean(requestedElement.getChildText("routput")));
+		filter.setShared(Boolean.parseBoolean(requestedElement.getChildText("shared")));
+		filter.setEditable(Boolean.parseBoolean(requestedElement.getChildText("editable")));
+		filter.setLastUpdate(requestedElement.getChildText("last_update"));
+	}
 }

@@ -73,6 +73,23 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	}
 	
 	/**
+	 * @param name
+	 * @return Index
+	 */
+	public int indexOfName(String name)
+	{
+		for (int i = 0; i < this.size(); i++)
+		{
+			if (name.equals(this.get(i).getName()))
+			{
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+	
+	/**
 	 * @return
 	 */
 	public CustomFiltersList getActiveFilters(){

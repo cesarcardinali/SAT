@@ -9,8 +9,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.IOException;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,11 +21,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.UndoManager;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-
+import supportive.NonWrappingTextPane;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
@@ -39,7 +33,6 @@ import filters.Issue;
 import filters.Normal;
 import filters.Suspicious;
 import filters.Tether;
-import supportive.NonWrappingTextPane;
 
 
 @SuppressWarnings("serial")
@@ -179,28 +172,7 @@ public class ParserPane extends JPanel
 	 */
 	private void loadPaneData()
 	{
-		try
-		{
-			File xmlFile = new File("Data/cfgs/user_cfg.xml");
-			SAXBuilder builder = new SAXBuilder();
-			Document document = (Document) builder.build(xmlFile);
-			Element satNode = document.getRootElement();
-			Element crs_jira_paneNode = satNode.getChild("parser_pane");
-			
-			for (Element e : crs_jira_paneNode.getChildren())
-			{
-				if (e.getName().equals("tree_breakdown"))
-				{
-					filtersResultsTree.setToggleClickCount(Integer.parseInt(e.getValue()));
-				}
-			}
-			
-			Logger.log(Logger.TAG_PARSER, "Options Saved");
-		}
-		catch (IOException | JDOMException e)
-		{
-			e.printStackTrace();
-		}
+		
 	}
 	
 	/**

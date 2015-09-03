@@ -39,13 +39,13 @@ public class CustomFilterItem
 	private boolean		   bugreport;
 	private boolean		   routput;
 	private boolean		   shared;
-	private boolean		   editable;
+	private boolean		   fPublic;
 	private boolean		   active;
-	private int			   id;
+	private int			   bd_id;
 	
 	public CustomFilterItem()
 	{
-		id = -1;
+		bd_id = -1;
 		name = "";
 		regex = "";
 		header = "";
@@ -82,13 +82,13 @@ public class CustomFilterItem
 	 * @param b If looks at bugreport log
 	 * @param ro If looks at report_output log
 	 * @param share If filter is shared
-	 * @param edit If filter is editable
+	 * @param edit If filter is fPublic
 	 */
 	public CustomFilterItem(String own, String name, String regex, String header, boolean m, boolean s,
 							boolean k, boolean r, boolean b, boolean ro, boolean share, boolean edit,
 							boolean active)
 	{
-		id = -1;
+		bd_id = -1;
 		this.name = name;
 		this.regex = regex;
 		this.header = header;
@@ -109,7 +109,7 @@ public class CustomFilterItem
 		bugreport = b;
 		routput = ro;
 		shared = share;
-		editable = edit;
+		fPublic = edit;
 		this.active = active;
 	}
 	
@@ -130,13 +130,13 @@ public class CustomFilterItem
 		bures = "";
 		rores = "";
 		res = "";
-		Logger.log(Logger.TAG_CUSTOMFILTER, "regex: " + regex);
-		Logger.log(Logger.TAG_CUSTOMFILTER, "main: " + main);
-		Logger.log(Logger.TAG_CUSTOMFILTER, "system: " + system);
-		Logger.log(Logger.TAG_CUSTOMFILTER, "kernel: " + kernel);
-		Logger.log(Logger.TAG_CUSTOMFILTER, "radio: " + radio);
-		Logger.log(Logger.TAG_CUSTOMFILTER, "bugreport: " + bugreport);
-		Logger.log(Logger.TAG_CUSTOMFILTER, "routput: " + routput);
+		Logger.log(Logger.TAG_CUSTOM_FILTERS, "regex: " + regex);
+		Logger.log(Logger.TAG_CUSTOM_FILTERS, "main: " + main);
+		Logger.log(Logger.TAG_CUSTOM_FILTERS, "system: " + system);
+		Logger.log(Logger.TAG_CUSTOM_FILTERS, "kernel: " + kernel);
+		Logger.log(Logger.TAG_CUSTOM_FILTERS, "radio: " + radio);
+		Logger.log(Logger.TAG_CUSTOM_FILTERS, "bugreport: " + bugreport);
+		Logger.log(Logger.TAG_CUSTOM_FILTERS, "routput: " + routput);
 		
 		// File path
 		String file = "";
@@ -164,8 +164,8 @@ public class CustomFilterItem
 				}
 			}
 			
-			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
-			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "path: " + path);
 			
 			try
 			{
@@ -188,14 +188,14 @@ public class CustomFilterItem
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "main log missing");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "main log missing");
 				mares = "main log missing\n";
 				res = res + "\n********From main log:\n" + mares;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				mares = "SAT IOException\n";
 				res = res + "\n********From main log:\n" + mares;
 			}
@@ -222,8 +222,8 @@ public class CustomFilterItem
 				}
 			}
 			
-			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
-			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "path: " + path);
 			
 			try
 			{
@@ -247,14 +247,14 @@ public class CustomFilterItem
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "System log missing");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "System log missing");
 				syres = "System log missing\n";
 				res = res + "\n********From system log:\n" + syres;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				syres = "SAT IOException\n";
 				res = res + "\n********From system log:\n" + syres;
 			}
@@ -282,8 +282,8 @@ public class CustomFilterItem
 				}
 			}
 			
-			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
-			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "path: " + path);
 			
 			try
 			{
@@ -306,14 +306,14 @@ public class CustomFilterItem
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "Kernel log missing");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "Kernel log missing");
 				keres = "Kernel log missing\n";
 				res = res + "\n********From kernel log:\n" + keres;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				keres = "SAT IOException\n";
 				res = res + "\n********From kernel log:\n" + keres;
 			}
@@ -341,8 +341,8 @@ public class CustomFilterItem
 				}
 			}
 			
-			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
-			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "path: " + path);
 			
 			try
 			{
@@ -365,14 +365,14 @@ public class CustomFilterItem
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "radio log missing");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "radio log missing");
 				rares = "radio log missing\n";
 				res = res + "\n********From radio log:\n" + rares;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				rares = "SAT IOException\n";
 				res = res + "\n********From radio log:\n" + rares;
 			}
@@ -400,8 +400,8 @@ public class CustomFilterItem
 				}
 			}
 			
-			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
-			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "path: " + path);
 			
 			try
 			{
@@ -425,14 +425,14 @@ public class CustomFilterItem
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "bugreport log missing");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "bugreport log missing");
 				bures = "bugreport log missing\n";
 				res = res + "\n********From bugreport log:\n" + bures;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				bures = "SAT IOException\n";
 				res = res + "\n********From bugreport log:\n" + bures;
 			}
@@ -460,8 +460,8 @@ public class CustomFilterItem
 				}
 			}
 			
-			Logger.log(Logger.TAG_CUSTOMFILTER, "file: " + file);
-			Logger.log(Logger.TAG_CUSTOMFILTER, "path: " + path);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "file: " + file);
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "path: " + path);
 			
 			try
 			{
@@ -484,14 +484,14 @@ public class CustomFilterItem
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "report output log missing");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "report output log missing");
 				rores = "report output log missing\n";
 				res = res + "\n********From report output log:********\n" + rores;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_CUSTOMFILTER, "IOException");
+				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				rores = "SAT IOException\n";
 				res = res + "\n********From report output log:********\n" + rores;
 			}
@@ -686,14 +686,14 @@ public class CustomFilterItem
 		this.shared = shared;
 	}
 	
-	public boolean isEditable()
+	public boolean isPublic()
 	{
-		return editable;
+		return fPublic;
 	}
 	
 	public void setEditable(boolean edit)
 	{
-		this.editable = edit;
+		this.fPublic = edit;
 	}
 	
 	public String getResult()
@@ -738,12 +738,12 @@ public class CustomFilterItem
 	
 	public int getId()
 	{
-		return id;
+		return bd_id;
 	}
 	
 	public void setId(int id)
 	{
-		this.id = id;
+		this.bd_id = id;
 	}
 	
 	public String toString()
@@ -751,6 +751,6 @@ public class CustomFilterItem
 		return "Filter: " + name + "\nRegex: " + regex + "\nHeader: " + header + "\nOwner: " + owner
 			   + "\nMain: " + main + "\nSystem: " + system + "\nKernel: " + kernel + "\nRadio: " + radio
 			   + "\nBugreport: " + bugreport + "\nRepOutput: " + routput + "\nShared: " + shared
-			   + "\nEditable: " + editable + "\nActive: " + active + "\nUpdated: " + lastUpdate + "\nModified: " + modified;
+			   + "\nEditable: " + fPublic + "\nActive: " + active + "\nUpdated: " + lastUpdate + "\nModified: " + modified;
 	}
 }

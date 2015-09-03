@@ -72,6 +72,9 @@ public class SharedFiltersTableModel extends AbstractTableModel
 			return false;
 		else if (dataVector.get(row).getOwner().equals("Public") || dataVector.get(row).getOwner().equals(""))
 			return true;
+		else if (column == ACTIVE_INDEX)
+			return true;
+		
 		return false;
 	}
 	
@@ -208,6 +211,24 @@ public class SharedFiltersTableModel extends AbstractTableModel
 		{
 			return false;
 		}
+	}
+	
+	public boolean hasFilterName(CustomFilterItem lookForFilter)
+	{
+		if (dataVector.size() == 0)
+			return false;
+		CustomFilterItem filter;
+		
+		for (int i=0; i < dataVector.size()-1; i++)
+		{
+			filter = dataVector.get(i);
+			if (filter.getName().trim().equals(lookForFilter.getName()) && !filter.getLastUpdate().equals(lookForFilter.getLastUpdate()))
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/**

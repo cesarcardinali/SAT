@@ -746,16 +746,6 @@ public class FileTree extends JPanel
 	// Initialize the variable rootFolderPath
 	public void initRootFolder()
 	{
-		Logger.log(Logger.TAG_FILETREE, "Loading Root: It should be made by SharedObjs.initClass()");
-		/*
-		 * try { File xmlFile = new File("Data/cfgs/user_cfg.xml"); SAXBuilder builder = new SAXBuilder(); Document document = (Document)
-		 * builder.build(xmlFile); Element satNode = document.getRootElement(); Element crs_jira_paneNode = satNode.getChild("parser_pane");
-		 * 
-		 * for (Element e : crs_jira_paneNode.getChildren()) { if (e.getName().equals("path")) { rootFolderPath = (e.getValue()); } }
-		 * 
-		 * 
-		 * } catch (IOException | JDOMException e) { e.printStackTrace(); }
-		 */
 	}
 	
 	public void buildTree()

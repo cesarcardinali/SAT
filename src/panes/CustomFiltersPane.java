@@ -27,37 +27,40 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import core.Icons;
-import core.Logger;
-import core.SharedObjs;
-import core.XmlMngr;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
 import style.FiltersTableCheckboxCellRenderer;
 import style.FiltersTableIntCellRenderer;
 import style.FiltersTableStringCellRenderer;
 import style.MyFiltersTableModel;
-import style.SharedFiltersTableModel;;
+import style.SharedFiltersTableModel;
+import core.Icons;
+import core.Logger;
+import core.SharedObjs;
+import core.XmlMngr;
 
+
+;
 
 @SuppressWarnings("serial")
 public class CustomFiltersPane extends JDialog
 {
-	private int						lastTab;
-	private JTabbedPane				tabbedPane;
-	private JScrollPane				scrollPaneTable1;
-	private JScrollPane				scrollPaneTable2;
-	private JPanel					myFiltersPane;
-	private JPanel					sharedPane;
-	private JButton					btnDone;
-	private JButton					btnAdd;
-	private JButton					btnDel;
-	private JLabel					label;
-	private JTable					myFiltersTable;
-	private JTable					sharedFiltersTable;
-	private MyFiltersTableModel		myFiltersTableModel;
-	private SharedFiltersTableModel	sharedTableModel;
-	private CustomFiltersList		changesStack;
+	private int					 lastTab;
+	private JTabbedPane			 tabbedPane;
+	private JScrollPane			 scrollPaneTable1;
+	private JScrollPane			 scrollPaneTable2;
+	private JPanel				  myFiltersPane;
+	private JPanel				  sharedPane;
+	private JButton				 btnDone;
+	private JButton				 btnAdd;
+	private JButton				 btnDel;
+	private JLabel				  label;
+	private JTable				  myFiltersTable;
+	private JTable				  sharedFiltersTable;
+	private MyFiltersTableModel	 myFiltersTableModel;
+	private SharedFiltersTableModel sharedTableModel;
+	private CustomFiltersList	   changesStack;
+	private CustomFiltersList	   sharedTabChangesStack;
 	
 	// Create the dialog.
 	public CustomFiltersPane()
@@ -272,7 +275,8 @@ public class CustomFiltersPane extends JDialog
 		gbc_btnDone.gridy = 1;
 		getContentPane().add(btnDone, gbc_btnDone);
 		
-		changesStack = new CustomFiltersList();
+    	changesStack = new CustomFiltersList();
+    	sharedTabChangesStack = new CustomFiltersList();
 		
 		lastTab = -1;
 		tabbedPane.addChangeListener(new ChangeListener()
@@ -287,7 +291,7 @@ public class CustomFiltersPane extends JDialog
 					{
 						System.out.println("Pane2 Mudou tab de " + lastTab + " para "
 										   + tabPane.getSelectedIndex());
-										   
+						
 						switch (lastTab)
 						{
 							case 0:
@@ -296,7 +300,7 @@ public class CustomFiltersPane extends JDialog
 								SharedObjs.getUserFiltersList().clear();
 								SharedObjs.getUserFiltersList()
 										  .addAll(myFiltersTableModel.getFilterElements());
-										  
+								
 								/*
 								 * XmlMngr.removeAllMyFilters(); XmlMngr.addMyFilters(SharedObjs.getUserFiltersList());
 								 * 
@@ -310,7 +314,7 @@ public class CustomFiltersPane extends JDialog
 								SharedObjs.getSharedFiltersList().clear();
 								SharedObjs.getSharedFiltersList()
 										  .addAll(sharedTableModel.getFilterElements());
-										  
+								
 								/*
 								 * XmlMngr.removeAllSharedFilters(); XmlMngr.addSharedFilters(SharedObjs.getSharedFiltersList());
 								 * 
@@ -355,7 +359,23 @@ public class CustomFiltersPane extends JDialog
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				if (!myFiltersTableModel.hasEmptyRow())
+				if (myFiltersTable.isEditing())
+					myFiltersTable.getCellEditor().stopCellEditing();
+				
+				if (myFiltersTableModel.hasEmptyRow())
+				{
+					myFiltersTable.setColumnSelectionInterval(1, 1);
+					int nRows = myFiltersTableModel.getRowCount() - 1;
+					myFiltersTable.setRowSelectionInterval(myFiltersTable.convertRowIndexToView(nRows),
+														   myFiltersTable.convertRowIndexToView(nRows));
+					
+					JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(),
+												  "The filter name can not be empty");
+					
+					myFiltersTable.editCellAt(myFiltersTable.convertRowIndexToView(nRows), 1);
+					myFiltersTable.transferFocus();
+				}
+				else
 				{
 					myFiltersTableModel.addEmptyRow();
 					myFiltersTable.setColumnSelectionInterval(1, 1);
@@ -366,18 +386,10 @@ public class CustomFiltersPane extends JDialog
 					myFiltersTable.transferFocus();
 					
 					myFiltersTableModel.getElementAt(nRows).setModified("Insert");
-					myFiltersTableModel.getElementAt(nRows).setLastUpdate("" + new Timestamp(new java.util.Date().getTime()));
+					myFiltersTableModel.getElementAt(nRows)
+									   .setLastUpdate("" + new Timestamp(new java.util.Date().getTime()));
+					
 					changesStack.add(myFiltersTableModel.getElementAt(nRows));
-				}
-				else
-				{
-					myFiltersTable.setColumnSelectionInterval(2, 2);
-					int nRows = myFiltersTableModel.getRowCount() - 1;
-					myFiltersTable.setRowSelectionInterval(myFiltersTable.convertRowIndexToView(nRows),
-														   myFiltersTable.convertRowIndexToView(nRows));
-					JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(), "The filter name can not be empty");
-					myFiltersTable.editCellAt(myFiltersTable.convertRowIndexToView(nRows), 2);
-					myFiltersTable.transferFocus();
 				}
 			}
 		});
@@ -395,8 +407,16 @@ public class CustomFiltersPane extends JDialog
 														   new String[] {"Yes", "No"}, "Yes");
 					if (ans == 0)
 					{
-						myFiltersTableModel.getElementAt(myFiltersTable.getSelectedRow()).setModified("Delete");
-						changesStack.add(myFiltersTableModel.getElementAt(myFiltersTable.getSelectedRow()));
+						CustomFilterItem filter = myFiltersTableModel.getElementAt(myFiltersTable.getSelectedRow());
+						if (filter.getModified().equals("Insert"))
+						{
+							changesStack.remove(changesStack.indexOf(filter.getLastUpdate()));
+						}
+						else
+						{
+							filter.setModified("Delete");
+							changesStack.add(filter);
+						}
 						myFiltersTableModel.removeRow(myFiltersTable.getSelectedRow());
 					}
 				}
@@ -414,9 +434,7 @@ public class CustomFiltersPane extends JDialog
 					
 					if (column == 0)
 					{
-						System.out.println("Bang!");
-						myFiltersTable.setColumnSelectionInterval(myFiltersTable.getColumnCount() - 2,
-																  column);
+						myFiltersTable.setColumnSelectionInterval(myFiltersTable.getColumnCount() - 2, column);
 					}
 					/*
 					 * table.changeSelection(row, column, false, false); table.requestFocus();
@@ -436,13 +454,13 @@ public class CustomFiltersPane extends JDialog
 					
 					if (column == 0)
 					{
-						System.out.println("Bang!");
 						sharedFiltersTable.setColumnSelectionInterval(sharedFiltersTable.getColumnCount() - 1,
 																	  column);
 					}
 				}
 			}
 		});
+		
 		myFiltersTableModel.addTableModelListener(new TableModelListener()
 		{
 			@Override
@@ -453,99 +471,198 @@ public class CustomFiltersPane extends JDialog
 		});
 		
 		sharedTableModel.addTableModelListener(new TableModelListener()
-		{	
+		{
 			@Override
 			public void tableChanged(TableModelEvent evt)
 			{
 				sharedFiltersTableTracer(evt);
 			}
 		});
+		
 	}
 	
-	public void updateFiltersData()
+	public void open()
 	{
+		reloadFiltersTable();
+		tabbedPane.setSelectedIndex(0);
+		lastTab = -1;
+		changesStack.clear();
+		sharedTabChangesStack.clear();
+		setLocationRelativeTo(SharedObjs.satFrame);
+		setVisible(true);
+	}
+	
+	public void reloadFiltersTable()
+	{
+		// If connected to DB, update the shared filters list
 		if (SharedObjs.satDB != null)
 		{
 			SharedObjs.getSharedFiltersList().clear();
 			SharedObjs.getSharedFiltersList().addAll(SharedObjs.satDB.sharedFilters());
+			XmlMngr.removeAllSharedFilters();
+			XmlMngr.addSharedFilters(SharedObjs.getSharedFiltersList());
 			
 			SharedObjs.getUserFiltersList().clear();
 			SharedObjs.getUserFiltersList().addAll(SharedObjs.satDB.myFilters());
+			XmlMngr.removeAllMyFilters();
+			XmlMngr.addMyFilters(SharedObjs.getUserFiltersList());
 			
 			SharedObjs.getActiveFiltersList().clear();
-			SharedObjs.getActiveFiltersList().addAll(SharedObjs.getUserFiltersList().getActiveFilters());
-			SharedObjs.getActiveFiltersList().addAll(SharedObjs.getSharedFiltersList().getActiveFilters());
-		}
-		else
-		{
-			SharedObjs.getSharedFiltersList().clear();
-			SharedObjs.getSharedFiltersList().addAll(XmlMngr.getAllSharedFilters());
+			SharedObjs.getActiveFiltersList().addAll(SharedObjs.satDB.activeFilters());
+			XmlMngr.removeAllActiveFilters();
+			XmlMngr.addActiveFilters(SharedObjs.getActiveFiltersList());
 			
-			SharedObjs.getUserFiltersList().clear();
-			SharedObjs.getUserFiltersList().addAll(XmlMngr.getAllMyFilters());
+			for (CustomFilterItem filter : SharedObjs.getActiveFiltersList())
+			{
+				System.out.println("Active filter: " + filter.getName());
+				
+				if (SharedObjs.getUserFiltersList().indexOf(filter.getId()) >= 0)
+				{
+					SharedObjs.getUserFiltersList()
+							  .get(SharedObjs.getUserFiltersList().indexOf(filter.getId())).setActive(true);
+				}
+				
+				if (SharedObjs.getSharedFiltersList().indexOf(filter.getId()) >= 0)
+				{
+					SharedObjs.getSharedFiltersList()
+							  .get(SharedObjs.getSharedFiltersList().indexOf(filter.getId()))
+							  .setActive(true);
+				}
+			}
 			
-			SharedObjs.getActiveFiltersList().clear();
-			SharedObjs.getActiveFiltersList().addAll(SharedObjs.getUserFiltersList().getActiveFilters());
-			SharedObjs.getActiveFiltersList().addAll(SharedObjs.getSharedFiltersList().getActiveFilters());
-		}
+			/*
+			 * SharedObjs.getUserFiltersList().clear(); SharedObjs.getUserFiltersList().addAll(SharedObjs.satDB.myFilters());
+			 * 
+			 * SharedObjs.getActiveFiltersList().clear();
+			 * SharedObjs.getActiveFiltersList().addAll(SharedObjs.getUserFiltersList().getActiveFilters());
+			 * SharedObjs.getActiveFiltersList().addAll(SharedObjs.satDB.activeFilters());
+			 */
+		}/*
+		  * else { SharedObjs.getSharedFiltersList().clear(); SharedObjs.getSharedFiltersList().addAll(XmlMngr.getAllSharedFilters());
+		  * 
+		  * SharedObjs.getUserFiltersList().clear(); SharedObjs.getUserFiltersList().addAll(XmlMngr.getAllMyFilters());
+		  * 
+		  * SharedObjs.getActiveFiltersList().clear();
+		  * SharedObjs.getActiveFiltersList().addAll(SharedObjs.getUserFiltersList().getActiveFilters());
+		  * SharedObjs.getActiveFiltersList().addAll(SharedObjs.getSharedFiltersList().getActiveFilters()); }
+		  */
 		
-		setMyFiltersFields();
-		setSharedFields();
+		setSharedTableFields();
+		setMyFiltersTableFields();
 	}
 	
 	public void saveFilters()
 	{
 		Logger.log("FiltersManager", "Saving filters");
+		
+		// Finish cell editing if editing
 		if (myFiltersTable.isEditing())
 			myFiltersTable.getCellEditor().stopCellEditing();
-			
+		
 		if (sharedFiltersTable.isEditing())
 			sharedFiltersTable.getCellEditor().stopCellEditing();
 		
+		// Execute stacked changes  
 		if (SharedObjs.satDB != null)
 		{
-			Logger.log("FiltersManager", "Updating DB and XML");
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "Updating DB and XML");
 			
+			// Execute changes made in MyFilters tab
 			for (CustomFilterItem filter : changesStack)
 			{
-				if (filter.isEditable())
-					filter.setOwner("");
+				if (filter.isPublic())
+					filter.setOwner("Public");
 				
 				if (filter.getModified().equals("Update"))
 				{
-					System.out.println("Update: " + SharedObjs.satDB.updateFilter(filter));
-					XmlMngr.setMyFiltersValueOf(filter);
+					System.out.println("Update element: " + filter.getName());
+					SharedObjs.satDB.updateFilter(filter);
 				}
 				else if (filter.getModified().equals("Insert"))
 				{
-					System.out.println("Insert: " + SharedObjs.satDB.insertFilter(filter));
-					XmlMngr.setMyFiltersValueOf(filter);
+					System.out.println("Insert: " + filter.getName());
+					SharedObjs.satDB.insertFilter(filter);
 				}
 				else if (filter.getModified().equals("Delete"))
 				{
-					System.out.println("Delete: " + SharedObjs.satDB.deleteFilter(filter));
-					XmlMngr.removeMyFiltersValueOf(filter);
+					System.out.println("Delete: " + filter.getName());
+					SharedObjs.satDB.deleteFilter(filter);
 				}
 			}
 			
-			System.out.println(changesStack);
+			// Execute changes made in SharedFilters tab
+			for (CustomFilterItem filter : sharedTabChangesStack)
+			{
+				if (filter.isPublic())
+					filter.setOwner("Public");
+				
+				if (filter.getModified().equals("Update"))
+				{
+					System.out.println("Update element: " + filter.getName());
+					SharedObjs.satDB.updateFilter(filter);
+				}
+				else if (filter.getModified().equals("Insert"))
+				{
+					System.out.println("Insert: " + filter.getName());
+					SharedObjs.satDB.insertFilter(filter);
+				}
+				else if (filter.getModified().equals("Delete"))
+				{
+					System.out.println("Delete: " + filter.getName());
+					SharedObjs.satDB.deleteFilter(filter);
+				}
+			}
 			
+			// Show changes stack trace
+			String stackTrace = "";
+			for (CustomFilterItem filter : changesStack)
+			{
+				stackTrace = stackTrace + " - Name: " + filter.getName() + " Mod: " + filter.getModified();
+			}
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "MyChangeStack: " + stackTrace);
+			
+			stackTrace = "";
+			for (CustomFilterItem filter : sharedTabChangesStack)
+			{
+				stackTrace = stackTrace + " - Name: " + filter.getName() + " Mod: " + filter.getModified();
+			}
+			Logger.log(Logger.TAG_CUSTOM_FILTERS, "SharedChangeStack: " + stackTrace);
+			
+			// Update XML file and in memory lists
 			SharedObjs.getUserFiltersList().clear();
 			SharedObjs.getUserFiltersList().addAll(myFiltersTableModel.getFilterElements());
+			XmlMngr.removeAllMyFilters();
+			XmlMngr.addMyFilters(SharedObjs.getUserFiltersList());
+			
 			SharedObjs.getSharedFiltersList().clear();
 			SharedObjs.getSharedFiltersList().addAll(sharedTableModel.getFilterElements());
+			XmlMngr.removeAllSharedFilters();
+			XmlMngr.addSharedFilters(SharedObjs.getSharedFiltersList());
+			
+			SharedObjs.getActiveFiltersList().clear();
+			SharedObjs.getActiveFiltersList().addAll(SharedObjs.satDB.activeFilters());
+			XmlMngr.removeAllActiveFilters();
+			XmlMngr.addActiveFilters(SharedObjs.getActiveFiltersList());
 		}
 		else
 		{
 			Logger.log("FiltersManager", "Updating XML");
 			for (CustomFilterItem filter : changesStack)
 			{
-				if (filter.isEditable())
-					filter.setOwner("");
+				if (filter.isPublic())
+					filter.setOwner("Public");
 				
 				if (filter.getModified().equals("Update") || filter.getModified().equals("Insert"))
 				{
-					XmlMngr.setMyFiltersValueOf(filter);
+					if (filter.isPublic())
+					{
+						XmlMngr.removeMyFiltersValueOf(filter);
+						XmlMngr.setActiveFiltersValueOf(filter);
+					}
+					else
+					{
+						XmlMngr.setMyFiltersValueOf(filter);
+					}
 				}
 				else if (filter.getModified().equals("Delete"))
 				{
@@ -554,56 +671,74 @@ public class CustomFiltersPane extends JDialog
 			}
 			
 			SharedObjs.getUserFiltersList().clear();
-			SharedObjs.getUserFiltersList().addAll(SharedObjs.satDB.myFilters());
+			SharedObjs.getUserFiltersList().addAll(XmlMngr.getAllMyFilters());
+			
 			SharedObjs.getSharedFiltersList().clear();
-			SharedObjs.getSharedFiltersList().addAll(SharedObjs.satDB.sharedFilters());
+			SharedObjs.getSharedFiltersList().addAll(XmlMngr.getAllSharedFilters());
+			
+			SharedObjs.getActiveFiltersList().clear();
+			SharedObjs.getActiveFiltersList().addAll(XmlMngr.getAllActiveFilters());
 		}
 		
+		SharedObjs.parserPane.getFiltersResultsTree().updateFiltersTree();
+		
 		Logger.log("FiltersManager", "Filters Saved");
-	}
-	
-	public void open()
-	{
-		updateFiltersData();
-		tabbedPane.setSelectedIndex(0);
-		lastTab = -1;
-		changesStack.clear();
-		setLocationRelativeTo(SharedObjs.satFrame);
-		setVisible(true);
 	}
 	
 	public void sharedFiltersTableTracer(TableModelEvent evt)
 	{
 		if (evt.getType() == TableModelEvent.UPDATE)
 		{
-			//int column = evt.getColumn();
+			// int column = evt.getColumn();
 			int row = evt.getFirstRow();
 			
 			CustomFilterItem filter = sharedTableModel.getElementAt(row);
-			if (!filter.getModified().equals("Insert"))
-				filter.setModified("Update");
 			
-			if (filter.isEditable())
-				filter.setOwner("");
-			
-			if (filter.getId() >= 0)
+			if (sharedTableModel.hasFilterName(filter))
 			{
-				if (changesStack.indexOf(filter.getId()) >= 0)
+				sharedFiltersTable.setColumnSelectionInterval(1, 1);
+				sharedFiltersTable.setRowSelectionInterval(sharedFiltersTable.convertRowIndexToView(row),
+														   sharedFiltersTable.convertRowIndexToView(row));
+				int i = 1;
+				filter.setName(filter.getName() + "(" + i + ")");
+				
+				while (sharedTableModel.hasFilterName(filter))
 				{
-					changesStack.set(changesStack.indexOf(filter.getId()), filter);
+					i++;
+					filter.setName(filter.getName().subSequence(0, filter.getName().length() - 3) + "(" + i + ")");
 				}
-				else
-				{
-					changesStack.add(filter);
-				}
-			}
-			else if (changesStack.indexOf(filter.getLastUpdate()) >= 0)
-			{
-				changesStack.set(changesStack.indexOf(filter.getLastUpdate()), filter);
+				
+				JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(), "This is already in use");
+				
+				sharedFiltersTable.transferFocus();
 			}
 			else
 			{
-				changesStack.add(filter);
+				if (!filter.getModified().equals("Insert"))
+					filter.setModified("Update");
+				
+				if (filter.isPublic())
+					filter.setOwner("Public");
+				
+				if (filter.getId() >= 0)
+				{
+					if (sharedTabChangesStack.indexOf(filter.getId()) >= 0)
+					{
+						sharedTabChangesStack.set(sharedTabChangesStack.indexOf(filter.getId()), filter);
+					}
+					else
+					{
+						sharedTabChangesStack.add(filter);
+					}
+				}
+				else if (sharedTabChangesStack.indexOf(filter.getLastUpdate()) >= 0)
+				{
+					sharedTabChangesStack.set(sharedTabChangesStack.indexOf(filter.getLastUpdate()), filter);
+				}
+				else
+				{
+					sharedTabChangesStack.add(filter);
+				}
 			}
 		}
 	}
@@ -612,62 +747,81 @@ public class CustomFiltersPane extends JDialog
 	{
 		if (evt.getType() == TableModelEvent.UPDATE)
 		{
-			//int column = evt.getColumn();
 			int row = evt.getFirstRow();
 			
 			CustomFilterItem filter = myFiltersTableModel.getElementAt(row);
-			if (!filter.getModified().equals("Insert"))
-				filter.setModified("Update");
 			
-			if (filter.isEditable())
-				filter.setOwner("");
-			
-			if (filter.getId() >= 0)
+			if (myFiltersTableModel.hasFilterName(filter))
 			{
-				if (changesStack.indexOf(filter.getId()) >= 0)
+				myFiltersTable.setColumnSelectionInterval(1, 1);
+				myFiltersTable.setRowSelectionInterval(myFiltersTable.convertRowIndexToView(row),
+													   myFiltersTable.convertRowIndexToView(row));
+				int i = 1;
+				filter.setName(filter.getName() + "(" + i + ")");
+				
+				while (myFiltersTableModel.hasFilterName(filter))
 				{
-					changesStack.set(changesStack.indexOf(filter.getId()), filter);
+					i++;
+					filter.setName(filter.getName().subSequence(0, filter.getName().length() - 3) + "(" + i
+								   + ")");
+				}
+				
+				JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(), "This is already in use");
+				
+				myFiltersTable.transferFocus();
+			}
+			else
+			{
+				System.out.println("Nome OK");
+				if (!filter.getModified().equals("Insert"))
+					filter.setModified("Update");
+				
+				if (filter.isPublic())
+					filter.setOwner("");
+				
+				if (filter.getId() >= 0)
+				{
+					System.out.println("ID Encontrado");
+					if (changesStack.indexOf(filter.getId()) >= 0)
+					{
+						changesStack.set(changesStack.indexOf(filter.getId()), filter);
+					}
+					else
+					{
+						changesStack.add(filter);
+					}
+				}
+				else if (changesStack.indexOf(filter.getLastUpdate()) >= 0)
+				{
+					changesStack.set(changesStack.indexOf(filter.getLastUpdate()), filter);
 				}
 				else
 				{
 					changesStack.add(filter);
 				}
 			}
-			else if (changesStack.indexOf(filter.getLastUpdate()) >= 0)
-			{
-				changesStack.set(changesStack.indexOf(filter.getLastUpdate()), filter);
-			}
-			else
-			{
-				changesStack.add(filter);
-			}
 		}
 	}
 	
-	public void setMyFiltersFields()
+	public void setMyFiltersTableFields()
 	{
 		// Clean table
 		while (myFiltersTableModel.getRowCount() > 0)
 			myFiltersTableModel.removeRow(myFiltersTableModel.getRowCount() - 1);
-			
+		
 		// Load MyFilters
 		for (CustomFilterItem filter : SharedObjs.getUserFiltersList())
 		{
 			myFiltersTableModel.addRow(filter);
 		}
-		
 	}
 	
-	public void setSharedFields()
+	public void setSharedTableFields()
 	{
-		/*
-		 * if(SharedObjs.satDB != null) SharedObjs.checkSharedFilters();
-		 */
-		
 		// Clean table
 		while (sharedTableModel.getRowCount() > 0)
 			sharedTableModel.removeRow(sharedTableModel.getRowCount() - 1);
-			
+		
 		// Load SharedFilters
 		for (CustomFilterItem filter : SharedObjs.getSharedFiltersList())
 		{

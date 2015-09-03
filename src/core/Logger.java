@@ -16,34 +16,35 @@ public class Logger
 	/**
 	 * Variables
 	 */
-	private static File			  logFile;
+	private static File		   logFile;
 	private static BufferedWriter logWriter;
-	private static boolean		  logCreated;
-	private static boolean		  debugMode;
-	public static final String	  TAG_SAT				 = "SAT";
-	public static final String	  TAG_PARSER			 = "PARSER";
-	public static final String	  TAG_CRSMANAGER		 = "CRS MANAGER";
-	public static final String	  TAG_OPTIONS			 = "OPTIONS";
-	public static final String	  TAG_FILETREE			 = "FILE TREE";
-	public static final String	  TAG_CUSTOMFILTER		 = "CUSTOM FILTER";
-	public static final String	  TAG_FILTERSRESULTSTREE = "FILTER RESULTS TREE";
-	public static final String	  TAG_COLORPRINTER		 = "COLOR PRINTER";
-	public static final String	  TAG_CRSCLOSER			 = "CRS CLOSER";
-	public static final String	  TAG_DIAGCRSCLOSER		 = "DIAG CRS CLOSER";
-	public static final String	  TAG_ALARM				 = "ALARM";
-	public static final String	  TAG_B2G				 = "BUG TO GO";
-	public static final String	  TAG_CONSUME			 = "CONSUME";
-	public static final String	  TAG_DIAG				 = "DIAG";
-	public static final String	  TAG_NORMAL			 = "NORMAL";
-	public static final String	  TAG_SUSPICIOUS		 = "SUSPICIOUS";
-	public static final String	  TAG_TETHER			 = "TETHER";
-	public static final String	  TAG_ALARMITEM			 = "ALARM ITEM";
-	public static final String	  TAG_UNZIP				 = "UNZIP";
-	public static final String	  TAG_BUG2GOITEM		 = "BUG2GO ITEM";
-	public static final String	  TAG_BUG2GODOWNLOADER	 = "BUG2GO DOWNLOADER";
-	public static final String	  TAG_XMLMNGR			 = "XML MANAGER";
-	public static final String	  TAG_SHAREDOBJS		 = "SHARED OBJS";
-	public static final String	  TAG_GETBUG			 = "GET BUG";
+	private static boolean		logCreated;
+	private static boolean		debugMode;
+	public static final String	TAG_SAT				= "SAT";
+	public static final String	TAG_PARSER			 = "PARSER";
+	public static final String	TAG_CRSMANAGER		 = "CRS MANAGER";
+	public static final String	TAG_OPTIONS			= "OPTIONS";
+	public static final String	TAG_FILETREE		   = "FILE TREE";
+	public static final String	TAG_FILTERSRESULTSTREE = "FILTER RESULTS TREE";
+	public static final String	TAG_COLORPRINTER	   = "COLOR PRINTER";
+	public static final String	TAG_CRSCLOSER		  = "CRS CLOSER";
+	public static final String	TAG_DIAGCRSCLOSER	  = "DIAG CRS CLOSER";
+	public static final String	TAG_ALARM			  = "ALARM";
+	public static final String	TAG_B2G				= "BUG TO GO";
+	public static final String	TAG_CONSUME			= "CONSUME";
+	public static final String	TAG_DIAG			   = "DIAG";
+	public static final String	TAG_NORMAL			 = "NORMAL";
+	public static final String	TAG_SUSPICIOUS		 = "SUSPICIOUS";
+	public static final String	TAG_TETHER			 = "TETHER";
+	public static final String	TAG_ALARMITEM		  = "ALARM ITEM";
+	public static final String	TAG_UNZIP			  = "UNZIP";
+	public static final String	TAG_BUG2GOITEM		 = "BUG2GO ITEM";
+	public static final String	TAG_BUG2GODOWNLOADER   = "BUG2GO DOWNLOADER";
+	public static final String	TAG_XMLMNGR			= "XML MANAGER";
+	public static final String	TAG_SHAREDOBJS		 = "SHARED OBJS";
+	public static final String	TAG_GETBUG			 = "GET BUG";
+	public static final String	TAG_CUSTOM_FILTERS	 = "CUSTOM FILTERS";
+	public static final String	TAG_LOGGER			 = "LOGGER";
 	
 	/**
 	 * Initialize class variables
@@ -55,12 +56,13 @@ public class Logger
 		if (debugMode)
 		{
 			// Generate log file
+			Logger.log(Logger.TAG_LOGGER, "Checking if logs folder exists");
 			if (new File(Strings.getLogsFolder()).exists())
 			{
 				logFile = new File(Strings.getLogsFolder() + "log_"
 								   + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
 								   + ".log");
-				System.out.println("Logs folder exists");
+				Logger.log(Logger.TAG_LOGGER, "Logs folder exists");
 			}
 			else
 			{
@@ -68,7 +70,7 @@ public class Logger
 				logFile = new File(Strings.getLogsFolder() + "log_"
 								   + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
 								   + ".log");
-				System.out.println("Logs folder created");
+				Logger.log(Logger.TAG_LOGGER, "Logs folder created");
 			}
 			
 			// Start log writer
@@ -80,7 +82,7 @@ public class Logger
 			catch (IOException e1)
 			{
 				logCreated = false;
-				System.out.println("Log file could not be created");
+				Logger.log(Logger.TAG_LOGGER, "Log file could not be created");
 				e1.printStackTrace();
 			}
 		}
@@ -107,7 +109,7 @@ public class Logger
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				System.out.println("Log file does not exist");
+				Logger.log(Logger.TAG_LOGGER, "Log file does not exist");
 			}
 		}
 		

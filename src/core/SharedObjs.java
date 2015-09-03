@@ -36,18 +36,18 @@ public class SharedObjs
 	/**
 	 * Variables
 	 */
-	public static final String		  contentFolder	 = "Data/";
-	public static final File		  sytemCfgFile	 = new File(contentFolder + "cfgs/system_cfg.xml");
-	public static final File		  userCfgFile	 = new File(contentFolder + "cfgs/user_cfg.xml");
+	public static final String		contentFolder  = "Data/";
+	public static final File		  sytemCfgFile   = new File(contentFolder + "cfgs/system_cfg.xml");
+	public static final File		  userCfgFile	= new File(contentFolder + "cfgs/user_cfg.xml");
 	public static final File		  messageCfgFile = new File(contentFolder + "cfgs/message.xml");
-	public static final File		  filtersFile	 = new File(contentFolder + "cfgs/filters.xml");
-	public static final File		  pwdFile		 = new File(contentFolder + "cfgs/pass.pwd");
-	private static String			  crPath;
-	private static String			  rootFolderPath;
-	private static String			  downloadPath;
-	private static String			  result;
-	private static String			  user;
-	private static String			  pass;
+	public static final File		  filtersFile	= new File(contentFolder + "cfgs/filters.xml");
+	public static final File		  pwdFile		= new File(contentFolder + "cfgs/pass.pwd");
+	private static String			 crPath;
+	private static String			 rootFolderPath;
+	private static String			 downloadPath;
+	private static String			 result;
+	private static String			 user;
+	private static String			 pass;
 	public static String			  updateFolder1;
 	public static String			  updateFolder2;
 	private static ArrayList<CrItem>  crsList;
@@ -56,13 +56,13 @@ public class SharedObjs
 	private static CustomFiltersList  sharedFiltersList;
 	private static CustomFiltersList  activeFiltersList;
 	private static CustomFiltersPane  customFiltersPane;
-	public static JTabbedPane		  tabbedPane;
+	public static JTabbedPane		 tabbedPane;
 	public static ParserPane		  parserPane;
 	public static CrsManagerPane	  crsManagerPane;
-	public static OptionsPane		  optionsPane;
+	public static OptionsPane		 optionsPane;
 	public static AdvancedOptionsPane advOptions;
-	public static SAT				  satFrame;
-	public static DBAdapter			  satDB;
+	public static SAT				 satFrame;
+	public static DBAdapter		   satDB;
 	
 	/**
 	 * Initialize class variables
@@ -130,7 +130,7 @@ public class SharedObjs
 						  crsManagerPane);
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Options</body></html>",
 						  optionsPane);
-						  
+		
 		// Setup connection status
 		if (satDB != null)
 			optionsPane.setServerStatus(true);
@@ -141,31 +141,18 @@ public class SharedObjs
 	/**
 	 * Check if all folders exists. If any of them does not exist, create it.
 	 */
-	public static void checkFolder()
+	public void checkFolder()
 	{
-		String[] folders = {"Data/cfgs", "Data/complements", "Data/logs", "Data/pics", "Data/scripts"};
-		
-		for (String s : folders)
-		{
-			File f = new File(s);
-			if (!f.exists())
-			{
-				f.mkdir();
-				Logger.log(Logger.TAG_SHAREDOBJS, "Creating folder " + s);
-			}
-			else
-			{
-				Logger.log(Logger.TAG_SHAREDOBJS, "Folder " + s + " already exists.");
-			}
-		}
+		// TODO
 	}
 	
 	private static void loadFilters()
 	{
+		Logger.log(Logger.TAG_SHAREDOBJS, "Loading filters");
 		checkMyFilters();
 		checkSharedFilters();
-		activeFiltersList.addAll(sharedFiltersList.getActiveFilters());
-		activeFiltersList.addAll(userFiltersList.getActiveFilters());
+		checkActiveSharedFilters();
+		Logger.log(Logger.TAG_SHAREDOBJS, "Filters loaded");
 	}
 	
 	/**
@@ -177,12 +164,14 @@ public class SharedObjs
 		
 		if (satDB != null)
 		{
+			Logger.log(Logger.TAG_SHAREDOBJS, "Loading user filters from DB ...");
 			CustomFiltersList dbFilters = satDB.myFilters();
+			Logger.log(Logger.TAG_SHAREDOBJS, "Loading user filters from XML ...");
 			CustomFiltersList xmlFilters = XmlMngr.getAllMyFilters();
 			
 			Logger.log(Logger.TAG_SHAREDOBJS,
 					   "Verifying filters consistency between local files and remote DB ...");
-					   
+			
 			if (dbFilters.size() != xmlFilters.size())
 			{
 				Logger.log(Logger.TAG_SHAREDOBJS, "Inconsistencies found ...");
@@ -192,6 +181,11 @@ public class SharedObjs
 			else
 			{
 				boolean hasItem = true;
+				
+				/*
+				 * System.out.println("List of XML Filters: \n" + xmlFilters); System.out.println("List of DB Filters: \n" + dbFilters);
+				 */
+				
 				for (CustomFilterItem filter : dbFilters)
 				{
 					if (xmlFilters.indexOf(filter) < 0)
@@ -229,18 +223,19 @@ public class SharedObjs
 			
 			JOptionPane.showMessageDialog(satFrame,
 										  "Could not connect to SAT DB.\nClick ok to keep using SAT anyway.\n"
-													+ "You will be able to sync your data next time you use SAT connected to DB.");
-													
+														  + "You will be able to sync your data next time you use SAT connected to DB.");
+			
 			userFiltersList = XmlMngr.getAllMyFilters();
 		}
+		
+		Logger.log(Logger.TAG_SHAREDOBJS, "User filters loaded: " + userFiltersList.size());
 	}
 	
 	private static void syncMyFilters(CustomFiltersList dbFilters, CustomFiltersList xmlFilters)
 	{
 		Logger.log(Logger.TAG_SHAREDOBJS, "Syncing filters between Cloud and XML");
 		
-		int ans = JOptionPane.showOptionDialog(SharedObjs.satFrame,
-											   "We noticed differences between your\n"
+		int ans = JOptionPane.showOptionDialog(SharedObjs.satFrame, "We noticed differences between your\n"
 																	+ "local and your cloud filters file.\n"
 																	+ "\n    - Your filters in DB: "
 																	+ dbFilters.size()
@@ -250,10 +245,9 @@ public class SharedObjs
 											   "Filters files conflict", JOptionPane.YES_NO_OPTION,
 											   JOptionPane.QUESTION_MESSAGE, null,
 											   new String[] {"Merge files",
-															 "Use local file",
-															 "Use cloud file"},
-											   "Merge files");
-											   
+													   "Use local file",
+													   "Use cloud file"}, "Merge files");
+		
 		if (ans == 0)
 		{
 			Logger.log(Logger.TAG_SHAREDOBJS, "Merging filters");
@@ -311,6 +305,8 @@ public class SharedObjs
 			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size()
 											  + "\nYour filters in XML: " + xmlFilters.size());
 		}
+		
+		Logger.log(Logger.TAG_SHAREDOBJS, "User filters loaded: " + userFiltersList.size());
 	}
 	
 	/**
@@ -322,7 +318,7 @@ public class SharedObjs
 		{
 			Logger.log(Logger.TAG_SHAREDOBJS, "Loading shared filters from SQL DB");
 			
-			sharedFiltersList = satDB.sharedFilters();
+			sharedFiltersList.addAll(satDB.sharedFilters());
 			XmlMngr.removeAllSharedFilters();
 			XmlMngr.addSharedFilters(sharedFiltersList);
 		}
@@ -330,8 +326,49 @@ public class SharedObjs
 		{
 			Logger.log(Logger.TAG_SHAREDOBJS, "Loading shared filters from XML");
 			
-			sharedFiltersList = XmlMngr.getAllSharedFilters();
+			sharedFiltersList.addAll(XmlMngr.getAllSharedFilters());
 		}
+		
+		Logger.log(Logger.TAG_SHAREDOBJS, "Shared filters loaded: " + sharedFiltersList.size());
+	}
+	
+	/**
+	 * @return
+	 */
+	public static void checkActiveSharedFilters()
+	{
+		if (satDB != null)
+		{
+			Logger.log(Logger.TAG_SHAREDOBJS, "Loading active shared filters from SQL DB");
+			
+			activeFiltersList.addAll(satDB.activeFilters());
+			XmlMngr.removeAllActiveFilters();
+			XmlMngr.addActiveFilters(activeFiltersList);
+		}
+		else
+		{
+			Logger.log(Logger.TAG_SHAREDOBJS,
+					   "Could not connect to SAT DB. Loading active shared filters from XML");
+			
+			activeFiltersList.addAll(XmlMngr.getAllActiveFilters());
+		}
+		
+		for (CustomFilterItem filter : activeFiltersList)
+		{
+			filter.setActive(true);
+			
+			if (userFiltersList.indexOf(filter.getId()) >= 0)
+			{
+				userFiltersList.get(userFiltersList.indexOf(filter.getId())).setActive(true);
+			}
+			
+			if (sharedFiltersList.indexOf(filter.getLastUpdate()) >= 0)
+			{
+				sharedFiltersList.get(sharedFiltersList.indexOf(filter.getLastUpdate())).setActive(true);
+			}
+		}
+		
+		Logger.log(Logger.TAG_SHAREDOBJS, "Active filters loaded: " + activeFiltersList.size());
 	}
 	
 	// Getters:

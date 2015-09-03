@@ -119,19 +119,19 @@ public class SAT extends JFrame
 	 */
 	public int checkForUpdate()
 	{
+		Logger.log(Logger.TAG_SAT, "Checking for update");
+		
 		updating = true;
 		File f1;
 		File f2;
 		long dateRemote, dateLocal;
 		f1 = new File(SharedObjs.updateFolder1 + Strings.getToolFileName());
 		
-		Logger.log(Logger.TAG_SAT, "Remote file: " + f1.getAbsolutePath());
-		Logger.log(Logger.TAG_SAT, "Remote: " + f1.lastModified());
+		Logger.log(Logger.TAG_SAT, "Remote file: " + f1.getAbsolutePath() + " - Modified: " + f1.lastModified());
 		
 		f2 = new File(Strings.getToolFileName());
 		
-		Logger.log(Logger.TAG_SAT, "Local file: " + f2.getAbsolutePath());
-		Logger.log(Logger.TAG_SAT, "Local: " + f2.lastModified());
+		Logger.log(Logger.TAG_SAT, "Local file: " + f2.getAbsolutePath() + " - Modified: " + f2.lastModified());
 		
 		dateRemote = f1.lastModified();
 		dateLocal = f2.lastModified();
@@ -184,6 +184,10 @@ public class SAT extends JFrame
 				return 2;
 			}
 		}
+		else
+		{
+			Logger.log(Logger.TAG_SAT, "SAT is up to date");
+		}
 		
 		return 0;
 	}
@@ -221,13 +225,11 @@ public class SAT extends JFrame
 		@Override
 		public void windowLostFocus(WindowEvent e)
 		{
-			Logger.log(Logger.TAG_SAT, "Window focus lost");
 		}
 		
 		@Override
 		public void windowGainedFocus(WindowEvent e)
 		{
-			Logger.log(Logger.TAG_SAT, "Window focus gained ");
 		}
 	};
 	

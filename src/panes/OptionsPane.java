@@ -1052,6 +1052,8 @@ public class OptionsPane extends JPanel
 	 */
 	public void loadDataPane()
 	{
+		Logger.log(Logger.TAG_OPTIONS, "Loading option pane values data");
+		
 		if (XmlMngr.getUserValueOf(new String[] {"option_pane", "tree_breakdown"}).equals("1"))
 		{
 			rdbtnSingleclick.setSelected(true);
@@ -1083,8 +1085,6 @@ public class OptionsPane extends JPanel
 			String encrypt_len = XmlMngr.getUserValueOf(new String[] {"option_pane", "encrypt_len"});
 			byte[] toDecrypt = new byte[Integer.parseInt(encrypt_len)];
 			
-			Logger.log(Logger.TAG_CRSMANAGER,
-					   "Lenght: " + encrypt_len + " - " + Integer.parseInt(encrypt_len));
 			bin.read(toDecrypt);
 			textPassword.setText("" + Encryptation.decrypt(toDecrypt));
 			SharedObjs.setPass("" + Encryptation.decrypt(toDecrypt));

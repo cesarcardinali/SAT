@@ -1,8 +1,8 @@
 package objects;
 
 
-import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,12 +16,12 @@ import core.SharedObjs;
  */
 public class DBAdapter
 {
-	private static final String DB_DRIVER		 = "com.mysql.jdbc.Driver";
-	private String			  DB_CONNECTION	 = null;
-	private String			  DB_USER		   = null;
-	private String			  DB_PASSWORD	   = null;
-	private Connection		  dbConnection	  = null;
-	private PreparedStatement   preparedStatement = null;
+	private static final String	DB_DRIVER		  = "com.mysql.jdbc.Driver";
+	private String				DB_CONNECTION	  = null;
+	private String				DB_USER			  = null;
+	private String				DB_PASSWORD		  = null;
+	private Connection			dbConnection	  = null;
+	private PreparedStatement	preparedStatement = null;
 	
 	/**
 	 * Constructor with connection parameter. For special cases when database connections will not be the default. Write the full path to
@@ -126,13 +126,12 @@ public class DBAdapter
 		fitem.setSystem(byteToBool(rs.getByte("w_syst")));
 		fitem.setRoutput(byteToBool(rs.getByte("w_rout")));
 		fitem.setShared(byteToBool(rs.getByte("shared")));
-		fitem.setActive(byteToBool(rs.getByte("active")));
 		fitem.setLastUpdate(rs.getTimestamp("last_modified").toString());
 		if (rs.getString("user_key") == null)
 			fitem.setEditable(true);
 		else
 			fitem.setEditable(false);
-		
+			
 		return fitem;
 	}
 	
@@ -160,7 +159,7 @@ public class DBAdapter
 		boolean boolVar = false;
 		if (bVar == 1)
 			boolVar = true;
-		
+			
 		return boolVar;
 	}
 	
@@ -277,7 +276,8 @@ public class DBAdapter
 	 */
 	public CustomFiltersList sharedFilters()
 	{
-		String selectSQL = "SELECT * FROM Filters WHERE shared = " + 1 + " AND user_key != '" + SharedObjs.getUser() + "';";
+		String selectSQL = "SELECT * FROM Filters WHERE shared = " + 1 + " AND user_key != '"
+						   + SharedObjs.getUser() + "';";
 		CustomFilterItem aux = new CustomFilterItem();
 		CustomFiltersList flist = new CustomFiltersList();
 		
@@ -307,7 +307,38 @@ public class DBAdapter
 	
 	public CustomFiltersList publicFilters()
 	{
-		String selectSQL = "SELECT * FROM Filters WHERE user_key = '';";
+		String selectSQL = "SELECT * FROM Filters WHERE user_key = 'public';";
+		CustomFilterItem aux = new CustomFilterItem();
+		CustomFiltersList flist = new CustomFiltersList();
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			while (rs.next())
+			{
+				aux = new CustomFilterItem();
+				flist.add(setAllFilterFields(aux, rs));
+			}
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return flist;
+	}
+	
+	public CustomFiltersList activeFilters()
+	{
+		String selectSQL = "SELECT Filters.* FROM Filters, ActiveFilters WHERE (ActiveFilters.user = '"
+						   + SharedObjs.getUser() + "' OR  ActiveFilters.user = 'Public') AND ActiveFilters.filter_id = Filters.f_id;";
 		CustomFilterItem aux = new CustomFilterItem();
 		CustomFiltersList flist = new CustomFiltersList();
 		
@@ -342,11 +373,11 @@ public class DBAdapter
 	 * @param userName The name of owner of the filter
 	 * @return [True] if found a result [False] if not
 	 */
-	public boolean existsFilterWithOwner(String filterName, String userName)
+	public int existsFilterWithOwner(String filterName, String userName)
 	{
-		String selectSQL = "SELECT name FROM Filters WHERE name = '" + filterName + "' AND user_key = '"
+		String selectSQL = "SELECT f_id FROM Filters WHERE name = '" + filterName + "' AND user_key = '"
 						   + userName + "';";
-		boolean found = false;
+		int id = -1;
 		
 		try
 		{
@@ -356,8 +387,11 @@ public class DBAdapter
 			ResultSet rs = preparedStatement.executeQuery();
 			
 			// if a line exists (found a result) then found receives true
-			found = rs.next();
-			
+			if (rs.next())
+			{
+				System.out.println("---id: " + id);
+				id = rs.getInt(1);
+			}
 		}
 		catch (SQLException e)
 		{
@@ -366,55 +400,7 @@ public class DBAdapter
 			
 		}
 		
-		return found;
-	}
-	
-	/**
-	 * Inserts Filter on Data Base determining every parameter.
-	 * 
-	 * @param filterName Name of the filter
-	 * @param header The header for the result found
-	 * @param regex Regex filter clause
-	 * @param wMain Main log "where to" checkbox
-	 * @param wSyst System log "where to" checkbox
-	 * @param wKrnl Kernel log "where to" checkbox
-	 * @param wBugr Bugreport log "where to" checkbox
-	 * @param wRout Report Output log "where to" checkbox
-	 * @param shared If it should be shared to other users
-	 * @param userName Owner of the filter
-	 * @return [0] if insert failed (Invalid fields) [1] if insert succeeded.
-	 */
-	public int insertFilter(String filterName, String header, String regex, boolean wMain, boolean wSyst,
-							boolean wKrnl, boolean wRadio, boolean wBugr, boolean wRout, boolean shared,
-							boolean active, String userName)
-	{
-		
-		// Visual query example for reference:
-		// INSERT INTO Filters VALUES (0, 'Test_Filter', '', '[A-z]', 1, 1, 0, 0, 1, 1, 0, 1, 'testuser', null);
-		
-		String insertSQL = "INSERT INTO Filters VALUES ( null, '" + filterName + "', '" + header + "', '"
-						   + regex + "', " + boolToByte(wMain) + ", " + boolToByte(wSyst) + ", "
-						   + boolToByte(wKrnl) + ", " + boolToByte(wRadio) + ", " + boolToByte(wBugr) + ", "
-						   + boolToByte(wRout) + ", " + boolToByte(shared) + ", " + boolToByte(active)
-						   + ", '" + userName + "', null);";
-		int insertDone = 0;
-		
-		try
-		{
-			preparedStatement = dbConnection.prepareStatement(insertSQL);
-			
-			// Execute insert SQL statement
-			insertDone = preparedStatement.executeUpdate();
-			
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			System.out.println(e.getMessage());
-		}
-		
-		return insertDone;
-		
+		return id;
 	}
 	
 	/**
@@ -425,25 +411,24 @@ public class DBAdapter
 	 */
 	public int insertFilter(CustomFilterItem filter)
 	{
-		// Visual query example for reference:
-		// INSERT INTO Filters VALUES (null, 'Test_Filter', '- TestHeader' , '[A-z]', 1, 1, 0, 0, 1, 1, 1, 0, 'testuser', null);
-		
-		String insertSQL = "INSERT INTO Filters VALUES ( null, '" + filter.getName() + "', '"
-						   + filter.getHeader() + "', '" + filter.getRegex() + "', "
-						   + boolToByte(filter.isMain()) + ", " + boolToByte(filter.isSystem()) + ", "
-						   + boolToByte(filter.isKernel()) + ", " + boolToByte(filter.isRadio()) + ", "
-						   + boolToByte(filter.isBugreport()) + ", " + boolToByte(filter.isRoutput()) + ", "
-						   + boolToByte(filter.isShared()) + ", " + boolToByte(filter.isActive()) + ", '"
-						   + (filter.isEditable() ? "" : SharedObjs.getUser()) + "', null);";
 		int insertDone = 0;
 		
 		try
 		{
+			// Visual query example for reference:
+			// INSERT INTO Filters VALUES (null, 'Test_Filter', '- TestHeader' , '[A-z]', 1, 1, 0, 0, 1, 1, 1, 0, 'testuser', null);
+			String insertSQL = "INSERT INTO Filters VALUES (null, '" + filter.getName() + "', '"
+							   + filter.getHeader() + "', '" + filter.getRegex() + "', "
+							   + boolToByte(filter.isMain()) + ", " + boolToByte(filter.isSystem()) + ", "
+							   + boolToByte(filter.isKernel()) + ", " + boolToByte(filter.isRadio()) + ", "
+							   + boolToByte(filter.isBugreport()) + ", " + boolToByte(filter.isRoutput())
+							   + ", " + boolToByte(filter.isShared()) + ", '"
+							   + (filter.isPublic() ? "Public" : SharedObjs.getUser()) + "', null);";
+							   
 			preparedStatement = dbConnection.prepareStatement(insertSQL);
 			
 			// Execute insert SQL statement
-			insertDone = preparedStatement.executeUpdate();
-			
+			insertDone = insertDone + preparedStatement.executeUpdate();
 		}
 		catch (SQLException e)
 		{
@@ -451,10 +436,34 @@ public class DBAdapter
 			System.out.println(e.getMessage());
 		}
 		
-		// TODO Modify this method to return the index of inserted filter on DB
+		if (filter.isActive() && insertDone > 0)
+		{
+			int id = -1;
+			
+			id = existsFilterWithOwner(filter.getName(), filter.getOwner());
+			
+			if (id >= 0)
+			{
+				String activeInsertSQL = "INSERT INTO ActiveFilters VALUES (null, '" + SharedObjs.getUser() + "', "
+										 + id + ")";
+										 
+				try
+				{
+					preparedStatement = dbConnection.prepareStatement(activeInsertSQL);
+					
+					// Execute insert SQL statement
+					insertDone = insertDone + preparedStatement.executeUpdate();
+					
+				}
+				catch (SQLException e)
+				{
+					e.printStackTrace();
+					System.out.println(e.getMessage());
+				}
+			}
+		}
 		
 		return insertDone;
-		
 	}
 	
 	/**
@@ -499,9 +508,9 @@ public class DBAdapter
 						   + boolToByte(editedFilter.isRadio()) + ", w_bugr = "
 						   + boolToByte(editedFilter.isBugreport()) + ", w_rout = "
 						   + boolToByte(editedFilter.isRoutput()) + ", shared = "
-						   + boolToByte(editedFilter.isShared()) + ", active= "
-						   + boolToByte(editedFilter.isActive()) + ", user_key = '" + editedFilter.getOwner()
+						   + boolToByte(editedFilter.isShared()) + ", user_key = '" + editedFilter.getOwner()
 						   + "' WHERE f_id = " + editedFilter.getId() + ";";
+						   
 		int updateDone = 0;
 		
 		try
@@ -516,6 +525,84 @@ public class DBAdapter
 		{
 			e.printStackTrace();
 			System.out.println(e.getMessage());
+		}
+		
+		// Check if filter is an active one.
+		if (editedFilter.isActive())
+		{
+			System.out.println("--------- Is Active");
+			try
+			{
+				// Execute select SQL statement
+				String findOcc = "SELECT * FROM ActiveFilters WHERE user = '" + SharedObjs.getUser()
+								 + "' AND filter_id = " + editedFilter.getId() + ";";
+				preparedStatement = dbConnection.prepareStatement(findOcc);
+				ResultSet rs = preparedStatement.executeQuery();
+				
+				// Check if filter exists in ActiveFilters tab
+				// if a line does not exist, add it.
+				if (!rs.next())
+				{
+					System.out.println("--------- Nao encontrado - " + SharedObjs.getUser()
+									   + " - filter_id = " + editedFilter.getId());
+					try
+					{
+						// Execute insert (update) SQL statement
+						String activeInsertSQL = "INSERT INTO ActiveFilters VALUES (null, '"
+												 + SharedObjs.getUser() + "', " + editedFilter.getId() + ")";
+						preparedStatement = dbConnection.prepareStatement(activeInsertSQL);
+						System.out.println("-------- Active Insert: " + preparedStatement.executeUpdate());
+					}
+					catch (SQLException e)
+					{
+						e.printStackTrace();
+						System.out.println(e.getMessage());
+					}
+				}
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+				System.out.println(e.getMessage());
+				
+			}
+		}
+		else
+		{
+			try
+			{
+				// Execute select SQL statement
+				String findOcc = "SELECT * FROM ActiveFilters WHERE user = '" + SharedObjs.getUser()
+								 + "' AND filter_id = " + editedFilter.getId() + ";";
+				preparedStatement = dbConnection.prepareStatement(findOcc);
+				ResultSet rs = preparedStatement.executeQuery();
+				
+				// Check if filter exists in ActiveFilters tab
+				// if a line does not exist, add it.
+				if (rs.next())
+				{
+					try
+					{
+						// Execute insert (update) SQL statement
+						// DELETE FROM `sat_db`.`ActiveFilters` WHERE `idActiveFilters`='5';
+						String activeInsertSQL = "DELETE FROM ActiveFilters WHERE idActiveFilters = "
+												 + rs.getInt(1) + ";";
+						preparedStatement = dbConnection.prepareStatement(activeInsertSQL);
+						preparedStatement.executeUpdate();
+					}
+					catch (SQLException e)
+					{
+						e.printStackTrace();
+						System.out.println(e.getMessage());
+					}
+				}
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+				System.out.println(e.getMessage());
+				
+			}
 		}
 		
 		return updateDone;
@@ -556,8 +643,7 @@ public class DBAdapter
 	}
 	
 	/**
-	 * Delete all filters from user.
-	 * This is only a support method and should be used only for tests purposes
+	 * Delete all filters from user. This is only a support method and should be used only for tests purposes
 	 * 
 	 * @return [0] if delete failed [1] if delete succeeded.
 	 */

@@ -395,7 +395,7 @@ public class AdvancedOptionsPane extends JFrame
 		// Print the file
 		xmlOutputter.output(document, new FileOutputStream(xmlFile));
 		
-		Logger.log(Logger.TAG_OPTIONS, "Options Saved");
+		Logger.log(Logger.TAG_OPTIONS, "Advanced Options Saved");
 	}
 	
 	// Getters and Setters

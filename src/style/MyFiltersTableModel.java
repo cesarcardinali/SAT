@@ -125,7 +125,7 @@ public class MyFiltersTableModel extends AbstractTableModel
 			case SHARED_INDEX:
 				return record.isShared();
 			case PUBLIC_INDEX:
-				return record.isEditable();
+				return record.isPublic();
 			case ACTIVE_INDEX:
 				return record.isActive();
 			case UPDATE_INDEX:
@@ -215,6 +215,24 @@ public class MyFiltersTableModel extends AbstractTableModel
 		{
 			return false;
 		}
+	}
+	
+	public boolean hasFilterName(CustomFilterItem lookForFilter)
+	{
+		if (dataVector.size() == 0)
+			return false;
+		CustomFilterItem filter;
+		
+		for (int i=0; i < dataVector.size()-1; i++)
+		{
+			filter = dataVector.get(i);
+			if (filter.getName().trim().equals(lookForFilter.getName()) && !filter.getLastUpdate().equals(lookForFilter.getLastUpdate()))
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public void addEmptyRow()

@@ -2,9 +2,26 @@
 <SAT>
   <!-- User defined filters: !-->
   <myFilters>
-    <teste>
-      <regex>teste</regex>
-      <header>teste</header>
+    <item_1>
+      <name>f2</name>
+      <regex>f2</regex>
+      <header>f2</header>
+      <owner>cesarc</owner>
+      <main>false</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>true</radio>
+      <bugreport>false</bugreport>
+      <routput>true</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-03 14:57:46.0</last_update>
+    </item_1>
+    <item_2>
+      <name>f3</name>
+      <regex>f3</regex>
+      <header>f3</header>
       <owner>cesarc</owner>
       <main>true</main>
       <system>false</system>
@@ -14,39 +31,13 @@
       <routput>false</routput>
       <shared>true</shared>
       <editable>false</editable>
-      <active>true</active>
-    </teste>
-    <lalál>
-      <regex>lalalala</regex>
-      <header>lalalal</header>
-      <owner>cesarc</owner>
-      <main>true</main>
-      <system>false</system>
-      <kernel>true</kernel>
-      <radio>false</radio>
-      <bugreport>true</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>true</active>
-    </lalál>
-    <old_new_filter>
-      <regex>new filter</regex>
-      <header>old new filter</header>
-      <owner>cesarc</owner>
-      <main>true</main>
-      <system>false</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>true</active>
-    </old_new_filter>
-    <wow>
-      <regex>uol</regex>
-      <header>uou</header>
+      <active>false</active>
+      <last_update>2015-09-03 14:57:46.0</last_update>
+    </item_2>
+    <item_3>
+      <name>f4</name>
+      <regex>f4</regex>
+      <header>f4</header>
       <owner>cesarc</owner>
       <main>true</main>
       <system>false</system>
@@ -57,8 +48,10 @@
       <shared>false</shared>
       <editable>false</editable>
       <active>false</active>
-    </wow>
-    <just_insert>
+      <last_update>2015-09-03 15:21:04.0</last_update>
+    </item_3>
+    <item_4>
+      <name>f0</name>
       <regex />
       <header />
       <owner>cesarc</owner>
@@ -71,55 +64,31 @@
       <shared>false</shared>
       <editable>false</editable>
       <active>false</active>
-    </just_insert>
+      <last_update>2015-09-03 17:29:49.0</last_update>
+    </item_4>
   </myFilters>
   <!-- Users shared filters: !-->
   <sharedFilters>
-    <abc1abc>
-      <regex>tem q ler e escrever</regex>
-      <header>toda crianca</header>
+    <item_1>
+      <name>September Filter</name>
+      <regex>[S-r]</regex>
+      <header>Wake me up when september ends</header>
       <owner>wmarques</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>true</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-    </abc1abc>
-    <Public_filter>
-      <regex>fdsafdsfa</regex>
-      <header>fdsgsdf</header>
-      <owner />
       <main>true</main>
-      <system>false</system>
+      <system>true</system>
       <kernel>false</kernel>
       <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
+      <bugreport>true</bugreport>
+      <routput>true</routput>
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-    </Public_filter>
-    <insert_updated>
-      <regex />
-      <header>update</header>
-      <owner />
-      <main>false</main>
-      <system>false</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-    </insert_updated>
-    <Bubo>
-      <regex />
-      <header />
+      <last_update>2015-09-02 10:10:22.0</last_update>
+    </item_1>
+    <item_2>
+      <name>f2</name>
+      <regex>f2</regex>
+      <header>f2</header>
       <owner>amaciel</owner>
       <main>false</main>
       <system>false</system>
@@ -130,6 +99,138 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-    </Bubo>
+      <last_update>2015-09-03 14:57:37.0</last_update>
+    </item_2>
+    <item_3>
+      <name>f4</name>
+      <regex>f4</regex>
+      <header>f4</header>
+      <owner>Public</owner>
+      <main>false</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>true</radio>
+      <bugreport>false</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-03 14:57:46.0</last_update>
+    </item_3>
+    <item_4>
+      <name>f6</name>
+      <regex>f6</regex>
+      <header>f6</header>
+      <owner>Public</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-03 14:57:46.0</last_update>
+    </item_4>
+    <item_5>
+      <name>p1</name>
+      <regex>p1</regex>
+      <header>p1</header>
+      <owner>Public</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-03 15:17:07.0</last_update>
+    </item_5>
+    <item_6>
+      <name>BatataSP</name>
+      <regex>[b-a-t-a-t-a]</regex>
+      <header>Pao de bataaataa</header>
+      <owner>wmarques</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-03 15:47:28.0</last_update>
+    </item_6>
+    <item_7>
+      <name>f5</name>
+      <regex>f5</regex>
+      <header>f5</header>
+      <owner>Public</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-03 16:20:45.0</last_update>
+    </item_7>
   </sharedFilters>
+  <!-- Active filters: !-->
+  <activeFilters>
+    <item_1>
+      <name>September Filter</name>
+      <regex>[S-r]</regex>
+      <header>Wake me up when september ends</header>
+      <owner>wmarques</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-02 10:10:22.0</last_update>
+    </item_1>
+    <item_2>
+      <name>f4</name>
+      <regex>f4</regex>
+      <header>f4</header>
+      <owner>Public</owner>
+      <main>false</main>
+      <system>true</system>
+      <kernel>false</kernel>
+      <radio>true</radio>
+      <bugreport>false</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-03 14:57:46.0</last_update>
+    </item_2>
+    <item_3>
+      <name>f0</name>
+      <regex />
+      <header />
+      <owner>cesarc</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-03 17:29:49.0</last_update>
+    </item_3>
+  </activeFilters>
 </SAT>
