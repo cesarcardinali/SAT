@@ -140,7 +140,7 @@ public class SAT extends JFrame
 		{
 			Object[] options = new Object[] {"Yes", "No"};
 			int n = JOptionPane.showOptionDialog(null,
-												 "Uma nova vers�o foi encontrada. Voce desaja atualizar agora?",
+												 "Uma nova versão foi encontrada. Voce desaja atualizar agora?",
 												 "New version available", JOptionPane.YES_NO_CANCEL_OPTION,
 												 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 												 
