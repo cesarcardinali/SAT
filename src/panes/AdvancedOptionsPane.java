@@ -1,46 +1,36 @@
 package panes;
 
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.JSeparator;
-import javax.swing.JButton;
-
-import java.awt.GridBagLayout;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.Font;
-import java.awt.Dimension;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ActionListener;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-
-import core.Icons;
-import core.Logger;
-import core.XmlMngr;
-
-import java.io.File;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import org.jdom2.JDOMException;
+
+import core.Logger;
+import core.SharedObjs;
+import core.XmlMngr;
 
 
 @SuppressWarnings("serial")
@@ -63,35 +53,7 @@ public class AdvancedOptionsPane extends JFrame
 	private JButton					btnOk;
 	private HashMap<String, String>	dupMap;
 	private HashMap<String, String>	bat_capMap;
-	private JButton					btnSet;
-	private JButton					btnSet2;
-	private Element					diag_dupNode;
-	private Element					bat_capNode;
-	private File					xmlFile;
-	private SAXBuilder				builder;
-	private Document				document;
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				try
-				{
-					AdvancedOptionsPane frame = new AdvancedOptionsPane();
-					frame.setVisible(true);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private JButton btnCancel;
 	
 	/**
 	 * Create the frame.
@@ -101,11 +63,12 @@ public class AdvancedOptionsPane extends JFrame
 		setTitle("Advanced options");
 		setResizable(false);
 		setMinimumSize(new Dimension(400, 350));
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 429, 356);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
+		setLocationRelativeTo(SharedObjs.satFrame);
 		
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[] {0, 0};
@@ -133,9 +96,9 @@ public class AdvancedOptionsPane extends JFrame
 		contentPane.add(panel, gbc_panel);
 		
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] {0, 0, 0, 0, 0};
+		gbl_panel.columnWidths = new int[] {0, 0, 0, 0};
 		gbl_panel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[] {0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.columnWeights = new double[] {0.0, 0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		lblConfigureDiagwsDup = new JLabel("Configure DIAG_WS Dup CR");
@@ -143,7 +106,7 @@ public class AdvancedOptionsPane extends JFrame
 		
 		GridBagConstraints gbc_lblConfigureDiagwsDup = new GridBagConstraints();
 		gbc_lblConfigureDiagwsDup.anchor = GridBagConstraints.WEST;
-		gbc_lblConfigureDiagwsDup.gridwidth = 4;
+		gbc_lblConfigureDiagwsDup.gridwidth = 3;
 		gbc_lblConfigureDiagwsDup.insets = new Insets(0, 0, 5, 0);
 		gbc_lblConfigureDiagwsDup.gridx = 0;
 		gbc_lblConfigureDiagwsDup.gridy = 0;
@@ -170,23 +133,12 @@ public class AdvancedOptionsPane extends JFrame
 		textDiag.setPreferredSize(new Dimension(150, 20));
 		textDiag.setMinimumSize(new Dimension(150, 20));
 		GridBagConstraints gbc_textDiag = new GridBagConstraints();
-		gbc_textDiag.insets = new Insets(0, 0, 5, 5);
+		gbc_textDiag.insets = new Insets(0, 0, 5, 0);
 		gbc_textDiag.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textDiag.gridx = 2;
 		gbc_textDiag.gridy = 1;
 		panel.add(textDiag, gbc_textDiag);
 		textDiag.setColumns(10);
-		
-		btnSet = new JButton("Set");
-		btnSet.setPreferredSize(new Dimension(49, 20));
-		btnSet.setMinimumSize(new Dimension(49, 20));
-		btnSet.setIcon(Icons.ok);
-		btnSet.setMargin(new Insets(2, 2, 2, 2));
-		GridBagConstraints gbc_btnSet = new GridBagConstraints();
-		gbc_btnSet.insets = new Insets(0, 0, 5, 0);
-		gbc_btnSet.gridx = 3;
-		gbc_btnSet.gridy = 1;
-		panel.add(btnSet, gbc_btnSet);
 		
 		separator = new JSeparator();
 		separator.setBackground(Color.LIGHT_GRAY);
@@ -195,7 +147,7 @@ public class AdvancedOptionsPane extends JFrame
 		GridBagConstraints gbc_separator = new GridBagConstraints();
 		gbc_separator.insets = new Insets(10, 0, 10, 0);
 		gbc_separator.fill = GridBagConstraints.BOTH;
-		gbc_separator.gridwidth = 4;
+		gbc_separator.gridwidth = 3;
 		gbc_separator.gridx = 0;
 		gbc_separator.gridy = 2;
 		panel.add(separator, gbc_separator);
@@ -205,7 +157,7 @@ public class AdvancedOptionsPane extends JFrame
 		GridBagConstraints gbc_lblBatCap = new GridBagConstraints();
 		gbc_lblBatCap.insets = new Insets(0, 0, 5, 0);
 		gbc_lblBatCap.anchor = GridBagConstraints.WEST;
-		gbc_lblBatCap.gridwidth = 4;
+		gbc_lblBatCap.gridwidth = 3;
 		gbc_lblBatCap.gridx = 0;
 		gbc_lblBatCap.gridy = 3;
 		panel.add(lblBatCap, gbc_lblBatCap);
@@ -233,22 +185,11 @@ public class AdvancedOptionsPane extends JFrame
 		textBatCap.setMinimumSize(new Dimension(150, 20));
 		textBatCap.setColumns(10);
 		GridBagConstraints gbc_textBatCap = new GridBagConstraints();
-		gbc_textBatCap.insets = new Insets(0, 0, 5, 5);
+		gbc_textBatCap.insets = new Insets(0, 0, 5, 0);
 		gbc_textBatCap.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textBatCap.gridx = 2;
 		gbc_textBatCap.gridy = 4;
 		panel.add(textBatCap, gbc_textBatCap);
-		
-		btnSet2 = new JButton("Set");
-		btnSet2.setPreferredSize(new Dimension(49, 20));
-		btnSet2.setMinimumSize(new Dimension(49, 20));
-		btnSet2.setMargin(new Insets(2, 2, 2, 2));
-		btnSet2.setIcon(new ImageIcon("Data\\pics\\Ok.png"));
-		GridBagConstraints gbc_btnSet2 = new GridBagConstraints();
-		gbc_btnSet2.insets = new Insets(0, 0, 5, 0);
-		gbc_btnSet2.gridx = 3;
-		gbc_btnSet2.gridy = 4;
-		panel.add(btnSet2, gbc_btnSet2);
 		
 		separator_1 = new JSeparator();
 		separator_1.setPreferredSize(new Dimension(2, 2));
@@ -256,7 +197,7 @@ public class AdvancedOptionsPane extends JFrame
 		separator_1.setBackground(Color.LIGHT_GRAY);
 		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
 		gbc_separator_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_1.gridwidth = 4;
+		gbc_separator_1.gridwidth = 3;
 		gbc_separator_1.insets = new Insets(10, 0, 10, 0);
 		gbc_separator_1.gridx = 0;
 		gbc_separator_1.gridy = 5;
@@ -275,6 +216,14 @@ public class AdvancedOptionsPane extends JFrame
 		btnOk = new JButton("Save and Exit");
 		panel_1.add(btnOk);
 		
+		btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+			}
+		});
+		panel_1.add(btnCancel);
+		
 		// Initialize variables
 		dupMap = new HashMap<String, String>();
 		dupMap.clear();
@@ -282,15 +231,7 @@ public class AdvancedOptionsPane extends JFrame
 		bat_capMap.clear();
 		
 		// Load data
-		try
-		{
-			getData();
-		}
-		catch (JDOMException | IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		getData();
 		
 		// Components action configuration
 		cbxDiagProd.addItemListener(new ItemListener()
@@ -306,24 +247,6 @@ public class AdvancedOptionsPane extends JFrame
 			public void itemStateChanged(ItemEvent e)
 			{
 				textBatCap.setText(bat_capMap.get(e.getItem()));
-			}
-		});
-		
-		btnSet.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				diag_dupNode.getChild((String) cbxDiagProd.getSelectedItem()).setText(textDiag.getText());
-				dupMap.put((String) cbxDiagProd.getSelectedItem(), textDiag.getText());
-			}
-		});
-		
-		btnSet2.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				bat_capNode.getChild((String) cbxBatCap.getSelectedItem()).setText(textBatCap.getText());
-				bat_capMap.put((String) cbxBatCap.getSelectedItem(), textBatCap.getText());
 			}
 		});
 		
@@ -348,34 +271,27 @@ public class AdvancedOptionsPane extends JFrame
 	 * @throws JDOMException
 	 * @throws IOException
 	 */
-	public void getData() throws JDOMException, IOException
+	public void getData()
 	{
-		xmlFile = new File("Data/cfgs/user_cfg.xml");
-		builder = new SAXBuilder();
-		document = (Document) builder.build(xmlFile);
-		Element satNode = document.getRootElement();
-		
-		diag_dupNode = satNode.getChild("diag_dup");
-		bat_capNode = satNode.getChild("bat_cap");
-		
 		dupMap.clear();
 		bat_capMap.clear();
 		
-		for (Element e : diag_dupNode.getChildren())
+		dupMap.putAll(XmlMngr.getDiagDupItems());
+		System.out.println(dupMap);
+		for (String value : dupMap.keySet())
 		{
-			cbxDiagProd.addItem(e.getName());
-			dupMap.put(e.getName(), e.getValue());
+			cbxDiagProd.addItem(value);
 		}
-		
 		textDiag.setText(dupMap.get((String) cbxDiagProd.getSelectedItem()));
 		
-		for (Element e : bat_capNode.getChildren())
+		bat_capMap.putAll(XmlMngr.getBatteryCapacityItems());
+		for (String value : bat_capMap.keySet())
 		{
-			cbxBatCap.addItem(e.getName());
-			bat_capMap.put(e.getName(), e.getValue());
+			cbxBatCap.addItem(value);
 		}
-		
 		textBatCap.setText(bat_capMap.get((String) cbxBatCap.getSelectedItem()));
+		
+		Logger.log(Logger.TAG_OPTIONS, "Advanced options loaded");
 	}
 	
 	/**
@@ -383,28 +299,28 @@ public class AdvancedOptionsPane extends JFrame
 	 * @throws IOException
 	 * @throws JDOMException
 	 */
-	public void setData() throws FileNotFoundException, IOException, JDOMException
+	public void setData()
 	{
-		// Assuming that JDOM document is ready, here we format it to XML
-		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+		XmlMngr.setBatteryCapacityItems(bat_capMap);
+		XmlMngr.setDiagDupItems(dupMap);
 		
-		// Output xml to console for debugging
-		// xmlOutputter.output(document, System.out);
+		dupMap.clear();
+		bat_capMap.clear();
 		
-		// Print the file
-		xmlOutputter.output(document, new FileOutputStream(xmlFile));
+		dupMap.putAll(XmlMngr.getDiagDupItems());
+		bat_capMap.putAll(XmlMngr.getBatteryCapacityItems());
 		
 		Logger.log(Logger.TAG_OPTIONS, "Advanced Options Saved");
 	}
 	
 	// Getters and Setters
-	public Element getDupNode()
+	public String getDupValue(String productName)
 	{
-		return diag_dupNode;
+		return dupMap.get(productName);
 	}
 	
-	public Element getBat_capNode()
+	public String getBatCapValue(String productName)
 	{
-		return bat_capNode;
+		return bat_capMap.get(productName);
 	}
 }

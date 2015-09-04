@@ -1,9 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SAT>
   <!-- User defined filters: !-->
-  <myFilters />
+  <myFilters>
+    <item_1>
+      <name>filtro1</name>
+      <regex>f</regex>
+      <header>f</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-04 15:41:53.0</last_update>
+    </item_1>
+  </myFilters>
   <!-- Users shared filters: !-->
-  <sharedFilters />
+  <sharedFilters>
+    <item_1>
+      <name>Teste</name>
+      <regex>Teste</regex>
+      <header>Teste</header>
+      <owner>Public</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>true</kernel>
+      <radio>true</radio>
+      <bugreport>true</bugreport>
+      <routput>true</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-04 11:47:06.0</last_update>
+    </item_1>
+  </sharedFilters>
   <!-- Active filters: !-->
   <activeFilters />
 </SAT>

@@ -31,7 +31,7 @@
     <remember>true</remember>
   </option_pane>
   <bat_cap>
-    <clark>3000</clark>
+    <clark>30001</clark>
     <condor>1980</condor>
     <falcon>2070</falcon>
     <ghost>2200</ghost>
@@ -62,6 +62,6 @@
     <osprey>IKUT-4329</osprey>
     <lux>IKSWL-1063</lux>
     <quark>IKUT-4329</quark>
-    <clark>IKUT-4329</clark>
+    <clark>IKUT-43291</clark>
   </diag_dup>
 </SAT>

@@ -1,6 +1,6 @@
 package supportive;
 
-
+ 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -117,8 +117,7 @@ public class UnZip implements Runnable
 								Scanner scanner = new Scanner(new File(outputFolder + "\\build_report.pl"));
 								String content = scanner.useDelimiter("\\Z").next();
 								content = content.replace("#bat_cap#",
-														  SharedObjs.advOptions.getBat_capNode()
-																			   .getChildText(sCurrentLine));
+														  SharedObjs.advOptions.getBatCapValue(sCurrentLine));
 								PrintWriter out = new PrintWriter(outputFolder + "\\build_report.pl");
 								out.println(content);
 								out.close();
@@ -258,8 +257,7 @@ public class UnZip implements Runnable
 								Scanner scanner = new Scanner(new File(outputFolder + "\\build_report.pl"));
 								String content = scanner.useDelimiter("\\Z").next();
 								content = content.replace("#bat_cap#",
-														  SharedObjs.advOptions.getBat_capNode()
-																			   .getChildText(sCurrentLine));
+														  SharedObjs.advOptions.getBatCapValue(sCurrentLine));
 								PrintWriter out = new PrintWriter(outputFolder + "\\build_report.pl");
 								out.println(content);
 								out.close();

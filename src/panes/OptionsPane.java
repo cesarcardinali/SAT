@@ -1001,8 +1001,7 @@ public class OptionsPane extends JPanel
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				SharedObjs.advOptions.setLocation(SharedObjs.satFrame.getLocation().x + 200,
-												  SharedObjs.satFrame.getLocation().y + 200);
+				SharedObjs.advOptions.setLocationRelativeTo(SharedObjs.satFrame);
 				SharedObjs.advOptions.setVisible(true);
 			}
 		});

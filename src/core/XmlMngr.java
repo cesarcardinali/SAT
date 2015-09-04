@@ -6,6 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+
+import objects.CustomFilterItem;
+import objects.CustomFiltersList;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -13,9 +17,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-
-import objects.CustomFilterItem;
-import objects.CustomFiltersList;
 
 
 /**
@@ -632,6 +633,64 @@ public class XmlMngr
 			Logger.log(Logger.TAG_XMLMNGR, "Error saving password");
 			e.printStackTrace();
 		}
+	}
+	
+	public static HashMap<String, String> getBatteryCapacityItems()
+	{
+		Element requestedElement = userDocument.getRootElement().getChild("bat_cap");
+		HashMap <String, String> items = new HashMap<String, String>();
+		
+		for (Element element : requestedElement.getChildren())
+		{
+			items.put(element.getName().toString(), element.getText());
+		}
+		
+		return items;
+	}
+	
+	public static HashMap<String, String> getDiagDupItems()
+	{
+		Element requestedElement = userDocument.getRootElement().getChild("diag_dup");
+		HashMap <String, String> items = new HashMap<String, String>();
+		
+		for (Element element : requestedElement.getChildren())
+		{
+			items.put(element.getName(), element.getText());
+		}
+		
+		return items;
+	}
+	
+	public static void setBatteryCapacityItems(HashMap <String, String> items)
+	{
+		Element element = userDocument.getRootElement().getChild("bat_cap");
+		
+		for (String value : items.keySet())
+		{
+			element.getChild(value).setText(items.get(value));
+		}
+	}
+	
+	public static void setDiagDupItems(HashMap <String, String> items)
+	{
+		Element element = userDocument.getRootElement().getChild("diag_dup");
+		
+		for (String value : items.keySet())
+		{
+			element.getChild(value).setText(items.get(value));
+		}
+	}
+	
+	public static void setBatteryCapacityItem(String product, String value)
+	{
+		Element element = userDocument.getRootElement().getChild("bat_cap").getChild(product);
+		element.setText(value);
+	}
+	
+	public static void setDiagDupItem(String product, String value)
+	{
+		Element element = userDocument.getRootElement().getChild("diag_dup").getChild(product);
+		element.setText(value);
 	}
 	
 	private static Element createElement(CustomFilterItem filter, int index)

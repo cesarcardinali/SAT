@@ -17,7 +17,6 @@
 			<attribute name="javadoc_location" value="jar:file:/C:/Java%20Libraries/commons-io/commons-io-2.4-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Java Libraries/Guava/guava-r05.jar"/>
-	<classpathentry kind="lib" path="C:/Java Libraries/Commons-CSV/commons-csv-1.1.jar" sourcepath="C:/Users/cesar.cardinali/.m2/repository/org/apache/commons/commons-csv/1.1/commons-csv-1.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Java Libraries/guava/guava-r05.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

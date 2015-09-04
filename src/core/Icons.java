@@ -39,8 +39,8 @@ public class Icons
 	public static Image		iconSat				= Toolkit.getDefaultToolkit()
 														 .getImage("Data\\pics\\icon.png");
 	public static ImageIcon	off					= new ImageIcon("Data\\pics\\off.png");
-	public static ImageIcon	ok					= new ImageIcon("Data\\pics\\.png");
-	public static ImageIcon	on					= new ImageIcon("Data\\pics\\.png");
-	public static ImageIcon	onOff				= new ImageIcon("Data\\pics\\.png");
+	public static ImageIcon	ok					= new ImageIcon("Data\\pics\\Ok.png");
+	public static ImageIcon	on					= new ImageIcon("Data\\pics\\on.png");
+	public static ImageIcon	onOff				= new ImageIcon("Data\\pics\\onoff.png");
 	public static ImageIcon	refresh				= new ImageIcon("Data\\pics\\refresh.png");
 }
