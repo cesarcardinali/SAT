@@ -417,8 +417,7 @@ public class UnZip implements Runnable
 		
 		try
 		{
-			Logger.log(Logger.TAG_UNZIP, zipFile + " preparing to extract");
-			SharedObjs.crsManagerPane.addLogLine(zipFile + " preparing to extract");
+			Logger.log(Logger.TAG_UNZIP, zipFile + " extracting");
 			
 			// create output directory is not exists
 			File fileFolder = new File(outputFolder);
@@ -439,7 +438,7 @@ public class UnZip implements Runnable
 				String fileName = ze.getName();
 				File newFile = new File(outputFolder + File.separator + fileName);
 				
-				Logger.log(Logger.TAG_UNZIP, "file unzip : " + newFile.getAbsoluteFile());
+				//Logger.log(Logger.TAG_UNZIP, "file unzip : " + newFile.getAbsoluteFile());
 				
 				// create all non exists folders else you will hit FileNotFoundException for compressed fileFolder
 				new File(newFile.getParent()).mkdirs();
@@ -459,12 +458,10 @@ public class UnZip implements Runnable
 			zis.close();
 			
 			Logger.log(Logger.TAG_UNZIP, zipFile + " extraction succeful\n");
-			SharedObjs.crsManagerPane.addLogLine(zipFile + " extraction succeful\n");
 		}
 		catch (IOException ex)
 		{
 			Logger.log(Logger.TAG_UNZIP, zipFile + " extraction error\n");
-			SharedObjs.crsManagerPane.addLogLine(zipFile + " extraction error\n");
 			ex.printStackTrace();
 		}
 	}

@@ -45,6 +45,7 @@ public class Logger
 	public static final String	TAG_GETBUG			 = "GET BUG";
 	public static final String	TAG_CUSTOM_FILTERS	 = "CUSTOM FILTERS";
 	public static final String	TAG_LOGGER			 = "LOGGER";
+	public static final String	TAG_CR_CHECKER			 = "CR CHECKER";
 	
 	/**
 	 * Initialize class variables

@@ -3,20 +3,20 @@
   <!-- User defined filters: !-->
   <myFilters>
     <item_1>
-      <name>filtro1</name>
-      <regex>f</regex>
-      <header>f</header>
+      <name>DIAG_WS Wakeups</name>
+      <regex>.*active wakeup source: DIAG_WS.*</regex>
+      <header>- DIAG_WS wakeups found in kernel log:</header>
       <owner>cesarc</owner>
-      <main>true</main>
+      <main>false</main>
       <system>false</system>
-      <kernel>false</kernel>
+      <kernel>true</kernel>
       <radio>false</radio>
       <bugreport>false</bugreport>
       <routput>false</routput>
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-04 15:41:53.0</last_update>
+      <last_update>2015-09-08 11:15:33.0</last_update>
     </item_1>
   </myFilters>
   <!-- Users shared filters: !-->
@@ -37,7 +37,40 @@
       <active>false</active>
       <last_update>2015-09-04 11:47:06.0</last_update>
     </item_1>
+    <item_2>
+      <name>Active Wakeup</name>
+      <regex>active wakeup</regex>
+      <header>- Active Wakeup Sources:</header>
+      <owner>Public</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>true</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-08 10:40:50.0</last_update>
+    </item_2>
   </sharedFilters>
   <!-- Active filters: !-->
-  <activeFilters />
+  <activeFilters>
+    <item_1>
+      <name>DIAG_WS Wakeups</name>
+      <regex>.*active wakeup source: DIAG_WS.*</regex>
+      <header>- DIAG_WS wakeups found in kernel log:</header>
+      <owner>cesarc</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>true</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-08 11:15:33.0</last_update>
+    </item_1>
+  </activeFilters>
 </SAT>

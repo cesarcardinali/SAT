@@ -15,6 +15,7 @@ import java.util.concurrent.Semaphore;
 
 import javax.swing.JOptionPane;
 
+import objects.CrItem;
 import core.Logger;
 import core.SharedObjs;
 
@@ -27,18 +28,18 @@ public class Bug2goDownloader implements Runnable
 	/**
 	 * Variables
 	 */
-	private static final String	  BASE_LOGIN_LINK = "https://b2gadm-mcloud101-blur.svcmot.com/bugreport/report/verify.action";
-	private static final String	  LOGIN_PARAM	  = "username=COREID&password=PASSWRD";
-	private HttpURLConnection	  connection;
+	private static final String   BASE_LOGIN_LINK = "https://b2gadm-mcloud101-blur.svcmot.com/bugreport/report/verify.action";
+	private static final String   LOGIN_PARAM	 = "username=COREID&password=PASSWRD";
+	private HttpURLConnection	 connection;
 	private OutputStream		  out;
 	private ArrayList<Bug2goItem> bug2goListSubmitted;
 	private ArrayList<Bug2goItem> bug2goListInProgress;
 	private ArrayList<Bug2goItem> bug2goListDone;
 	private ArrayList<Bug2goItem> bug2goListFailed;
-	private int					  errors;
-	private boolean				  overwrite;
-	private Semaphore			  semaphore;
-	private ExecutorService		  executor;
+	private int				   errors;
+	private boolean			   overwrite;
+	private Semaphore			 semaphore;
+	private ExecutorService	   executor;
 	
 	/**
 	 * Initialize class variables. The constructor is private in order to implement the Singleton design pattern
@@ -220,6 +221,7 @@ public class Bug2goDownloader implements Runnable
 		{
 			if (!login())
 			{
+				SharedObjs.crsManagerPane.addLogLine("Bug2Go login failed");
 				return;
 			}
 		}
@@ -229,6 +231,7 @@ public class Bug2goDownloader implements Runnable
 		}
 		
 		executor = Executors.newFixedThreadPool(5);
+		SharedObjs.crsManagerPane.addLogLine("Downloading b2g files ...");
 		
 		while (!bug2goListSubmitted.isEmpty() || !bug2goListInProgress.isEmpty())
 		{
@@ -256,11 +259,11 @@ public class Bug2goDownloader implements Runnable
 			
 			for (Bug2goItem b : bug2goListInProgress)
 			{
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-						   b.getBugId() + ": status > " + b.getStatus() + " | size > " + b.getSizeOfFile()
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, b.getBugId() + ": status > " + b.getStatus()
+														+ " | size > " + b.getSizeOfFile()
 														+ " | downloaded > " + b.getDownloadProgress()
 														+ " | running > " + b.isRunning());
-														
+				
 				if (b.getStatus() == Bug2goItem.DownloadStatus.FAILED && errors == 0)
 				{
 					errors = 1;
@@ -317,19 +320,22 @@ public class Bug2goDownloader implements Runnable
 		}
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Downloads finished");
+		SharedObjs.crsManagerPane.addLogLine("Downloads finished");
 		
 		if (errors == 1)
 			JOptionPane.showMessageDialog(SharedObjs.satFrame,
 										  "There were errors during the download. \nFiles may be missing or corrupted.");
-										  
+		
 		// Ask if user wants to unzip them all
-		int ans = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane, "What do you want to do next?",
+		int ans = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
+											   "What do you want to do next?\n"
+															   + "Note: If you choose option 1 or 2, the SAT will also search for incomplete CRs\n"
+															   + "and close them on Jira!",
 											   "Downloads completed", JOptionPane.YES_NO_OPTION,
 											   JOptionPane.QUESTION_MESSAGE, null,
-											   new Object[] {"Unzip and build report output",
-															 "Just unzip them all",
-															 "Nothing, I am ok"},
-											   null);
+											   new Object[] {"Unzip/Build report",
+													   "Just unzip them all",
+													   "Nothing, I am ok"}, null);
 		if (ans == 0)
 		{
 			File[] filesName = new File(SharedObjs.getDownloadPath()).listFiles();
@@ -338,22 +344,55 @@ public class Bug2goDownloader implements Runnable
 			{
 				if (file.isFile() && file.getName().contains(".zip") && file.getName().contains("_B2G_"))
 				{
+					SharedObjs.crsManagerPane.addLogLine("Unzipping " + file.getName() + " ...");
 					UnZip.unZipIt(file.getAbsolutePath(),
 								  file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
-								  
-					file = new File(file.getAbsolutePath().substring(0,
-																	 file.getAbsolutePath().length() - 28));
-																	 
-					try
+					
+					file = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
+					SharedObjs.crsManagerPane.addLogLine("Unzipping done for " + file.getName());
+					
+					SharedObjs.crsManagerPane.addLogLine("Checking if CR is incomplete ...");
+					CheckIfIncomplete incompleteChecker = new CheckIfIncomplete();
+					if (incompleteChecker.checkIt(file.getAbsolutePath()).contains("Incomplete:"))
 					{
-						SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
+						CrItem cr = SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName());
+						if (cr != null)
+						{
+							JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
+															 SharedObjs.getUser(),
+															 SharedObjs.getPass());
+							
+							jira.closeIssue(cr.getJiraID(), JiraSatApi.INCOMPLETE,
+											"The text logs are missing/incomplete. Could not perform a complete analysis.");
+							
+							SharedObjs.crsManagerPane.addLogLine("Closing CR " + cr.getJiraID() + " as incomplete");
+							
+							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+																	+ ". Closed as incomplete");
+						}
+						else
+						{
+							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+										+ ". It is incomplete but it could not be found\nin crs list. It stills opened on Jira.");
+						}
 					}
-					catch (IOException e)
+					else
 					{
-						e.printStackTrace();
+						SharedObjs.crsManagerPane.addLogLine("CR is OK");
+						try
+						{
+							SharedObjs.crsManagerPane.addLogLine("Generating build report ..." + file.getName());
+							SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
+						}
+						catch (IOException e)
+						{
+							e.printStackTrace();
+						}
+						
+						Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath());
 					}
 					
-					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath());
+					SharedObjs.crsManagerPane.addLogLine("All done for " + file.getName() + "\n");
 				}
 			}
 			
@@ -370,16 +409,45 @@ public class Bug2goDownloader implements Runnable
 				{
 					UnZip.unZipIt(file.getAbsolutePath(),
 								  file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
-								  
-					file = new File(file.getAbsolutePath().substring(0,
-																	 file.getAbsolutePath().length() - 28));
-																	 
-					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath());
+					
+					file = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
+					
+					CheckIfIncomplete incompleteChecker = new CheckIfIncomplete();
+					if (incompleteChecker.checkIt(file.getAbsolutePath()).contains("Incomplete:"))
+					{
+						CrItem cr = SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName());
+						if (cr != null)
+						{
+							JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
+															 SharedObjs.getUser(),
+															 SharedObjs.getPass());
+							jira.closeIssue(cr.getJiraID(), JiraSatApi.INCOMPLETE,
+											"The text logs are missing/incomplete. Could not perform a complete analysis.");
+
+							SharedObjs.crsManagerPane.addLogLine("Closing CR " + cr.getJiraID() + " as incomplete");
+							
+							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+																	+ ". Closed as incomplete");
+						}
+						else
+						{
+							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+										+ ". It is incomplete but it could not be found\nin crs list. It stills opened on Jira.");
+						}
+					}
+					else
+					{
+						Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath());
+					}
+					
+					SharedObjs.crsManagerPane.addLogLine("All done for " + file.getName() + "\n");
 				}
 			}
 			
 			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "All b2g files are unzipped.");
 		}
+		
+		SharedObjs.crsManagerPane.getCrsList().clear();
 	}
 	
 	/**

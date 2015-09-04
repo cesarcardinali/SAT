@@ -7,9 +7,9 @@ import java.util.Comparator;
 
 
 @SuppressWarnings("serial")
-public class CrItemList extends ArrayList<CrItem>
+public class CrItemsList extends ArrayList<CrItem>
 {
-	public CrItemList(){
+	public CrItemsList(){
 		super();
 		this.clear();
 	}
@@ -39,17 +39,36 @@ public class CrItemList extends ArrayList<CrItem>
 	 * @param key JiraID
 	 * @return Index of a CR with having given JiraID
 	 */
-	public int indexOf(String key)
+	public CrItem getCrByKey(String key)
 	{
 		for (int i = 0; i < this.size(); i++)
 		{
 			if (key.equals(this.get(i).getJiraID()))
 			{
-				return i;
+				return this.get(i);
 			}
 		}
 		
-		return -1;
+		return null;
+	}
+	
+	/**
+	 * Return the index of a CR with having given b2gId
+	 * 
+	 * @param key JiraID
+	 * @return Index of a CR with having given JiraID
+	 */
+	public CrItem getCrByB2gId(String b2gId)
+	{
+		for (int i = 0; i < this.size(); i++)
+		{
+			if (b2gId.equals(this.get(i).getB2gID()))
+			{
+				return this.get(i);
+			}
+		}
+		
+		return null;
 	}
 	
 	/**

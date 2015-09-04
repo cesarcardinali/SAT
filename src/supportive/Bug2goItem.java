@@ -171,6 +171,7 @@ public class Bug2goItem implements Runnable
 				}
 				
 				reader.close();
+				SharedObjs.crsManagerPane.addLogLine(fileName + " download finished");
 				file.close();
 				
 				status = DownloadStatus.DONE;
