@@ -61,6 +61,8 @@ public class XmlMngr
 		}
 	}
 	
+	
+	
 	/**
 	 * Returns value in user XML file.<br/>
 	 * Returns null if element not found.

@@ -216,21 +216,5 @@
       <active>false</active>
       <last_update>2015-09-03 14:57:46.0</last_update>
     </item_2>
-    <item_3>
-      <name>f0</name>
-      <regex />
-      <header />
-      <owner>cesarc</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2015-09-03 17:29:49.0</last_update>
-    </item_3>
   </activeFilters>
 </SAT>

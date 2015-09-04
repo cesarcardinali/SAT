@@ -34,12 +34,12 @@ import org.jdom2.output.XMLOutputter;
 
 import core.Icons;
 import core.Logger;
+import core.XmlMngr;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import java.util.HashMap;
 
 
@@ -353,7 +353,6 @@ public class AdvancedOptionsPane extends JFrame
 		xmlFile = new File("Data/cfgs/user_cfg.xml");
 		builder = new SAXBuilder();
 		document = (Document) builder.build(xmlFile);
-		
 		Element satNode = document.getRootElement();
 		
 		diag_dupNode = satNode.getChild("diag_dup");

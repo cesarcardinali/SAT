@@ -248,6 +248,8 @@ public class SharedObjs
 													   "Use local file",
 													   "Use cloud file"}, "Merge files");
 		
+		Logger.log(Logger.TAG_SHAREDOBJS, "Option selected: " + ans);
+		
 		if (ans == 0)
 		{
 			Logger.log(Logger.TAG_SHAREDOBJS, "Merging filters");
