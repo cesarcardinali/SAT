@@ -1,4 +1,4 @@
-package objects;
+package supportive;
 
 
 import java.sql.Connection;
@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import objects.CustomFilterItem;
+import objects.CustomFiltersList;
 import core.SharedObjs;
 
 

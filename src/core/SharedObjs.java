@@ -20,12 +20,12 @@ import main.SAT;
 import objects.CrItem;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
-import objects.DBAdapter;
 import panes.AdvancedOptionsPane;
 import panes.CrsManagerPane;
 import panes.CustomFiltersPane;
 import panes.OptionsPane;
 import panes.ParserPane;
+import supportive.DBAdapter;
 
 
 /**

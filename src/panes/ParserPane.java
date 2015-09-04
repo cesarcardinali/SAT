@@ -21,7 +21,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.UndoManager;
 
-import supportive.NonWrappingTextPane;
+import style.NonWrappingTextPane;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;

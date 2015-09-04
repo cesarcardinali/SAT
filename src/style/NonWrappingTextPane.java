@@ -1,4 +1,4 @@
-package supportive;
+package style;
 
 
 import java.awt.Component;
