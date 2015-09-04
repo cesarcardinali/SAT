@@ -93,19 +93,6 @@ public class SharedObjs
 		crsList = new ArrayList<CrItem>();
 		user = XmlMngr.getUserValueOf(new String[] {"option_pane", "uname"});
 		
-		// Try to connect to DB
-		try
-		{
-			satDB = new DBAdapter();
-		}
-		catch (SQLException e1)
-		{
-			e1.printStackTrace();
-			Logger.log(Logger.TAG_SHAREDOBJS, "Could not connect to SQL DB");
-		}
-		
-		loadFilters();
-		
 		// Create Panes
 		parserPane = new ParserPane();
 		crsManagerPane = new CrsManagerPane();
@@ -130,6 +117,19 @@ public class SharedObjs
 						  crsManagerPane);
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Options</body></html>",
 						  optionsPane);
+		
+		// Try to connect to DB
+		try
+		{
+			satDB = new DBAdapter();
+		}
+		catch (SQLException e1)
+		{
+			e1.printStackTrace();
+			Logger.log(Logger.TAG_SHAREDOBJS, "Could not connect to SQL DB");
+		}
+		
+		loadFilters();
 		
 		// Setup connection status
 		if (satDB != null)

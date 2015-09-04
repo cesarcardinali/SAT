@@ -43,8 +43,8 @@ public class SAT extends JFrame
 			{
 				// Initialize all static classes
 				XmlMngr.initClass();
-				SharedObjs.initClass();
 				Logger.initClass();
+				SharedObjs.initClass();
 				// Start UI
 				SharedObjs.satFrame.setVisible(true);
 			}
