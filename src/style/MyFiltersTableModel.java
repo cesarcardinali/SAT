@@ -75,6 +75,11 @@ public class MyFiltersTableModel extends AbstractTableModel
 			return false;
 		else if (dataVector.get(row).getOwner().equals("Public"))
 			return false;
+		else if (column == PUBLIC_INDEX)
+			if (dataVector.get(row).isShared())
+				return true;
+			else
+				return false;
 		return true;
 	}
 	

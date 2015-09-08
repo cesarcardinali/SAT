@@ -529,23 +529,7 @@ public class CustomFiltersPane extends JDialog
 							  .setActive(true);
 				}
 			}
-			
-			/*
-			 * SharedObjs.getUserFiltersList().clear(); SharedObjs.getUserFiltersList().addAll(SharedObjs.satDB.myFilters());
-			 * 
-			 * SharedObjs.getActiveFiltersList().clear();
-			 * SharedObjs.getActiveFiltersList().addAll(SharedObjs.getUserFiltersList().getActiveFilters());
-			 * SharedObjs.getActiveFiltersList().addAll(SharedObjs.satDB.activeFilters());
-			 */
-		}/*
-		  * else { SharedObjs.getSharedFiltersList().clear(); SharedObjs.getSharedFiltersList().addAll(XmlMngr.getAllSharedFilters());
-		  * 
-		  * SharedObjs.getUserFiltersList().clear(); SharedObjs.getUserFiltersList().addAll(XmlMngr.getAllMyFilters());
-		  * 
-		  * SharedObjs.getActiveFiltersList().clear();
-		  * SharedObjs.getActiveFiltersList().addAll(SharedObjs.getUserFiltersList().getActiveFilters());
-		  * SharedObjs.getActiveFiltersList().addAll(SharedObjs.getSharedFiltersList().getActiveFilters()); }
-		  */
+		}
 		
 		setSharedTableFields();
 		setMyFiltersTableFields();
@@ -649,9 +633,6 @@ public class CustomFiltersPane extends JDialog
 			Logger.log("FiltersManager", "Updating XML");
 			for (CustomFilterItem filter : changesStack)
 			{
-				if (filter.isPublic())
-					filter.setOwner("Public");
-				
 				if (filter.getModified().equals("Update") || filter.getModified().equals("Insert"))
 				{
 					if (filter.isPublic())
@@ -717,9 +698,6 @@ public class CustomFiltersPane extends JDialog
 				if (!filter.getModified().equals("Insert"))
 					filter.setModified("Update");
 				
-				if (filter.isPublic())
-					filter.setOwner("Public");
-				
 				if (filter.getId() >= 0)
 				{
 					if (sharedTabChangesStack.indexOf(filter.getId()) >= 0)
@@ -775,9 +753,6 @@ public class CustomFiltersPane extends JDialog
 				System.out.println("Nome OK");
 				if (!filter.getModified().equals("Insert"))
 					filter.setModified("Update");
-				
-				if (filter.isPublic())
-					filter.setOwner("");
 				
 				if (filter.getId() >= 0)
 				{

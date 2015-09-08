@@ -41,6 +41,8 @@ public class FiltersTableCheckboxCellRenderer extends JCheckBox implements Table
 			}
 		}
 		
+		
+		
 		setSelected((value != null && ((Boolean) value).booleanValue()));
 		
 		return this;
