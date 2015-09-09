@@ -1142,16 +1142,7 @@ public class FiltersResultsTree extends JTree
 							if (selectedNode.toString().contains("On Colors"))
 							{
 								ColorPrinter.colorsAlarm(SharedObjs.parserPane.getResultsTxtPane(),
-																 SharedObjs.optionsPane.getTextAlarms()
-																					   .replace("#pname#",
-																								Alarm.getList()
-																									 .get(nodeIndex)
-																									 .getProcess())
-																					   .replace("#log#",
-																								Alarm.getList()
-																									 .get(nodeIndex)
-																									 .toString())
-																					   .replace("\\n", "\n"));
+								                         Alarm.getResult());
 								break;
 							}
 							else
