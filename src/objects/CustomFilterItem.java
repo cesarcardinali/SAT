@@ -152,7 +152,7 @@ public class CustomFilterItem
 			if (!folder.isDirectory() || path.equals(""))
 			{
 				mares = "Not a directory";
-				res = res + "\n********From main log:\n" + mares;
+				res = res + "\n******** From main log ********\n\n" + mares;
 				return res;
 			}
 			
@@ -184,21 +184,21 @@ public class CustomFilterItem
 				}
 				
 				reader.close();
-				res = res + "\n********From main log:\n" + mares;
+				res = res + "\n******** From main log ********\n\n" + mares;
 			}
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "main log missing");
 				mares = "main log missing\n";
-				res = res + "\n********From main log:\n" + mares;
+				res = res + "\n******** From main log ********\n\n" + mares;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				mares = "SAT IOException\n";
-				res = res + "\n********From main log:\n" + mares;
+				res = res + "\n******** From main log ********\n\n" + mares;
 			}
 		}
 		
@@ -211,7 +211,7 @@ public class CustomFilterItem
 			if (!folder.isDirectory() || path.equals(""))
 			{
 				syres = "Not a directory";
-				res = res + "\n********From system log:\n" + syres;
+				res = res + "\n******** From system log ********\n\n" + syres;
 				return res;
 			}
 			
@@ -244,21 +244,21 @@ public class CustomFilterItem
 				}
 				
 				reader.close();
-				res = res + "\n********From system log:\n" + syres;
+				res = res + "\n******** From system log ********\n\n" + syres;
 			}
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "System log missing");
 				syres = "System log missing\n";
-				res = res + "\n********From system log:\n" + syres;
+				res = res + "\n******** From system log ********\n\n" + syres;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				syres = "SAT IOException\n";
-				res = res + "\n********From system log:\n" + syres;
+				res = res + "\n******** From system log ********\n\n" + syres;
 			}
 		}
 		
@@ -272,7 +272,7 @@ public class CustomFilterItem
 			if (!folder.isDirectory() || path.equals(""))
 			{
 				keres = "Not a directory";
-				res = res + "\n********From kernel log:\n" + keres;
+				res = res + "\n******** From kernel log ********\n\n" + keres;
 				return res;
 			}
 			
@@ -304,21 +304,21 @@ public class CustomFilterItem
 					}
 				}
 				reader.close();
-				res = res + "\n********From kernel log:\n" + keres;
+				res = res + "\n******** From kernel log ********\n\n" + keres;
 			}
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "Kernel log missing");
 				keres = "Kernel log missing\n";
-				res = res + "\n********From kernel log:\n" + keres;
+				res = res + "\n******** From kernel log ********\n\n" + keres;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				keres = "SAT IOException\n";
-				res = res + "\n********From kernel log:\n" + keres;
+				res = res + "\n******** From kernel log ********\n\n" + keres;
 			}
 		}
 		
@@ -332,7 +332,7 @@ public class CustomFilterItem
 			if (!folder.isDirectory() || path.equals(""))
 			{
 				rares = "Not a directory";
-				res = res + "\n********From radio log:\n" + rares;
+				res = res + "\n******** From radio log ********\n\n" + rares;
 				return res;
 			}
 			
@@ -364,21 +364,21 @@ public class CustomFilterItem
 				}
 				
 				reader.close();
-				res = res + "\n********From radio log:\n" + rares;
+				res = res + "\n******** From radio log ********\n\n" + rares;
 			}
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "radio log missing");
 				rares = "radio log missing\n";
-				res = res + "\n********From radio log:\n" + rares;
+				res = res + "\n******** From radio log ********\n\n" + rares;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				rares = "SAT IOException\n";
-				res = res + "\n********From radio log:\n" + rares;
+				res = res + "\n******** From radio log ********\n\n" + rares;
 			}
 		}
 		
@@ -392,7 +392,7 @@ public class CustomFilterItem
 			if (!folder.isDirectory() || path.equals(""))
 			{
 				bures = "Not a directory";
-				res = res + "\n********From bugreport log:\n" + bures;
+				res = res + "\n******** From bugreport log ********\n\n" + bures;
 				return res;
 			}
 			
@@ -425,21 +425,21 @@ public class CustomFilterItem
 				}
 				
 				reader.close();
-				res = res + "\n********From bugreport log:\n" + bures;
+				res = res + "\n******** From bugreport log ********\n\n" + bures;
 			}
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "bugreport log missing");
 				bures = "bugreport log missing\n";
-				res = res + "\n********From bugreport log:\n" + bures;
+				res = res + "\n******** From bugreport log ********\n\n" + bures;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				bures = "SAT IOException\n";
-				res = res + "\n********From bugreport log:\n" + bures;
+				res = res + "\n******** From bugreport log ********\n\n" + bures;
 			}
 		}
 		
@@ -453,7 +453,7 @@ public class CustomFilterItem
 			if (!folder.isDirectory() || path.equals(""))
 			{
 				rores = "Not a directory";
-				res = res + "\n********From report output log:********\n" + rores;
+				res = res + "\n******** From report output log ********\n\n" + rores;
 				return res;
 			}
 			
@@ -485,21 +485,21 @@ public class CustomFilterItem
 				}
 				
 				reader.close();
-				res = res + "\n********From report output log:********\n" + rores;
+				res = res + "\n******** From report output log ********\n\n" + rores;
 			}
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "report output log missing");
 				rores = "report output log missing\n";
-				res = res + "\n********From report output log:********\n" + rores;
+				res = res + "\n******** From report output log ********\n\n" + rores;
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 				Logger.log(Logger.TAG_CUSTOM_FILTERS, "IOException");
 				rores = "SAT IOException\n";
-				res = res + "\n********From report output log:********\n" + rores;
+				res = res + "\n******** From report output log ********\n\n" + rores;
 			}
 		}
 		

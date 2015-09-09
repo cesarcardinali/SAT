@@ -45,22 +45,22 @@ import core.XmlMngr;
 @SuppressWarnings("serial")
 public class CustomFiltersPane extends JDialog
 {
-	private int					 lastTab;
-	private JTabbedPane			 tabbedPane;
-	private JScrollPane			 scrollPaneTable1;
-	private JScrollPane			 scrollPaneTable2;
-	private JPanel				  myFiltersPane;
-	private JPanel				  sharedPane;
-	private JButton				 btnDone;
-	private JButton				 btnAdd;
-	private JButton				 btnDel;
-	private JLabel				  label;
-	private JTable				  myFiltersTable;
-	private JTable				  sharedFiltersTable;
-	private MyFiltersTableModel	 myFiltersTableModel;
+	private int                     lastTab;
+	private JTabbedPane             tabbedPane;
+	private JScrollPane             scrollPaneTable1;
+	private JScrollPane             scrollPaneTable2;
+	private JPanel                  myFiltersPane;
+	private JPanel                  sharedPane;
+	private JButton                 btnDone;
+	private JButton                 btnAdd;
+	private JButton                 btnDel;
+	private JLabel                  label;
+	private JTable                  myFiltersTable;
+	private JTable                  sharedFiltersTable;
+	private MyFiltersTableModel     myFiltersTableModel;
 	private SharedFiltersTableModel sharedTableModel;
-	private CustomFiltersList	   changesStack;
-	private CustomFiltersList	   sharedTabChangesStack;
+	private CustomFiltersList       changesStack;
+	private CustomFiltersList       sharedTabChangesStack;
 	
 	// Create the dialog.
 	public CustomFiltersPane()
@@ -275,8 +275,8 @@ public class CustomFiltersPane extends JDialog
 		gbc_btnDone.gridy = 1;
 		getContentPane().add(btnDone, gbc_btnDone);
 		
-    	changesStack = new CustomFiltersList();
-    	sharedTabChangesStack = new CustomFiltersList();
+		changesStack = new CustomFiltersList();
+		sharedTabChangesStack = new CustomFiltersList();
 		
 		lastTab = -1;
 		tabbedPane.addChangeListener(new ChangeListener()
@@ -290,7 +290,7 @@ public class CustomFiltersPane extends JDialog
 					if (tabPane.getSelectedIndex() != lastTab)
 					{
 						System.out.println("Pane2 Mudou tab de " + lastTab + " para "
-										   + tabPane.getSelectedIndex());
+						                   + tabPane.getSelectedIndex());
 						
 						switch (lastTab)
 						{
@@ -299,7 +299,7 @@ public class CustomFiltersPane extends JDialog
 									myFiltersTable.getCellEditor().stopCellEditing();
 								SharedObjs.getUserFiltersList().clear();
 								SharedObjs.getUserFiltersList()
-										  .addAll(myFiltersTableModel.getFilterElements());
+								          .addAll(myFiltersTableModel.getFilterElements());
 								
 								/*
 								 * XmlMngr.removeAllMyFilters(); XmlMngr.addMyFilters(SharedObjs.getUserFiltersList());
@@ -313,7 +313,7 @@ public class CustomFiltersPane extends JDialog
 									sharedFiltersTable.getCellEditor().stopCellEditing();
 								SharedObjs.getSharedFiltersList().clear();
 								SharedObjs.getSharedFiltersList()
-										  .addAll(sharedTableModel.getFilterElements());
+								          .addAll(sharedTableModel.getFilterElements());
 								
 								/*
 								 * XmlMngr.removeAllSharedFilters(); XmlMngr.addSharedFilters(SharedObjs.getSharedFiltersList());
@@ -367,10 +367,10 @@ public class CustomFiltersPane extends JDialog
 					myFiltersTable.setColumnSelectionInterval(1, 1);
 					int nRows = myFiltersTableModel.getRowCount() - 1;
 					myFiltersTable.setRowSelectionInterval(myFiltersTable.convertRowIndexToView(nRows),
-														   myFiltersTable.convertRowIndexToView(nRows));
+					                                       myFiltersTable.convertRowIndexToView(nRows));
 					
 					JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(),
-												  "The filter name can not be empty");
+					                              "The filter name can not be empty");
 					
 					myFiltersTable.editCellAt(myFiltersTable.convertRowIndexToView(nRows), 1);
 					myFiltersTable.transferFocus();
@@ -381,13 +381,13 @@ public class CustomFiltersPane extends JDialog
 					myFiltersTable.setColumnSelectionInterval(1, 1);
 					int nRows = myFiltersTableModel.getRowCount() - 1;
 					myFiltersTable.setRowSelectionInterval(myFiltersTable.convertRowIndexToView(nRows),
-														   myFiltersTable.convertRowIndexToView(nRows));
+					                                       myFiltersTable.convertRowIndexToView(nRows));
 					myFiltersTable.editCellAt(myFiltersTable.convertRowIndexToView(nRows), 1);
 					myFiltersTable.transferFocus();
 					
 					myFiltersTableModel.getElementAt(nRows).setModified("Insert");
 					myFiltersTableModel.getElementAt(nRows)
-									   .setLastUpdate("" + new Timestamp(new java.util.Date().getTime()));
+					                   .setLastUpdate("" + new Timestamp(new java.util.Date().getTime()));
 					
 					changesStack.add(myFiltersTableModel.getElementAt(nRows));
 				}
@@ -401,10 +401,10 @@ public class CustomFiltersPane extends JDialog
 				if (myFiltersTable.getSelectedRow() >= 0)
 				{
 					int ans = JOptionPane.showOptionDialog(SharedObjs.getCustomFiltersPane(),
-														   "Do you really want to remove this filter?",
-														   "Deleting filter", JOptionPane.YES_NO_OPTION,
-														   JOptionPane.QUESTION_MESSAGE, null,
-														   new String[] {"Yes", "No"}, "Yes");
+					                                       "Do you really want to remove this filter?",
+					                                       "Deleting filter", JOptionPane.YES_NO_OPTION,
+					                                       JOptionPane.QUESTION_MESSAGE, null,
+					                                       new String[] {"Yes", "No"}, "Yes");
 					if (ans == 0)
 					{
 						CustomFilterItem filter = myFiltersTableModel.getElementAt(myFiltersTable.getSelectedRow());
@@ -455,7 +455,7 @@ public class CustomFiltersPane extends JDialog
 					if (column == 0)
 					{
 						sharedFiltersTable.setColumnSelectionInterval(sharedFiltersTable.getColumnCount() - 1,
-																	  column);
+						                                              column);
 					}
 				}
 			}
@@ -519,14 +519,13 @@ public class CustomFiltersPane extends JDialog
 				if (SharedObjs.getUserFiltersList().indexOf(filter.getId()) >= 0)
 				{
 					SharedObjs.getUserFiltersList()
-							  .get(SharedObjs.getUserFiltersList().indexOf(filter.getId())).setActive(true);
+					          .get(SharedObjs.getUserFiltersList().indexOf(filter.getId())).setActive(true);
 				}
 				
 				if (SharedObjs.getSharedFiltersList().indexOf(filter.getId()) >= 0)
 				{
 					SharedObjs.getSharedFiltersList()
-							  .get(SharedObjs.getSharedFiltersList().indexOf(filter.getId()))
-							  .setActive(true);
+					          .get(SharedObjs.getSharedFiltersList().indexOf(filter.getId())).setActive(true);
 				}
 			}
 		}
@@ -546,7 +545,7 @@ public class CustomFiltersPane extends JDialog
 		if (sharedFiltersTable.isEditing())
 			sharedFiltersTable.getCellEditor().stopCellEditing();
 		
-		// Execute stacked changes  
+		// Execute stacked changes
 		if (SharedObjs.satDB != null)
 		{
 			Logger.log(Logger.TAG_CUSTOM_FILTERS, "Updating DB and XML");
@@ -679,14 +678,15 @@ public class CustomFiltersPane extends JDialog
 			{
 				sharedFiltersTable.setColumnSelectionInterval(1, 1);
 				sharedFiltersTable.setRowSelectionInterval(sharedFiltersTable.convertRowIndexToView(row),
-														   sharedFiltersTable.convertRowIndexToView(row));
+				                                           sharedFiltersTable.convertRowIndexToView(row));
 				int i = 1;
 				filter.setName(filter.getName() + "(" + i + ")");
 				
 				while (sharedTableModel.hasFilterName(filter))
 				{
 					i++;
-					filter.setName(filter.getName().subSequence(0, filter.getName().length() - 3) + "(" + i + ")");
+					filter.setName(filter.getName().subSequence(0, filter.getName().length() - 3) + "(" + i
+					               + ")");
 				}
 				
 				JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(), "This is already in use");
@@ -733,7 +733,7 @@ public class CustomFiltersPane extends JDialog
 			{
 				myFiltersTable.setColumnSelectionInterval(1, 1);
 				myFiltersTable.setRowSelectionInterval(myFiltersTable.convertRowIndexToView(row),
-													   myFiltersTable.convertRowIndexToView(row));
+				                                       myFiltersTable.convertRowIndexToView(row));
 				int i = 1;
 				filter.setName(filter.getName() + "(" + i + ")");
 				
@@ -741,7 +741,7 @@ public class CustomFiltersPane extends JDialog
 				{
 					i++;
 					filter.setName(filter.getName().subSequence(0, filter.getName().length() - 3) + "(" + i
-								   + ")");
+					               + ")");
 				}
 				
 				JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(), "This is already in use");

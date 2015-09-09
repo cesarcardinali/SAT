@@ -16,16 +16,16 @@ import java.awt.Font;
 @SuppressWarnings("serial")
 public class ProgressDialog extends JDialog
 {
-	private JPanel	panel;
-	private JLabel	message;
-	private JLabel	filesToProcess;
-	private JLabel	filesDone;
-	private JButton	button;
-	private JFrame	frame;
-	private int		files;
+	private JPanel  panel;
+	private JLabel  message;
+	private JLabel  filesToProcess;
+	private JLabel  filesDone;
+	private JButton button;
+	private JFrame  frame;
+	private int     files;
 	
 	public ProgressDialog(JFrame parentFrame, int numberOfFiles)
-	{	
+	{
 		files = numberOfFiles;
 		frame = parentFrame;
 		
@@ -44,7 +44,6 @@ public class ProgressDialog extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				// TODO Auto-generated method stub
 				if (button.getText().equals("Hide"))
 					setVisible(false);
 				else

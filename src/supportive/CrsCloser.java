@@ -21,10 +21,10 @@ public class CrsCloser implements Runnable
 	{
 		Object[] options = {"It's OK. Go!", "Cancel, I need to check"};
 		int n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
-											 "Please, make sure that your username and password are set correctly at \"CRs and Jira\" tab. Otherwise, cancel this window and "
-																		+ "check your login data.",
-											 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
-											 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		                                     "Please, make sure that your username and password are set correctly at \"CRs and Jira\" tab. Otherwise, cancel this window and "
+		                                                     + "check your login data.", "Warning",
+		                                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+		                                     null, options, options[1]);
 		Logger.log(Logger.TAG_CRSCLOSER, "Resposta: " + n);
 		if (n == 0)
 		{

@@ -38,11 +38,11 @@ import filters.Tether;
 @SuppressWarnings("serial")
 public class ParserPane extends JPanel
 {
-	private UndoManager			undoManager;
-	private JSplitPane			splitPane;
-	private FileTree			fileTree;
-	private FiltersResultsTree	filtersResultsTree;
-	private NonWrappingTextPane	resultTxtPane;
+	private UndoManager         undoManager;
+	private JSplitPane          splitPane;
+	private FileTree            fileTree;
+	private FiltersResultsTree  filtersResultsTree;
+	private NonWrappingTextPane resultTxtPane;
 	
 	/**
 	 * Create the panel.
@@ -187,10 +187,10 @@ public class ParserPane extends JPanel
 		String selectedNodeParent = ((DefaultMutableTreeNode) node).getParent().toString().toLowerCase();
 		
 		if ((selectedNode.contains("colors") && selectedNodeParent.contains("alarms "))
-			|| selectedNode.contains("alarms "))
+		    || selectedNode.contains("alarms "))
 			Alarm.updateResult(text);
 		if ((selectedNode.contains("colors") && selectedNodeParent.contains(" consum"))
-			|| selectedNode.contains(" consum"))
+		    || selectedNode.contains(" consum"))
 			Consume.updateResult(text);
 		if (selectedNode.contains("diag ") || selectedNodeParent.contains("diag "))
 			Diag.updateResult(text);

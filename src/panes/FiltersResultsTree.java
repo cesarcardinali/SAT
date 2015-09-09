@@ -23,7 +23,6 @@ import filters.Suspicious;
 import filters.Tether;
 
 
-@SuppressWarnings("serial")
 public class FiltersResultsTree extends JTree
 {
 	// Global Variables
@@ -667,7 +666,8 @@ public class FiltersResultsTree extends JTree
 		
 		if (index >= 0)
 		{
-			result = SharedObjs.getActiveFiltersList().get(index).runFilter(SharedObjs.getCrPath());
+			CustomFilterItem filter = SharedObjs.getActiveFiltersList().get(index);
+			result = filter.runFilter(SharedObjs.getCrPath());
 			if (result.contains(" log missing"))
 			{
 				x = (nodeName + " - Error");
@@ -694,17 +694,28 @@ public class FiltersResultsTree extends JTree
 			}
 			else
 			{
-				addCustomResult(nodeName, "Result");
-				result = result + SharedObjs.getActiveFiltersList().get(index).getHeader() + "\n";
+				if (filter.isMain())
+					addCustomResult(nodeName, "Main");
+				if (filter.isSystem())
+					addCustomResult(nodeName, "System");
+				if (filter.isKernel())
+					addCustomResult(nodeName, "Kernel");
+				if (filter.isRadio())
+					addCustomResult(nodeName, "Radio");
+				if (filter.isBugreport())
+					addCustomResult(nodeName, "BugReport");
+				if (filter.isRoutput())
+					addCustomResult(nodeName, "RepOutput");
+				
+				result = filter.getHeader() + result + "\n";
 				SharedObjs.setResult(SharedObjs.getResult()
-									 + "\n\n\n========================= Tethering =========================\n"
+									 + "\n\n\n========================= " + filter.getName() + " =========================\n"
 									 + result);
 				x = (nodeName + " - Done");
 				selectedNode.setUserObject(x);
 				updateResultTreeUI();
 				Logger.log(Logger.TAG_FILTERSRESULTSTREE, nodeName + "thread finished");
 			}
-			// expandPath(new TreePath(selectedNode.getPath()));
 			
 			showResultOnTextPane(selectedNode);
 		}
@@ -928,8 +939,8 @@ public class FiltersResultsTree extends JTree
 		return false;
 	}
 	
-	private void treeSelectionAction(){
-
+	private void treeSelectionAction()
+	{
 		final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) getLastSelectedPathComponent();
 		
 		if (selectedNode != null)
@@ -1097,7 +1108,6 @@ public class FiltersResultsTree extends JTree
 						{
 							if (selectedNode.getChildCount() == 0)
 							{
-								Logger.log(Logger.TAG_FILTERSRESULTSTREE, "3");
 								new Thread(new Runnable()
 								{
 									@Override
@@ -1263,8 +1273,19 @@ public class FiltersResultsTree extends JTree
 						
 						if (index >= 0)
 						{
-							SharedObjs.parserPane.setResultsPaneTxt(SharedObjs.getActiveFiltersList()
-																			  .get(index).getResult());
+							CustomFilterItem filter = SharedObjs.getActiveFiltersList().get(index);
+							if (selectedNode.toString().contains("Main"))
+								SharedObjs.parserPane.setResultsPaneTxt(filter.getMares());
+							if (selectedNode.toString().contains("System"))
+								SharedObjs.parserPane.setResultsPaneTxt(filter.getSyres());
+							if (selectedNode.toString().contains("Kernel"))
+								SharedObjs.parserPane.setResultsPaneTxt(filter.getKeres());
+							if (selectedNode.toString().contains("Radio"))
+								SharedObjs.parserPane.setResultsPaneTxt(filter.getRares());
+							if (selectedNode.toString().contains("BugReport"))
+								SharedObjs.parserPane.setResultsPaneTxt(filter.getBures());
+							if (selectedNode.toString().contains("RepOutput"))
+								SharedObjs.parserPane.setResultsPaneTxt(filter.getRores());
 						}
 					}
 					break;

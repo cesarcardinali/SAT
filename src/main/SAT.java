@@ -31,7 +31,7 @@ public class SAT extends JFrame
 	 * Variables
 	 */
 	boolean updating = false; // Checking for update
-	
+	                          
 	/**
 	 * Runnable
 	 */
@@ -128,11 +128,13 @@ public class SAT extends JFrame
 		long dateRemote, dateLocal;
 		f1 = new File(SharedObjs.updateFolder1 + Strings.getToolFileName());
 		
-		Logger.log(Logger.TAG_SAT, "Remote file: " + f1.getAbsolutePath() + " - Modified: " + f1.lastModified());
+		Logger.log(Logger.TAG_SAT,
+		           "Remote file: " + f1.getAbsolutePath() + " - Modified: " + f1.lastModified());
 		
 		f2 = new File(Strings.getToolFileName());
 		
-		Logger.log(Logger.TAG_SAT, "Local file: " + f2.getAbsolutePath() + " - Modified: " + f2.lastModified());
+		Logger.log(Logger.TAG_SAT,
+		           "Local file: " + f2.getAbsolutePath() + " - Modified: " + f2.lastModified());
 		
 		dateRemote = f1.lastModified();
 		dateLocal = f2.lastModified();
@@ -141,19 +143,18 @@ public class SAT extends JFrame
 		{
 			Object[] options = new Object[] {"Yes", "No"};
 			int n = JOptionPane.showOptionDialog(null,
-												 "Uma nova versão foi encontrada. Voce desaja atualizar agora?",
-												 "New version available", JOptionPane.YES_NO_CANCEL_OPTION,
-												 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-												 
+			                                     "Uma nova versão foi encontrada. Voce desaja atualizar agora?",
+			                                     "New version available", JOptionPane.YES_NO_CANCEL_OPTION,
+			                                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+			
 			if (n == 0)
 			{
 				try
 				{
-					Logger.log(Logger.TAG_SAT,
-							   "Updating the Updater first, from: " + SharedObjs.updateFolder1);
-					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/"
-												+ Strings.getUpdaterFileName()),
-									   new File(Strings.getUpdaterFileName()));
+					Logger.log(Logger.TAG_SAT, "Updating the Updater first, from: "
+					                           + SharedObjs.updateFolder1);
+					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/" + Strings.getUpdaterFileName()),
+					                   new File(Strings.getUpdaterFileName()));
 				}
 				catch (IOException e)
 				{
@@ -167,10 +168,11 @@ public class SAT extends JFrame
 				{
 					Logger.log(Logger.TAG_SAT, "path: " + new File("").getAbsolutePath());
 					ProcessBuilder builder = new ProcessBuilder("cmd.exe",
-																"/c",
-																"cd " + new File("").getAbsolutePath()
-																	  + " && java -jar "
-																	  + Strings.getUpdaterFileName());
+					                                            "/c",
+					                                            "cd "
+					                                                            + new File("").getAbsolutePath()
+					                                                            + " && java -jar "
+					                                                            + Strings.getUpdaterFileName());
 					builder.start();
 				}
 				catch (IOException e2)
@@ -196,43 +198,43 @@ public class SAT extends JFrame
 	/**
 	 * Thread to run when shutting down SAT application
 	 */
-	Thread onShutdown = new Thread(new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			int run = 0;
-			
-			while (run == 0)
-			{
-				Logger.log(Logger.TAG_SAT, "Saving all user data ...");
-				SharedObjs.crsManagerPane.saveUserData();
-				SharedObjs.parserPane.savePaneData();
-				SharedObjs.optionsPane.savePaneData();
-				run = 1;
-				Logger.log(Logger.TAG_SAT, "Done");
-			}
-			
-			XmlMngr.closeXmls();
-			Logger.close();
-		}
-	});
+	Thread              onShutdown = new Thread(new Runnable()
+	                               {
+		                               @Override
+		                               public void run()
+		                               {
+			                               int run = 0;
+			                               
+			                               while (run == 0)
+			                               {
+				                               Logger.log(Logger.TAG_SAT, "Saving all user data ...");
+				                               SharedObjs.crsManagerPane.saveUserData();
+				                               SharedObjs.parserPane.savePaneData();
+				                               SharedObjs.optionsPane.savePaneData();
+				                               run = 1;
+				                               Logger.log(Logger.TAG_SAT, "Done");
+			                               }
+			                               
+			                               XmlMngr.closeXmls();
+			                               Logger.close();
+		                               }
+	                               });
 	
 	/**
 	 * Window Focus Listener used on SAT main Frame
 	 */
-	WindowFocusListener satWFL = new WindowFocusListener()
-	{
-		@Override
-		public void windowLostFocus(WindowEvent e)
-		{
-		}
-		
-		@Override
-		public void windowGainedFocus(WindowEvent e)
-		{
-		}
-	};
+	WindowFocusListener satWFL     = new WindowFocusListener()
+	                               {
+		                               @Override
+		                               public void windowLostFocus(WindowEvent e)
+		                               {
+		                               }
+		                               
+		                               @Override
+		                               public void windowGainedFocus(WindowEvent e)
+		                               {
+		                               }
+	                               };
 	
 	// Getters and Setters:
 	public boolean isUpdating()

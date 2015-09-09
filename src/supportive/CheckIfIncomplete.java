@@ -9,10 +9,10 @@ import core.Logger;
 
 public class CheckIfIncomplete
 {
-	String			folderPath;
+	String            folderPath;
 	ArrayList<String> incompleteFiles;
 	ArrayList<String> filesNames;
-	ArrayList<File> files;
+	ArrayList<File>   files;
 	
 	/**
 	 * @param crPath

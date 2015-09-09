@@ -46,30 +46,30 @@ import supportive.Encryptation;
 @SuppressWarnings("serial")
 public class OptionsPane extends JPanel
 {
-	private JTextField	   textConsumeFull;
-	private JTextField	   textConsumeOff;
-	private JTextField	   textConsumeOn;
-	private JTextField	   textHighCurrent;
-	private JTextField	   textKernelWake;
-	private JTextField	   textJavaWake;
-	private JTextField	   textSuspiciousHeader;
-	private JTextField	   textSuspicious;
-	private JTextField	   textAlarms;
-	private JTextField	   textB2g;
-	private JTextField	   textTether;
-	private JTextField	   textDiag;
+	private JTextField     textConsumeFull;
+	private JTextField     textConsumeOff;
+	private JTextField     textConsumeOn;
+	private JTextField     textHighCurrent;
+	private JTextField     textKernelWake;
+	private JTextField     textJavaWake;
+	private JTextField     textSuspiciousHeader;
+	private JTextField     textSuspicious;
+	private JTextField     textAlarms;
+	private JTextField     textB2g;
+	private JTextField     textTether;
+	private JTextField     textDiag;
 	private JRadioButton   rdbtnSingleclick;
 	private JRadioButton   rdbtnDouble;
 	private JRadioButton   rdbtnTAnalisys;
 	private JRadioButton   rdbtnNotepad;
-	private JCheckBox	   chkTextWrap;
-	private JButton		   btnManageFilters;
-	private JButton		   btnAdvanced;
-	private JTextField	   textUsername;
+	private JCheckBox      chkTextWrap;
+	private JButton        btnManageFilters;
+	private JButton        btnAdvanced;
+	private JTextField     textUsername;
 	private JPasswordField textPassword;
-	private JCheckBox	   chkbxRemember;
-	private JPanel		   panel_2;
-	private JLabel		   lblServerStatus;
+	private JCheckBox      chkbxRemember;
+	private JPanel         panel_2;
+	private JLabel         lblServerStatus;
 	
 	/**
 	 * Create the panel.
@@ -167,7 +167,7 @@ public class OptionsPane extends JPanel
 			@Override
 			public void focusGained(FocusEvent e)
 			{
-			
+				
 			}
 		});
 		GridBagConstraints gbc_textUsername = new GridBagConstraints();
@@ -204,7 +204,7 @@ public class OptionsPane extends JPanel
 			@Override
 			public void focusGained(FocusEvent e)
 			{
-			
+				
 			}
 		});
 		
@@ -229,7 +229,7 @@ public class OptionsPane extends JPanel
 			@Override
 			public void focusGained(FocusEvent e)
 			{
-			
+				
 			}
 		});
 		GridBagConstraints gbc_chkbxRemember = new GridBagConstraints();
@@ -301,58 +301,58 @@ public class OptionsPane extends JPanel
 		GridBagLayout gbl_panel_2 = new GridBagLayout();
 		gbl_panel_2.columnWidths = new int[] {175, 450, 30, 0};
 		gbl_panel_2.rowHeights = new int[] {0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0};
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0,
+		        0};
 		gbl_panel_2.columnWeights = new double[] {0.0, 2.0, 0.0, Double.MIN_VALUE};
 		gbl_panel_2.rowWeights = new double[] {0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   0.0,
-											   Double.MIN_VALUE};
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        0.0,
+		        Double.MIN_VALUE};
 		panel_2.setLayout(gbl_panel_2);
 		
 		JLabel label_1 = new JLabel("High consumption apps:");
@@ -1035,8 +1035,7 @@ public class OptionsPane extends JPanel
 		textHighCurrent.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "high_current"}));
 		textKernelWake.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "krnl_wkl"}));
 		textJavaWake.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "java_wkl"}));
-		textSuspiciousHeader.setText(XmlMngr.getUserValueOf(new String[] {"option_pane",
-																		  "suspicious_header"}));
+		textSuspiciousHeader.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "suspicious_header"}));
 		textSuspicious.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "suspicious"}));
 		textAlarms.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "alarms"}));
 		textB2g.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "b2g"}));
@@ -1068,12 +1067,12 @@ public class OptionsPane extends JPanel
 			chkTextWrap.setSelected(false);
 		else
 			chkTextWrap.setSelected(true);
-			
+		
 		if (XmlMngr.getUserValueOf(new String[] {"option_pane", "editor"}).equals("0"))
 			rdbtnTAnalisys.setSelected(true);
 		else
 			rdbtnNotepad.setSelected(true);
-			
+		
 		textUsername.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "uname"}));
 		SharedObjs.setUser("" + textUsername.getText());
 		
@@ -1095,8 +1094,8 @@ public class OptionsPane extends JPanel
 		}
 		
 		chkbxRemember.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(new String[] {"option_pane",
-																							"remember"})));
-																							
+		        "remember"})));
+		
 		getComments();
 		
 		Logger.log(Logger.TAG_OPTIONS, "Option pane values loaded");
@@ -1114,7 +1113,7 @@ public class OptionsPane extends JPanel
 		XmlMngr.setUserValueOf(new String[] {"option_pane", "krnl_wkl"}, textKernelWake.getText());
 		XmlMngr.setUserValueOf(new String[] {"option_pane", "java_wkl"}, textJavaWake.getText());
 		XmlMngr.setUserValueOf(new String[] {"option_pane", "suspicious_header"},
-							   textSuspiciousHeader.getText());
+		                       textSuspiciousHeader.getText());
 		XmlMngr.setUserValueOf(new String[] {"option_pane", "suspicious"}, textSuspicious.getText());
 		XmlMngr.setUserValueOf(new String[] {"option_pane", "alarms"}, textAlarms.getText());
 		XmlMngr.setUserValueOf(new String[] {"option_pane", "b2g"}, textB2g.getText());
@@ -1134,17 +1133,17 @@ public class OptionsPane extends JPanel
 			XmlMngr.setUserValueOf(new String[] {"option_pane", "editor"}, "1");
 		else
 			XmlMngr.setUserValueOf(new String[] {"option_pane", "editor"}, "0");
-			
+		
 		if (chkTextWrap.isSelected())
 			XmlMngr.setUserValueOf(new String[] {"option_pane", "wwrap"}, "1");
 		else
 			XmlMngr.setUserValueOf(new String[] {"option_pane", "wwrap"}, "0");
-			
+		
 		if (rdbtnSingleclick.isSelected())
 			XmlMngr.setUserValueOf(new String[] {"option_pane", "tree_breakdown"}, "1");
 		else
 			XmlMngr.setUserValueOf(new String[] {"option_pane", "tree_breakdown"}, "2");
-			
+		
 		XmlMngr.setUserValueOf(new String[] {"option_pane", "uname"}, textUsername.getText());
 		
 		try

@@ -135,8 +135,7 @@ public class ColorPrinter
 							if (difTempo > 120000L)
 								docAlarms.insertString(docAlarms.getLength(), lines[i] + " \t\t\n", High);
 							else
-								docAlarms.insertString(docAlarms.getLength(), lines[i] + " \t\t\n",
-													   High_Freq);
+								docAlarms.insertString(docAlarms.getLength(), lines[i] + " \t\t\n", High_Freq);
 						}
 						else
 						{
@@ -153,8 +152,7 @@ public class ColorPrinter
 							if (difTempo > 120000L)
 								docAlarms.insertString(docAlarms.getLength(), lines[i] + " \t\t\n", High);
 							else
-								docAlarms.insertString(docAlarms.getLength(), lines[i] + " \t\t\n",
-													   High_Freq);
+								docAlarms.insertString(docAlarms.getLength(), lines[i] + " \t\t\n", High_Freq);
 						}
 						else
 						{
@@ -222,7 +220,7 @@ public class ColorPrinter
 				time = dateFormat.parse((String) line.subSequence(0, 13)).getTime();
 			}
 			else if ((!line.contains("AlarmManager"))
-					 && (line.contains("Screen") || line.matches("Unknow.+pid")))
+			         && (line.contains("Screen") || line.matches("Unknow.+pid")))
 			{
 				time = dateFormat.parse((String) line.substring(12, 26)).getTime();
 			}

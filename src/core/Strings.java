@@ -9,18 +9,18 @@ public class Strings
 	/**
 	 * System String Variables
 	 */
-	private static String		toolName	= getSystemString("tool_name");
-	private static String		toolVersion	= getSystemString("tool_version");
-	private static String		toolFile	= getSystemString("tool_file");
-	private static String		updaterFile	= getSystemString("updater");
-	private static final String	DATA_FOLDER	= "Data/";
-	private static String		picsFolder	= DATA_FOLDER + getSystemString("pics_folder");
-	private static String		logsFolder	= DATA_FOLDER + getSystemString("logs_folder");
+	private static String       toolName    = getSystemString("tool_name");
+	private static String       toolVersion = getSystemString("tool_version");
+	private static String       toolFile    = getSystemString("tool_file");
+	private static String       updaterFile = getSystemString("updater");
+	private static final String DATA_FOLDER = "Data/";
+	private static String       picsFolder  = DATA_FOLDER + getSystemString("pics_folder");
+	private static String       logsFolder  = DATA_FOLDER + getSystemString("logs_folder");
 	
 	/**
 	 * Message Strings Variables
 	 */
-	private static String		newVersion	= getMessageString("new_version");
+	private static String       newVersion  = getMessageString("new_version");
 	
 	/**
 	 * Get Strings located in messages_cfg.xml

@@ -27,11 +27,11 @@ public class XmlMngr
 	/**
 	 * Variables
 	 */
-	private static Document	userDocument;	 // User XML file
-	private static Document	systemDocument;	 // System XML file
-	private static Document	messageDocument; // Message XML file
-	private static Document	filtersDocument; // Filters XML file
-	
+	private static Document userDocument;   // User XML file
+	private static Document systemDocument; // System XML file
+	private static Document messageDocument; // Message XML file
+	private static Document filtersDocument; // Filters XML file
+	                                         
 	/**
 	 * Initialize all variables and configure the class
 	 */
@@ -61,8 +61,6 @@ public class XmlMngr
 			e.printStackTrace();
 		}
 	}
-	
-	
 	
 	/**
 	 * Returns value in user XML file.<br/>
@@ -291,7 +289,7 @@ public class XmlMngr
 	public static CustomFilterItem getSharedFiltersValueOf(String name, String owner)
 	{
 		for (Element requestedElement : filtersDocument.getRootElement().getChild("sharedFilters")
-													   .getChildren())
+		                                               .getChildren())
 		{
 			if (requestedElement.getName().equals(name))
 			{
@@ -327,7 +325,7 @@ public class XmlMngr
 			}
 			
 			sharedFiltersElement.addContent(createElement(filter,
-														  sharedFiltersElement.getChildren().size() + 1));
+			                                              sharedFiltersElement.getChildren().size() + 1));
 			return true;
 		}
 		
@@ -337,7 +335,7 @@ public class XmlMngr
 	public static CustomFilterItem getActiveFiltersValueOf(String name, String owner)
 	{
 		for (Element requestedElement : filtersDocument.getRootElement().getChild("activeFilters")
-													   .getChildren())
+		                                               .getChildren())
 		{
 			if (requestedElement.getChildText("name").equals(name))
 			{
@@ -368,8 +366,8 @@ public class XmlMngr
 			}
 			
 			activeFiltersElement.addContent(createElement(filter,
-														  activeFiltersElement.getChildren().size() + 1));
-														  
+			                                              activeFiltersElement.getChildren().size() + 1));
+			
 			return true;
 		}
 		
@@ -514,7 +512,7 @@ public class XmlMngr
 			myFiltersElement.removeContent();
 		else
 			return false;
-			
+		
 		return true;
 	}
 	
@@ -525,7 +523,7 @@ public class XmlMngr
 	public static boolean removeSharedFiltersValueOf(CustomFilterItem filter)
 	{
 		Element sharedFiltersElement = filtersDocument.getRootElement().getChild("sharedFilters");
-
+		
 		for (Element requestedElement : sharedFiltersElement.getChildren())
 		{
 			if (requestedElement.getChildText("name").equals(filter.getName()))
@@ -549,7 +547,7 @@ public class XmlMngr
 			sharedFiltersElement.removeContent();
 		else
 			return false;
-			
+		
 		return true;
 	}
 	
@@ -560,7 +558,7 @@ public class XmlMngr
 	public static boolean removeActiveFiltersValueOf(CustomFilterItem filter)
 	{
 		Element activeFiltersElement = filtersDocument.getRootElement().getChild("activeFilters");
-
+		
 		for (Element requestedElement : activeFiltersElement.getChildren())
 		{
 			if (requestedElement.getChildText("name").equals(filter.getName()))
@@ -584,7 +582,7 @@ public class XmlMngr
 			activeFiltersElement.removeContent();
 		else
 			return false;
-			
+		
 		return true;
 	}
 	
@@ -638,7 +636,7 @@ public class XmlMngr
 	public static HashMap<String, String> getBatteryCapacityItems()
 	{
 		Element requestedElement = userDocument.getRootElement().getChild("bat_cap");
-		HashMap <String, String> items = new HashMap<String, String>();
+		HashMap<String, String> items = new HashMap<String, String>();
 		
 		for (Element element : requestedElement.getChildren())
 		{
@@ -651,7 +649,7 @@ public class XmlMngr
 	public static HashMap<String, String> getDiagDupItems()
 	{
 		Element requestedElement = userDocument.getRootElement().getChild("diag_dup");
-		HashMap <String, String> items = new HashMap<String, String>();
+		HashMap<String, String> items = new HashMap<String, String>();
 		
 		for (Element element : requestedElement.getChildren())
 		{
@@ -661,7 +659,7 @@ public class XmlMngr
 		return items;
 	}
 	
-	public static void setBatteryCapacityItems(HashMap <String, String> items)
+	public static void setBatteryCapacityItems(HashMap<String, String> items)
 	{
 		Element element = userDocument.getRootElement().getChild("bat_cap");
 		
@@ -671,7 +669,7 @@ public class XmlMngr
 		}
 	}
 	
-	public static void setDiagDupItems(HashMap <String, String> items)
+	public static void setDiagDupItems(HashMap<String, String> items)
 	{
 		Element element = userDocument.getRootElement().getChild("diag_dup");
 		

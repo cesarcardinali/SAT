@@ -1,6 +1,6 @@
 package supportive;
 
- 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +26,7 @@ public class UnZip implements Runnable
 {
 	private static Process p;
 	private static String  file;
-	private String		   path;
+	private String         path;
 	
 	public UnZip(String path)
 	{
@@ -41,8 +41,8 @@ public class UnZip implements Runnable
 		if (fileFolder.isDirectory())
 		{
 			JOptionPane.showMessageDialog(null,
-										  "Avisa o rapaizin responsavel por essa SAT aki q deu biziu em alguma coisa na hora de extrair ae\n"
-												+ "Mas pera, se vc nao rodou com logs nem precisa avisar, tem nada q da pra fazer nesse caso nao negao");
+			                              "Avisa o rapaizin responsavel por essa SAT aki q deu biziu em alguma coisa na hora de extrair ae\n"
+			                                              + "Mas pera, se vc nao rodou com logs nem precisa avisar, tem nada q da pra fazer nesse caso nao negao");
 		}
 		else if (fileFolder.isFile())
 		{
@@ -53,11 +53,10 @@ public class UnZip implements Runnable
 				String fileName = getFileName(file);
 				String fileFolderPath = getFileFolders(file);
 				String outputFolder = fileFolderPath + fileName;
-				Logger.log(Logger.TAG_UNZIP,
-						   "File full path: " + file + "\nFile Name: " + fileName + "\nFile folder path: "
-											 + fileFolderPath + "\nOutput folder: " + fileFolderPath
-											 + fileName);
-											 
+				Logger.log(Logger.TAG_UNZIP, "File full path: " + file + "\nFile Name: " + fileName
+				                             + "\nFile folder path: " + fileFolderPath + "\nOutput folder: "
+				                             + fileFolderPath + fileName);
+				
 				try
 				{
 					Logger.log(Logger.TAG_UNZIP, "Unzipping file to " + fileName);
@@ -80,7 +79,7 @@ public class UnZip implements Runnable
 						{
 							String files = filesList[j].getName();
 							if (files.toLowerCase().endsWith(".txt")
-								&& files.toLowerCase().contains("report_info"))
+							    && files.toLowerCase().contains("report_info"))
 							{
 								npath = npath + "\\" + files;
 								break;
@@ -108,8 +107,8 @@ public class UnZip implements Runnable
 							sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
 							sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
 							Logger.log(Logger.TAG_UNZIP, sCurrentLine);
-							copyScript(new File("Data\\scripts\\_Base.pl"),
-									   new File(outputFolder + "\\build_report.pl"));
+							copyScript(new File("Data\\scripts\\_Base.pl"), new File(outputFolder
+							                                                         + "\\build_report.pl"));
 							// Configure build report battery capacity
 							try
 							{
@@ -117,7 +116,7 @@ public class UnZip implements Runnable
 								Scanner scanner = new Scanner(new File(outputFolder + "\\build_report.pl"));
 								String content = scanner.useDelimiter("\\Z").next();
 								content = content.replace("#bat_cap#",
-														  SharedObjs.advOptions.getBatCapValue(sCurrentLine));
+								                          SharedObjs.advOptions.getBatCapValue(sCurrentLine));
 								PrintWriter out = new PrintWriter(outputFolder + "\\build_report.pl");
 								out.println(content);
 								out.close();
@@ -131,9 +130,8 @@ public class UnZip implements Runnable
 					}
 					
 					br.close();
-					ProcessBuilder builder = new ProcessBuilder("cmd.exe",
-																"/c",
-																"cd " + outputFolder + " && build_report.pl");
+					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + outputFolder
+					                                                             + " && build_report.pl");
 					builder.redirectErrorStream(true);
 					p = builder.start();
 					BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -153,15 +151,15 @@ public class UnZip implements Runnable
 						// SharedObjs.crsManagerPane.addLogLine(line);
 					}
 					
-					Logger.log(Logger.TAG_UNZIP,
-							   "Finished unzipping and running Bulid_report.pl of " + fileName);
+					Logger.log(Logger.TAG_UNZIP, "Finished unzipping and running Bulid_report.pl of "
+					                             + fileName);
 				}
 				catch (IOException | InterruptedException e)
 				{
 					e.printStackTrace();
 				}
 				
-				//SharedObjs.crsManagerPane.updateAllDataUI();
+				// SharedObjs.crsManagerPane.updateAllDataUI();
 				
 				Logger.log(Logger.TAG_UNZIP, fileName + " Successfully extracted");
 			}
@@ -180,8 +178,8 @@ public class UnZip implements Runnable
 		if (fileFolder.isDirectory())
 		{
 			JOptionPane.showMessageDialog(null,
-										  "Avisa o rapaizin responsavel por essa SAT aki q deu biziu em alguma coisa na hora de extrair ae\n"
-												+ "Mas pera, se vc nao rodou com logs nem precisa avisar, tem nada q da pra fazer nesse caso nao negao");
+			                              "Avisa o rapaizin responsavel por essa SAT aki q deu biziu em alguma coisa na hora de extrair ae\n"
+			                                              + "Mas pera, se vc nao rodou com logs nem precisa avisar, tem nada q da pra fazer nesse caso nao negao");
 		}
 		else if (fileFolder.isFile())
 		{
@@ -192,11 +190,10 @@ public class UnZip implements Runnable
 				String fileName = getFileName(file);
 				String fileFolderPath = getFileFolders(file);
 				String outputFolder = fileFolderPath + fileName;
-				Logger.log(Logger.TAG_UNZIP,
-						   "File full path: " + file + "\nFile Name: " + fileName + "\nFile folder path: "
-											 + fileFolderPath + "\nOutput folder: " + fileFolderPath
-											 + fileName);
-											 
+				Logger.log(Logger.TAG_UNZIP, "File full path: " + file + "\nFile Name: " + fileName
+				                             + "\nFile folder path: " + fileFolderPath + "\nOutput folder: "
+				                             + fileFolderPath + fileName);
+				
 				try
 				{
 					Logger.log(Logger.TAG_UNZIP, "Unzipping file to " + fileName);
@@ -219,7 +216,7 @@ public class UnZip implements Runnable
 						{
 							String files = filesList[j].getName();
 							if (files.toLowerCase().endsWith(".txt")
-								&& files.toLowerCase().contains("report_info"))
+							    && files.toLowerCase().contains("report_info"))
 							{
 								npath = npath + "\\" + files;
 								break;
@@ -247,9 +244,9 @@ public class UnZip implements Runnable
 							sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
 							sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
 							Logger.log(Logger.TAG_UNZIP, sCurrentLine);
-							copyScript(new File("Data\\scripts\\_Base.pl"),
-									   new File(outputFolder + "\\build_report.pl"));
-									   
+							copyScript(new File("Data\\scripts\\_Base.pl"), new File(outputFolder
+							                                                         + "\\build_report.pl"));
+							
 							// Configure build report battery capacity
 							try
 							{
@@ -257,7 +254,7 @@ public class UnZip implements Runnable
 								Scanner scanner = new Scanner(new File(outputFolder + "\\build_report.pl"));
 								String content = scanner.useDelimiter("\\Z").next();
 								content = content.replace("#bat_cap#",
-														  SharedObjs.advOptions.getBatCapValue(sCurrentLine));
+								                          SharedObjs.advOptions.getBatCapValue(sCurrentLine));
 								PrintWriter out = new PrintWriter(outputFolder + "\\build_report.pl");
 								out.println(content);
 								out.close();
@@ -271,9 +268,8 @@ public class UnZip implements Runnable
 					}
 					
 					br.close();
-					ProcessBuilder builder = new ProcessBuilder("cmd.exe",
-																"/c",
-																"cd " + outputFolder + " && build_report.pl");
+					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + outputFolder
+					                                                             + " && build_report.pl");
 					builder.redirectErrorStream(true);
 					p = builder.start();
 					BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -294,15 +290,15 @@ public class UnZip implements Runnable
 						// SharedObjs.crsManagerPane.addLogLine(line);
 					}
 					
-					Logger.log(Logger.TAG_UNZIP,
-							   "Finished unzipping and running Bulid_report.pl of " + fileName);
+					Logger.log(Logger.TAG_UNZIP, "Finished unzipping and running Bulid_report.pl of "
+					                             + fileName);
 				}
 				catch (IOException | InterruptedException e)
 				{
 					e.printStackTrace();
 				}
 				
-				//SharedObjs.crsManagerPane.updateAllDataUI();
+				// SharedObjs.crsManagerPane.updateAllDataUI();
 				Logger.log(Logger.TAG_UNZIP, fileName + " Successfully extracted");
 			}
 			else
@@ -345,10 +341,9 @@ public class UnZip implements Runnable
 	
 	public void delZips()
 	{
-		ProcessBuilder builder = new ProcessBuilder("cmd.exe",
-													"/c",
-													"cd " + file.substring(0, file.length() - 28)
-														  + "&& cd .. && del *.zip");
+		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd "
+		                                                             + file.substring(0, file.length() - 28)
+		                                                             + "&& cd .. && del *.zip");
 		builder.redirectErrorStream(true);
 		
 		try
@@ -384,8 +379,8 @@ public class UnZip implements Runnable
 	{
 		String[] folders = fullPath.split("\\\\");
 		Logger.log(Logger.TAG_UNZIP, "File name: " + folders[folders.length - 1] + "\nSubstring: "
-									 + folders[folders.length - 1].subSequence(0, 8));
-									 
+		                             + folders[folders.length - 1].subSequence(0, 8));
+		
 		return (String) folders[folders.length - 1].subSequence(0, 8);
 	}
 	
@@ -438,7 +433,7 @@ public class UnZip implements Runnable
 				String fileName = ze.getName();
 				File newFile = new File(outputFolder + File.separator + fileName);
 				
-				//Logger.log(Logger.TAG_UNZIP, "file unzip : " + newFile.getAbsoluteFile());
+				// Logger.log(Logger.TAG_UNZIP, "file unzip : " + newFile.getAbsoluteFile());
 				
 				// create all non exists folders else you will hit FileNotFoundException for compressed fileFolder
 				new File(newFile.getParent()).mkdirs();

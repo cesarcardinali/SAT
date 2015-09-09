@@ -16,36 +16,36 @@ public class Logger
 	/**
 	 * Variables
 	 */
-	private static File		   logFile;
+	private static File           logFile;
 	private static BufferedWriter logWriter;
-	private static boolean		logCreated;
-	private static boolean		debugMode;
-	public static final String	TAG_SAT				= "SAT";
-	public static final String	TAG_PARSER			 = "PARSER";
-	public static final String	TAG_CRSMANAGER		 = "CRS MANAGER";
-	public static final String	TAG_OPTIONS			= "OPTIONS";
-	public static final String	TAG_FILETREE		   = "FILE TREE";
-	public static final String	TAG_FILTERSRESULTSTREE = "FILTER RESULTS TREE";
-	public static final String	TAG_COLORPRINTER	   = "COLOR PRINTER";
-	public static final String	TAG_CRSCLOSER		  = "CRS CLOSER";
-	public static final String	TAG_DIAGCRSCLOSER	  = "DIAG CRS CLOSER";
-	public static final String	TAG_ALARM			  = "ALARM";
-	public static final String	TAG_B2G				= "BUG TO GO";
-	public static final String	TAG_CONSUME			= "CONSUME";
-	public static final String	TAG_DIAG			   = "DIAG";
-	public static final String	TAG_NORMAL			 = "NORMAL";
-	public static final String	TAG_SUSPICIOUS		 = "SUSPICIOUS";
-	public static final String	TAG_TETHER			 = "TETHER";
-	public static final String	TAG_ALARMITEM		  = "ALARM ITEM";
-	public static final String	TAG_UNZIP			  = "UNZIP";
-	public static final String	TAG_BUG2GOITEM		 = "BUG2GO ITEM";
-	public static final String	TAG_BUG2GODOWNLOADER   = "BUG2GO DOWNLOADER";
-	public static final String	TAG_XMLMNGR			= "XML MANAGER";
-	public static final String	TAG_SHAREDOBJS		 = "SHARED OBJS";
-	public static final String	TAG_GETBUG			 = "GET BUG";
-	public static final String	TAG_CUSTOM_FILTERS	 = "CUSTOM FILTERS";
-	public static final String	TAG_LOGGER			 = "LOGGER";
-	public static final String	TAG_CR_CHECKER			 = "CR CHECKER";
+	private static boolean        logCreated;
+	private static boolean        debugMode;
+	public static final String    TAG_SAT                = "SAT";
+	public static final String    TAG_PARSER             = "PARSER";
+	public static final String    TAG_CRSMANAGER         = "CRS MANAGER";
+	public static final String    TAG_OPTIONS            = "OPTIONS";
+	public static final String    TAG_FILETREE           = "FILE TREE";
+	public static final String    TAG_FILTERSRESULTSTREE = "FILTER RESULTS TREE";
+	public static final String    TAG_COLORPRINTER       = "COLOR PRINTER";
+	public static final String    TAG_CRSCLOSER          = "CRS CLOSER";
+	public static final String    TAG_DIAGCRSCLOSER      = "DIAG CRS CLOSER";
+	public static final String    TAG_ALARM              = "ALARM";
+	public static final String    TAG_B2G                = "BUG TO GO";
+	public static final String    TAG_CONSUME            = "CONSUME";
+	public static final String    TAG_DIAG               = "DIAG";
+	public static final String    TAG_NORMAL             = "NORMAL";
+	public static final String    TAG_SUSPICIOUS         = "SUSPICIOUS";
+	public static final String    TAG_TETHER             = "TETHER";
+	public static final String    TAG_ALARMITEM          = "ALARM ITEM";
+	public static final String    TAG_UNZIP              = "UNZIP";
+	public static final String    TAG_BUG2GOITEM         = "BUG2GO ITEM";
+	public static final String    TAG_BUG2GODOWNLOADER   = "BUG2GO DOWNLOADER";
+	public static final String    TAG_XMLMNGR            = "XML MANAGER";
+	public static final String    TAG_SHAREDOBJS         = "SHARED OBJS";
+	public static final String    TAG_GETBUG             = "GET BUG";
+	public static final String    TAG_CUSTOM_FILTERS     = "CUSTOM FILTERS";
+	public static final String    TAG_LOGGER             = "LOGGER";
+	public static final String    TAG_CR_CHECKER         = "CR CHECKER";
 	
 	/**
 	 * Initialize class variables
@@ -61,16 +61,16 @@ public class Logger
 			if (new File(Strings.getLogsFolder()).exists())
 			{
 				logFile = new File(Strings.getLogsFolder() + "log_"
-								   + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
-								   + ".log");
+				                   + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
+				                   + ".log");
 				Logger.log(Logger.TAG_LOGGER, "Logs folder exists");
 			}
 			else
 			{
 				new File(Strings.getLogsFolder()).mkdirs();
 				logFile = new File(Strings.getLogsFolder() + "log_"
-								   + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
-								   + ".log");
+				                   + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
+				                   + ".log");
 				Logger.log(Logger.TAG_LOGGER, "Logs folder created");
 			}
 			
