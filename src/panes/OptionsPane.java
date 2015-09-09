@@ -43,9 +43,9 @@ import core.XmlMngr;
 import supportive.Encryptation;
 
 
-@SuppressWarnings("serial")
 public class OptionsPane extends JPanel
 {
+	// {{ Variables
 	private JTextField     textConsumeFull;
 	private JTextField     textConsumeOff;
 	private JTextField     textConsumeOn;
@@ -70,6 +70,7 @@ public class OptionsPane extends JPanel
 	private JCheckBox      chkbxRemember;
 	private JPanel         panel_2;
 	private JLabel         lblServerStatus;
+	// }}
 	
 	/**
 	 * Create the panel.
@@ -162,6 +163,7 @@ public class OptionsPane extends JPanel
 			public void focusLost(FocusEvent e)
 			{
 				updateUserdata();
+				System.out.println("fooooooooooooocus lost");
 			}
 			
 			@Override
@@ -1041,13 +1043,8 @@ public class OptionsPane extends JPanel
 		textB2g.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "b2g"}));
 		textTether.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "tether"}));
 		textDiag.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "diag"}));
-		
-		// Logger.log(Logger.TAG_OPTIONS, "Comments Loaded");
 	}
 	
-	/**
-	 * 
-	 */
 	public void loadDataPane()
 	{
 		Logger.log(Logger.TAG_OPTIONS, "Loading option pane values data");
@@ -1101,9 +1098,6 @@ public class OptionsPane extends JPanel
 		Logger.log(Logger.TAG_OPTIONS, "Option pane values loaded");
 	}
 	
-	/**
-	 * 
-	 */
 	public void setComments()
 	{
 		XmlMngr.setUserValueOf(new String[] {"option_pane", "full_log"}, textConsumeFull.getText());

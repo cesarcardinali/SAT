@@ -136,6 +136,8 @@ public class SharedObjs
 			optionsPane.setServerStatus(true);
 		else
 			optionsPane.setServerStatus(false);
+		
+		parserPane.getFiltersResultsTree().updateFiltersTree();
 	}
 	
 	/**
