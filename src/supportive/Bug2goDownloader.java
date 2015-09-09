@@ -384,8 +384,6 @@ public class Bug2goDownloader implements Runnable
 						SharedObjs.crsManagerPane.addLogLine("CR is OK");
 						try
 						{
-							SharedObjs.crsManagerPane.addLogLine("Generating build report ..."
-							                                     + file.getName());
 							SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
 						}
 						catch (IOException e)
