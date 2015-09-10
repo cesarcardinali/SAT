@@ -7,13 +7,19 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -136,6 +142,11 @@ public class ParserPane extends JPanel
 			@Override
 			public void keyPressed(KeyEvent e)
 			{
+				if (e.isControlDown() && e.isShiftDown() && e.getKeyCode() == 67)
+				{
+					copyAll();
+				}
+				
 				if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0))
 				{
 					try
@@ -146,6 +157,17 @@ public class ParserPane extends JPanel
 					{
 						cre.printStackTrace();
 					}
+				}
+			}
+		});
+		
+		resultTxtPane.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				if (SwingUtilities.isRightMouseButton(e))
+				{
 				}
 			}
 		});
@@ -217,6 +239,13 @@ public class ParserPane extends JPanel
 		filtersResultsTree.clearTree();
 		resultTxtPane.setText(""); // reset the text pane
 		SharedObjs.setResult(""); // reset the result for the filters
+	}
+	
+	private void copyAll()
+	{
+		Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+		StringSelection stringSelection = new StringSelection(resultTxtPane.getText());
+		clpbrd.setContents(stringSelection, null);
 	}
 	
 	/**
