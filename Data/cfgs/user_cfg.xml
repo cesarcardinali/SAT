@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SAT>
   <parser_pane>
-    <rootPath>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs</rootPath>
+    <rootPath>C:\CRs</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\Users\cesar.cardinali\Desktop\CRs</path>
-    <assign>false</assign>
-    <label>false</label>
+    <path>C:\CRs\Debuging</path>
+    <assign>true</assign>
+    <label>true</label>
   </crs_jira_pane>
   <option_pane>
     <full_log>- The process *#pname#* was consuming *~#avgconsume#* of CPU processing power.\n{noformat}\n#logfull#\n{noformat}</full_log>

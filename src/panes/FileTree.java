@@ -472,7 +472,7 @@ public class FileTree extends JPanel
 		
 		if (isSelectedNodesFolder(fileTree.getSelectionPaths()))
 		{
-			JMenuItem runScript = new JMenuItem("Run build-report");
+			JMenuItem runScript = new JMenuItem("TestsRun build-report");
 			
 			runScript.addActionListener(new ActionListener()
 			{

@@ -300,6 +300,8 @@ public class CrsManagerPane extends JPanel
 		gbc_btnOpenOnChrome.gridy = 8;
 		panel_3.add(btnOpenOnChrome, gbc_btnOpenOnChrome);
 		
+				                                              + "After download is done, just click \"TestsRun\" and follow the instructions on the screen\n\n"
+		JButton btnrun = new JButton("TestsRun");
 		JSeparator separator = new JSeparator();
 		separator.setMaximumSize(new Dimension(130, 32767));
 		separator.setForeground(Color.DARK_GRAY);

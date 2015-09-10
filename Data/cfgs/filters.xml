@@ -16,7 +16,7 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-08 17:24:11.0</last_update>
+      <last_update>2015-09-18 11:22:20.0</last_update>
     </item_1>
     <item_2>
       <name>All Errors</name>
@@ -32,7 +32,7 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-09 12:48:19.0</last_update>
+      <last_update>2015-09-18 11:22:20.0</last_update>
     </item_2>
   </myFilters>
   <!-- Users shared filters: !-->
@@ -69,14 +69,11 @@
       <active>false</active>
       <last_update>2015-09-08 10:40:50.0</last_update>
     </item_2>
-  </sharedFilters>
-  <!-- Active filters: !-->
-  <activeFilters>
-    <item_1>
+    <item_3>
       <name>DIAG_WS Wakeups</name>
       <regex>.*active wakeup source: DIAG_WS.*</regex>
       <header>- DIAG_WS wakeups found in kernel log:</header>
-      <owner>cesarc</owner>
+      <owner>wmarques</owner>
       <main>false</main>
       <system>false</system>
       <kernel>true</kernel>
@@ -86,15 +83,15 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-08 17:24:11.0</last_update>
-    </item_1>
-    <item_2>
+      <last_update>2015-09-11 14:09:46.0</last_update>
+    </item_3>
+    <item_4>
       <name>All Errors</name>
       <regex>.*error.*</regex>
       <header />
-      <owner>cesarc</owner>
+      <owner>wmarques</owner>
       <main>true</main>
-      <system>false</system>
+      <system>true</system>
       <kernel>true</kernel>
       <radio>false</radio>
       <bugreport>false</bugreport>
@@ -102,7 +99,9 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-09 12:51:37.0</last_update>
-    </item_2>
-  </activeFilters>
+      <last_update>2015-09-11 14:09:46.0</last_update>
+    </item_4>
+  </sharedFilters>
+  <!-- Active filters: !-->
+  <activeFilters />
 </SAT>

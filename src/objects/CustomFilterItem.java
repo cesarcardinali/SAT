@@ -114,7 +114,7 @@ public class CustomFilterItem
 	}
 	
 	/**
-	 * Run the filter and generate a result
+	 * TestsRun the filter and generate a result
 	 * 
 	 * @param path CR path
 	 * @return Result as {@link String}
