@@ -31,6 +31,7 @@ public class SAT extends JFrame
 	 * Variables
 	 */
 	boolean updating = false; // Checking for update
+	
 	                          
 	/**
 	 * Runnable
@@ -142,17 +143,18 @@ public class SAT extends JFrame
 		if (dateLocal < dateRemote && dateLocal != 0)
 		{
 			Object[] options = new Object[] {"Yes", "No"};
-			int n = JOptionPane.showOptionDialog(null,
-			                                     "Uma nova versão foi encontrada. Voce desaja atualizar agora?",
-			                                     "New version available", JOptionPane.YES_NO_CANCEL_OPTION,
-			                                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+			int n = JOptionPane.showOptionDialog(null,					
+												XmlMngr.getMessageValueOf(new String[] {"messages", "new_version"}),
+												XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), 
+												JOptionPane.YES_NO_CANCEL_OPTION,
+			                                    JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 			
 			if (n == 0)
 			{
 				try
 				{
-					Logger.log(Logger.TAG_SAT, "Updating the Updater first, from: "
-					                           + SharedObjs.updateFolder1);
+					Logger.log(Logger.TAG_SAT, 
+							  "Updating the Updater first, from: " + SharedObjs.updateFolder1);
 					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/" + Strings.getUpdaterFileName()),
 					                   new File(Strings.getUpdaterFileName()));
 				}
