@@ -1,4 +1,4 @@
-package supportive;
+package objects;
 
 
 import java.io.File;
@@ -11,6 +11,7 @@ import java.net.URL;
 
 import core.Logger;
 import core.SharedObjs;
+import supportive.Bug2goDownloader;
 
 
 /**
@@ -33,8 +34,10 @@ public class Bug2goItem implements Runnable
 	private String				bugId;
 	private int					sizeOfFile;
 	private int					downloadProgress;
+	private int 				retry;
 	private boolean				running;
 	private DownloadStatus		status;
+	private boolean				overwrite;
 	
 	/**
 	 * Initialize class variables
@@ -44,11 +47,13 @@ public class Bug2goItem implements Runnable
 		bugId = bugNumber;
 		running = false;
 		downloadProgress = 0;
+		retry = 0;
 		status = DownloadStatus.STOPPED;
+		overwrite = false;
 	}
 	
 	/**
-	 * Remove this current B2G item from the b2goListInProgress kept by Bug2goDownloader
+	 * Remove this current B2G item from one of the b2goLists kept by Bug2goDownloader
 	 */
 	public void removeFromList(Bug2goItem item)
 	{
@@ -56,15 +61,17 @@ public class Bug2goItem implements Runnable
 		
 		try
 		{
+			// Acquire the semaphore first
 			b2gDownloader.getSemaphore().acquire();
+			
+			// Remove itself from the list
+			b2gDownloader.removeBugItem(this);
 		}
 		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
-		
-		b2gDownloader.removeBugItem(this);
-		
+
 		b2gDownloader.getSemaphore().release();
 	}
 	
@@ -74,23 +81,25 @@ public class Bug2goItem implements Runnable
 	@Override
 	public void run()
 	{
+		URL urlDownload;
+		String bugNumber;
+		FileOutputStream file = null;
 		int responseCode = -1;
 		
 		running = true;
 		status = DownloadStatus.DOWNLOADING;
-		
-		FileOutputStream file = null;
-		
-		String bugNumber;
 		bugNumber = BUG_ID_PARAM.replace("BUGID", bugId);
-		
+
 		// Open connection to download the CR
-		URL urlDownload;
 		try
 		{
 			urlDownload = new URL(BASE_DOWNLOAD_LINK);
 			
 			connection = (HttpURLConnection) urlDownload.openConnection();
+			
+			// Sets connect timeout and read timeout to 30s
+			connection.setConnectTimeout(30000);
+			connection.setReadTimeout(30000);
 			
 			// For POST only - START
 			// Use the URL connection for output
@@ -102,67 +111,60 @@ public class Bug2goItem implements Runnable
 			// For POST only - END
 			
 			responseCode = connection.getResponseCode();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			running = false;
-			status = DownloadStatus.FAILED;
-			removeFromList(this);
-			connection.disconnect();
-			return;
-		}
-		
-		Logger.log(Logger.TAG_BUG2GOITEM, "POST Response Code :: " + responseCode);
-		Logger.log(Logger.TAG_BUG2GOITEM, "URL after download POST: " + connection.getURL());
-		
-		if (responseCode == HttpURLConnection.HTTP_OK
-			&& !connection.getURL().toString()
-						  .equals("https://b2gadm-mcloud101-blur.svcmot.com/bugreport/report/verify.action"))
-		{
-			File downloadFolder;
 			
-			// Get the file name to be downloaded
-			String fileName = connection.getHeaderField("Content-Disposition");
-			fileName = fileName.replace("\"", "");
-			fileName = fileName.substring(fileName.lastIndexOf("=") + 1);
+			Logger.log(Logger.TAG_BUG2GOITEM, "POST Response Code :: " + responseCode);
+			Logger.log(Logger.TAG_BUG2GOITEM, "URL after download POST: " + connection.getURL());
 			
-			sizeOfFile = connection.getContentLength();
-			
-			Logger.log(Logger.TAG_BUG2GOITEM,
-					   "Size of file: " + String.valueOf(connection.getContentLength()));
-			Logger.log(Logger.TAG_BUG2GOITEM, "File being downloaded: " + fileName);
-			Logger.log(Logger.TAG_BUG2GOITEM, "File being saved in: " + SharedObjs.getDownloadPath());
-			
-			// Get download folder
-			downloadFolder = new File(SharedObjs.getDownloadPath());
-			
-			// If user doesn't want to overwrite an existing file with the same name, abort download
-			if (!Bug2goDownloader.getInstance().isOverwrite())
+			if (responseCode == HttpURLConnection.HTTP_OK
+				&& !connection.getURL().toString()
+							  .equals("https://b2gadm-mcloud101-blur.svcmot.com/bugreport/report/verify.action"))
 			{
-				for (File f : downloadFolder.listFiles())
+				Logger.log(Logger.TAG_BUG2GOITEM, "BUGID " + bugId + ": Entered in the if statement.");
+				
+				File downloadFolder;
+				
+				// Get the file name to be downloaded
+				String fileName = connection.getHeaderField("Content-Disposition");
+				Logger.log(Logger.TAG_BUG2GOITEM, fileName + ": 1");
+				fileName = fileName.replace("\"", "");
+				Logger.log(Logger.TAG_BUG2GOITEM, fileName + ": 2");
+				fileName = fileName.substring(fileName.lastIndexOf("=") + 1);
+				Logger.log(Logger.TAG_BUG2GOITEM, fileName + ": 3");
+				sizeOfFile = connection.getContentLength();
+				
+				Logger.log(Logger.TAG_BUG2GOITEM,
+						   "Size of file: " + String.valueOf(connection.getContentLength()));
+				Logger.log(Logger.TAG_BUG2GOITEM, "File being downloaded: " + fileName);
+				Logger.log(Logger.TAG_BUG2GOITEM, "File being saved in: " + SharedObjs.getDownloadPath());
+				
+				// Get download folder
+				downloadFolder = new File(SharedObjs.getDownloadPath());
+				
+				// If user doesn't want to overwrite an existing file with the same name, abort download
+				if (!overwrite)
 				{
-					if (f.getName().equals(fileName))
+					for (File f : downloadFolder.listFiles())
 					{
-						Logger.log(Logger.TAG_BUG2GOITEM, "File already exists. Aborting download.");
-						status = DownloadStatus.FAILED;
-						running = false;
-						removeFromList(this);
-						connection.disconnect();
-						return;
+						if (f.getName().equals(fileName))
+						{
+							Logger.log(Logger.TAG_BUG2GOITEM, "File already exists. Aborting download.");
+							status = DownloadStatus.DONE;
+							running = false;
+							removeFromList(this);
+							connection.disconnect();
+							return;
+						}
 					}
 				}
-			}
-			
-			// Creates a new file
-			try
-			{
+				
+				// Creates a new file
 				file = new FileOutputStream(SharedObjs.getDownloadPath() + "\\" + fileName);
 				// Buffer
 				byte[] buffer = new byte[4096];
 				int len;
 				InputStream reader = connection.getInputStream();
 				
+				Logger.log(Logger.TAG_BUG2GOITEM, "BUGID " + bugId + ": SAT will start getting the file.");
 				// Getting the file from server
 				while ((len = reader.read(buffer)) > 0)
 				{
@@ -170,33 +172,48 @@ public class Bug2goItem implements Runnable
 					downloadProgress += len;
 				}
 				
+				Logger.log(Logger.TAG_BUG2GOITEM, "BUGID " + bugId + ": Download finished. Thread will die.");
+				
 				reader.close();
 				SharedObjs.crsManagerPane.addLogLine(fileName + " download finished");
 				file.close();
 				
 				status = DownloadStatus.DONE;
 				running = false;
-				
 				removeFromList(this);
 			}
-			catch (IOException e)
+			else
 			{
-				e.printStackTrace();
+				Logger.log(Logger.TAG_BUG2GOITEM, "POST request did not work");
 				status = DownloadStatus.FAILED;
 				running = false;
+				retry++;
 				removeFromList(this);
 				connection.disconnect();
-				return;
 			}
 			
 		}
-		else
+		catch (NullPointerException | IOException e)
 		{
-			Logger.log(Logger.TAG_BUG2GOITEM, "POST request did not work");
-			status = DownloadStatus.FAILED;
+			e.printStackTrace();
+			if (file != null)
+			{
+				try
+				{
+					file.close();
+				}
+				catch (IOException e1)
+				{
+					e1.printStackTrace();
+				}
+			}
 			running = false;
+			status = DownloadStatus.FAILED;
+			downloadProgress = 0;
+			retry++;
 			removeFromList(this);
 			connection.disconnect();
+			return;
 		}
 		
 		Logger.log(Logger.TAG_BUG2GOITEM, bugId + " Thread dead");
@@ -254,4 +271,20 @@ public class Bug2goItem implements Runnable
 	{
 		this.running = run;
 	}
+
+	public int getRetry()
+	{
+		return retry;
+	}
+
+	public boolean isOverwrite()
+	{
+		return overwrite;
+	}
+
+	public void setOverwrite(boolean overwrite)
+	{
+		this.overwrite = overwrite;
+	}
+
 }

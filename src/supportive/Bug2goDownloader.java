@@ -15,6 +15,7 @@ import java.util.concurrent.Semaphore;
 
 import javax.swing.JOptionPane;
 
+import objects.Bug2goItem;
 import objects.CrItem;
 import core.Logger;
 import core.SharedObjs;
@@ -28,30 +29,30 @@ public class Bug2goDownloader implements Runnable
 	/**
 	 * Variables
 	 */
-	private static final String   BASE_LOGIN_LINK = "https://b2gadm-mcloud101-blur.svcmot.com/bugreport/report/verify.action";
-	private static final String   LOGIN_PARAM     = "username=COREID&password=PASSWRD";
-	private HttpURLConnection     connection;
-	private OutputStream          out;
+	private static final String	  BASE_LOGIN_LINK = "https://b2gadm-mcloud101-blur.svcmot.com/bugreport/report/verify.action";
+	private static final String	  LOGIN_PARAM	  = "username=COREID&password=PASSWRD";
+	private HttpURLConnection	  connection;
+	private OutputStream		  out;
 	private ArrayList<Bug2goItem> bug2goListSubmitted;
 	private ArrayList<Bug2goItem> bug2goListInProgress;
 	private ArrayList<Bug2goItem> bug2goListDone;
 	private ArrayList<Bug2goItem> bug2goListFailed;
-	private int                   errors;
-	private boolean               overwrite;
-	private Semaphore             semaphore;
-	private ExecutorService       executor;
+	private ArrayList<Bug2goItem> bug2goListRetry;
+	private int					  errors;
+	private Semaphore			  semaphore;
+	private ExecutorService		  executor;
 	
 	/**
 	 * Initialize class variables. The constructor is private in order to implement the Singleton design pattern
 	 */
 	private Bug2goDownloader()
 	{
-		overwrite = true;
 		semaphore = new Semaphore(1);
 		bug2goListSubmitted = new ArrayList<Bug2goItem>();
 		bug2goListInProgress = new ArrayList<Bug2goItem>();
 		bug2goListDone = new ArrayList<Bug2goItem>();
 		bug2goListFailed = new ArrayList<Bug2goItem>();
+		bug2goListRetry = new ArrayList<Bug2goItem>();
 		errors = 0;
 		
 		// Used to avoid the error: Security: Server SSL Error-handshake alert:unrecognized_name
@@ -140,9 +141,24 @@ public class Bug2goDownloader implements Runnable
 			
 			else if (item.getStatus() == Bug2goItem.DownloadStatus.FAILED)
 			{
-				bug2goListFailed.add(item);
+				if (item.getRetry() > 0 && item.getRetry() < 5)
+				{
+					// Setting overwrite to true once the file may be incomplete. This item will be retried
+					item.setOverwrite(true);
+					bug2goListRetry.add(item);
+				}
+				else if (item.getRetry() == 5)
+				{
+					// No more retries. Delete the incomplete file if it exists. 
+					deleteIncompleteFile(item);
+					bug2goListFailed.add(item);
+				}
+				//else if (item.getRetry() == 0)
+				//{
+					// Retry = 0 means that file was already there
+					//bug2goListFailed.add(item);
+				//}
 			}
-			
 		}
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Was the item removed? " + removed);
@@ -160,6 +176,10 @@ public class Bug2goDownloader implements Runnable
 		}
 		else if (executor.isTerminated())
 		{
+			bug2goListInProgress.clear();
+			bug2goListDone.clear();
+			bug2goListFailed.clear();
+			bug2goListRetry.clear();
 			new Thread(this).start();
 		}
 	}
@@ -212,11 +232,30 @@ public class Bug2goDownloader implements Runnable
 	}
 	
 	/**
+	 * Delete incomplete files that may exist due to failed downloads
+	 */
+	public void deleteIncompleteFile(Bug2goItem bug)
+	{
+		// Get download folder
+		File downloadFolder = new File(SharedObjs.getDownloadPath());
+		
+		for (File f : downloadFolder.listFiles())
+		{
+			if (f.getName().contains(bug.getBugId()))
+			{
+				Logger.log(Logger.TAG_BUG2GOITEM, "Deleting incomplete file: " + bug.getBugId());
+				f.delete();
+			}
+		}
+	}
+	
+	/**
 	 * Monitor the downloads
 	 */
 	@Override
 	public void run()
 	{
+		// Try to login
 		try
 		{
 			if (!login())
@@ -228,61 +267,74 @@ public class Bug2goDownloader implements Runnable
 		catch (IOException e1)
 		{
 			e1.printStackTrace();
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Exception trying to login.");
+			return;
 		}
 		
+		// Create a thread pool of size 5
 		executor = Executors.newFixedThreadPool(5);
 		SharedObjs.crsManagerPane.addLogLine("Downloading b2g files ...");
 		
-		while (!bug2goListSubmitted.isEmpty() || !bug2goListInProgress.isEmpty())
+		// While any of the lists still have an item
+		while (!bug2goListSubmitted.isEmpty() || !bug2goListInProgress.isEmpty()
+			   || !bug2goListRetry.isEmpty())
 		{
-			if (!bug2goListSubmitted.isEmpty())
+			// If there are items to be submitted or retried, start all of them
+			if (!bug2goListSubmitted.isEmpty() || !bug2goListRetry.isEmpty())
 			{
 				try
 				{
 					semaphore.acquire();
+					for (Bug2goItem b : bug2goListSubmitted)
+					{
+						executor.execute(b);
+						bug2goListInProgress.add(b);
+					}
+					
+					bug2goListSubmitted.clear();
+					
+					for (Bug2goItem b : bug2goListRetry)
+					{
+						Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+								   b.getBugId() + ": retry value: " + b.getRetry());
+						bug2goListSubmitted.add(b);
+					}
+					
+					bug2goListRetry.clear();
+					semaphore.release();
 				}
 				catch (InterruptedException e)
 				{
 					e.printStackTrace();
 				}
-				for (Bug2goItem b : bug2goListSubmitted)
-				{
-					executor.execute(b);
-					bug2goListInProgress.add(b);
-				}
-				
-				bug2goListSubmitted.clear();
-				semaphore.release();
 			}
 			
-			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking...");
-			
-			for (Bug2goItem b : bug2goListInProgress)
-			{
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, b.getBugId() + ": status > " + b.getStatus()
-				                                        + " | size > " + b.getSizeOfFile()
-				                                        + " | downloaded > " + b.getDownloadProgress()
-				                                        + " | running > " + b.isRunning());
-				
-				if (b.getStatus() == Bug2goItem.DownloadStatus.FAILED && errors == 0)
-				{
-					errors = 1;
-				}
-			}
-			
+			// Check the status of the items in progress. For debug only.
 			try
 			{
+				semaphore.acquire();
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking...");
+				
+				for (Bug2goItem b : bug2goListInProgress)
+				{
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+							   b.getBugId() + ": status > " + b.getStatus() + " | size > " + b.getSizeOfFile()
+															+ " | downloaded > " + b.getDownloadProgress()
+															+ " | running > " + b.isRunning());
+				}
+				semaphore.release();
 				Thread.sleep(3000);
 			}
-			catch (InterruptedException e)
+			catch (InterruptedException e1)
 			{
-				e.printStackTrace();
+				e1.printStackTrace();
 			}
-			
 		}
 		
+		// Shutdown the executor. No thread can be added after this point
 		executor.shutdown();
 		
+		// The following IFs are for debug only
 		if (bug2goListInProgress.isEmpty())
 		{
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList In Progress is Empty.");
@@ -292,6 +344,7 @@ public class Bug2goDownloader implements Runnable
 			for (Bug2goItem i : bug2goListInProgress)
 			{
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList In Progress: " + i.getBugId());
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Retry: " + i.getRetry());
 			}
 		}
 		
@@ -304,6 +357,7 @@ public class Bug2goDownloader implements Runnable
 			for (Bug2goItem i : bug2goListDone)
 			{
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList Done: " + i.getBugId());
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Retry: " + i.getRetry());
 			}
 		}
 		
@@ -313,29 +367,46 @@ public class Bug2goDownloader implements Runnable
 		}
 		else
 		{
+			errors = 1;
 			for (Bug2goItem i : bug2goListFailed)
 			{
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList Failed: " + i.getBugId());
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Retry: " + i.getRetry());
+			}
+		}
+		
+		if (bug2goListRetry.isEmpty())
+		{
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList Retry is Empty.");
+		}
+		else
+		{
+			for (Bug2goItem i : bug2goListRetry)
+			{
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "bug2goList Retry: " + i.getBugId());
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Retry: " + i.getRetry());
 			}
 		}
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Downloads finished");
 		SharedObjs.crsManagerPane.addLogLine("Downloads finished");
 		
+		// If there was any error
 		if (errors == 1)
 			JOptionPane.showMessageDialog(SharedObjs.satFrame,
-			                              "There were errors during the download. \nFiles may be missing or corrupted.");
-		
+										  "There were errors during the download. \nFiles may be missing or corrupted.");
+										  
 		// Ask if user wants to unzip them all
 		int ans = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
-		                                       "What do you want to do next?\n"
-		                                                       + "Note: If you choose option 1 or 2, the SAT will also search for incomplete CRs\n"
-		                                                       + "and close them on Jira!",
-		                                       "Downloads completed", JOptionPane.YES_NO_OPTION,
-		                                       JOptionPane.QUESTION_MESSAGE, null,
-		                                       new Object[] {"Unzip/Build report",
-		                                               "Just unzip them all",
-		                                               "Nothing, I am ok"}, null);
+											   "What do you want to do next?\n"
+																		  + "Note: If you choose option 1 or 2, the SAT will also search for incomplete CRs\n"
+																		  + "and close them on Jira!",
+											   "Downloads completed", JOptionPane.YES_NO_OPTION,
+											   JOptionPane.QUESTION_MESSAGE, null,
+											   new Object[] {"Unzip/Build report",
+															 "Just unzip them all",
+															 "Nothing, I am ok"},
+											   null);
 		if (ans == 0)
 		{
 			File[] filesName = new File(SharedObjs.getDownloadPath()).listFiles();
@@ -346,9 +417,10 @@ public class Bug2goDownloader implements Runnable
 				{
 					SharedObjs.crsManagerPane.addLogLine("Unzipping " + file.getName() + " ...");
 					UnZip.unZipIt(file.getAbsolutePath(),
-					              file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
-					
-					file = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
+								  file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
+								  
+					file = new File(file.getAbsolutePath().substring(0,
+																	 file.getAbsolutePath().length() - 28));
 					SharedObjs.crsManagerPane.addLogLine("Unzipping done for " + file.getName());
 					
 					SharedObjs.crsManagerPane.addLogLine("Checking if CR is incomplete ...");
@@ -359,24 +431,22 @@ public class Bug2goDownloader implements Runnable
 						if (cr != null)
 						{
 							JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
-							                                 SharedObjs.getUser(),
-							                                 SharedObjs.getPass());
-							
+															 SharedObjs.getUser(),
+															 SharedObjs.getPass());
+															 
 							jira.closeIssue(cr.getJiraID(), JiraSatApi.INCOMPLETE,
-							                "The text logs are missing/incomplete. Could not perform a complete analysis.");
-							
+											"The text logs are missing/incomplete. Could not perform a complete analysis.");
+											
 							SharedObjs.crsManagerPane.addLogLine("Closing CR " + cr.getJiraID()
-							                                     + " as incomplete");
-							
-							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
-							                                        + ". Closed as incomplete");
+																 + " as incomplete");
+																 
+							Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+									   "Done for " + file.getAbsolutePath() + ". Closed as incomplete");
 						}
 						else
 						{
-							Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-							           "Done for "
-							                           + file.getAbsolutePath()
-							                           + ". It is incomplete but it could not be found\nin crs list. It stills opened on Jira.");
+							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+																	+ ". It is incomplete but it could not be found\nin crs list. It stills opened on Jira.");
 						}
 					}
 					else
@@ -399,7 +469,7 @@ public class Bug2goDownloader implements Runnable
 			}
 			
 			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane,
-			                              "All b2g files are unzipped and with report output generated.");
+										  "All b2g files are unzipped and with report output generated.");
 		}
 		else if (ans == 1)
 		{
@@ -410,10 +480,11 @@ public class Bug2goDownloader implements Runnable
 				if (file.isFile() && file.getName().contains(".zip") && file.getName().contains("_B2G_"))
 				{
 					UnZip.unZipIt(file.getAbsolutePath(),
-					              file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
-					
-					file = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
-					
+								  file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
+								  
+					file = new File(file.getAbsolutePath().substring(0,
+																	 file.getAbsolutePath().length() - 28));
+																	 
 					CheckIfIncomplete incompleteChecker = new CheckIfIncomplete();
 					if (incompleteChecker.checkIt(file.getAbsolutePath()).contains("Incomplete:"))
 					{
@@ -421,23 +492,21 @@ public class Bug2goDownloader implements Runnable
 						if (cr != null)
 						{
 							JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
-							                                 SharedObjs.getUser(),
-							                                 SharedObjs.getPass());
+															 SharedObjs.getUser(),
+															 SharedObjs.getPass());
 							jira.closeIssue(cr.getJiraID(), JiraSatApi.INCOMPLETE,
-							                "The text logs are missing/incomplete. Could not perform a complete analysis.");
-							
+											"The text logs are missing/incomplete. Could not perform a complete analysis.");
+											
 							SharedObjs.crsManagerPane.addLogLine("Closing CR " + cr.getJiraID()
-							                                     + " as incomplete");
-							
-							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
-							                                        + ". Closed as incomplete");
+																 + " as incomplete");
+																 
+							Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+									   "Done for " + file.getAbsolutePath() + ". Closed as incomplete");
 						}
 						else
 						{
-							Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-							           "Done for "
-							                           + file.getAbsolutePath()
-							                           + ". It is incomplete but it could not be found\nin crs list. It stills opened on Jira.");
+							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+																	+ ". It is incomplete but it could not be found\nin crs list. It stills opened on Jira.");
 						}
 					}
 					else
@@ -468,13 +537,4 @@ public class Bug2goDownloader implements Runnable
 		this.semaphore = semaphore;
 	}
 	
-	public boolean isOverwrite()
-	{
-		return overwrite;
-	}
-	
-	public void setOverwrite(boolean overwrite)
-	{
-		this.overwrite = overwrite;
-	}
 }

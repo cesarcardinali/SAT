@@ -455,7 +455,6 @@ public class CrsManagerPane extends JPanel
 			try
 			{
 				b2gDownloader.addBugIdList(b2gList);
-				b2gDownloader.setOverwrite(false);
 			}
 			catch (InterruptedException e)
 			{
