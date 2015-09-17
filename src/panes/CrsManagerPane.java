@@ -818,6 +818,7 @@ public class CrsManagerPane extends JPanel
 		File f = new File(folder);
 		File[] filesList = f.listFiles();
 		String reportFile = null, sCurrentLine;
+		String bugreport = null;
 		
 		addLogLine("Generating bugreport for " + f.getName() + " ...");
 		
@@ -879,8 +880,18 @@ public class CrsManagerPane extends JPanel
 		}
 		
 		br.close();
+		
+		for (File file : filesList)
+		{
+			if (file.getName().contains("bugreport"))
+			{
+				bugreport = file.getName();
+			}
+		}
+		
+		
 		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd \"" + folder
-		                                                             + "\" && build_report.pl");
+		                                                             + "\" && build_report.pl " + bugreport + " > report_output.txt");
 		builder.redirectErrorStream(true);
 		Process p = builder.start();
 		BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));

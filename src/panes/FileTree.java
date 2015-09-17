@@ -445,7 +445,7 @@ public class FileTree extends JPanel
 				}
 			});
 			
-			runScript.setIcon(fileSystemView.getSystemIcon(new File("Data\\scripts\\build_report.pl")));
+			runScript.setIcon(fileSystemView.getSystemIcon(new File("Data\\scripts\\_Base.pl")));
 			popup.add(runScript);
 		}
 		
@@ -542,7 +542,7 @@ public class FileTree extends JPanel
 			});
 			
 			unzip.setIcon(Icons.zip);
-			unzipRun.setIcon(fileSystemView.getSystemIcon(new File("Data\\scripts\\build_report.pl")));
+			unzipRun.setIcon(fileSystemView.getSystemIcon(new File("Data\\scripts\\_Base.pl")));
 			popup.add(unzip);
 			popup.add(unzipRun);
 		}

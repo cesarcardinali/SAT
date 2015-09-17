@@ -1,328 +1,340 @@
-my $TEMP = "file-list.txt";
-my $VERSION = "v1.5";
-my $OUTPUT = "report-output_".$VERSION.".txt";
-my $DATE = "31-07-2013";
-my $PATH = "c:\\Bug2Go-scripts\\";
-my $year = 2014;
-my $UTC_offset = -5;
-
-my $BUGREPORT_PRE = "bugreport";
-my $SUMMARY_PRE = "summary";
-my $OUTPUT_PRE = "report-output";
-
-use strict;
+#!/usr/bin/perl
+#
+# (c) Motorola Mobility 2010
+#
+# Description:
+#   Parses a kernel log and outputs a new file containing real time stamps based on the kernel
+#   tick count and real time stamps found in the output.  The following are also analyzed in the
+#   script:
+#     Wakeups - A list of all of the wakeups durations and wakeup reasons is generated
+#               at the bottom of the output file.
+#
+# Usage:
+#   parse_bugreport.pl [--debug] <infile> <outfile>
+#
+# Where:
+#   --debug   Causes debug output.
+#   <infile>  is the name of the required input file.
+#   <outfile> is the name of the required output file.
+#
 use warnings;
+use integer;
+use Getopt::Long;
+use Time::Local;
 
-####################################################################
-#  Control parameters for optional functionality                   #
-####################################################################
-my $PARSING_PARAMETERS = "c:/bug2go-scripts/report_setup.xml";
-my $doSystem =  parseXmlLine($PARSING_PARAMETERS,"parse_system_log");
-my $doMain = parseXmlLine($PARSING_PARAMETERS,"parse_main_log");
-my $doKernel = parseXmlLine($PARSING_PARAMETERS,"parse_kernel_log");
-my $doPmLog = parseXmlLine($PARSING_PARAMETERS,"parse_pm_log");
-my $doBtd = parseXmlLine($PARSING_PARAMETERS,"parse_BTD_file");
-my $doBugReport = parseXmlLine($PARSING_PARAMETERS,"parse_bugreport");
-my $doEvents = parseXmlLine($PARSING_PARAMETERS,"parse_events_log");
-my $doRadio = parseXmlLine($PARSING_PARAMETERS,"parse_radio_log");
+my $BATTERY = #bat_cap#;
+my $ALL_WL = 'ALL_KERNEL_WAKELOCKS';
+my $BG_WL = 'BACKGROUND_KERNEL_WAKELOCKS';
+my $STATS_UNPLUG = 'Statistics since last unplugged';
+my $STATS_CHARGE = 'Statistics since last charge';
+my $debug = 0;
+my $start_pr = 0;
+my $kernel_wl_ttime = 0;
+my $kernel_wl_ttime_ns = 0;
+my %kernel_wl;
+my @java_wl = 0;
+my $java_wl_c = 0;
+my @java_wl_up = 0;
+my $java_wl_up_c = 0;
+my @krnl_wl = 0;
+my $krnl_wl_c = 0;
+my @krnl_wl_up = 0;
+my $krnl_wl_up_c = 0;
+my $java_unplugged = 0;
+my $screen_on = 0;
+my $time_on_batt = 0;
+my $total_time = 0;
+my $parse_procrank = 0;
 
-my $batt_cap = #bat_cap#;
-
-my %files;
-my %fnames;
-my $events_files = "";
-my $kernel_files = "";
-my $main_files = "";
-my $radio_files = "";
-my $system_files = "";
-my $MAIN = "main";
-my $KERNEL = "kernel";
-my $SYSTEM = "system";
-my $RADIO = "radio";
-my $EVENTS = "events";
-
-$fnames{$MAIN} = "";
-$fnames{$KERNEL} = "";
-$fnames{$SYSTEM} = "";
-$fnames{$RADIO} = "";
-$fnames{$EVENTS} = "";
-$fnames{"end"} = "";
-$files{$MAIN} = "";
-$files{$KERNEL} = "";
-$files{$SYSTEM} = "";
-$files{$RADIO} = "";
-$files{$EVENTS} = "";
-$files{"end"} = "";
-
-
-#for build-report.pl  add the following to the top after $OUTPUT is declared:
-my $num_args = $#ARGV + 1;
-if($num_args >= 1)
+sub debug_printf
 {
-    $OUTPUT = $ARGV[0]."_".$OUTPUT;
-}
-if($num_args == 2)
-{
-    $PATH = $ARGV[1];
-}
-if ($num_args == 3)
-{
-    $PATH = $ARGV[1];
-    $batt_cap = $ARGV[2];
-}
-
-system("dir > $TEMP");
-
-open(FILE1, "$TEMP") or die "Unable to Open $TEMP\n" ;
-while (<FILE1>)
-{
-  if (($_ =~ /$MAIN/ && $doMain eq "TRUE") || ($_ =~ /$SYSTEM/ && $doSystem eq "TRUE") ||
-      ($_ =~ /$EVENTS/ && $doEvents eq "TRUE") || ($_ =~ /$RADIO/ && $doRadio eq "TRUE") ||
-      ($_ =~ /$KERNEL/ && $doKernel eq "TRUE")) 
-  {
-    if ($_ =~ /.*\s(\S*[\.|_\-])(\S*)(\.txt$)/)
+    if ($debug)
     {
-#        print "$1$2$3\n";
-        my $key = $2;
-        my $fname = "$1$2$3";
-        if ($1 =~ /\.\d+/)
+	printf @_;
+    }
+}
+
+sub get_time_s {
+    my ($str) = @_;
+    my $s = 0;
+
+    if ($str =~ /^(\d+)d (\d+)h (\d+)m (\d+)s (\d+)ms/)
+    {
+        $s = $1*86400+$2*3600+$3*60+$4+$5/1000;
+    }
+    if ($str =~ /^(\d+)h (\d+)m (\d+)s (\d+)ms/)
+    {
+        $s = $1*3600+$2*60+$3+$4/1000;
+    }
+    elsif ($str =~ /^(\d+)m (\d+)s (\d+)ms/)
+    {
+        $s = $1*60+$2+$3/1000;
+    }
+    elsif ($str =~ /^(\d+)s (\d+)ms/)
+    {
+        $s = $1+$2/1000;
+    }
+    elsif ($str =~ /^(\d+)ms/)
+    {
+        $s = $1/1000;
+    }
+    debug_printf "SCREEN ON $str $s\n";
+    return $s;
+}
+
+sub total_wl {
+    my ($wl, $count, $ttime, $ttime_ns, $mtime) = @_;
+
+    $kernel_wl{$ALL_WL}{'count'} += $count;
+    $kernel_wl{$ALL_WL}{'ttime'} += $ttime;
+    $kernel_wl_ttime_ns += $ttime_ns;
+    if ($kernel_wl{$ALL_WL}{'mtime'} < $mtime)
+    {
+        $kernel_wl{$ALL_WL}{'mtime'} = $mtime;
+    }
+    if (($wl ne "\"main\"") && ($wl ne "\"usb\""))
+    {
+        debug_printf "$wl\n";
+        $kernel_wl{$BG_WL}{'count'} += $count;
+        $kernel_wl{$BG_WL}{'ttime'} += $ttime;
+        $kernel_wl_ttime_ns += $ttime_ns;
+
+        if ($kernel_wl{$BG_WL}{'mtime'} < $mtime)
         {
-            $files{$key} = "$fname"."+"."$files{$key}";
-            $fnames{$key} = "full\.$key\.txt";
+            $kernel_wl{$BG_WL}{'mtime'} = $mtime;
+            debug_printf "$wl, $mtime, $ttime\n";
+        }
+    }
+}
+
+if (!GetOptions("debug"    => \$debug,
+                ))
+{
+    die "Unable to parse options.\n";
+}
+
+if (scalar(@ARGV) == 2)
+{
+    $BATTERY = $ARGV[1];
+}
+elsif (scalar(@ARGV) != 1)
+{
+    die "Please provide an input file.\n";
+}
+my $input_file = $ARGV[0];
+
+open (INFILE, "<$input_file") or die "Unable to open input file $input_file.\n";
+while (<INFILE>)
+{
+    my $line = $_;
+
+    $line =~ s/\s+$//;
+
+    if ($start_pr == 1)
+    {
+        if ($line eq "")
+        {
+            print "\n";
+            $start_pr = 0;
         }
         else
         {
-            $files{$key} .= "$fname";
-            if ($fnames{$key} eq "")
+            if ($line =~ /(Amount discharged while screen on:\s*)(\d*)/)
             {
-                $fnames{$key} = "$fname";
+                my $batt = $BATTERY*$2/100;
+                if ($screen_on)
+                {
+                    printf("$1$2: %s mAh in %sh%sm => %3s mA average\n", $batt, $screen_on/3600, ($screen_on/60)%60, ($batt*3600/$screen_on));
+                }
+                else
+                {
+                    printf("$1$2: %s mAh in %sh%sm => %3s mA average\n", $batt, $screen_on/3600, ($screen_on/60)%60, 0);
+                }
+            }
+            elsif ($line =~ /(Amount discharged while screen off:\s*)(\d*)/)
+            {
+                my $batt = $BATTERY*$2/100;
+                my $t_off = ($time_on_batt-$screen_on);
+                if ($t_off)
+                {
+                    printf("$1$2: %s mAh in %sh%sm => %3s mA average\n", $batt, $t_off/3600, ($t_off/60)%60, ($batt*3600/($t_off)));
+                }
+                else
+                {
+                    printf("$1$2: %s mAh in %sh%sm => %3s mA average\n", $batt, $t_off/3600, ($t_off/60)%60, 0);
+                }
+                printf("Full Charge Battery Capacity: $BATTERY\n");
+            }
+            elsif (($line =~ /Kernel Wake lock.* \d+h /) ||
+                   ($line =~ /Kernel Wake lock.* \d+d /))
+            {
+                if ($java_unplugged == 0) {
+                    $krnl_wl[$krnl_wl_c++] = $line;
+                } else {
+                    $krnl_wl_up[$krnl_wl_up_c++] = $line;
+                }
+            }
+            elsif ($line =~ /Time on battery\: (.*) \(.*\) realtime\,.*/)
+            { # Time on battery: 6h 28m 31s 184ms (9.0%) realtime,
+                print("$line\n");
+                $time_on_batt = get_time_s($1);
+            }
+            elsif ($line =~ /Screen on: (.*) \(.*\) .*\, Interactive.*/)
+            { # Screen on: 55m 3s 155ms (14.2%),
+                print("$line\n");
+                $screen_on = get_time_s($1);
+            }
+            elsif ($line =~ /Total run time\:/)
+            {
+                print "$line\n";
+                if ($total_time eq "charge") 
+                {
+                    $total_time = $line;
+                }
+            } 
+            elsif (!($line =~ /Kernel Wake lock/))
+            {
+                print "$line\n";
             }
         }
     }
-    elsif ($_ =~ /.*\s(BT\d\_\S*\_)(\S*)(\.log$)/)
+    elsif ($line =~ /($STATS_CHARGE\:)/)
     {
-        my $key = $2;
-        my $fname = "$1$2$3";
-        if ($2 =~ /\.\d+/)
+        printf "$line\n";
+        $start_pr = 1;
+        $total_time = "charge";
+    }
+    elsif ($line =~ /Device battery use since last full charge/)
+    {
+        printf "$line\n";
+        $start_pr = 1;
+    }
+    elsif ($line =~ /$STATS_UNPLUG\:/)
+    {
+        printf "$line\n";
+        $start_pr = 1;
+        $java_unplugged = 1;
+    }
+    elsif (($line =~ /Device is currently unplugged/) || ($line =~ /Device is currently plugged/))
+    {
+        printf "$line\n";
+        $start_pr = 1;
+    }
+    elsif ($line =~ /KERNEL WAKELOCKS/)
+    {
+        $kernel_wl{$ALL_WL}{'mtime'} = 0;
+        $kernel_wl{$BG_WL}{'mtime'} = 0;
+    }
+    elsif ($line =~ /(\".*\")\s+(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)(\d\d\d\d\d\d)\s+\d+\s+(\d+)\d\d\d\d\d\d\s+\d+/)
+    {
+        debug_printf "%16s %16s %d %d\n", $3, $5, $3, $5;
+        if (($3 > 600000) || ($5 > 60000) || ($2 > 1000))
         {
-            $key = "main";
+            $kernel_wl{$1}{'count'} = $2;
+            $kernel_wl{$1}{'ttime'} = $3;
+            $kernel_wl{$1}{'mtime'} = $5;
         }
-        $fnames{$key} = $fname;
-        #print "Key: $key, Filename: $fname\n";
+        total_wl($1, $2, $3, $4, $5);
+    }
+    elsif ($line =~ /(\".*\")\s+(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)(\d\d\d\d\d\d)\s+\d+\s+(\d+)\s+\d+/)
+    {
+        debug_printf "%16s %16s %d %d\n", $3, $5, $3, $5;
+        if (($3 > 600000) || ($2 > 1000))
+        {
+            $kernel_wl{$1}{'count'} = $2;
+            $kernel_wl{$1}{'ttime'} = $3;
+            $kernel_wl{$1}{'mtime'} = $5/1000000;
+        }
+        total_wl($1, $2, $3, $4, $5/1000000);
+    }
+    elsif ($line =~ /(\".*\")\s+(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+(\d+)\s+\d+/)
+    {
+        $kernel_wl_ttime_ns += $3
+    }
+    elsif (($line =~ /Wake lock.* \d+h /) ||
+           ($line =~ /Wake lock.* \d+d /))
+    {
+        if ($java_unplugged == 0) {
+            $java_wl[$java_wl_c++] = $line;
+        } else {
+            $java_wl_up[$java_wl_up_c++] = $line;
+        }
+    }
+    elsif ($line =~ /Wake lock.* (\d+)m /)
+    {
+      if ($1 > 10) {
+        if ($java_unplugged == 0) {
+            $java_wl[$java_wl_c++] = $line;
+        } else {
+            $java_wl_up[$java_wl_up_c++] = $line;
+        }
+      }
+    }
+    elsif ($line =~ /PROCRANK/)
+    {
+        $parse_procrank = 1;
+    }
+    elsif ($line =~ /VIRTUAL MEMORY STATS/)
+    {
+        $parse_procrank = 0;
+    }
+    elsif ($parse_procrank == 1)
+    {
+        if ($line =~ /diag_mdlog/)
+        {
+             print "\n***************************************************\nBP_LOGGING ENABLED\n***************************************************\n\n";
+#             exit;
+        }
+    }
+}
+close (INFILE);
+
+#Add back in the $kernel_wl_ttime_ns
+if ($kernel_wl_ttime != 0) {
+  $kernel_wl{$ALL_WL}{'ttime'} += $kernel_wl_ttime_ns / 1000000;
+  print "<DataBlockStart>Kernel wakelocks held</DataBlockStart>\n";
+  print "Kernel wakelocks held > 10m total or > 1m at one time, out of (Total run time)\n";
+  print "$total_time\n";
+  print "==============================================================================\n";
+  print "                               name   count    total_time     max_time\n";
+  foreach my $wl (sort {$kernel_wl{$b}{'ttime'} <=> $kernel_wl{$a}{'ttime'}} keys %kernel_wl)
+  {
+  #    printf "%35s %7s %16s %16s\n", $wl, $kernel_wl{$wl}{'count'}, $kernel_wl{$wl}{'ttime'}/60000, $kernel_wl{$wl}{'mtime'}/60000;
+      my $tt_h = $kernel_wl{$wl}{'ttime'}/3600000;
+      my $tt_m = $kernel_wl{$wl}{'ttime'}/60000%60;
+      my $tt_s = $kernel_wl{$wl}{'ttime'}/1000%60;
+    if (defined($kernel_wl{$wl}{'mtime'})) {
+      my $mt_h = $kernel_wl{$wl}{'mtime'}/3600000;
+      my $mt_m = $kernel_wl{$wl}{'mtime'}/60000%60;
+      my $mt_s = $kernel_wl{$wl}{'mtime'}/1000%60;
+      printf "%35s %7s      %02d:%02d:%02d     %02d:%02d:%02d\n", $wl, $kernel_wl{$wl}{'count'}, $tt_h, $tt_m, $tt_s, $mt_h, $mt_m, $mt_s;
     }
   }
+  print "<DataBlockEnd>Kernel wakelocks held</DataBlockEnd>\n";
 }
-close(FILE1);
-system("del $TEMP");
-
-foreach my $flist (keys %files)
+print "\n<DataBlockStart>Java wakelocks held</DataBlockStart>\n";
+print "$STATS_CHARGE\n";
+for (my $java_wl_i = 0; $java_wl_i < $java_wl_c; $java_wl_i++)
 {
-#    print "$flist $files{$flist}\n";
-#    print "$fnames{$flist}\n";
-    if ($files{$flist} =~ /(\S*)\+(\S*)$/)
-    {
-        my $dfile = $1;
-        system("copy $1\+$2 full\.$flist\.txt");
-        #print("copy $1\+$2 full\.$flist\.txt\n");
-        system("del $2");
-        #print("del $2\n");
-        while ($dfile ne "")
-        {
-            if ($dfile =~ /(\S*)\+(\S*)$/)
-            {
-                system("del $2");
-                #print("del $2\n");
-                $dfile = $1;
-            }
-            else
-            {
-                system("del $dfile");
-                #print("del $dfile\n");
-                $dfile = "";
-            }
-        }
-    }
+    print "$java_wl[$java_wl_i]\n";
 }
-#printf "Filename: %s\n", $fnames{"main"};
-
-open(FILE2, ">$OUTPUT");
-print FILE2 "\<ReportBlockStart\>$VERSION\<\/ReportBlockStart\>\n";
-print FILE2 "\<ReportVersionDate\>$DATE\<\/ReportVersionDate\>\n\n";
-close(FILE2);
-
-my $f = $fnames{"kernel"};
-if($doKernel eq "TRUE")
+print "$STATS_UNPLUG\n";
+for (my $java_wl_up_i = 0; $java_wl_up_i < $java_wl_up_c; $java_wl_up_i++)
 {
-	if ($f ne "")
-	{
-		system("perl $PATH\/parse-kernel.pl $f >> $OUTPUT");
-		if($doPmLog eq "TRUE")
-		{
-			system("python $PATH\/pm_log_parser.py -p MSM $f >> $OUTPUT");
-		#	system("perl $PATH\/pm_log_parser.pl $f >> $OUTPUT");
-		}
-	}
-	else
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\n*** KERNEL log not available\n";
-		close(FILE2);
-	}
+    print "$java_wl_up[$java_wl_up_i]\n";
 }
-
-$f = $fnames{"main"};
-my $main_log = $fnames{"main"};
-if($doMain eq "TRUE")
-{
-	if ($f ne "")
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\n\nParsing main log for wake locks, conn state, and foreground applications\n";
-		close(FILE2);
-		system("perl $PATH\/parse-main.pl --year $year $f >> $OUTPUT");
-	}
-	else
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\n*** MAIN log not available\n";
-		close(FILE2);
-	}
+print "<DataBlockEnd>Java wakelocks held</DataBlockEnd>\n";
+if ($kernel_wl_ttime == 0) {
+  print "\n<DataBlockStart>Kernel wakelocks held</DataBlockStart>\n";
+  print "$STATS_CHARGE\n";
+  for (my $krnl_wl_i = 0; $krnl_wl_i < $krnl_wl_c; $krnl_wl_i++)
+  {
+    print "$krnl_wl[$krnl_wl_i]\n";
+  }
+  print "$STATS_UNPLUG\n";
+  for (my $krnl_wl_up_i = 0; $krnl_wl_up_i < $krnl_wl_up_c; $krnl_wl_up_i++)
+  {
+    print "$krnl_wl_up[$krnl_wl_up_i]\n";
+  }
+  print "<DataBlockEnd>Kernel wakelocks held</DataBlockEnd>\n";
 }
-
-my $events_log = $fnames{$EVENTS};
-if($doEvents eq "TRUE")
-{
-	if ($events_log ne "")
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\n\nParsing events log for battery metering\n";
-		print FILE2     "=======================================\n";
-		print FILE2 "\<DataBlockStart\>Event log Parsing\<\/DataBlockStart\>\n";
-		close(FILE2);
-		system("perl $PATH\/parse-events.pl --year $year $events_log >> $OUTPUT");
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\<DataBlockEnd\>Event log Parsing\<\/DataBlockEnd\>\n";
-		close(FILE2);
-	}
-	else
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\n*** EVENTS log not available\n";
-		close(FILE2);
-	}
-}
-
-$f = $fnames{"system"};
-if($doSystem eq "TRUE")
-{
-	if ($f ne "")
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\nParsing system log for wake ups and conn state\n";
-		print FILE2   "==============================================\n";
-		print FILE2 "\<DataBlockStart\>System log Parsing\<\/DataBlockStart\>\n";
-		close(FILE2);
-		system("perl $PATH\/parse-system.pl --year $year $f >> $OUTPUT");
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\<DataBlockEnd\>System log Parsing\<\/DataBlockEnd\>\n";
-		close(FILE2);
-	}
-	else
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\n*** EVENTS log not available\n";
-		close(FILE2);
-	}
-}	
-
-$f = $fnames{"radio"};
-if($doRadio eq "TRUE")
-{
-	if ($f ne "")
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\nParsing radio log for RATs\n";
-		print FILE2   "==========================\n";
-		print FILE2 "\<DataBlockStart\>Radio log Parsing\<\/DataBlockStart\>\n";
-		close(FILE2);
-		system("perl $PATH\/parse-radio.pl $f >> $OUTPUT");
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\<DataBlockEnd\>Radio log Parsing\<\/DataBlockEnd\>\n";
-		close(FILE2);
-	}
-	else
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\n*** RADIO log not available\n";
-		close(FILE2);
-	}
-}
-
-if ($fnames{"end"} ne "")
-{
-    $f = $fnames{"end"};
-}
-else
-{
-    my $where = ".";
-    my $name = "";
-    if (-d "../bug2go") {
-        $where = "../bug2go";
-    }
-    if (defined($name = <$where/bugreport*>)) {
-        $f = $name;
-    }
-    elsif (defined($name = <$where/*bugreport*>)) {
-        $f = $name;
-    }
-}
-
-if($doBugReport eq "TRUE")
-{
-	if (-f $f)
-	{
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\nParsing Bugreport\n";
-		print FILE2   "=================\n";
-		print FILE2 "\<DataBlockStart\>Bugreport Parsing\<\/DataBlockStart\>\n";
-		close(FILE2);
-		system("perl $PATH\/parse-bugreport.pl $f $batt_cap >> $OUTPUT");
-
-		open(FILE2, ">>$OUTPUT");
-		print FILE2 "\<DataBlockEnd\>Bugreport Parsing\<\/DataBlockEnd\>\n";
-		close(FILE2);
-	}
-}
-
-
-if($doBtd eq "TRUE")
-{
-    system("perl $PATH\/parse_batt.pl >> $OUTPUT");
-}
-	
-open(FILE2, ">>$OUTPUT");
-print FILE2 "\<ReportBlockEnd\>$VERSION\<\/ReportBlockEnd\>\n";
-close(FILE2);
-
-sub parseXmlLine
-{
-	my $temp1 = "<".$_[1].">";
-	my $temp2 = "<\/".$_[1].">";
-
-	open(XML, "$_[0]") or die "Unable to open $_[0]\n";
-	while (<XML>)
-	{
-		if($_ =~ m/$temp1(.*)$temp2/)
-		{
-			my $tempVal = $1;
-			$tempVal =~ s/ //g;
-			close(XML);
-			return $tempVal;
-		}
-	}
-	print "$_[1] not found in xml file.  Can't set parameter properly.\n";
-	print "File must contain $temp1 SETTING $temp2\n";
-	close(XML);
-	die;
-}
-
