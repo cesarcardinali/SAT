@@ -67,15 +67,15 @@ public class CrsManagerPane extends JPanel
 	/**
 	 * Global Variables
 	 */
-	private JTextArea     textDownload;
-	private JTextField    textPath;
-	private JTextPane     textLog;
-	private JTextPane     textPane;
-	private JCheckBox     chckbxAssign;
-	private JCheckBox     chckbxLabels;
+	private JTextArea	  textDownload;
+	private JTextField	  textPath;
+	private JTextPane	  textLog;
+	private JTextPane	  textPane;
+	private JCheckBox	  chckbxAssign;
+	private JCheckBox	  chckbxLabels;
 	private JList<String> listDiag;
-	private CrItemsList   crsList;
-	private String        CRs[];
+	private CrItemsList	  crsList;
+	private String		  CRs[];
 	
 	/**
 	 * Create the panel.
@@ -94,15 +94,15 @@ public class CrsManagerPane extends JPanel
 		gridBagLayout.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[] {1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[] {0.0,
-		        0.0,
-		        0.0,
-		        0.0,
-		        0.0,
-		        0.0,
-		        0.0,
-		        1.0,
-		        0.0,
-		        Double.MIN_VALUE};
+												 0.0,
+												 0.0,
+												 0.0,
+												 0.0,
+												 0.0,
+												 0.0,
+												 1.0,
+												 0.0,
+												 Double.MIN_VALUE};
 		contentPane.setLayout(gridBagLayout);
 		
 		JPanel panel = new JPanel();
@@ -390,14 +390,14 @@ public class CrsManagerPane extends JPanel
 			public void actionPerformed(ActionEvent e)
 			{
 				JOptionPane.showMessageDialog(null,
-				                              "First, download the CRs using the \"Downloader\" option\n"
-				                                              + "After download is done, just click \"Run\" and follow the instructions on the screen\n\n"
-				                                              + "If you have downloaded the CRs already, you need to insert the path where the ZIP files are.\n"
-				                                              + "and insert the CRs on the textarea of the Downloader option on the left.\n"
-				                                              + "Then, just click \"RUN\"\n\n"
-				                                              + "If you dont have the ZIP files anymore, sorry, but the tool is not prepared to this situation yet.\n\n"
-				                                              + "More options and more flexibility coming soon\n\n\n"
-				                                              + "Thank you, have a good day Sir.");
+											  "First, download the CRs using the \"Downloader\" option\n"
+													+ "After download is done, just click \"Run\" and follow the instructions on the screen\n\n"
+													+ "If you have downloaded the CRs already, you need to insert the path where the ZIP files are.\n"
+													+ "and insert the CRs on the textarea of the Downloader option on the left.\n"
+													+ "Then, just click \"RUN\"\n\n"
+													+ "If you dont have the ZIP files anymore, sorry, but the tool is not prepared to this situation yet.\n\n"
+													+ "More options and more flexibility coming soon\n\n\n"
+													+ "Thank you, have a good day Sir.");
 			}
 		});
 		GridBagConstraints gbc_btnHelp = new GridBagConstraints();
@@ -603,9 +603,9 @@ public class CrsManagerPane extends JPanel
 		
 		// Setup jira connection
 		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
-		                                 SharedObjs.getUser(),
-		                                 SharedObjs.getPass());
-		
+										 SharedObjs.getUser(),
+										 SharedObjs.getPass());
+										 
 		// Get the CRs list
 		CRs = textDownload.getText().replaceAll(" ", "").split("\n");
 		
@@ -629,16 +629,16 @@ public class CrsManagerPane extends JPanel
 				
 				if (chckbxAssign.isSelected())
 					jira.assignIssue(crKey);
-				
+					
 				if (chckbxLabels.isSelected())
 					jira.addLabel(crKey, "ll_prodteam_analyzed");
-				
+					
 				b2gList.add(crItem.getB2gID());
 			}
 			else
 			{
-				Logger.log(Logger.TAG_CRSMANAGER, "CR KEY: " + crKey
-				                                  + " seems not to exist. Or your user/password is wrong");
+				Logger.log(Logger.TAG_CRSMANAGER,
+						   "CR KEY: " + crKey + " seems not to exist. Or your user/password is wrong");
 			}
 		}
 		
@@ -662,10 +662,10 @@ public class CrsManagerPane extends JPanel
 		else
 		{
 			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane,
-			                              "There were errors during the b2g collection."
-			                                              + "\nWe could not get CRs data from Jira."
-			                                              + "\nYour pass or username may be wrong or "
-			                                              + "the CRs sent does not exist.");
+										  "There were errors during the b2g collection."
+																	 + "\nWe could not get CRs data from Jira."
+																	 + "\nYour pass or username may be wrong or "
+																	 + "the CRs sent does not exist.");
 		}
 	}
 	
@@ -758,8 +758,8 @@ public class CrsManagerPane extends JPanel
 			try
 			{
 				File f = new File("Data\\logs\\log_"
-				                  + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
-				                  + ".txt");
+								  + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
+								  + ".txt");
 				BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 				bw.write(textLog.getText());
 				bw.close();
@@ -857,16 +857,17 @@ public class CrsManagerPane extends JPanel
 				sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
 				Logger.log(Logger.TAG_CRSMANAGER, sCurrentLine);
 				
-				SharedObjs.copyScript(new File("Data\\scripts\\_Base.pl"), new File(folder
-				                                                                    + "\\build_report.pl"));
-				
+				SharedObjs.copyScript(new File("Data\\scripts\\_Base.pl"),
+									  new File(folder + "\\build_report.pl"));
+									  
 				// Configure build report battery capacity
 				try
 				{
 					@SuppressWarnings("resource")
 					Scanner scanner = new Scanner(new File(folder + "\\build_report.pl"));
 					String content = scanner.useDelimiter("\\Z").next();
-					content = content.replace("#bat_cap#", SharedObjs.advOptions.getBatCapValue(sCurrentLine));
+					content = content.replace("#bat_cap#",
+											  SharedObjs.advOptions.getBatCapValue(sCurrentLine));
 					PrintWriter out = new PrintWriter(folder + "\\build_report.pl");
 					out.println(content);
 					out.close();
@@ -889,9 +890,10 @@ public class CrsManagerPane extends JPanel
 			}
 		}
 		
-		
-		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd \"" + folder
-		                                                             + "\" && build_report.pl " + bugreport + " > report_output.txt");
+		ProcessBuilder builder = new ProcessBuilder("cmd.exe",
+													"/c",
+													"cd \"" + folder + "\" && build_report.pl " + bugreport
+														  + " > report-output.txt");
 		builder.redirectErrorStream(true);
 		Process p = builder.start();
 		BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
