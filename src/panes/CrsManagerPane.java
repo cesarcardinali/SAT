@@ -841,6 +841,7 @@ public class CrsManagerPane extends JPanel
 		if (reportFile == null)
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Log de sistema nao encontrado: " + reportFile);
+			return;
 		}
 		else
 		{
