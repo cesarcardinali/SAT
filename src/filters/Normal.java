@@ -92,6 +92,19 @@ public class Normal
 					
 					bugReportData = bugReportData + noFormat + "\n";
 				}
+				else if (sCurrentLine.contains("Statistics since last charge:"))
+				{
+					Logger.log(Logger.TAG_NORMAL, "bugReportData - 1");
+					bugReportData = "\n" + noFormat + "\n" + sCurrentLine + "\n";
+					sCurrentLine = br.readLine();
+					while (!sCurrentLine.contains("Mobile total received"))
+					{
+						bugReportData = bugReportData + sCurrentLine + "\n";
+						sCurrentLine = br.readLine();
+					}
+					
+					bugReportData = bugReportData + noFormat + "\n";
+				}
 				
 				if (sCurrentLine.contains("obile total receiv"))
 				{
