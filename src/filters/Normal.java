@@ -79,7 +79,7 @@ public class Normal
 			// Read new line and parse it
 			while ((sCurrentLine = br.readLine()) != null)
 			{
-				if (sCurrentLine.contains("Statistics since last unplugged:"))
+				if (sCurrentLine.contains("Statistics since last unplugged:") || sCurrentLine.contains("Statistics since last charge:"))
 				{
 					Logger.log(Logger.TAG_NORMAL, "bugReportData - 1");
 					bugReportData = "\n" + noFormat + "\n" + sCurrentLine + "\n";
