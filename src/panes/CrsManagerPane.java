@@ -26,14 +26,11 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -42,7 +39,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -53,8 +49,6 @@ import objects.CrItemsList;
 import org.json.simple.parser.ParseException;
 
 import supportive.Bug2goDownloader;
-import supportive.CrsCloser;
-import supportive.DiagCrsCloser;
 import supportive.JiraSatApi;
 import core.Logger;
 import core.SharedObjs;
@@ -67,15 +61,16 @@ public class CrsManagerPane extends JPanel
 	/**
 	 * Global Variables
 	 */
-	private JTextArea	  textDownload;
-	private JTextField	  textPath;
-	private JTextPane	  textLog;
-	private JTextPane	  textPane;
-	private JCheckBox	  chckbxAssign;
-	private JCheckBox	  chckbxLabels;
-	private JList<String> listDiag;
-	private CrItemsList	  crsList;
-	private String		  CRs[];
+	private JTextArea	textDownload;
+	private JTextField	textPath;
+	private JTextPane	textLog;
+	private JTextPane	textPane;
+	private JCheckBox	chckbxAssign;
+	private JCheckBox	chckbxLabels;
+	private CrItemsList	crsList;
+	private String		CRs[];
+	private String		labels[];
+	private JTextField	textLabel;
 	
 	/**
 	 * Create the panel.
@@ -90,9 +85,9 @@ public class CrsManagerPane extends JPanel
 		add(contentPane);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] {0, 0, 0, 0, 0, 0};
+		gridBagLayout.columnWidths = new int[] {0, 0, 0};
 		gridBagLayout.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[] {1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[] {1.0, 1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[] {0.0,
 												 0.0,
 												 0.0,
@@ -108,7 +103,7 @@ public class CrsManagerPane extends JPanel
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.insets = new Insets(10, 5, 5, 5);
-		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.fill = GridBagConstraints.VERTICAL;
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 0;
 		contentPane.add(panel, gbc_panel);
@@ -159,32 +154,21 @@ public class CrsManagerPane extends JPanel
 		gbc_textPath.gridy = 1;
 		panel.add(textPath, gbc_textPath);
 		
-		JSeparator separator_2 = new JSeparator();
-		separator_2.setOrientation(SwingConstants.VERTICAL);
-		separator_2.setForeground(Color.DARK_GRAY);
-		GridBagConstraints gbc_separator_2 = new GridBagConstraints();
-		gbc_separator_2.fill = GridBagConstraints.VERTICAL;
-		gbc_separator_2.gridheight = 6;
-		gbc_separator_2.insets = new Insets(0, 0, 5, 5);
-		gbc_separator_2.gridx = 1;
-		gbc_separator_2.gridy = 0;
-		contentPane.add(separator_2, gbc_separator_2);
-		
 		JPanel panel_3 = new JPanel();
 		panel_3.setMinimumSize(new Dimension(150, 10));
 		GridBagConstraints gbc_panel_3 = new GridBagConstraints();
 		gbc_panel_3.gridheight = 6;
-		gbc_panel_3.insets = new Insets(10, 5, 5, 5);
-		gbc_panel_3.fill = GridBagConstraints.BOTH;
-		gbc_panel_3.gridx = 2;
+		gbc_panel_3.insets = new Insets(10, 5, 5, 0);
+		gbc_panel_3.fill = GridBagConstraints.VERTICAL;
+		gbc_panel_3.gridx = 1;
 		gbc_panel_3.gridy = 0;
 		contentPane.add(panel_3, gbc_panel_3);
 		
 		GridBagLayout gbl_panel_3 = new GridBagLayout();
 		gbl_panel_3.columnWidths = new int[] {0, 0};
-		gbl_panel_3.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel_3.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_panel_3.columnWeights = new double[] {0.0, Double.MIN_VALUE};
-		gbl_panel_3.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_3.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_3.setLayout(gbl_panel_3);
 		JLabel lblDownloader = new JLabel("Downloader:");
 		lblDownloader.setHorizontalAlignment(SwingConstants.CENTER);
@@ -201,6 +185,7 @@ public class CrsManagerPane extends JPanel
 		chckbxAssign.setMinimumSize(new Dimension(15, 20));
 		chckbxAssign.setSelected(true);
 		GridBagConstraints gbc_chckbxAssign = new GridBagConstraints();
+		gbc_chckbxAssign.insets = new Insets(0, 0, 5, 0);
 		gbc_chckbxAssign.gridx = 0;
 		gbc_chckbxAssign.gridy = 1;
 		panel_3.add(chckbxAssign, gbc_chckbxAssign);
@@ -216,6 +201,16 @@ public class CrsManagerPane extends JPanel
 		gbc_chckbxLabels.gridy = 2;
 		panel_3.add(chckbxLabels, gbc_chckbxLabels);
 		
+		textLabel = new JTextField();
+		textLabel.setText("ll_prodteam_analyzed");
+		GridBagConstraints gbc_textLabel = new GridBagConstraints();
+		gbc_textLabel.insets = new Insets(0, 10, 5, 10);
+		gbc_textLabel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textLabel.gridx = 0;
+		gbc_textLabel.gridy = 3;
+		panel_3.add(textLabel, gbc_textLabel);
+		textLabel.setColumns(10);
+		
 		JScrollPane scrollPane_2 = new JScrollPane();
 		scrollPane_2.setPreferredSize(new Dimension(140, 350));
 		scrollPane_2.setBorder(new LineBorder(SystemColor.activeCaption));
@@ -224,7 +219,7 @@ public class CrsManagerPane extends JPanel
 		gbc_scrollPane_2.fill = GridBagConstraints.VERTICAL;
 		gbc_scrollPane_2.insets = new Insets(0, 0, 5, 0);
 		gbc_scrollPane_2.gridx = 0;
-		gbc_scrollPane_2.gridy = 3;
+		gbc_scrollPane_2.gridy = 4;
 		panel_3.add(scrollPane_2, gbc_scrollPane_2);
 		
 		textDownload = new JTextArea();
@@ -249,7 +244,7 @@ public class CrsManagerPane extends JPanel
 		GridBagConstraints gbc_btnClear = new GridBagConstraints();
 		gbc_btnClear.insets = new Insets(0, 0, 5, 0);
 		gbc_btnClear.gridx = 0;
-		gbc_btnClear.gridy = 4;
+		gbc_btnClear.gridy = 5;
 		panel_3.add(btnClear, gbc_btnClear);
 		
 		JButton btnPaste = new JButton("Paste");
@@ -267,7 +262,7 @@ public class CrsManagerPane extends JPanel
 		GridBagConstraints gbc_btnPaste = new GridBagConstraints();
 		gbc_btnPaste.insets = new Insets(0, 0, 5, 0);
 		gbc_btnPaste.gridx = 0;
-		gbc_btnPaste.gridy = 5;
+		gbc_btnPaste.gridy = 6;
 		panel_3.add(btnPaste, gbc_btnPaste);
 		
 		JButton btnDownload = new JButton("Get the CRs");
@@ -285,7 +280,7 @@ public class CrsManagerPane extends JPanel
 		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
 		gbc_btnDownload.insets = new Insets(0, 0, 5, 0);
 		gbc_btnDownload.gridx = 0;
-		gbc_btnDownload.gridy = 6;
+		gbc_btnDownload.gridy = 7;
 		panel_3.add(btnDownload, gbc_btnDownload);
 		
 		JButton btnOpenOnChrome = new JButton("Open on Chrome");
@@ -299,213 +294,13 @@ public class CrsManagerPane extends JPanel
 		});
 		GridBagConstraints gbc_btnOpenOnChrome = new GridBagConstraints();
 		gbc_btnOpenOnChrome.gridx = 0;
-		gbc_btnOpenOnChrome.gridy = 7;
+		gbc_btnOpenOnChrome.gridy = 8;
 		panel_3.add(btnOpenOnChrome, gbc_btnOpenOnChrome);
-		
-		JSeparator separator_3 = new JSeparator();
-		separator_3.setForeground(Color.DARK_GRAY);
-		separator_3.setBackground(Color.WHITE);
-		separator_3.setOrientation(SwingConstants.VERTICAL);
-		GridBagConstraints gbc_separator_3 = new GridBagConstraints();
-		gbc_separator_3.fill = GridBagConstraints.VERTICAL;
-		gbc_separator_3.gridheight = 6;
-		gbc_separator_3.insets = new Insets(0, 0, 5, 5);
-		gbc_separator_3.gridx = 3;
-		gbc_separator_3.gridy = 0;
-		contentPane.add(separator_3, gbc_separator_3);
-		
-		JPanel panel_4 = new JPanel();
-		GridBagConstraints gbc_panel_4 = new GridBagConstraints();
-		gbc_panel_4.insets = new Insets(10, 5, 5, 0);
-		gbc_panel_4.gridheight = 6;
-		gbc_panel_4.fill = GridBagConstraints.BOTH;
-		gbc_panel_4.gridx = 4;
-		gbc_panel_4.gridy = 0;
-		contentPane.add(panel_4, gbc_panel_4);
-		
-		GridBagLayout gbl_panel_4 = new GridBagLayout();
-		gbl_panel_4.columnWidths = new int[] {0, 0};
-		gbl_panel_4.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel_4.columnWeights = new double[] {0.0, Double.MIN_VALUE};
-		gbl_panel_4.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel_4.setLayout(gbl_panel_4);
-		JLabel lblDiagCloser = new JLabel("Diag Closer:");
-		lblDiagCloser.setMinimumSize(new Dimension(60, 14));
-		lblDiagCloser.setFont(new Font("Tahoma", Font.BOLD, 18));
-		GridBagConstraints gbc_lblDiagCloser = new GridBagConstraints();
-		gbc_lblDiagCloser.insets = new Insets(0, 0, 5, 0);
-		gbc_lblDiagCloser.gridx = 0;
-		gbc_lblDiagCloser.gridy = 0;
-		panel_4.add(lblDiagCloser, gbc_lblDiagCloser);
-		
-		JScrollPane scrollPane_5 = new JScrollPane();
-		scrollPane_5.setBorder(new LineBorder(SystemColor.activeCaption));
-		scrollPane_5.setPreferredSize(new Dimension(220, 360));
-		scrollPane_5.setMinimumSize(new Dimension(220, 360));
-		GridBagConstraints gbc_scrollPane_5 = new GridBagConstraints();
-		gbc_scrollPane_5.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane_5.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane_5.gridx = 0;
-		gbc_scrollPane_5.gridy = 1;
-		panel_4.add(scrollPane_5, gbc_scrollPane_5);
-		
-		listDiag = new JList<String>();
-		scrollPane_5.setViewportView(listDiag);
-		listDiag.setToolTipText("List of CRs to be checked");
-		listDiag.setMaximumSize(new Dimension(2000, 2000));
-		listDiag.setVisibleRowCount(0);
-		listDiag.setBorder(null);
-		listDiag.setMinimumSize(new Dimension(220, 360));
-		listDiag.setModel(new DefaultListModel<String>());
-		
-		JLabel lblBgId = new JLabel("   B2G ID   -    Jira ID  -  Diag Result");
-		lblBgId.setBorder(new LineBorder(new Color(0, 0, 0)));
-		scrollPane_5.setColumnHeaderView(lblBgId);
-		
-		JTextArea txtrInstructionsHere = new JTextArea();
-		txtrInstructionsHere.setTabSize(4);
-		txtrInstructionsHere.setWrapStyleWord(true);
-		txtrInstructionsHere.setEditable(false);
-		txtrInstructionsHere.setLineWrap(true);
-		txtrInstructionsHere.setMargin(new Insets(2, 5, 2, 5));
-		txtrInstructionsHere.setBorder(new LineBorder(Color.RED));
-		txtrInstructionsHere.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		txtrInstructionsHere.setText("Click on HELP button to learn how to use it");
-		txtrInstructionsHere.setBackground(UIManager.getColor("Panel.background"));
-		txtrInstructionsHere.setPreferredSize(new Dimension(220, 17));
-		txtrInstructionsHere.setMinimumSize(new Dimension(220, 17));
-		GridBagConstraints gbc_txtrInstructionsHere = new GridBagConstraints();
-		gbc_txtrInstructionsHere.insets = new Insets(0, 0, 5, 0);
-		gbc_txtrInstructionsHere.gridx = 0;
-		gbc_txtrInstructionsHere.gridy = 2;
-		panel_4.add(txtrInstructionsHere, gbc_txtrInstructionsHere);
-		
-		JButton btnHelp = new JButton("Help");
-		btnHelp.setEnabled(false);
-		btnHelp.setPreferredSize(new Dimension(70, 23));
-		btnHelp.setToolTipText("How to use DIAG CLOSER.");
-		btnHelp.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnHelp.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				JOptionPane.showMessageDialog(null,
-											  "First, download the CRs using the \"Downloader\" option\n"
-													+ "After download is done, just click \"Run\" and follow the instructions on the screen\n\n"
-													+ "If you have downloaded the CRs already, you need to insert the path where the ZIP files are.\n"
-													+ "and insert the CRs on the textarea of the Downloader option on the left.\n"
-													+ "Then, just click \"RUN\"\n\n"
-													+ "If you dont have the ZIP files anymore, sorry, but the tool is not prepared to this situation yet.\n\n"
-													+ "More options and more flexibility coming soon\n\n\n"
-													+ "Thank you, have a good day Sir.");
-			}
-		});
-		GridBagConstraints gbc_btnHelp = new GridBagConstraints();
-		gbc_btnHelp.insets = new Insets(0, 0, 5, 0);
-		gbc_btnHelp.gridx = 0;
-		gbc_btnHelp.gridy = 3;
-		panel_4.add(btnHelp, gbc_btnHelp);
-		
-		JButton btnrun = new JButton("Run");
-		btnrun.setEnabled(false);
-		btnrun.setPreferredSize(new Dimension(70, 23));
-		btnrun.setToolTipText("Start to check CRs and close Diag ones. Please, read HELP");
-		btnrun.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				btnRunDiag();
-			}
-		});
-		GridBagConstraints gbc_btnrun = new GridBagConstraints();
-		gbc_btnrun.insets = new Insets(0, 0, 5, 0);
-		gbc_btnrun.gridx = 0;
-		gbc_btnrun.gridy = 4;
-		panel_4.add(btnrun, gbc_btnrun);
-		
-		JButton btnOpenDiagsOn = new JButton("Open Diags on Chrome");
-		btnOpenDiagsOn.setEnabled(false);
-		btnOpenDiagsOn.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				HashMap<String, String> b2g_crid = DiagCrsCloser.getB2g_crid();
-				ArrayList<String> getDiagCRs = DiagCrsCloser.getDiagCRs();
-				for (String b2gid : getDiagCRs)
-				{
-					try
-					{
-						String s = b2g_crid.get(b2gid);
-						s = s.replaceAll("\n", "");
-						s = s.replaceAll("\r", "");
-						s = s.replaceAll(" |  ", "");
-						Desktop.getDesktop().browse(new URI("http://idart.mot.com/browse/" + s));
-						Thread.sleep(600);
-					}
-					catch (Exception ex)
-					{
-						JOptionPane.showMessageDialog(null, "Exception:\n" + ex.getMessage());
-					}
-				}
-			}
-		});
-		btnOpenDiagsOn.setPreferredSize(new Dimension(165, 23));
-		GridBagConstraints gbc_btnOpenDiagsOn = new GridBagConstraints();
-		gbc_btnOpenDiagsOn.insets = new Insets(0, 0, 5, 0);
-		gbc_btnOpenDiagsOn.gridx = 0;
-		gbc_btnOpenDiagsOn.gridy = 5;
-		panel_4.add(btnOpenDiagsOn, gbc_btnOpenDiagsOn);
-		
-		JButton btnOpenNondiagsOn = new JButton("Open Non-Diags on Chrome");
-		btnOpenNondiagsOn.setEnabled(false);
-		btnOpenNondiagsOn.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				HashMap<String, String> b2g_crid = DiagCrsCloser.getB2g_crid();
-				ArrayList<String> getUnknownCRs = DiagCrsCloser.getUnknownCRs();
-				for (String b2gid : getUnknownCRs)
-				{
-					try
-					{
-						String s = b2g_crid.get(b2gid);
-						s = s.replaceAll("\n", "");
-						s = s.replaceAll("\r", "");
-						s = s.replaceAll(" |  ", "");
-						Desktop.getDesktop().browse(new URI("http://idart.mot.com/browse/" + s));
-						Thread.sleep(600);
-					}
-					catch (Exception ex)
-					{
-						JOptionPane.showMessageDialog(null, "Exception:\n" + ex.getMessage());
-					}
-				}
-			}
-		});
-		GridBagConstraints gbc_btnOpenNondiagsOn = new GridBagConstraints();
-		gbc_btnOpenNondiagsOn.insets = new Insets(0, 0, 5, 0);
-		gbc_btnOpenNondiagsOn.gridx = 0;
-		gbc_btnOpenNondiagsOn.gridy = 6;
-		panel_4.add(btnOpenNondiagsOn, gbc_btnOpenNondiagsOn);
-		
-		JButton btnCloseOld = new JButton("Close As Old");
-		btnCloseOld.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				new Thread(new CrsCloser()).start();
-			}
-		});
-		GridBagConstraints gbc_btnCloseOld = new GridBagConstraints();
-		gbc_btnCloseOld.gridx = 0;
-		gbc_btnCloseOld.gridy = 7;
-		panel_4.add(btnCloseOld, gbc_btnCloseOld);
 		
 		JSeparator separator = new JSeparator();
 		separator.setMaximumSize(new Dimension(130, 32767));
 		separator.setForeground(Color.DARK_GRAY);
 		GridBagConstraints gbc_separator = new GridBagConstraints();
-		gbc_separator.fill = GridBagConstraints.HORIZONTAL;
 		gbc_separator.insets = new Insets(0, 1, 5, 5);
 		gbc_separator.gridx = 0;
 		gbc_separator.gridy = 1;
@@ -514,8 +309,7 @@ public class CrsManagerPane extends JPanel
 		JSeparator separator_4 = new JSeparator();
 		separator_4.setForeground(new Color(0, 0, 0));
 		GridBagConstraints gbc_separator_4 = new GridBagConstraints();
-		gbc_separator_4.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_4.gridwidth = 5;
+		gbc_separator_4.gridwidth = 2;
 		gbc_separator_4.insets = new Insets(10, 5, 5, 0);
 		gbc_separator_4.gridx = 0;
 		gbc_separator_4.gridy = 6;
@@ -524,7 +318,7 @@ public class CrsManagerPane extends JPanel
 		JPanel panel_5 = new JPanel();
 		panel_5.setBorder(new LineBorder(new Color(240, 128, 128), 1, true));
 		GridBagConstraints gbc_panel_5 = new GridBagConstraints();
-		gbc_panel_5.gridwidth = 5;
+		gbc_panel_5.gridwidth = 2;
 		gbc_panel_5.gridx = 0;
 		gbc_panel_5.gridy = 8;
 		contentPane.add(panel_5, gbc_panel_5);
@@ -615,6 +409,13 @@ public class CrsManagerPane extends JPanel
 		
 		SharedObjs.crsManagerPane.addLogLine("Generating b2g list to download ...");
 		
+		// Get label list
+		labels = textLabel.getText().split(" ");
+		for (String s : labels)
+		{
+			Logger.log(Logger.TAG_CRSMANAGER, "Label entered: " + s);
+		}
+		
 		// Manage CR
 		for (String crKey : CRs)
 		{
@@ -631,8 +432,13 @@ public class CrsManagerPane extends JPanel
 					jira.assignIssue(crKey);
 					
 				if (chckbxLabels.isSelected())
-					jira.addLabel(crKey, "ll_prodteam_analyzed");
-					
+				{
+					for (String s : labels)
+					{
+						jira.addLabel(crKey, s);
+					}
+				}
+				
 				b2gList.add(crItem.getB2gID());
 			}
 			else
@@ -738,10 +544,6 @@ public class CrsManagerPane extends JPanel
 				JOptionPane.showMessageDialog(this, "Exception: " + ex.getMessage());
 			}
 		}
-	}
-	
-	private void btnRunDiag()
-	{
 	}
 	
 	public void updateDiagList()
@@ -950,4 +752,10 @@ public class CrsManagerPane extends JPanel
 	{
 		return crsList;
 	}
+	
+	public JTextField getTextLabel()
+	{
+		return textLabel;
+	}
+	
 }
