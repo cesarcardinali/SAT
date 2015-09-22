@@ -25,8 +25,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
+import java.util.TimeZone;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -573,7 +576,11 @@ public class CrsManagerPane extends JPanel
 			textLog.setText("");
 		}
 		
-		textLog.setText(textLog.getText() + line + "\n");
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+		format.setTimeZone(TimeZone.getTimeZone("Brazil/East"));
+		
+		textLog.setText(textLog.getText() + format.format(date) + "\t" + line + "\n");
 		textLog.setCaretPosition(textLog.getText().length());
 	}
 	
