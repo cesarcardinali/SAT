@@ -1,8 +1,9 @@
-package supportive.parsers.logsparser;
+package supportive.preanalyzers.btdparser;
 
 import java.util.Date;
 
-public class LogState
+
+public class BtdState
 {
 	private long start  = -1; // timestamp
 	private long end    = -1; // timestamp
@@ -65,5 +66,5 @@ public class LogState
 	public Date getEndDate()
     {
 	    return new Date(end);
-    }	
+    }
 }

@@ -25,9 +25,9 @@ src/tests/*.java
 Data/cfgs/pass.pwd
 BatTracer.jar
 Updater.jar
+/TestDataCRs/
 /TestDataCRs/*.*
 /btdTestData/
-*.*
 /bin/
 *.log
 /

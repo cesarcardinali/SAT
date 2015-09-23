@@ -1,4 +1,4 @@
-package supportive.parsers.logsparser;
+package supportive.preanalyzers.logsparser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

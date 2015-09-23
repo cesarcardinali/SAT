@@ -1,35 +1,34 @@
-package supportive.parsers.btdparser;
-
+package supportive.preanalyzers.logsparser;
 
 import java.util.ArrayList;
 
-
-public class BtdStatesData extends ArrayList<BtdState>
+public class LogStatesData extends ArrayList<LogState>
 {
-	BtdStatesData()
+	LogStatesData()
 	{
 		super();
 	}
 	
 	//Modificar o metodo "add" para verificar o maior periodo e guardar o index
 	
-	public BtdStatesData getChargingPeriods()
+	public LogStatesData getChargingPeriods()
 	{
 		return null;
 	}
 	
-	public BtdStatesData getDischargingPeriods()
+	public LogStatesData getDischargingPeriods()
 	{
 		return null;
 	}
 	
-	public BtdState getLongerDischargingPeriod()
+	public LogState getLongerDischargingPeriod()
 	{
 		long longer = -1;
 		int index = -1;
 		
 		for (int i=0; i<this.size(); i++)
 		{
+			//System.out.println("------- Periodo " + i + ":\n" + this.get(i).getStatus() + " - " + this.get(i).getDuration() + " - " + this.get(i).getStart() + " - " + this.get(i).getEnd());
 			if (this.get(i).getStatus() == 0 && this.get(i).getDuration() > longer)
 			{
 				longer = this.get(i).getDuration();

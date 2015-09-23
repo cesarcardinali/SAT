@@ -1,4 +1,4 @@
-package supportive.parsers.logsparser;
+package supportive.preanalyzers.logsparser;
 
 
 import java.io.BufferedReader;
@@ -18,7 +18,7 @@ import core.Logger;
 
 public class MainParser
 {
-	private class wifiPeriod
+	public class wifiPeriod
 	{
 		public long   startTime;
 		public long   endTime;
@@ -114,7 +114,7 @@ public class MainParser
 					nextTime = DateOperator.getMillis(parseLineDate(sCurrentLine)[0]);
 					if ((nextTime - actualTime) > 3600000L)
 					{
-						//System.out.println("Diff: " + (nextTime - actualTime) + "\n" + sCurrentLine);
+						// System.out.println("Diff: " + (nextTime - actualTime) + "\n" + sCurrentLine);
 						actualTime = nextTime;
 						startTime = actualTime;
 						
@@ -250,8 +250,8 @@ public class MainParser
 		                   + DateOperator.getDateStringFromBtdStringMillis(totalLogTime) + " or "
 		                   + (totalLogTime) + "ms");
 		System.out.println("Longer discharge time "
-		                   + DateOperator.getDateStringFromBtdStringMillis(longerDischarge.getDuration()) + " or "
-		                   + (totalLogTime) + "ms");
+		                   + DateOperator.getDateStringFromBtdStringMillis(longerDischarge.getDuration())
+		                   + " or " + (totalLogTime) + "ms");
 		System.out.println("From " + longerDischarge.getStartDate() + " to " + longerDischarge.getEndDate());
 	}
 	
@@ -270,8 +270,7 @@ public class MainParser
 		                   + DateOperator.getDateStringFromBtdStringMillis(totalTetherTime));
 		DecimalFormat df = new DecimalFormat("##.##");
 		df.setRoundingMode(RoundingMode.DOWN);
-		System.out.println("Tethering running for " + df.format(100.0 * totalTetherTime / (totalLogTime))
-		                   + "% of total log time");
+		System.out.println("Tethering running for " + getTetherPercentage() + "% of total log time");
 	}
 	
 	public boolean checkForTethering()
@@ -342,4 +341,61 @@ public class MainParser
 		return "";
 	}
 	
+	// Getters, Setter and Supportive methods
+	public String getTetherPercentage()
+	{
+		DecimalFormat df = new DecimalFormat("##.##");
+		df.setRoundingMode(RoundingMode.DOWN);
+		return df.format(100.0 * totalTetherTime / (totalLogTime));
+	}
+
+	public LogState getLongerDischarge()
+	{
+		return longerDischarge;
+	}
+
+	public LogStatesData getStatesData()
+	{
+		return statesData;
+	}
+
+	public ArrayList<wifiPeriod> getWifiPeriods()
+	{
+		return wifiPeriods;
+	}
+
+	public long getTotalLogTime()
+	{
+		return totalLogTime;
+	}
+
+	public long getTotalTetherTime()
+	{
+		return totalTetherTime;
+	}
+
+	public void setLongerDischarge(LogState longerDischarge)
+	{
+		this.longerDischarge = longerDischarge;
+	}
+
+	public void setStatesData(LogStatesData statesData)
+	{
+		this.statesData = statesData;
+	}
+
+	public void setWifiPeriods(ArrayList<wifiPeriod> wifiPeriods)
+	{
+		this.wifiPeriods = wifiPeriods;
+	}
+
+	public void setTotalLogTime(long totalLogTime)
+	{
+		this.totalLogTime = totalLogTime;
+	}
+
+	public void setTotalTetherTime(long totalTetherTime)
+	{
+		this.totalTetherTime = totalTetherTime;
+	}
 }

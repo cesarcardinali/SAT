@@ -1,4 +1,4 @@
-package supportive.parsers.btdparser;
+package supportive.preanalyzers.btdparser;
 
 
 import java.util.ArrayList;

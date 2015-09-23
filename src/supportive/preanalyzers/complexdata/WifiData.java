@@ -1,4 +1,4 @@
-package supportive.parsers;
+package supportive.preanalyzers.complexdata;
 
 
 public class WifiData

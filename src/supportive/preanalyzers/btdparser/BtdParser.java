@@ -1,15 +1,17 @@
-package supportive.parsers.btdparser;
+package supportive.preanalyzers.btdparser;
 
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -173,7 +175,7 @@ public class BtdParser
 			return false;
 	}
 	
-	public long getTetheringTime()
+	private long getTetheringTime()
 	{
 		long lastCTX, actualCTX, lastWRX, actualWRX;
 		long lastTime, actualTime, cumulativeTime = 0;
@@ -1062,8 +1064,250 @@ public class BtdParser
 		return (int) (consumeOff / (timeOff / 3600000.0));
 	}
 	
+	public String getTetherPercentage()
+	{
+		DecimalFormat df = new DecimalFormat("##.##");
+		df.setRoundingMode(RoundingMode.DOWN);
+		return df.format(100.0 * tetheringTime / realTimeOnBatt);
+	}
+	
 	public double millisToHours(long millis)
 	{
 		return (double) (millis / 3600000.0);
+	}
+
+	public int getStatus()
+	{
+		return status;
+	}
+
+	public BtdState getFinalState()
+	{
+		return finalState;
+	}
+
+	public long[] getScreenData()
+	{
+		return screenData;
+	}
+
+	public long[] getSignalData()
+	{
+		return signalData;
+	}
+
+	public float[] getCpuTempData()
+	{
+		return cpuTempData;
+	}
+
+	public float[] getDeviceTempData()
+	{
+		return deviceTempData;
+	}
+
+	public int[] getBttDischarged()
+	{
+		return bttDischarged;
+	}
+
+	public long getCellTX()
+	{
+		return cellTX;
+	}
+
+	public long getCellRX()
+	{
+		return cellRX;
+	}
+
+	public long getWifiTX()
+	{
+		return wifiTX;
+	}
+
+	public long getWifiRX()
+	{
+		return wifiRX;
+	}
+
+	public long getGpsLocation()
+	{
+		return gpsLocation;
+	}
+
+	public long getNetworkLocation()
+	{
+		return networkLocation;
+	}
+
+	public long getConsumeOn()
+	{
+		return consumeOn;
+	}
+
+	public long getConsumeOff()
+	{
+		return consumeOff;
+	}
+
+	public long getTimeOff()
+	{
+		return timeOff;
+	}
+
+	public long getTimeOn()
+	{
+		return timeOn;
+	}
+
+	public long getWifiOnTime()
+	{
+		return wifiOnTime;
+	}
+
+	public long getWifiRunningTime()
+	{
+		return wifiRunningTime;
+	}
+
+	public long getRealTimeOnBatt()
+	{
+		return realTimeOnBatt;
+	}
+
+	public long getAwakeTimeOnBatt()
+	{
+		return awakeTimeOnBatt;
+	}
+
+	public long getPhoneCall()
+	{
+		return phoneCall;
+	}
+
+	public void setStatus(int status)
+	{
+		this.status = status;
+	}
+
+	public void setBtdRows(BtdRowsList btdRows)
+	{
+		this.btdRows = btdRows;
+	}
+
+	public void setFinalState(BtdState finalState)
+	{
+		this.finalState = finalState;
+	}
+
+	public void setStatesData(BtdStatesData statesData)
+	{
+		this.statesData = statesData;
+	}
+
+	public void setScreenData(long[] screenData)
+	{
+		this.screenData = screenData;
+	}
+
+	public void setSignalData(long[] signalData)
+	{
+		this.signalData = signalData;
+	}
+
+	public void setCpuTempData(float[] cpuTempData)
+	{
+		this.cpuTempData = cpuTempData;
+	}
+
+	public void setDeviceTempData(float[] deviceTempData)
+	{
+		this.deviceTempData = deviceTempData;
+	}
+
+	public void setBttDischarged(int[] bttDischarged)
+	{
+		this.bttDischarged = bttDischarged;
+	}
+
+	public void setCellTX(long cellTX)
+	{
+		this.cellTX = cellTX;
+	}
+
+	public void setCellRX(long cellRX)
+	{
+		this.cellRX = cellRX;
+	}
+
+	public void setWifiTX(long wifiTX)
+	{
+		this.wifiTX = wifiTX;
+	}
+
+	public void setWifiRX(long wifiRX)
+	{
+		this.wifiRX = wifiRX;
+	}
+
+	public void setGpsLocation(long gpsLocation)
+	{
+		this.gpsLocation = gpsLocation;
+	}
+
+	public void setNetworkLocation(long networkLocation)
+	{
+		this.networkLocation = networkLocation;
+	}
+
+	public void setConsumeOn(long consumeOn)
+	{
+		this.consumeOn = consumeOn;
+	}
+
+	public void setConsumeOff(long consumeOff)
+	{
+		this.consumeOff = consumeOff;
+	}
+
+	public void setTimeOff(long timeOff)
+	{
+		this.timeOff = timeOff;
+	}
+
+	public void setTimeOn(long timeOn)
+	{
+		this.timeOn = timeOn;
+	}
+
+	public void setWifiOnTime(long wifiOnTime)
+	{
+		this.wifiOnTime = wifiOnTime;
+	}
+
+	public void setWifiRunningTime(long wifiRunningTime)
+	{
+		this.wifiRunningTime = wifiRunningTime;
+	}
+
+	public void setRealTimeOnBatt(long realTimeOnBatt)
+	{
+		this.realTimeOnBatt = realTimeOnBatt;
+	}
+
+	public void setAwakeTimeOnBatt(long awakeTimeOnBatt)
+	{
+		this.awakeTimeOnBatt = awakeTimeOnBatt;
+	}
+
+	public void setPhoneCall(long phoneCall)
+	{
+		this.phoneCall = phoneCall;
+	}
+
+	public void setTetheringTime(long tetheringTime)
+	{
+		this.tetheringTime = tetheringTime;
 	}
 }

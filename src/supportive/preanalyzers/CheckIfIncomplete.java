@@ -1,4 +1,4 @@
-package supportive;
+package supportive.preanalyzers;
 
 
 import java.io.File;
@@ -18,7 +18,7 @@ public class CheckIfIncomplete
 	 * @param crPath
 	 * @return
 	 */
-	public String checkIt(String crPath)
+	public boolean checkIt(String crPath)
 	{
 		folderPath = crPath;
 		incompleteFiles = new ArrayList<String>();
@@ -29,7 +29,8 @@ public class CheckIfIncomplete
 		
 		if (!folder.isDirectory())
 		{
-			return "Not a directory";
+			Logger.log(Logger.TAG_CR_CHECKER, "Not a directory");
+			return false;
 		}
 		
 		for (File file : folder.listFiles())
@@ -96,8 +97,18 @@ public class CheckIfIncomplete
 		}
 		
 		if (incompleteFiles.size() == 4)
-			return "Incomplete: " + incompleteFiles;
+			return true;
 		else
-			return "Normal: " + incompleteFiles;
+			return false;
+	}
+	
+	public ArrayList<String> getIncompleteFiles()
+	{
+		return incompleteFiles;
+	}
+	
+	public void setIncompleteFiles(ArrayList<String> incompleteFiles)
+	{
+		this.incompleteFiles = incompleteFiles;
 	}
 }
