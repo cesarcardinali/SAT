@@ -114,7 +114,7 @@ public class Tether
 			
 			while ((sCurrentLine = br.readLine()) != null)
 			{
-				if ((sCurrentLine.contains("Tether") && sCurrentLine.contains("what=4"))
+				if ((sCurrentLine.contains("TetherModeAliveState") && sCurrentLine.contains("what=4"))
 					|| sCurrentLine.contains("processMsg: TetheredState"))
 				{
 					wifitetherData2 = wifitetherData2 + sCurrentLine + "\n";

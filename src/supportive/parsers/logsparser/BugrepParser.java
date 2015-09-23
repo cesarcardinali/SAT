@@ -1,4 +1,4 @@
-package supportive.parsers.bugreportparser;
+package supportive.parsers.logsparser;
 
 
 import java.io.BufferedReader;

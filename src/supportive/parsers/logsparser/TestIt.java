@@ -1,0 +1,77 @@
+package supportive.parsers.logsparser;
+
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+
+
+public class TestIt
+{
+	public static void main(String[] args)
+	{
+		String root = "C:/CRs/Debuging/";
+		
+		//MainParser mainParser = new MainParser(root + "77712231");81176461
+		MainParser mainParser = new MainParser(root + "80605931");
+		long now = System.currentTimeMillis();
+		
+		//System.out.println(DateOperator.getDateStringFromBtdStringMillis(148857));
+		
+		try
+        {
+			mainParser.getMainData();
+			mainParser.checkForTethering();
+			mainParser.showAcquiredData();
+			mainParser.showTetheringData();
+        }
+        catch (IOException e1)
+        {
+	        // TODO Auto-generated catch block
+	        e1.printStackTrace();
+        }
+		
+		System.out.println("\n\nIt took " + DateOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now)));
+		//System.out.println("Started at " + new Date(now) + " stopped at "
+		//                   + new Date(System.currentTimeMillis()));
+		/*
+		try
+		{
+			
+			System.out.println();System.out.println("-----------------");System.out.println();
+			
+			// File seek and load configuration
+			File folder = new File(root);
+			File[] listOfFiles = folder.listFiles();
+			
+			if (folder.isDirectory())
+			{
+				// Look for the file
+				for (int i = 0; i < listOfFiles.length; i++)
+				{
+					// Logger.log(Logger.TAG_DIAG, folder.listFiles()[i]);
+					if (listOfFiles[i].isDirectory())
+					{
+						String path = listOfFiles[i].getName();
+						
+						mainParser = new MainParser(root + path);
+						mainParser.getMainData();
+						mainParser.checkForTethering();
+						mainParser.showTetheringData();
+						
+						System.out.println();System.out.println("-----------------");System.out.println();
+						//break;
+					}
+				}
+			}
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}*/
+		
+		System.out.println("\n\nIt took " + DateOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now)) + "ms");
+		System.out.println("Started at " + new Date(now) + " stopped at "
+		                   + new Date(System.currentTimeMillis()));
+	}
+}

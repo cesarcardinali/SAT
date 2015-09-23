@@ -4,9 +4,9 @@
     <rootPath>C:\CRs</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\CRs\Debuging</path>
-    <assign>true</assign>
-    <label>true</label>
+    <path>C:\CRs\Debuging\tether_test</path>
+    <assign>false</assign>
+    <label>false</label>
   </crs_jira_pane>
   <option_pane>
     <full_log>- The process *#pname#* was consuming *~#avgconsume#* of CPU processing power.\n{noformat}\n#logfull#\n{noformat}</full_log>

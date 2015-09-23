@@ -1,6 +1,10 @@
 package supportive.parsers.btdparser;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -17,6 +21,8 @@ public class BtdParser
 	private Connection    c;
 	private Statement     stmt;
 	private ResultSet     rs;
+	private String        path;
+	private int           status;
 	private BtdRow        btdRow;
 	private BtdRowsList   btdRows;
 	private BtdState      finalState;
@@ -45,16 +51,53 @@ public class BtdParser
 	
 	public BtdParser(String path)
 	{
+		this.path = path;
+		System.out.println("CR path: " + path);
+		
 		try
 		{
-			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + path);
-			stmt = c.createStatement();
+			// File seek and load configuration
+			String file_report = "";
+			File folder = new File(path);
+			File[] listOfFiles = folder.listFiles();
 			
-			statesData = new BtdStatesData();
-			btdRows = null;
+			if (folder.isDirectory())
+			{
+				// Look for the file
+				for (int i = 0; i < listOfFiles.length; i++)
+				{
+					// Logger.log(Logger.TAG_DIAG, folder.listFiles()[i]);
+					if (listOfFiles[i].isFile())
+					{
+						String file = listOfFiles[i].getName();
+						if (file.endsWith(".btd") && listOfFiles[i].length() > 5000000)
+						{
+							file_report = "/" + file;
+						}
+					}
+				}
+			}
 			
-			System.out.println("Opened database successfully\n");
+			if (!file_report.equals(""))
+			{
+				System.out.println("Using file: " + file_report);
+				Class.forName("org.sqlite.JDBC");
+				c = DriverManager.getConnection("jdbc:sqlite:" + path + file_report);
+				stmt = c.createStatement();
+				
+				statesData = new BtdStatesData();
+				btdRows = null;
+				
+				status = 1;
+				
+				System.out.println("Opened database successfully");
+			}
+			else
+			{
+				status = 0;
+				System.out.println("Failed to open DB\nPath: " + file_report);
+				System.out.println("BTD file is too short or does not exists");
+			}
 		}
 		catch (ClassNotFoundException e)
 		{
@@ -66,34 +109,52 @@ public class BtdParser
 		}
 	}
 	
-	public void parse()
+	public boolean parse()
 	{
-		bttDischarged = new int[2];
-		
-		// Get charge and discharge periods
-		getPeriods();
-		
-		// Get the longer discharge period
-		finalState = getLongerDischargingPeriod();
-		
-		getDischargeInternetData(finalState);
-		
-		getDischargeGeneralData(finalState);
-		
-		getDischargeBatteryData(finalState);
-		
-		getDischargePhoneSignalData(finalState);
-		
-		getDischargeScreenBrightData(finalState);
-		
-		getDischargeTemperatureData(finalState);
-		
-		// Search for issues
-		tetheringTime = checkForTethering();
-		System.out.println("Tethering time: " + tetheringTime + " " + getDateStringFromBtdStringMillis(tetheringTime));
-		
-		// Show results:
-		showParseResults();
+		if (status == 1)
+		{
+			bttDischarged = new int[2];
+			
+			// Get charge and discharge periods
+			getPeriods();
+			
+			// Get the longer discharge period
+			finalState = getLongerDischargingPeriod();
+			
+			getDischargeInternetData(finalState);
+			
+			getDischargeGeneralData(finalState);
+			
+			getDischargeBatteryData(finalState);
+			
+			getDischargePhoneSignalData(finalState);
+			
+			getDischargeScreenBrightData(finalState);
+			
+			getDischargeTemperatureData(finalState);
+			
+			getTetheringTime();
+			
+			// Show acquired data
+			//showParseResults();
+			
+			// Print acquired data
+			try
+			{
+				printResultToFile();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			
+			return true;
+		}
+		else
+		{
+			System.out.println("Was not possible to find BTD file or the existent is too short");
+			return false;
+		}
 	}
 	
 	public void checkForIssuesIndications()
@@ -101,60 +162,73 @@ public class BtdParser
 		
 	}
 	
-	public long checkForTethering()
+	public boolean checkForTethering()
+	{
+		System.out.println("Checking for tethering resolution:\nTotal on battery time: " + realTimeOnBatt
+		                   + "\nTotal tethering time: " + tetheringTime + "\nProportion: "
+		                   + (100.0 * tetheringTime / realTimeOnBatt) + "%");
+		if (tetheringTime >= realTimeOnBatt * 0.10)
+			return true;
+		else
+			return false;
+	}
+	
+	public long getTetheringTime()
 	{
 		long lastCTX, actualCTX, lastWRX, actualWRX;
 		long lastTime, actualTime, cumulativeTime = 0;
 		
 		try
-        {
-			rs = execQuery("select CELL_TX, WIFI_RX, timestamp from t_fgdata where timestamp BETWEEN " + finalState.getStart() + " AND " + finalState.getEnd() + " AND WIFI_LABEL = ''  AND CELL_LABEL != '';");
+		{
+			rs = execQuery("select CELL_TX, WIFI_RX, timestamp from t_fgdata where timestamp BETWEEN "
+			               + finalState.getStart() + " AND " + finalState.getEnd()
+			               + " AND WIFI_LABEL = ''  AND CELL_LABEL != '';");
 			
 			lastCTX = rs.getLong(1);
 			lastWRX = rs.getLong(2);
 			lastTime = rs.getLong(3);
-			int i = 0;
+			int i =0;
 			
-	        while (rs.next())
-	        {
-	        	i++;
-	        	actualCTX = rs.getLong(1);
-	        	actualWRX = rs.getLong(2);
-	        	actualTime = rs.getLong(3);
-	        	int timeCorrection = (int)((actualTime - lastTime)/10000);
+			while (rs.next())
+			{
+				i++;
+				actualCTX = rs.getLong(1);
+				actualWRX = rs.getLong(2);
+				actualTime = rs.getLong(3);
+				int timeCorrection = (int) ((actualTime - lastTime) / 10000);
 				
-	        	//System.out.println(i + " - " + lastTime);
-	        	//System.out.println((actualCTX - lastCTX));
-	        	//System.out.println((actualWRX - lastWRX));
-
-	        	// problema:
-	        	// o select traz apenas as linhas que se enquadram em ""WIFI_LABEL = ''  AND CELL_LABEL != ''""
-	        	// acontece que se uma a linha anterior se enquadrar no momento X e a posterior num momento X+3horas, ele acusará 3 horas de tethering.
-	        	
-	        	if ((actualCTX - lastCTX) > 25000*timeCorrection && (actualWRX - lastWRX) > 25000*timeCorrection && ((actualCTX - lastCTX) >= (actualWRX - lastWRX)))
-	        	{
-	        		cumulativeTime = cumulativeTime + actualTime - lastTime;
-//	        		System.out.println("tethering: " + (actualTime - lastTime));
-	        	}
-	        	else
-	        	{
-//	        		System.out.println("not tethering");
-	        	}
-	        	
-//	        	System.out.println();
-	        	
-	        	lastCTX = actualCTX;
+				 //System.out.println(i + " - " + lastTime);
+				 //System.out.println((actualCTX - lastCTX));
+				 //System.out.println((actualWRX - lastWRX));
+				 //System.out.println(timeCorrection);
+				
+				if ((actualCTX - lastCTX) > 10000 * timeCorrection
+				    && (actualWRX - lastWRX) > 10000 * timeCorrection)
+				{
+					cumulativeTime = cumulativeTime + actualTime - lastTime;
+					 //System.out.println("tethering: " + (actualTime - lastTime));
+				}
+				else
+				{
+					// System.out.println("not tethering");
+				}
+				
+				 //System.out.println();
+				
+				lastCTX = actualCTX;
 				lastWRX = actualWRX;
 				lastTime = actualTime;
-	        }
-	        
-	        return cumulativeTime;
-        }
-        catch (SQLException e)
-        {
-        	e.printStackTrace();
-        	return -1;
-        }
+			}
+			
+			tetheringTime = cumulativeTime;
+			
+			return cumulativeTime;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return -1;
+		}
 	}
 	
 	public void showParseResults()
@@ -178,17 +252,18 @@ public class BtdParser
 		System.out.println("GPS Location: " + gpsLocation);
 		System.out.println("Network Location: " + networkLocation);
 		System.out.println("Screen ON: " + getDateStringFromBtdStringMillis(timeOn) + " or " + timeOn + "ms");
-		System.out.println("Screen OFF: " + getDateStringFromBtdStringMillis(timeOff) + " or " + timeOff + "ms");
-		System.out.println("Total time: " + getDateStringFromBtdStringMillis(finalState.getDuration()) + " or "
-		                   + finalState.getDuration() + "ms");
-		System.out.println("Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - " + phoneCall
+		System.out.println("Screen OFF: " + getDateStringFromBtdStringMillis(timeOff) + " or " + timeOff
 		                   + "ms");
+		System.out.println("Total time: " + getDateStringFromBtdStringMillis(finalState.getDuration())
+		                   + " or " + finalState.getDuration() + "ms");
+		System.out.println("Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - "
+		                   + phoneCall + "ms");
 		System.out.println("Time on battery: " + getDateStringFromBtdStringMillis(realTimeOnBatt) + " - "
 		                   + realTimeOnBatt + "ms");
 		System.out.println("Time awake: " + getDateStringFromBtdStringMillis(awakeTimeOnBatt) + " - "
 		                   + awakeTimeOnBatt + "ms");
-		System.out.println("Wifi On time: " + getDateStringFromBtdStringMillis(wifiOnTime) + " - " + wifiOnTime
-		                   + "ms");
+		System.out.println("Wifi On time: " + getDateStringFromBtdStringMillis(wifiOnTime) + " - "
+		                   + wifiOnTime + "ms");
 		System.out.println("Wifi Running time: " + getDateStringFromBtdStringMillis(wifiRunningTime) + " - "
 		                   + wifiRunningTime + "ms");
 		
@@ -225,6 +300,79 @@ public class BtdParser
 		                   + getDateStringFromBtdStringMillis(screenData[3]));
 		System.out.println("\tbright:\t\t" + millisToHours(screenData[4]) + "\t"
 		                   + getDateStringFromBtdStringMillis(screenData[4]));
+		
+		// Specific detections
+		System.out.println("Tethering time: " + tetheringTime + " "
+		                   + getDateStringFromBtdStringMillis(tetheringTime) + "\n");
+	}
+	
+	public void printResultToFile() throws IOException
+	{
+		File output = new File(path + "/BTD output.txt");
+		BufferedWriter br = new BufferedWriter(new FileWriter(output));
+		
+		br.write("The longer discharge period is from " + finalState.getStart() + " ("
+		         + formatDate(finalState.getStartDate()) + ") to " + finalState.getEnd() + " ("
+		         + formatDate(finalState.getEndDate()) + ")\nA total time of "
+		         + dateDiff(finalState.getStartDate(), finalState.getEndDate()) + " or "
+		         + getMillisFromBtdStringDate(dateDiff(finalState.getStartDate(), finalState.getEndDate()))
+		         + "ms\n" + "\n");
+		br.write("Cell Rx: " + cellRX + " KBytes  ||  Cell TX: " + cellTX + " KBytes" + "\n");
+		br.write("Wifi Rx: " + wifiRX + " KBytes  ||  Wifi TX: " + wifiTX + " KBytes" + "\n");
+		br.write("Btt: " + bttDischarged[0] + "% --> " + bttDischarged[1] + "%" + "\n");
+		br.write("GPS Location: " + gpsLocation + "\n");
+		br.write("Network Location: " + networkLocation + "\n");
+		br.write("Screen ON: " + getDateStringFromBtdStringMillis(timeOn) + " or " + timeOn + "ms" + "\n");
+		br.write("Screen OFF: " + getDateStringFromBtdStringMillis(timeOff) + " or " + timeOff + "ms" + "\n");
+		br.write("Total time: " + getDateStringFromBtdStringMillis(finalState.getDuration()) + " or "
+		         + finalState.getDuration() + "ms" + "\n");
+		br.write("Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - " + phoneCall + "ms" + "\n");
+		br.write("Time on battery: " + getDateStringFromBtdStringMillis(realTimeOnBatt) + " - "
+		         + realTimeOnBatt + "ms" + "\n");
+		br.write("Time awake: " + getDateStringFromBtdStringMillis(awakeTimeOnBatt) + " - " + awakeTimeOnBatt
+		         + "ms" + "\n");
+		br.write("Wifi On time: " + getDateStringFromBtdStringMillis(wifiOnTime) + " - " + wifiOnTime + "ms" + "\n");
+		br.write("Wifi Running time: " + getDateStringFromBtdStringMillis(wifiRunningTime) + " - "
+		         + wifiRunningTime + "ms" + "\n");
+		
+		br.write("Total discharge ms: " + (timeOn + timeOff) + "\n");
+		br.write("Total discharge hours: " + (millisToHours(timeOn) + millisToHours(timeOff)) + "\n");
+		br.write("Total discharge capacity: " + (consumeOn + consumeOff) + "\n");
+		
+		br.write("Total On mAh: " + consumeOn + " - Total ms: " + timeOn + "\n");
+		br.write("Average On mAh: " + getAverageconsumeOn() + " - " + millisToHours(timeOn) + "\n");
+		
+		br.write("Total Off mAh: " + consumeOff + " - Total ms: " + timeOff + "\n");
+		br.write("Average Off mAh: " + getAverageconsumeOff() + " - " + millisToHours(timeOff) + "\n");
+		
+		br.write("Signal data:" + "\n");
+		br.write("\tnone: \t\t" + millisToHours(signalData[0]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[0]) + "\n");
+		br.write("\tpoor: \t\t" + millisToHours(signalData[1]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[1]) + "\n");
+		br.write("\tmoderate:\t" + millisToHours(signalData[2]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[2]) + "\n");
+		br.write("\tgood: \t\t" + millisToHours(signalData[3]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[3]) + "\n");
+		br.write("\tgreat: \t\t" + millisToHours(signalData[4]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[4]) + "\n");
+		
+		br.write("Screen brightnesses:" + "\n");
+		br.write("\tdark: \t\t" + millisToHours(screenData[0]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[0]) + "\n");
+		br.write("\tdim: \t\t" + millisToHours(screenData[1]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[1]) + "\n");
+		br.write("\tmedium:\t\t" + millisToHours(screenData[2]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[2]) + "\n");
+		br.write("\tlight: \t\t" + millisToHours(screenData[3]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[3]) + "\n");
+		br.write("\tbright:\t\t" + millisToHours(screenData[4]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[4]) + "\n");
+		
+		// Specific detections
+		br.write("Tethering time: " + tetheringTime + " " + getDateStringFromBtdStringMillis(tetheringTime) + "\n");
+		
+		br.close();
 	}
 	
 	private boolean getDischargeBatteryData(BtdState finalState)
@@ -321,8 +469,6 @@ public class BtdParser
 		String[][] results = getTopBottomData(new String[] {"SignalLevels"},
 		                                      new long[] {finalState.getStart(), finalState.getEnd()});
 		
-		// none 1h,31m,30s,169ms (9,8%) 57x, poor 38m,36s,496ms (4,1%) 36x, moderate 2h,16m,6s,592ms (14,6%) 90x, good 7h,46m,3s,188ms
-		// (49,9%) 111x, great 3h,21m,43s,44ms (21,6%) 31x
 		String[] intialSignalParts = results[0][0].split(", ");
 		String[] finalSignalParts = results[0][1].split(", ");
 		
@@ -352,8 +498,6 @@ public class BtdParser
 					break;
 			}
 		}
-		
-		System.out.println();
 		
 		for (String s : intialSignalParts)
 		{
@@ -419,8 +563,6 @@ public class BtdParser
 					break;
 			}
 		}
-		
-		System.out.println();
 		
 		for (String s : intialScreenParts)
 		{
@@ -662,10 +804,10 @@ public class BtdParser
 		long days, hours, minutes, seconds, millis;
 		
 		millis = timestamp % 1000;
-		seconds = timestamp / 1000 % 60;
-		minutes = timestamp / (60 * 1000) % 60;
-		hours = timestamp / (60 * 60 * 1000);
-		days = timestamp / (24 * 60 * 60 * 1000);
+		seconds = (timestamp / 1000) % 60;
+		minutes = (timestamp / (60*1000)) % 60;
+		hours = (timestamp / (60*60*1000)) % 24;
+		days = timestamp / (24*60*60*1000);
 		
 		return days + "d," + hours + "h," + minutes + "m," + seconds + "s," + millis + "ms";
 	}
@@ -795,9 +937,6 @@ public class BtdParser
 			
 			rs = stmt.executeQuery("SELECT VALUE FROM t_phoneinfo WHERE NAME LIKE 'TZ_ID';");
 			timezone = rs.getString(1);
-			
-			// rs.close();
-			// stmt.close();
 			
 			return timezone;
 		}
