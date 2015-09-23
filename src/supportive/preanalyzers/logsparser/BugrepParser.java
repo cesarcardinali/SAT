@@ -14,7 +14,6 @@ import core.Logger;
 
 public class BugrepParser
 {
-	private final String TAG = "BUGREPORT PARSER";
 	private String       path;
 	
 	public BugrepParser(String path)
@@ -56,7 +55,7 @@ public class BugrepParser
 			}
 		}
 		
-		Logger.log(TAG, "\nBugreport file: " + file_report);
+		Logger.log(Logger.TAG_BUGREPORT_PARSER, "\nBugreport file: " + file_report);
 		
 		// Try to open file
 		if (!file_report.equals(""))
@@ -82,7 +81,7 @@ public class BugrepParser
 				{
 					if (sCurrentLine.contains("Statistics since "))
 					{
-						Logger.log(TAG, "Statistics line found: " + sCurrentLine);
+						Logger.log(Logger.TAG_BUGREPORT_PARSER, "Statistics line found: " + sCurrentLine);
 						
 						// Read next line
 						while ((sCurrentLine = br.readLine()) != null)
@@ -120,7 +119,7 @@ public class BugrepParser
 		}
 		else
 		{
-			Logger.log(TAG, "No statistics found inside bugreport");
+			Logger.log(Logger.TAG_BUGREPORT_PARSER, "No statistics found inside bugreport");
 			return;
 		}
 	}

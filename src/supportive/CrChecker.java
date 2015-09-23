@@ -7,7 +7,6 @@ import java.io.IOException;
 import objects.CrItem;
 import supportive.preanalyzers.CheckIfIncomplete;
 import supportive.preanalyzers.btdparser.BtdParser;
-import supportive.preanalyzers.logsparser.DateOperator;
 import supportive.preanalyzers.logsparser.MainParser;
 import core.Logger;
 import core.SharedObjs;
@@ -158,14 +157,14 @@ public class CrChecker
 		
 		tetherComment = "The user is *tethering a Wifi* network. Thus, this CR can be considered invalid for current drain analysis.\\n\\n";
 		if(btdTether)
-		{
-			tetherComment = tetherComment + "- Following BTD file, SAT has detected " + btdParser.getTetherPercentage()
-							+ "% of tethering time on total battery discharge time.\\n\\n";
+		{//that Wi-Fi tethering is enabled for 12% of the discharge time
+			tetherComment = tetherComment + "- Following BTD file, SAT has detected that Wi-Fi tethering is enabled for "
+							+ btdParser.getTetherPercentage() + "% of the discharge time.\\n\\n";
 		}
 		if(mainTether)
 		{
-			tetherComment = tetherComment + "- Following main log file, SAT has detected " + mainParser.getTetherPercentage()
-							+ "% of tethering time on total battery discharge time.\\n";
+			tetherComment = tetherComment + "- Following main log file, SAT has detected that Wi-Fi tethering is enabled for "
+							+ mainParser.getTetherPercentage() + "% of the discharge time.\\n";
 			tetherComment = tetherComment + "Tethering periods found in main log:\\n";
 			for (int i = 0; i < mainParser.getWifiPeriods().size(); i++)
 			{

@@ -46,6 +46,9 @@ public class Logger
 	public static final String    TAG_CUSTOM_FILTERS     = "CUSTOM FILTERS";
 	public static final String    TAG_LOGGER             = "LOGGER";
 	public static final String    TAG_CR_CHECKER         = "CR CHECKER";
+	public static final String    TAG_BUGREPORT_PARSER   = "BUGREPORT PARSER";
+	public static final String    TAG_MAINLOG_PARSER     = "MAINLOG PARSER";
+	public static final String    TAG_BTD_PARSER         = "BTD PARSER";
 	
 	/**
 	 * Initialize class variables
