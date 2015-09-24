@@ -2,11 +2,11 @@ package supportive;
 
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 
 import objects.CrItem;
-import supportive.preanalyzers.CheckIfIncomplete;
 import supportive.preanalyzers.btdparser.BtdParser;
+import supportive.preanalyzers.logsparser.BugrepParser;
 import supportive.preanalyzers.logsparser.MainParser;
 import core.Logger;
 import core.SharedObjs;
@@ -14,10 +14,24 @@ import core.SharedObjs;
 
 public class CrChecker
 {
-	String  crPath;
-	String  tetherComment;
-	boolean btdTether;
-	boolean mainTether;
+	String            crPath;
+	String            falsePositiveComment;
+	String            tetherComment;
+	boolean           btdParsed;
+	boolean           mainParsed;
+	boolean           bugrepParsed;
+	boolean           btdTether;
+	boolean           mainTether;
+	
+	ArrayList<String> incompleteFiles;
+	ArrayList<String> filesNames;
+	ArrayList<File>   files;
+	
+	BtdParser         btdParser;
+	BugrepParser      bugrepParser;
+	MainParser        mainParser;
+	
+	CrItem            cr;
 	
 	public CrChecker(String crPath)
 	{
@@ -26,19 +40,25 @@ public class CrChecker
 	
 	public boolean checkCR()
 	{
-		if (checkIfIncomplete())
+		File file = new File(crPath);
+		cr = SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName());
+		
+		if (cr != null)
 		{
-			File file = new File(crPath);
-			CrItem cr = SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName());
+			long start = System.currentTimeMillis();
+			SharedObjs.crsManagerPane.addLogLine("Checking if incomplete ...");
 			
-			if (cr != null)
+			if (checkIfIncomplete())
 			{
 				JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
 				                                 SharedObjs.getUser(),
 				                                 SharedObjs.getPass());
 				
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.INCOMPLETE,
-				                "The text logs are missing/incomplete. Could not perform a complete analysis.");
+				                "The text logs are missing. Could not perform a complete analysis.");
+				
+				// Update cr object
+				// Add to statistic
 				
 				SharedObjs.crsManagerPane.addLogLine("Logs are missing. Closing CR " + cr.getJiraID()
 				                                     + " as incomplete");
@@ -48,28 +68,29 @@ public class CrChecker
 				
 				return true;
 			}
-			else
-			{
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-				           "Done for "
-				                           + file.getAbsolutePath()
-				                           + ". It is incomplete but the CR could not be found\nin crs list. It stills opened on Jira.");
-			}
-		}
-		
-		if (checkForTethering())
-		{
-			File file = new File(crPath);
-			CrItem cr = SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName());
 			
-			if (cr != null)
+			// Try to parse log files
+			btdParser = new BtdParser(crPath);
+			SharedObjs.crsManagerPane.addLogLine("Parsing BTD data ...");
+			btdParsed = btdParser.parse();
+			mainParser = new MainParser(crPath);
+			SharedObjs.crsManagerPane.addLogLine("Parsing Main log data ...");
+			mainParsed = mainParser.parse();
+			bugrepParser = new BugrepParser(crPath);
+			SharedObjs.crsManagerPane.addLogLine("Parsing Bugreport log data ...");
+			bugrepParsed = bugrepParser.parse();
+			
+			SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
+			if (checkForTethering())
 			{
 				JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
 				                                 SharedObjs.getUser(),
 				                                 SharedObjs.getPass());
 				
-				jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID,
-				                tetherComment);
+				jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
+				
+				// Update cr object
+				// Add to statistic
 				
 				SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
 				                                     + " as invalid");
@@ -79,22 +100,108 @@ public class CrChecker
 				
 				return true;
 			}
-			else
+			
+			SharedObjs.crsManagerPane.addLogLine("Checking if false positive ...");
+			if (checkIfFalsePositive())
 			{
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-				           "Done for "
-				                           + file.getAbsolutePath()
-				                           + ". It is a tethering case but the CR could not be found\nin crs list. It stills opened on Jira.");
+				return true;
 			}
+			
+			SharedObjs.crsManagerPane.addLogLine("Nothing was detected. " + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
+			Logger.log(Logger.TAG_FALSE_POSITIVE,
+			           DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
+			
+			return false;
 		}
 		
+		Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+		           file.getAbsolutePath()
+		                           + " was not pre analyzed because this CR is not on the downloaded CRs list");
 		return false;
 	}
 	
+	// Checkers ------------------------------------------------------------------------------
 	private boolean checkIfIncomplete()
 	{
-		CheckIfIncomplete incompleteChecker = new CheckIfIncomplete();
-		return incompleteChecker.checkIt(crPath);
+		incompleteFiles = new ArrayList<String>();
+		filesNames = new ArrayList<String>();
+		files = new ArrayList<File>();
+		
+		File folder = new File(crPath);
+		
+		if (!folder.isDirectory())
+		{
+			Logger.log(Logger.TAG_CR_CHECKER, "Not a directory");
+			return false;
+		}
+		
+		for (File file : folder.listFiles())
+		{
+			filesNames.add(file.getName());
+			files.add(file);
+		}
+		
+		// Check files
+		if (files.contains(new File(crPath + "/aplogcat-main.txt")))
+		{
+			File f = new File(crPath + "/aplogcat-main.txt");
+			if (f.length() / 1048576 < 2)
+			{
+				incompleteFiles.add("main");
+				Logger.log(Logger.TAG_CR_CHECKER, "Main file is too short");
+			}
+		}
+		else
+		{
+			incompleteFiles.add("main");
+		}
+		
+		if (files.contains(new File(crPath + "/aplogcat-system.txt")))
+		{
+			File f = new File(crPath + "/aplogcat-system.txt");
+			if (f.length() / 1048576 < 2)
+			{
+				incompleteFiles.add("system");
+				Logger.log(Logger.TAG_CR_CHECKER, "System file is too short");
+			}
+		}
+		else
+		{
+			incompleteFiles.add("system");
+		}
+		
+		if (files.contains(new File(crPath + "/aplogcat-kernel.txt")))
+		{
+			File f = new File(crPath + "/aplogcat-kernel.txt");
+			if (f.length() / 1048576 < 2)
+			{
+				incompleteFiles.add("kernel");
+				Logger.log(Logger.TAG_CR_CHECKER, "Kernel file is too short");
+			}
+		}
+		else
+		{
+			incompleteFiles.add("kernel");
+		}
+		
+		if (files.contains(new File(crPath + "/aplogcat-radio.txt")))
+		{
+			File f = new File(crPath + "/aplogcat-radio.txt");
+			if (f.length() / 1048576 < 2)
+			{
+				incompleteFiles.add("radio");
+				Logger.log(Logger.TAG_CR_CHECKER, "Radio file is too short");
+			}
+		}
+		else
+		{
+			incompleteFiles.add("radio");
+		}
+		
+		if (incompleteFiles.size() == 4)
+			return true;
+		else
+			return false;
 	}
 	
 	private boolean checkForTethering()
@@ -107,9 +214,7 @@ public class CrChecker
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Verifying BTD");
 		
-		BtdParser btdParser = new BtdParser(crPath);
-		boolean ok = btdParser.parse();
-		if (ok)
+		if (btdParsed)
 		{
 			btdTether = btdParser.checkForTethering();
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Tethering issue? " + btdTether);
@@ -117,63 +222,65 @@ public class CrChecker
 		}
 		else
 		{
-			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Could not find BTD file");
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Could not parse BTD file");
 		}
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 		           "\nBTD parse and tethering detection process took "
-		                           + DateOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - start))
+		                           + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start))
 		                           + "\n");
 		
 		// Check for tethering
-		MainParser mainParser = new MainParser(crPath);
 		long now = System.currentTimeMillis();
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Verifying Main file");
 		
-		try
+		if (mainParsed)
 		{
-			ok = mainParser.getMainData();
-			if (ok)
-			{
-				mainParser.showAcquiredData();
-				mainTether = mainParser.checkForTethering();
-				mainParser.showTetheringData();
-			}
-			else
-			{
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Could not find Main log");
-			}
+			mainParser.showAcquiredData();
+			mainTether = mainParser.checkForTethering();
+			mainParser.showTetheringData();
 		}
-		catch (IOException e1)
+		else
 		{
-			e1.printStackTrace();
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Could not parse Main log");
 		}
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 		           "\nMain parse and tethering detection process took "
-		                           + DateOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now))
+		                           + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - now))
 		                           + "\n");
 		
 		tetherComment = "The user is *tethering a Wifi* network. Thus, this CR can be considered invalid for current drain analysis.\\n\\n";
-		if(btdTether)
-		{//that Wi-Fi tethering is enabled for 12% of the discharge time
-			tetherComment = tetherComment + "- Following BTD file, SAT has detected that Wi-Fi tethering is enabled for "
-							+ btdParser.getTetherPercentage() + "% of the discharge time.\\n\\n";
-		}
-		if(mainTether)
+		
+		// Wi-Fi tethering is enabled for 10% or more from the discharge time
+		if (btdTether)
 		{
-			tetherComment = tetherComment + "- Following main log file, SAT has detected that Wi-Fi tethering is enabled for "
-							+ mainParser.getTetherPercentage() + "% of the discharge time.\\n";
+			tetherComment = tetherComment
+			                + "- Following BTD file, SAT has detected that Wi-Fi tethering is enabled for "
+			                + btdParser.getTetherPercentage() + "% of the discharge time.\\n\\n";
+		}
+		// Wi-Fi tethering is enabled for 10% or more from the discharge time
+		if (mainTether)
+		{
+			tetherComment = tetherComment
+			                + "- Following main log file, SAT has detected that Wi-Fi tethering is enabled for "
+			                + mainParser.getTetherPercentage() + "% of the discharge time.\\n";
 			tetherComment = tetherComment + "Tethering periods found in main log:\\n";
 			for (int i = 0; i < mainParser.getWifiPeriods().size(); i++)
 			{
 				if (mainParser.getWifiPeriods().get(i).getDuration() > 0)
 				{
-					tetherComment = tetherComment + "Period " + (i+1) + ":\\n";
-					tetherComment = tetherComment + "|" + mainParser.getWifiPeriods().get(i).startLine + "|\\n";
+					tetherComment = tetherComment + "Period " + (i + 1) + ":\\n";
+					tetherComment = tetherComment + "|" + mainParser.getWifiPeriods().get(i).startLine
+					                + "|\\n";
 					tetherComment = tetherComment + "|" + mainParser.getWifiPeriods().get(i).endLine + "|\\n";
-					tetherComment = tetherComment + "|Duration: " + DateOperator.getDateStringFromBtdStringMillis(mainParser.getWifiPeriods().get(i).getDuration()) + "|\\n";
+					tetherComment = tetherComment
+					                + "|Duration: "
+					                + DateTimeOperator.getTimeStringFromMillis(mainParser.getWifiPeriods()
+					                                                                     .get(i)
+					                                                                     .getDuration())
+					                + "|\\n";
 				}
 				tetherComment = tetherComment + "\\n";
 			}
@@ -181,6 +288,7 @@ public class CrChecker
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "BTD Tether: " + btdTether);
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Main Tether: " + mainTether);
+		
 		if (btdTether || mainTether)
 		{
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Closed as tethering");
@@ -190,5 +298,99 @@ public class CrChecker
 		{
 			return false;
 		}
+	}
+	
+	private boolean checkIfFalsePositive()
+	{	
+		if (!btdParsed && !bugrepParsed)
+		{
+			return false;
+		}
+		
+		boolean upTime = false;
+		boolean ntTime = false;
+		boolean lowEbl = false;
+		
+		for (String label : cr.getLabels())
+		{
+			if (label.equals("high_background_uptime_percentage")
+			    || label.equals("high_background_uptime_percentage_btd"))
+			{
+				upTime = true;
+			}
+			
+			if (label.equals("high_background_current_drain_btd")
+			    || label.equals("high_background_current_drain"))
+			{
+				lowEbl = true;
+			}
+			
+			if (label.equals("high_nt_current_drain"))
+			{
+				ntTime = true;
+			}
+		}
+		
+		// Get battery capacity from BTD file
+		if (!bugrepParser.getCommentReport().equals(""))
+			if (btdParsed && bugrepParsed)
+			{
+				bugrepParser.setBatCap(btdParser.getBatCap());
+				if (btdParser.getAverageconsumeOff() <= 100 && bugrepParser.getConsAvgOff() <= 100 && upTime == false)
+				{
+					JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
+					                                 SharedObjs.getUser(),
+					                                 SharedObjs.getPass());
+					
+					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO add calling time
+					
+					// Update cr object
+					// Add to statistic
+					
+					System.out.println(bugrepParser.getCommentReport());
+					
+					SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
+					                                     + " as cancelled");
+					
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "This CR is a false positive. Closing " + cr.getJiraID()
+					                                        + " as cancelled");
+					return true;
+				}
+				
+			}
+			else if (bugrepParsed)
+			{
+				if (bugrepParser.getConsAvgOff() <= 100)
+				{
+					if (upTime == false)
+					{
+						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
+						                                 SharedObjs.getUser(),
+						                                 SharedObjs.getPass());
+						
+						jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO
+						
+						// Update cr object
+						// Add to statistic
+						
+						System.out.println(bugrepParser.getCommentReport());
+						
+						SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing "
+						                                     + cr.getJiraID() + " as cancelled");
+						
+						Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+						           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+						return true;
+					}
+				}
+			}
+		
+		return false;
+	}
+	
+	// Getters and Setters
+	public ArrayList<String> getIncompleteFiles()
+	{
+		return incompleteFiles;
 	}
 }

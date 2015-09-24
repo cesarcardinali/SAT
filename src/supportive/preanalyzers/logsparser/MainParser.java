@@ -3,6 +3,7 @@ package supportive.preanalyzers.logsparser;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.RoundingMode;
@@ -13,7 +14,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import supportive.DateOperator;
+import supportive.DateTimeOperator;
 import core.Logger;
 
 
@@ -59,7 +60,7 @@ public class MainParser
 		year = getYearFromBugReport();
 	}
 	
-	public boolean getMainData() throws IOException
+	public boolean parse()
 	{
 		System.out.println("Running at " + path);
 		
@@ -97,142 +98,159 @@ public class MainParser
 		
 		// Logger.log(Logger.TAG_CONSUME, "Main file found:" + path + mainFile);
 		
-		BufferedReader br = new BufferedReader(new FileReader(path + mainFile));
-		String sCurrentLine;
-		LogState logState = new LogState();
-		wifiPeriod wifiPeriod = new wifiPeriod();
-		long actualTime = -1;
-		long nextTime = -1;
-		
-		while ((sCurrentLine = br.readLine()) != null)
+		BufferedReader br;
+		try
 		{
-			if (sCurrentLine.contains(": "))
+			br = new BufferedReader(new FileReader(path + mainFile));
+			String sCurrentLine;
+			LogState logState = new LogState();
+			wifiPeriod wifiPeriod = new wifiPeriod();
+			long actualTime = -1;
+			long nextTime = -1;
+			
+			while ((sCurrentLine = br.readLine()) != null)
 			{
-				try
+				if (sCurrentLine.contains(": "))
 				{
-					// System.out.println(sCurrentLine);
-					// System.out.println(parseLine(sCurrentLine)[0]);
-					nextTime = DateOperator.getMillis(parseLineDate(sCurrentLine)[0]);
-					if ((nextTime - actualTime) > 3600000L)
+					try
 					{
-						// System.out.println("Diff: " + (nextTime - actualTime) + "\n" + sCurrentLine);
-						actualTime = nextTime;
+						// System.out.println(sCurrentLine);
+						// System.out.println(parseLine(sCurrentLine)[0]);
+						nextTime = DateTimeOperator.getMillis(parseLineDate(sCurrentLine)[0]);
+						if ((nextTime - actualTime) > 3600000L)
+						{
+							// System.out.println("Diff: " + (nextTime - actualTime) + "\n" + sCurrentLine);
+							actualTime = nextTime;
+							startTime = actualTime;
+							
+							if (statesData.size() > 0)
+							{
+								statesData.clear();
+							}
+							else if (logState.getStart() > 0)
+							{
+								logState = new LogState();
+								logState.setStart(actualTime);
+							}
+							
+							if (wifiPeriods.size() > 0)
+							{
+								wifiPeriods.clear();
+							}
+							
+							if (wifiPeriod.startTime > 0)
+							{
+								wifiPeriod = new wifiPeriod();
+							}
+						}
+						else
+						{
+							actualTime = nextTime;
+							endTime = actualTime;
+						}
+					}
+					catch (ParseException e1)
+					{
+						Logger.log(Logger.TAG_MAINLOG_PARSER, "Could not parse the date at:\n" + sCurrentLine);
+						e1.printStackTrace();
+					}
+					
+					if (startTime == 0)
+					{
 						startTime = actualTime;
+						System.out.println(parseLineDate(sCurrentLine)[0] + " - " + startTime);
+					}
+					
+					if (logState.getStart() == -1)
+					{
+						logState.setStart(actualTime);
+					}
+					
+					// Find battery status line
+					mPlug = ptPlug.matcher(sCurrentLine);
+					if (mPlug.find())
+					{
+						// System.out.println("Plugged: " + mPlug.group(1));
 						
-						if (statesData.size() > 0)
+						if (logState.getStatus() == -1)
 						{
-							statesData.clear();
+							logState.setStatus(Integer.parseInt(mPlug.group(1)));
 						}
-						else if (logState.getStart() > 0)
+						else if (Integer.parseInt(mPlug.group(1)) != logState.getStatus())
 						{
+							logState.setEnd(actualTime);
+							statesData.add(logState);
 							logState = new LogState();
-							logState.setStart(actualTime);
 						}
-						
-						if (wifiPeriods.size() > 0)
-						{
-							wifiPeriods.clear();
-						}
-						
-						if (wifiPeriod.startTime > 0)
-						{
-							wifiPeriod = new wifiPeriod();
-						}
-					}
-					else
-					{
-						actualTime = nextTime;
-						endTime = actualTime;
-					}
-				}
-				catch (ParseException e1)
-				{
-					e1.printStackTrace();
-				}
-				
-				if (startTime == 0)
-				{
-					startTime = actualTime;
-					System.out.println(parseLineDate(sCurrentLine)[0] + " - " + startTime);
-				}
-				
-				if (logState.getStart() == -1)
-				{
-					logState.setStart(actualTime);
-				}
-				
-				// Find battery status line
-				mPlug = ptPlug.matcher(sCurrentLine);
-				if (mPlug.find())
-				{
-					// System.out.println("Plugged: " + mPlug.group(1));
-					
-					if (logState.getStatus() == -1)
-					{
-						logState.setStatus(Integer.parseInt(mPlug.group(1)));
-					}
-					else if (Integer.parseInt(mPlug.group(1)) != logState.getStatus())
-					{
-						logState.setEnd(actualTime);
-						statesData.add(logState);
-						logState = new LogState();
-					}
-				}
-				
-				// Find tethering info
-				if (sCurrentLine.contains("Tethering: Tethering wlan0"))
-				{
-					wifiPeriod.startTime = actualTime;
-					wifiPeriod.startLine = sCurrentLine;
-					// System.out.println(sCurrentLine);
-				}
-				else if (sCurrentLine.contains("Tethering: Untethering wlan0"))
-				{
-					if (wifiPeriod.startTime == 0)
-					{
-						wifiPeriod.startTime = startTime;
-						wifiPeriod.startLine = "It has begun before this log time";
-						wifiPeriod.endTime = actualTime;
-						wifiPeriod.endLine = sCurrentLine;
-					}
-					else
-					{
-						wifiPeriod.endTime = actualTime;
-						wifiPeriod.endLine = sCurrentLine;
 					}
 					
-					// System.out.println(sCurrentLine);
-					wifiPeriods.add(wifiPeriod);
-					wifiPeriod = new wifiPeriod();
+					// Find tethering info
+					if (sCurrentLine.contains("Tethering: Tethering wlan0"))
+					{
+						wifiPeriod.startTime = actualTime;
+						wifiPeriod.startLine = sCurrentLine;
+						// System.out.println(sCurrentLine);
+					}
+					else if (sCurrentLine.contains("Tethering: Untethering wlan0"))
+					{
+						if (wifiPeriod.startTime == 0)
+						{
+							wifiPeriod.startTime = startTime;
+							wifiPeriod.startLine = "It has begun before this log time";
+							wifiPeriod.endTime = actualTime;
+							wifiPeriod.endLine = sCurrentLine;
+						}
+						else
+						{
+							wifiPeriod.endTime = actualTime;
+							wifiPeriod.endLine = sCurrentLine;
+						}
+						
+						// System.out.println(sCurrentLine);
+						wifiPeriods.add(wifiPeriod);
+						wifiPeriod = new wifiPeriod();
+					}
+				}
+				else
+				{
+					if (sCurrentLine.equals("Finished dumping"))
+						break;
 				}
 			}
-			else
+			
+			if (logState.getEnd() == -1)
 			{
-				if (sCurrentLine.equals("Finished dumping"))
-					break;
+				logState.setEnd(actualTime);
+				statesData.add(logState);
 			}
+			
+			longerDischarge = statesData.getLongerDischargingPeriod();
+			
+			if (wifiPeriod.endTime == 0 && wifiPeriod.startTime > 0)
+			{
+				wifiPeriod.endTime = actualTime;
+				wifiPeriod.endLine = "Tethering still running ...";
+				wifiPeriods.add(wifiPeriod);
+			}
+			
+			totalLogTime = endTime - startTime;
+			
+			br.close();
+			
+			return true;
 		}
-		
-		br.close();
-		
-		if (logState.getEnd() == -1)
+		catch (FileNotFoundException e)
 		{
-			logState.setEnd(actualTime);
-			statesData.add(logState);
+			e.printStackTrace();
+			Logger.log(Logger.TAG_MAINLOG_PARSER, "Main file not found");
+			return false;
 		}
-		
-		longerDischarge = statesData.getLongerDischargingPeriod();
-		
-		if (wifiPeriod.endTime == 0 && wifiPeriod.startTime > 0)
+		catch (IOException e)
 		{
-			wifiPeriod.endTime = actualTime;
-			wifiPeriod.endLine = "Tethering still running ...";
-			wifiPeriods.add(wifiPeriod);
+			Logger.log(Logger.TAG_MAINLOG_PARSER, "Failed to close file");
+			e.printStackTrace();
+			return true;
 		}
-		
-		totalLogTime = endTime - startTime;
-		
-		return true;
 	}
 	
 	// Resolution methods
@@ -248,10 +266,10 @@ public class MainParser
 		System.out.println("Begins " + new Date(startTime) + "(" + startTime + ")");
 		System.out.println("Ends " + new Date(endTime) + "(" + endTime + ")");
 		System.out.println("Total running time "
-		                   + DateOperator.getDateStringFromBtdStringMillis(totalLogTime) + " or "
+		                   + DateTimeOperator.getTimeStringFromMillis(totalLogTime) + " or "
 		                   + (totalLogTime) + "ms");
 		System.out.println("Longer discharge time "
-		                   + DateOperator.getDateStringFromBtdStringMillis(longerDischarge.getDuration())
+		                   + DateTimeOperator.getTimeStringFromMillis(longerDischarge.getDuration())
 		                   + " or " + (totalLogTime) + "ms");
 		System.out.println("From " + longerDischarge.getStartDate() + " to " + longerDischarge.getEndDate());
 	}
@@ -262,13 +280,13 @@ public class MainParser
 		{
 			System.out.println("Tethering data:");
 			System.out.println("Total time: " + (w.getDuration()) + "ms  >  "
-			                   + DateOperator.getDateStringFromBtdStringMillis(w.getDuration()));
+			                   + DateTimeOperator.getTimeStringFromMillis(w.getDuration()));
 			System.out.println("Started at: " + w.startLine);
 			System.out.println("Stopped at: " + w.endLine);
 		}
 		
 		System.out.println("Total Tethering time " + totalTetherTime + "ms  >  "
-		                   + DateOperator.getDateStringFromBtdStringMillis(totalTetherTime));
+		                   + DateTimeOperator.getTimeStringFromMillis(totalTetherTime));
 		DecimalFormat df = new DecimalFormat("##.##");
 		df.setRoundingMode(RoundingMode.DOWN);
 		System.out.println("Tethering running for " + getTetherPercentage() + "% of total log time");
@@ -349,52 +367,52 @@ public class MainParser
 		df.setRoundingMode(RoundingMode.DOWN);
 		return df.format(100.0 * totalTetherTime / (totalLogTime));
 	}
-
+	
 	public LogState getLongerDischarge()
 	{
 		return longerDischarge;
 	}
-
+	
 	public LogStatesData getStatesData()
 	{
 		return statesData;
 	}
-
+	
 	public ArrayList<wifiPeriod> getWifiPeriods()
 	{
 		return wifiPeriods;
 	}
-
+	
 	public long getTotalLogTime()
 	{
 		return totalLogTime;
 	}
-
+	
 	public long getTotalTetherTime()
 	{
 		return totalTetherTime;
 	}
-
+	
 	public void setLongerDischarge(LogState longerDischarge)
 	{
 		this.longerDischarge = longerDischarge;
 	}
-
+	
 	public void setStatesData(LogStatesData statesData)
 	{
 		this.statesData = statesData;
 	}
-
+	
 	public void setWifiPeriods(ArrayList<wifiPeriod> wifiPeriods)
 	{
 		this.wifiPeriods = wifiPeriods;
 	}
-
+	
 	public void setTotalLogTime(long totalLogTime)
 	{
 		this.totalLogTime = totalLogTime;
 	}
-
+	
 	public void setTotalTetherTime(long totalTetherTime)
 	{
 		this.totalTetherTime = totalTetherTime;

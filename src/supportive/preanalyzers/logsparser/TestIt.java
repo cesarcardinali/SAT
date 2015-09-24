@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import supportive.DateOperator;
+import supportive.DateTimeOperator;
 
 
 public class TestIt
@@ -25,7 +25,7 @@ public class TestIt
 		/*
 		MainParser mainParser = new MainParser(root + "80976191");
 		
-		//System.out.println(DateOperator.getDateStringFromBtdStringMillis(148857));
+		//System.out.println(DateTimeOperator.getDateStringFromBtdStringMillis(148857));
 		
 		try
         {
@@ -40,7 +40,7 @@ public class TestIt
 	        e1.printStackTrace();
         }
 		
-		System.out.println("\n\nIt took " + DateOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now)));
+		System.out.println("\n\nIt took " + DateTimeOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now)));
 		*/
 		
 		//System.out.println("Started at " + new Date(now) + " stopped at "
@@ -81,7 +81,7 @@ public class TestIt
 			e.printStackTrace();
 		}*/
 		
-		System.out.println("\n\nIt took " + DateOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now)));
+		System.out.println("\n\nIt took " + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - now)));
 		System.out.println("Started at " + new Date(now) + " stopped at "
 		                   + new Date(System.currentTimeMillis()));
 	}

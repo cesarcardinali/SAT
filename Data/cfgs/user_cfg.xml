@@ -4,7 +4,7 @@
     <rootPath>C:\CRs</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\CRs\OficialTest</path>
+    <path>C:\CRs\Debuging\normal_test</path>
     <assign>false</assign>
     <label>false</label>
   </crs_jira_pane>

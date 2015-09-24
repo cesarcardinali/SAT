@@ -495,7 +495,8 @@ public class JiraSatApi
 		return output;
 	}
 	
-	public CrItem getCrData(String key) throws ParseException
+	@SuppressWarnings("unchecked")
+    public CrItem getCrData(String key) throws ParseException
 	{
 		CrItem cr = new CrItem();
 		
@@ -512,6 +513,7 @@ public class JiraSatApi
 		JSONObject jsonObj = (JSONObject) jsonParser.parse(output);
 		JSONObject fields = (JSONObject) jsonObj.get("fields");
 		JSONObject aux;
+		JSONArray labels;
 		
 		cr.setJiraID(jsonObj.get("key").toString()); // Get CR key
 		
@@ -537,6 +539,13 @@ public class JiraSatApi
 		else
 		{
 			cr.setAssignee(aux.get("name").toString());
+		}
+		
+		labels = (JSONArray) fields.get("labels"); // Get CR labels
+		if (labels != null) // Check if it is not null
+		{
+			System.out.println(labels);
+			cr.setLabels(labels);
 		}
 		
 		if (fields.get("customfield_10622") == null

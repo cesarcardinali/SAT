@@ -33,6 +33,7 @@ public class BtdParser
 	private long[]        signalData;     // 0- none, 1- poor, 2- moderate, 3- good, 4- great
 	private float[]       cpuTempData;    // 0- min, 1- max, 2- avg
 	private float[]       deviceTempData; // 0- min, 1- max, 2- avg
+	private int           batCap; // Battery capacity
 	private int           bttDischarged[]; // Battery discharge from, to.
 	private long          cellTX;         // Total cell data sent
 	private long          cellRX;         // Total cell data received
@@ -189,11 +190,11 @@ public class BtdParser
 			lastCTX = rs.getLong(1);
 			lastWRX = rs.getLong(2);
 			lastTime = rs.getLong(3);
-			int i =0;
+			//int i =0;
 			
 			while (rs.next())
 			{
-				i++;
+				//i++;
 				actualCTX = rs.getLong(1);
 				actualWRX = rs.getLong(2);
 				actualTime = rs.getLong(3);
@@ -452,7 +453,8 @@ public class BtdParser
 		        "RealTimeOnBatt",
 		        "AwakeTimeOnBatt",
 		        "WifiOnTime",
-		        "WifiRunningTime"}, new long[] {finalState.getStart(), finalState.getEnd()});
+		        "WifiRunningTime",
+		        "FCC"}, new long[] {finalState.getStart(), finalState.getEnd()});
 		
 		bttDischarged[0] = Integer.parseInt(results[0][0]);
 		bttDischarged[1] = Integer.parseInt(results[0][1]);
@@ -464,6 +466,7 @@ public class BtdParser
 		wifiOnTime = getMillisFromBtdStringDate(results[4][1]) - getMillisFromBtdStringDate(results[4][0]);
 		wifiRunningTime = getMillisFromBtdStringDate(results[5][1])
 		                  - getMillisFromBtdStringDate(results[5][0]);
+		batCap = Integer.parseInt(results[6][0]);
 	}
 	
 	private void getDischargePhoneSignalData(BtdState finalState)
@@ -1309,5 +1312,15 @@ public class BtdParser
 	public void setTetheringTime(long tetheringTime)
 	{
 		this.tetheringTime = tetheringTime;
+	}
+
+	public int getBatCap()
+	{
+		return batCap;
+	}
+
+	public void setBatCap(int batCap)
+	{
+		this.batCap = batCap;
 	}
 }

@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DateOperator
+public class DateTimeOperator
 {
 	public static long getMillis(String sDate) throws ParseException
 	{
@@ -14,7 +14,7 @@ public class DateOperator
 		return date.getTime();
 	}
 	
-	static public String getDateStringFromBtdStringMillis(long timestamp)
+	static public String getTimeStringFromMillis(long timestamp)
 	{
 		long days, hours, minutes, seconds, millis;
 		

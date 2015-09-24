@@ -49,6 +49,7 @@ public class Logger
 	public static final String    TAG_BUGREPORT_PARSER   = "BUGREPORT PARSER";
 	public static final String    TAG_MAINLOG_PARSER     = "MAINLOG PARSER";
 	public static final String    TAG_BTD_PARSER         = "BTD PARSER";
+	public static final String    TAG_FALSE_POSITIVE     = "FALSE_POSITIVE_CHECKER";
 	
 	/**
 	 * Initialize class variables

@@ -422,13 +422,13 @@ public class Bug2goDownloader implements Runnable
 					
 					SharedObjs.crsManagerPane.addLogLine("Unzipping done for " + file.getName());
 					
-					SharedObjs.crsManagerPane.addLogLine("Checking if CR has an issue which SAT can use to close the CR ...");
+					SharedObjs.crsManagerPane.addLogLine("Pre analyzing CR ...");
 					
 					CrChecker crChecker = new CrChecker(file.getAbsolutePath());
 					
 					if (!crChecker.checkCR())
 					{
-						SharedObjs.crsManagerPane.addLogLine("CR is OK");
+						SharedObjs.crsManagerPane.addLogLine("Nothing detected");
 						try
 						{
 							SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());

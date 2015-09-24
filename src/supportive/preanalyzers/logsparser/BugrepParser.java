@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import supportive.DateOperator;
+import supportive.DateTimeOperator;
 import core.Logger;
 
 
@@ -28,15 +28,15 @@ public class BugrepParser
 		public BugRepKernelWL(String name, String duration, String timesAcquired) throws ParseException
 		{
 			this.name = name.replaceAll(" +$", "");
-			this.duration = DateOperator.getMillisFromBtdStringDate(duration);
+			this.duration = DateTimeOperator.getMillisFromBtdStringDate(duration);
 			this.timesAcquired = Integer.parseInt(timesAcquired);
 		}
 		
 		public String toString()
 		{
 			return "[" + "name=" + name + ", duration=" + duration + "ms > "
-			       + DateOperator.getDateStringFromBtdStringMillis(duration) + ", timesAcquired="
-			       + timesAcquired + "]";
+			       + DateTimeOperator.getTimeStringFromMillis(duration) + ", timesAcquired=" + timesAcquired
+			       + "]";
 		}
 	}
 	
@@ -51,53 +51,54 @@ public class BugrepParser
 		{
 			this.name = name.replaceAll(" +$", "");
 			this.uid = uid;
-			this.duration = DateOperator.getMillisFromBtdStringDate(duration);
+			this.duration = DateTimeOperator.getMillisFromBtdStringDate(duration);
 			this.timesAcquired = Integer.parseInt(timesAcquired);
 		}
 		
 		public String toString()
 		{
 			return "[" + "name=" + name + ", uid=" + uid + ", duration=" + duration + "ms > "
-			       + DateOperator.getDateStringFromBtdStringMillis(duration) + ", timesAcquired="
-			       + timesAcquired + "]";
+			       + DateTimeOperator.getTimeStringFromMillis(duration) + ", timesAcquired=" + timesAcquired
+			       + "]";
 		}
 	}
 	
 	// All long variables represent time in millis
 	private String                    path;
-	private long                      timeOnBat;
-	private long                      scOffTime;
-	private long                      remTime;
-	private long                      scDark;
-	private long                      scDim;
-	private long                      scMedium;
-	private long                      scLight;
-	private long                      scBright;
-	private long                      signalNone;
-	private long                      signalPoor;
-	private long                      signalModerate;
-	private long                      signalGood;
-	private long                      signalGreat;
-	private long                      signalScan;
-	private long                      radioNone;
-	private long                      radioGprs;
-	private long                      radioUmts;
-	private long                      radioEvdo;
-	private long                      radio1xrtt;
-	private long                      radioActive;
-	private long                      wifiOn;
-	private long                      wifiScan;
-	private long                      wifiLevel0;
-	private long                      wifiLevel1;
-	private long                      wifiLevel2;
-	private long                      wifiLevel3;
-	private long                      wifiLevel4;
-	private int                     connectChanges; // Times that radio connection changed
-	private float                     dischargeAmount; // Percentage
-	private float                     dischScOn;      // Percentage from discharge amount
-	private float                     dischScOff;     // Percentage from discharge amount
-	private float                     batCap;         // Total battery capacity
-	private String                    result;
+	private String                    rawStats;
+	private long                      timeOnBat      = -1;
+	private long                      scOffTime      = -1;
+	private long                      scOnTime       = -1;
+	private long                      remTime        = -1;
+	private long                      scDark         = -1;
+	private long                      scDim          = -1;
+	private long                      scMedium       = -1;
+	private long                      scLight        = -1;
+	private long                      scBright       = -1;
+	private long                      signalNone     = -1;
+	private long                      signalPoor     = -1;
+	private long                      signalModerate = -1;
+	private long                      signalGood     = -1;
+	private long                      signalGreat    = -1;
+	private long                      signalScan     = -1;
+	private long                      radioNone      = -1;
+	private long                      radioGprs      = -1;
+	private long                      radioUmts      = -1;
+	private long                      radioEvdo      = -1;
+	private long                      radio1xrtt     = -1;
+	private long                      radioActive    = -1;
+	private long                      wifiOn         = -1;
+	private long                      wifiScan       = -1;
+	private long                      wifiLevel0     = -1;
+	private long                      wifiLevel1     = -1;
+	private long                      wifiLevel2     = -1;
+	private long                      wifiLevel3     = -1;
+	private long                      wifiLevel4     = -1;
+	private int                       connectChanges;     // Times that radio connection changed
+	private float                     dischargeAmount;    // Percentage
+	private float                     dischScOn;          // Percentage from discharge amount
+	private float                     dischScOff;         // Percentage from discharge amount
+	private float                     batCap;             // Total battery capacity
 	private ArrayList<BugRepKernelWL> kernelWLs;
 	private ArrayList<BugRepJavaWL>   javaWLs;
 	
@@ -119,7 +120,6 @@ public class BugrepParser
 		
 		if (!folder.isDirectory())
 		{
-			result = "Not a directory";
 			return false;
 		}
 		
@@ -187,6 +187,8 @@ public class BugrepParser
 				
 				Matcher matcher;
 				
+				rawStats = "";
+				
 				br = new BufferedReader(new FileReader(file_report));
 				
 				// Search for b2g evidences
@@ -205,11 +207,11 @@ public class BugrepParser
 							}
 							else
 							{
-								
+								rawStats = rawStats + sCurrentLine + "\\n";
 								matcher = ptTimeOnBat.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									timeOnBat = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									timeOnBat = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("1 ptTimeOnBat " + timeOnBat);
 									continue;
 								}
@@ -217,7 +219,7 @@ public class BugrepParser
 								matcher = ptScOffTime.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									scOffTime = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									scOffTime = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("2 ptScOffTime " + scOffTime);
 									continue;
 								}
@@ -225,7 +227,7 @@ public class BugrepParser
 								matcher = ptRemTime.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									remTime = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									remTime = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("3 ptRemTime " + remTime);
 									continue;
 								}
@@ -233,7 +235,7 @@ public class BugrepParser
 								matcher = ptScDark.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									scDark = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									scDark = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("4 ptScDark " + scDark);
 									continue;
 								}
@@ -241,7 +243,7 @@ public class BugrepParser
 								matcher = ptScDim.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									scDim = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									scDim = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("5 ptScDim " + scDim);
 									continue;
 								}
@@ -249,7 +251,7 @@ public class BugrepParser
 								matcher = ptScMedium.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									scMedium = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									scMedium = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("6 ptScMedium " + scMedium);
 									continue;
 								}
@@ -257,7 +259,7 @@ public class BugrepParser
 								matcher = ptScLight.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									scLight = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									scLight = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("7 ptScLight " + scLight);
 									continue;
 								}
@@ -265,7 +267,7 @@ public class BugrepParser
 								matcher = ptScBright.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									scBright = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									scBright = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("8 ptScBright " + scBright);
 									continue;
 								}
@@ -281,7 +283,7 @@ public class BugrepParser
 								matcher = ptSignalNone.matcher(sCurrentLine);
 								if (matcher.find() && sLastLine.contains("Phone"))
 								{
-									signalNone = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									signalNone = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("10 ptSignalNone " + signalNone);
 									continue;
 								}
@@ -289,7 +291,7 @@ public class BugrepParser
 								matcher = ptSignalPoor.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									signalPoor = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									signalPoor = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("11 ptSignalPoor " + signalPoor);
 									continue;
 								}
@@ -297,7 +299,7 @@ public class BugrepParser
 								matcher = ptSignalModerate.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									signalModerate = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									signalModerate = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("12 ptSignalModerate " + signalModerate);
 									continue;
 								}
@@ -305,7 +307,7 @@ public class BugrepParser
 								matcher = ptSignalGood.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									signalGood = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									signalGood = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("13 ptSignalGood " + signalGood);
 									continue;
 								}
@@ -313,7 +315,7 @@ public class BugrepParser
 								matcher = ptSignalGreat.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									signalGreat = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									signalGreat = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("14 ptSignalGreat " + signalGreat);
 									continue;
 								}
@@ -321,7 +323,7 @@ public class BugrepParser
 								matcher = ptSignalScan.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									signalScan = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									signalScan = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("15 ptSignalScan " + signalScan);
 									continue;
 								}
@@ -329,7 +331,7 @@ public class BugrepParser
 								matcher = ptRadioNone.matcher(sCurrentLine);
 								if (matcher.find() && sLastLine.contains("Radio"))
 								{
-									radioNone = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									radioNone = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("16 ptRadioNone " + radioNone);
 									continue;
 								}
@@ -337,7 +339,7 @@ public class BugrepParser
 								matcher = ptRadioGprs.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									radioGprs = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									radioGprs = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("17 ptRadioGprs " + radioGprs);
 									continue;
 								}
@@ -345,7 +347,7 @@ public class BugrepParser
 								matcher = ptRadioUmts.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									radioUmts = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									radioUmts = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("18 ptRadioUmts " + radioUmts);
 									continue;
 								}
@@ -353,7 +355,7 @@ public class BugrepParser
 								matcher = ptRadio1xrtt.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									radio1xrtt = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									radio1xrtt = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("19 ptRadioLxrtt " + radio1xrtt);
 									continue;
 								}
@@ -361,7 +363,7 @@ public class BugrepParser
 								matcher = ptRadioEvdo.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									radioEvdo = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									radioEvdo = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("20 ptRadioEvdo " + radioEvdo);
 									continue;
 								}
@@ -369,7 +371,7 @@ public class BugrepParser
 								matcher = ptRadioActive.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									radioActive = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									radioActive = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("21 ptRadioActive " + radioActive);
 									continue;
 								}
@@ -377,7 +379,7 @@ public class BugrepParser
 								matcher = ptWifiOn.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									wifiOn = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									wifiOn = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("22 ptWifiOn " + wifiOn);
 									continue;
 								}
@@ -385,7 +387,7 @@ public class BugrepParser
 								matcher = ptWifiScan.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									wifiScan = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									wifiScan = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("23 ptWifiScan " + wifiScan);
 									continue;
 								}
@@ -393,7 +395,7 @@ public class BugrepParser
 								matcher = ptWifiLevel0.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									wifiLevel0 = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									wifiLevel0 = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("24 ptWifiLevel0 " + wifiLevel0);
 									continue;
 								}
@@ -401,7 +403,7 @@ public class BugrepParser
 								matcher = ptWifiLevel1.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									wifiLevel1 = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									wifiLevel1 = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("25 ptWifiLevel1 " + wifiLevel1);
 									continue;
 								}
@@ -409,7 +411,7 @@ public class BugrepParser
 								matcher = ptWifiLevel2.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									wifiLevel2 = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									wifiLevel2 = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("26 ptWifiLevel2 " + wifiLevel2);
 									continue;
 								}
@@ -417,7 +419,7 @@ public class BugrepParser
 								matcher = ptWifiLevel3.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									wifiLevel3 = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									wifiLevel3 = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("27 ptWifiLevel3 " + wifiLevel3);
 									continue;
 								}
@@ -425,7 +427,7 @@ public class BugrepParser
 								matcher = ptWifiLevel4.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									wifiLevel4 = DateOperator.getMillisFromBtdStringDate(matcher.group(1));
+									wifiLevel4 = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("28 ptWifiLevel4 " + wifiLevel4);
 									continue;
 								}
@@ -539,6 +541,7 @@ public class BugrepParser
 			}
 			finally
 			{
+				scOnTime = timeOnBat - scOffTime;
 				// Close file reader
 				try
 				{
@@ -560,7 +563,7 @@ public class BugrepParser
 		}
 	}
 	
-	// Issue related methods
+	// Issue related methods -------------------------------------------------
 	public boolean checkForHighCurrentScOff()
 	{
 		if (getConsAvgOff() > 100.0)
@@ -573,23 +576,287 @@ public class BugrepParser
 		}
 	}
 	
-	// Show all acquired data
+	// Show all acquired data -------------------------------------------------
 	public void showData()
 	{
 		Logger.log(Logger.TAG_BUGREPORT_PARSER, "Avg sc off consume: " + formatNumber(getConsAvgOff()));
 	}
 	
-	// Supportive methods
+	// Supportive methods -----------------------------------------------------
 	private String formatNumber(float number)
 	{
 		DecimalFormat df = new DecimalFormat("##.##");
 		df.setRoundingMode(RoundingMode.HALF_UP);
-		return df.format(number); 
+		return df.format(number);
+	}
+	
+	public String getCommentReport()
+	{
+		if (rawStats.length() > 80)
+		{
+			String comment = "{panel:title=*Statistics since last charge:*|titleBGColor=#E9F2FF}\\n {noformat}\\n" + rawStats.replaceAll("\n|\r", "\\\\n") + "{noformat}{panel}\\n";
+			comment = comment + "{panel:title=*Current drain data*|titleBGColor=#E9F2FF}\\n";
+			// TODO improve
+			comment = comment + "Total time on battery: " + DateTimeOperator.getTimeStringFromMillis(timeOnBat)
+			          + "\\n";
+			comment = comment + "Screen On  time: " + DateTimeOperator.getTimeStringFromMillis(scOnTime) + " ("
+					          + formatNumber(getPercentage(scOnTime, timeOnBat)) + "%)\\n";
+			comment = comment + "Screen On consume: *" + formatNumber(getConsAvgOn()) + " mAh*\\n";
+			comment = comment + "Screen Off time: " + DateTimeOperator.getTimeStringFromMillis(scOffTime) + " ("
+			          + formatNumber(getPercentage(scOffTime, timeOnBat)) + "%)\\n";
+			comment = comment + "Screen Off consume: *" + formatNumber(getConsAvgOff()) + " mAh* \\n";
+					
+			
+			if (remTime > 1000)
+				comment = comment + "Estimated remaining battery time: "
+				          + DateTimeOperator.getTimeStringFromMillis(remTime) + "\\n";
+			
+			comment = comment + "{panel}\\n";
+			comment = comment + "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
+			
+			long screenBright = scBright + scLight + scMedium;
+			if (getPercentage(screenBright, scOnTime) > 20)
+			{
+				comment = comment + "Screen was Bright/Light/Moderate for "
+				          + DateTimeOperator.getTimeStringFromMillis(screenBright) + " ("
+				          + formatNumber(getPercentage(screenBright, scOnTime)) + "%)\\n";
+				comment = comment + "\\n";
+			}
+			
+			long phoneBadSignal = signalNone + signalPoor + signalModerate;
+			if (getPercentage(phoneBadSignal, timeOnBat) > 20)
+			{
+				comment = comment + "Phone signal quality was bad (None/Poor/Moderate) for "
+				          + DateTimeOperator.getTimeStringFromMillis(phoneBadSignal) + " ("
+				          + formatNumber(getPercentage(phoneBadSignal, timeOnBat)) + "%)\\n";
+				comment = comment + "\\n";
+			}
+			
+			long phoneBadRadio = radio1xrtt + radioEvdo + radioUmts + radioGprs;
+			if (getPercentage(phoneBadRadio, radioActive) > 20)
+			{
+				comment = comment + "Radio network was not good for "
+				          + DateTimeOperator.getTimeStringFromMillis(phoneBadRadio) + " ("
+				          + formatNumber(getPercentage(phoneBadRadio, radioActive)) + "%)\\n";
+				comment = comment + "\\n";
+			}
+			
+			long wifiBadSignal = wifiLevel0 + wifiLevel1 + wifiLevel2;
+			if (getPercentage(wifiBadSignal, wifiOn) > 20)
+			{
+				comment = comment + "Wifi signal quality was bad (Level0/Level1/Level2) for "
+				          + DateTimeOperator.getTimeStringFromMillis(wifiBadSignal) + " ("
+				          + formatNumber(getPercentage(wifiBadSignal, wifiOn)) + "%)\\n";
+			}
+			if (getPercentage(wifiScan, wifiOn) > 20)
+			{
+				comment = comment + "Scanning for better wifi network for "
+				          + DateTimeOperator.getTimeStringFromMillis(wifiScan) + " ("
+				          + formatNumber(getPercentage(wifiScan, wifiOn)) + "%)\\n";
+			}
+			
+			comment = comment + "{panel}\\n\\nNo current drain issues found in this CR. Closing as cancelled.";
+			
+			return comment;
+		}
+		
+		return "";
 	}
 	
 	// Get specific data
 	public float getConsAvgOff()
 	{
 		return (float) (dischScOff * (batCap / 100.0) / (scOffTime / 3600000.0));
+	}
+	
+	public float getConsAvgOn()
+	{
+		return (float) (dischScOn * (batCap / 100.0) / (scOnTime / 3600000.0));
+	}
+	
+	private float getPercentage(long percentageOf, long from)
+	{
+		return (float) (100.0 * percentageOf / from);
+	}
+	
+	// Getters and Setters ---------------------------------------------------
+	public float getBatCap()
+	{
+		return batCap;
+	}
+	
+	public void setBatCap(float batCap)
+	{
+		this.batCap = batCap;
+	}
+	
+	public String getPath()
+	{
+		return path;
+	}
+	
+	public long getTimeOnBat()
+	{
+		return timeOnBat;
+	}
+	
+	public long getScOffTime()
+	{
+		return scOffTime;
+	}
+	
+	public long getRemTime()
+	{
+		return remTime;
+	}
+	
+	public long getScDark()
+	{
+		return scDark;
+	}
+	
+	public long getScDim()
+	{
+		return scDim;
+	}
+	
+	public long getScMedium()
+	{
+		return scMedium;
+	}
+	
+	public long getScLight()
+	{
+		return scLight;
+	}
+	
+	public long getScBright()
+	{
+		return scBright;
+	}
+	
+	public long getSignalNone()
+	{
+		return signalNone;
+	}
+	
+	public long getSignalPoor()
+	{
+		return signalPoor;
+	}
+	
+	public long getSignalModerate()
+	{
+		return signalModerate;
+	}
+	
+	public long getSignalGood()
+	{
+		return signalGood;
+	}
+	
+	public long getSignalGreat()
+	{
+		return signalGreat;
+	}
+	
+	public long getSignalScan()
+	{
+		return signalScan;
+	}
+	
+	public long getRadioNone()
+	{
+		return radioNone;
+	}
+	
+	public long getRadioGprs()
+	{
+		return radioGprs;
+	}
+	
+	public long getRadioUmts()
+	{
+		return radioUmts;
+	}
+	
+	public long getRadioEvdo()
+	{
+		return radioEvdo;
+	}
+	
+	public long getRadio1xrtt()
+	{
+		return radio1xrtt;
+	}
+	
+	public long getRadioActive()
+	{
+		return radioActive;
+	}
+	
+	public long getWifiOn()
+	{
+		return wifiOn;
+	}
+	
+	public long getWifiScan()
+	{
+		return wifiScan;
+	}
+	
+	public long getWifiLevel0()
+	{
+		return wifiLevel0;
+	}
+	
+	public long getWifiLevel1()
+	{
+		return wifiLevel1;
+	}
+	
+	public long getWifiLevel2()
+	{
+		return wifiLevel2;
+	}
+	
+	public long getWifiLevel3()
+	{
+		return wifiLevel3;
+	}
+	
+	public long getWifiLevel4()
+	{
+		return wifiLevel4;
+	}
+	
+	public int getConnectChanges()
+	{
+		return connectChanges;
+	}
+	
+	public float getDischargeAmount()
+	{
+		return dischargeAmount;
+	}
+	
+	public float getDischScOn()
+	{
+		return dischScOn;
+	}
+	
+	public float getDischScOff()
+	{
+		return dischScOff;
+	}
+	
+	public ArrayList<BugRepKernelWL> getKernelWLs()
+	{
+		return kernelWLs;
+	}
+	
+	public ArrayList<BugRepJavaWL> getJavaWLs()
+	{
+		return javaWLs;
 	}
 }
