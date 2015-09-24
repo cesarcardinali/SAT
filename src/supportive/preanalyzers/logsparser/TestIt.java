@@ -13,10 +13,17 @@ public class TestIt
 	public static void main(String[] args)
 	{
 		String root = "C:/CRs/Debuging/";
-		
-		//MainParser mainParser = new MainParser(root + "77712231");81176461
-		MainParser mainParser = new MainParser(root + "80605931");
 		long now = System.currentTimeMillis();
+		
+		BugrepParser brParser = new BugrepParser(root + "HC1-82203841");
+		
+		brParser.parse();
+		System.out.println();
+		brParser.showData();
+		
+		
+		/*
+		MainParser mainParser = new MainParser(root + "80976191");
 		
 		//System.out.println(DateOperator.getDateStringFromBtdStringMillis(148857));
 		
@@ -34,6 +41,8 @@ public class TestIt
         }
 		
 		System.out.println("\n\nIt took " + DateOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now)));
+		*/
+		
 		//System.out.println("Started at " + new Date(now) + " stopped at "
 		//                   + new Date(System.currentTimeMillis()));
 		/*
@@ -72,7 +81,7 @@ public class TestIt
 			e.printStackTrace();
 		}*/
 		
-		System.out.println("\n\nIt took " + DateOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now)) + "ms");
+		System.out.println("\n\nIt took " + DateOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now)));
 		System.out.println("Started at " + new Date(now) + " stopped at "
 		                   + new Date(System.currentTimeMillis()));
 	}

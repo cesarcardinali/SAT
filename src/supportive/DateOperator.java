@@ -26,4 +26,38 @@ public class DateOperator
 		
 		return days + "d," + hours + "h," + minutes + "m," + seconds + "s," + millis + "ms";
 	}
+	
+	public static int[] stringTimeParser(String stime)
+	{
+		stime = stime.replaceAll(" \\(.+", "");
+		String timeParts[] = stime.split(" ");
+		int time[] = new int[timeParts.length];
+		
+		for (int i = 0; i < timeParts.length; i++)
+		{
+			time[timeParts.length - i - 1] = Integer.parseInt(timeParts[i].replaceAll("[a-z]", ""));
+		}
+		
+		return time;
+	}
+	
+	public static long getMillisFromBtdStringDate(String time)
+	{
+		int[] parts = stringTimeParser(time);
+		long millis = parts[0];
+		
+		try
+		{
+			millis = millis + parts[1] * 1000;
+			millis = millis + parts[2] * 1000 * 60;
+			millis = millis + parts[3] * 1000 * 60 * 60;
+			millis = millis + parts[4] * 1000 * 60 * 60 * 24;
+		}
+		catch (ArrayIndexOutOfBoundsException e)
+		{
+			// e.printStackTrace();
+		}
+		
+		return millis;
+	}
 }

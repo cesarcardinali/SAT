@@ -342,7 +342,7 @@ public class MainParser
 		return "";
 	}
 	
-	// Getters, Setter and Supportive methods
+	// Getters, Setters and Complementary methods
 	public String getTetherPercentage()
 	{
 		DecimalFormat df = new DecimalFormat("##.##");
