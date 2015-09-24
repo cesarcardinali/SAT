@@ -706,7 +706,7 @@ public class XmlMngr
 		xmlElement.addContent(new Element("routput").setText("" + filter.isRoutput()));
 		xmlElement.addContent(new Element("shared").setText("" + filter.isShared()));
 		xmlElement.addContent(new Element("editable").setText("" + filter.isPublic()));
-		xmlElement.addContent(new Element("active").setText("false"));
+		xmlElement.addContent(new Element("active").setText("" + filter.isActive()));
 		xmlElement.addContent(new Element("last_update").setText("" + filter.getLastUpdate()));
 		return xmlElement;
 	}
@@ -725,6 +725,7 @@ public class XmlMngr
 		requestedElement.getChild("routput").setText("" + filter.isRoutput());
 		requestedElement.getChild("shared").setText("" + filter.isShared());
 		requestedElement.getChild("editable").setText("" + filter.isPublic());
+		requestedElement.getChild("active").setText("" + filter.isActive());
 		requestedElement.getChild("last_update").setText("" + filter.getLastUpdate());
 	}
 	
@@ -742,6 +743,7 @@ public class XmlMngr
 		filter.setRoutput(Boolean.parseBoolean(requestedElement.getChildText("routput")));
 		filter.setShared(Boolean.parseBoolean(requestedElement.getChildText("shared")));
 		filter.setEditable(Boolean.parseBoolean(requestedElement.getChildText("editable")));
+		filter.setActive(Boolean.parseBoolean(requestedElement.getChildText("active")));
 		filter.setLastUpdate(requestedElement.getChildText("last_update"));
 	}
 }

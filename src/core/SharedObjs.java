@@ -129,15 +129,15 @@ public class SharedObjs
 			Logger.log(Logger.TAG_SHAREDOBJS, "Could not connect to SQL DB");
 		}
 		
+		// Load filters and update tree
 		loadFilters();
+		parserPane.getFiltersResultsTree().updateFiltersTree();
 		
 		// Setup connection status
 		if (satDB != null)
 			optionsPane.setServerStatus(true);
 		else
 			optionsPane.setServerStatus(false);
-		
-		parserPane.getFiltersResultsTree().updateFiltersTree();
 	}
 	
 	/**
@@ -265,6 +265,12 @@ public class SharedObjs
 					aux.add(filter);
 					satDB.insertFilter(filter);
 				}
+				else
+				{
+					// Comparar datas e pega ro mais atual
+					// As datas ja foram configuradas na 115
+					// para permitir essa modificação aqui.
+				}
 			}
 			
 			for (CustomFilterItem filter : dbFilters)
@@ -273,6 +279,12 @@ public class SharedObjs
 				{
 					xmlFilters.add(filter);
 					XmlMngr.setMyFiltersValueOf(filter);
+				}
+				else
+				{
+					// Comparar datas e pega ro mais atual
+					// As datas ja foram configuradas na 115
+					// para permitir essa modificação aqui.
 				}
 			}
 			
@@ -346,6 +358,21 @@ public class SharedObjs
 			Logger.log(Logger.TAG_SHAREDOBJS, "Loading active shared filters from SQL DB");
 			
 			activeFiltersList.addAll(satDB.activeFilters());
+			
+			// If filter comes from DB, it does not have "active" field info, so we need to force it true here
+			for (CustomFilterItem filter : activeFiltersList)
+			{
+				if (userFiltersList.indexOf(filter.getId()) >= 0)
+				{
+					userFiltersList.get(userFiltersList.indexOf(filter.getId())).setActive(true);
+				}
+				
+				if (sharedFiltersList.indexOf(filter.getLastUpdate()) >= 0)
+				{
+					sharedFiltersList.get(sharedFiltersList.indexOf(filter.getLastUpdate())).setActive(true);
+				}
+			}
+			
 			XmlMngr.removeAllActiveFilters();
 			XmlMngr.addActiveFilters(activeFiltersList);
 		}
@@ -355,21 +382,6 @@ public class SharedObjs
 			           "Could not connect to SAT DB. Loading active shared filters from XML");
 			
 			activeFiltersList.addAll(XmlMngr.getAllActiveFilters());
-		}
-		
-		for (CustomFilterItem filter : activeFiltersList)
-		{
-			filter.setActive(true);
-			
-			if (userFiltersList.indexOf(filter.getId()) >= 0)
-			{
-				userFiltersList.get(userFiltersList.indexOf(filter.getId())).setActive(true);
-			}
-			
-			if (sharedFiltersList.indexOf(filter.getLastUpdate()) >= 0)
-			{
-				sharedFiltersList.get(sharedFiltersList.indexOf(filter.getLastUpdate())).setActive(true);
-			}
 		}
 		
 		Logger.log(Logger.TAG_SHAREDOBJS, "Active filters loaded: " + activeFiltersList.size());

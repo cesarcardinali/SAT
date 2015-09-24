@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
@@ -116,6 +117,8 @@ public class DBAdapter
 	 */
 	private CustomFilterItem setAllFilterFields(CustomFilterItem fitem, ResultSet rs) throws SQLException
 	{
+		SimpleDateFormat formater = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+		
 		fitem.setId(rs.getInt("f_id"));
 		fitem.setName(rs.getString("name"));
 		fitem.setHeader(rs.getString("header"));
@@ -128,7 +131,7 @@ public class DBAdapter
 		fitem.setSystem(byteToBool(rs.getByte("w_syst")));
 		fitem.setRoutput(byteToBool(rs.getByte("w_rout")));
 		fitem.setShared(byteToBool(rs.getByte("shared")));
-		fitem.setLastUpdate(rs.getTimestamp("last_modified").toString());
+		fitem.setLastUpdate(formater.format(rs.getTimestamp("last_modified")));
 		if (rs.getString("user_key") == null)
 			fitem.setEditable(true);
 		else

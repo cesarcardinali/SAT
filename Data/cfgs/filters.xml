@@ -13,10 +13,10 @@
       <radio>false</radio>
       <bugreport>false</bugreport>
       <routput>false</routput>
-      <shared>true</shared>
+      <shared>false</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-18 11:22:20.0</last_update>
+      <last_update>2015-09-24 17:21:11</last_update>
     </item_1>
     <item_2>
       <name>All Errors</name>
@@ -32,7 +32,7 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-18 11:22:20.0</last_update>
+      <last_update>2015-09-24 17:21:11</last_update>
     </item_2>
     <item_3>
       <name>teste</name>
@@ -47,9 +47,25 @@
       <routput>false</routput>
       <shared>false</shared>
       <editable>false</editable>
-      <active>false</active>
-      <last_update>2015-09-22 16:51:10.0</last_update>
+      <active>true</active>
+      <last_update>2015-09-24 17:21:11</last_update>
     </item_3>
+    <item_4>
+      <name>t</name>
+      <regex>t</regex>
+      <header>tere</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-24 17:37:03</last_update>
+    </item_4>
   </myFilters>
   <!-- Users shared filters: !-->
   <sharedFilters>
@@ -67,7 +83,7 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-04 11:47:06.0</last_update>
+      <last_update>2015-09-04 11:47:06</last_update>
     </item_1>
     <item_2>
       <name>Active Wakeup</name>
@@ -83,7 +99,7 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-08 10:40:50.0</last_update>
+      <last_update>2015-09-08 10:40:50</last_update>
     </item_2>
     <item_3>
       <name>DIAG_WS Wakeups</name>
@@ -99,7 +115,7 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-11 14:09:46.0</last_update>
+      <last_update>2015-09-11 14:09:46</last_update>
     </item_3>
     <item_4>
       <name>All Errors</name>
@@ -115,9 +131,26 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-11 14:09:46.0</last_update>
+      <last_update>2015-09-11 14:09:46</last_update>
     </item_4>
   </sharedFilters>
   <!-- Active filters: !-->
-  <activeFilters />
+  <activeFilters>
+    <item_1>
+      <name>teste</name>
+      <regex>t</regex>
+      <header>t</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>false</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-09-24 17:21:11</last_update>
+    </item_1>
+  </activeFilters>
 </SAT>

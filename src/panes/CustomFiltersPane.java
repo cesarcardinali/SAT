@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -403,8 +405,9 @@ public class CustomFiltersPane extends JDialog
 					int ans = JOptionPane.showOptionDialog(SharedObjs.getCustomFiltersPane(),
 					                                       "Do you really want to remove this filter?",
 					                                       "Deleting filter", JOptionPane.YES_NO_OPTION,
-					                                       JOptionPane.QUESTION_MESSAGE, null,
-					                                       new String[] {"Yes", "No"}, "Yes");
+					                                       JOptionPane.QUESTION_MESSAGE, null, new String[] {
+					                                               "Yes",
+					                                               "No"}, "Yes");
 					if (ans == 0)
 					{
 						CustomFilterItem filter = myFiltersTableModel.getElementAt(myFiltersTable.getSelectedRow());
@@ -630,26 +633,58 @@ public class CustomFiltersPane extends JDialog
 		else
 		{
 			Logger.log("FiltersManager", "Updating XML");
+			XmlMngr.removeAllMyFilters();
+			XmlMngr.removeAllSharedFilters();
+			XmlMngr.removeAllActiveFilters();
+			SimpleDateFormat formater = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+			
+			// Execute changes made in MyFilters tab
 			for (CustomFilterItem filter : changesStack)
 			{
-				if (filter.getModified().equals("Update") || filter.getModified().equals("Insert"))
+				if (filter.getModified().equals("Update"))
 				{
-					if (filter.isPublic())
-					{
-						XmlMngr.removeMyFiltersValueOf(filter);
-						XmlMngr.setActiveFiltersValueOf(filter);
-					}
-					else
-					{
-						XmlMngr.setMyFiltersValueOf(filter);
-					}
+					System.out.println("Update element: " + filter.getName());
+					filter.setLastUpdate(formater.format(new Date()));
+				}
+				else if (filter.getModified().equals("Insert"))
+				{
+					System.out.println("Insert: " + filter.getName());
+					filter.setLastUpdate(formater.format(new Date()));
 				}
 				else if (filter.getModified().equals("Delete"))
 				{
-					XmlMngr.removeMyFiltersValueOf(filter);
+					System.out.println("Delete: " + filter.getName());
 				}
 			}
 			
+			for (CustomFilterItem filter : myFiltersTableModel.getFilterElements())
+			{
+				if (filter.isPublic())
+					filter.setOwner("Public");
+				
+				XmlMngr.setMyFiltersValueOf(filter);
+				// System.out.println(filter.getName() + " - " + filter.isActive());
+				if (filter.isActive())
+				{
+					XmlMngr.setActiveFiltersValueOf(filter);
+				}
+			}
+			
+			for (CustomFilterItem filter : sharedTableModel.getFilterElements())
+			{
+				if (filter.isPublic())
+					filter.setOwner("Public");
+				
+				filter.setLastUpdate(formater.format(new Date()));
+				XmlMngr.setSharedFiltersValueOf(filter);
+				// System.out.println(filter.getName() + " - " + filter.isActive());
+				if (filter.isActive())
+				{
+					XmlMngr.setActiveFiltersValueOf(filter);
+				}
+			}
+			
+			// Update in memory lists
 			SharedObjs.getUserFiltersList().clear();
 			SharedObjs.getUserFiltersList().addAll(XmlMngr.getAllMyFilters());
 			
@@ -787,6 +822,7 @@ public class CustomFiltersPane extends JDialog
 		// Load MyFilters
 		for (CustomFilterItem filter : SharedObjs.getUserFiltersList())
 		{
+			System.out.println(filter.getName() + " - " + filter.isActive());
 			myFiltersTableModel.addRow(filter);
 		}
 	}
