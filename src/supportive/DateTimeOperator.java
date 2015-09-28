@@ -6,12 +6,21 @@ import java.util.Date;
 
 public class DateTimeOperator
 {
-	public static long getMillis(String sDate) throws ParseException
+	public static long getMillis(String sDate)
 	{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		Date date = dateFormat.parse(sDate);
-		
-		return date.getTime();
+		Date date;
+        try
+        {
+	        date = dateFormat.parse(sDate);
+	        return date.getTime();
+        }
+        catch (ParseException e)
+        {
+        	System.out.println("222222222-- " + sDate);
+	        e.printStackTrace();
+	        return 0;
+        }
 	}
 	
 	static public String getTimeStringFromMillis(long timestamp)

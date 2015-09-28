@@ -112,47 +112,40 @@ public class MainParser
 			{
 				if (sCurrentLine.contains(": "))
 				{
-					try
+					
+					// System.out.println(sCurrentLine);
+					System.out.println(sCurrentLine);
+					nextTime = DateTimeOperator.getMillis(parseLineDate(sCurrentLine)[0]);
+					if ((nextTime - actualTime) > 3600000L)
 					{
-						// System.out.println(sCurrentLine);
-						// System.out.println(parseLine(sCurrentLine)[0]);
-						nextTime = DateTimeOperator.getMillis(parseLineDate(sCurrentLine)[0]);
-						if ((nextTime - actualTime) > 3600000L)
+						// System.out.println("Diff: " + (nextTime - actualTime) + "\n" + sCurrentLine);
+						actualTime = nextTime;
+						startTime = actualTime;
+						
+						if (statesData.size() > 0)
 						{
-							// System.out.println("Diff: " + (nextTime - actualTime) + "\n" + sCurrentLine);
-							actualTime = nextTime;
-							startTime = actualTime;
-							
-							if (statesData.size() > 0)
-							{
-								statesData.clear();
-							}
-							else if (logState.getStart() > 0)
-							{
-								logState = new LogState();
-								logState.setStart(actualTime);
-							}
-							
-							if (wifiPeriods.size() > 0)
-							{
-								wifiPeriods.clear();
-							}
-							
-							if (wifiPeriod.startTime > 0)
-							{
-								wifiPeriod = new wifiPeriod();
-							}
+							statesData.clear();
 						}
-						else
+						else if (logState.getStart() > 0)
 						{
-							actualTime = nextTime;
-							endTime = actualTime;
+							logState = new LogState();
+							logState.setStart(actualTime);
+						}
+						
+						if (wifiPeriods.size() > 0)
+						{
+							wifiPeriods.clear();
+						}
+						
+						if (wifiPeriod.startTime > 0)
+						{
+							wifiPeriod = new wifiPeriod();
 						}
 					}
-					catch (ParseException e1)
+					else
 					{
-						Logger.log(Logger.TAG_MAINLOG_PARSER, "Could not parse the date at:\n" + sCurrentLine);
-						e1.printStackTrace();
+						actualTime = nextTime;
+						endTime = actualTime;
 					}
 					
 					if (startTime == 0)
@@ -265,12 +258,11 @@ public class MainParser
 		System.out.println("Periodo total do log:");
 		System.out.println("Begins " + new Date(startTime) + "(" + startTime + ")");
 		System.out.println("Ends " + new Date(endTime) + "(" + endTime + ")");
-		System.out.println("Total running time "
-		                   + DateTimeOperator.getTimeStringFromMillis(totalLogTime) + " or "
-		                   + (totalLogTime) + "ms");
-		System.out.println("Longer discharge time "
-		                   + DateTimeOperator.getTimeStringFromMillis(longerDischarge.getDuration())
+		System.out.println("Total running time " + DateTimeOperator.getTimeStringFromMillis(totalLogTime)
 		                   + " or " + (totalLogTime) + "ms");
+		System.out.println("Longer discharge time "
+		                   + DateTimeOperator.getTimeStringFromMillis(longerDischarge.getDuration()) + " or "
+		                   + (totalLogTime) + "ms");
 		System.out.println("From " + longerDischarge.getStartDate() + " to " + longerDischarge.getEndDate());
 	}
 	
@@ -339,6 +331,11 @@ public class MainParser
 		
 		if (parts.length > 3)
 		{
+			if (parts[0].length() > 18)
+			{
+				System.out.println("---------------- " + line);
+				parsed[0] = parsed[0].substring(2, 19);
+			}
 			parsed[1] = parts[parts.length - 1];
 			parsed[0] = year + "-" + parts[0] + " " + parts[1];
 		}

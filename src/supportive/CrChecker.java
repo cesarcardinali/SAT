@@ -107,7 +107,8 @@ public class CrChecker
 				return true;
 			}
 			
-			SharedObjs.crsManagerPane.addLogLine("Nothing was detected. " + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
+			SharedObjs.crsManagerPane.addLogLine("Nothing was detected. "
+			                                     + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
 			Logger.log(Logger.TAG_FALSE_POSITIVE,
 			           DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
 			
@@ -301,7 +302,7 @@ public class CrChecker
 	}
 	
 	private boolean checkIfFalsePositive()
-	{	
+	{
 		if (!btdParsed && !bugrepParsed)
 		{
 			return false;
@@ -336,7 +337,7 @@ public class CrChecker
 			if (btdParsed && bugrepParsed)
 			{
 				bugrepParser.setBatCap(btdParser.getBatCap());
-				if (btdParser.getAverageconsumeOff() <= 100 && bugrepParser.getConsAvgOff() <= 100 && upTime == false)
+				if ((btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110) && upTime == false)
 				{
 					JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
 					                                 SharedObjs.getUser(),
@@ -349,39 +350,43 @@ public class CrChecker
 					
 					System.out.println(bugrepParser.getCommentReport());
 					
-					SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
-					                                     + " as cancelled");
+					SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing "
+					                                     + cr.getJiraID() + " as cancelled");
 					
-					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "This CR is a false positive. Closing " + cr.getJiraID()
-					                                        + " as cancelled");
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+					           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
 					return true;
 				}
-				
+				else if(btdParser.getAverageconsumeOff() < 100 && bugrepParser.getConsAvgOff() < 100 && lowEbl && btdParser.getAverageconsumeOn() > 800 && bugrepParser.getConsAvgOn() > 800)
+				{
+					
+				}
 			}
 			else if (bugrepParsed)
 			{
-				if (bugrepParser.getConsAvgOff() <= 100)
+				if (btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110 && upTime == false)
 				{
-					if (upTime == false)
-					{
-						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
-						                                 SharedObjs.getUser(),
-						                                 SharedObjs.getPass());
-						
-						jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO
-						
-						// Update cr object
-						// Add to statistic
-						
-						System.out.println(bugrepParser.getCommentReport());
-						
-						SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing "
-						                                     + cr.getJiraID() + " as cancelled");
-						
-						Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-						           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
-						return true;
-					}
+					JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
+					                                 SharedObjs.getUser(),
+					                                 SharedObjs.getPass());
+					
+					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO
+					
+					// Update cr object
+					// Add to statistic
+					
+					System.out.println(bugrepParser.getCommentReport());
+					
+					SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing "
+					                                     + cr.getJiraID() + " as cancelled");
+					
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+					           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+					return true;
+				}
+				else if(btdParser.getAverageconsumeOff() < 100 && bugrepParser.getConsAvgOff() < 100 && lowEbl && btdParser.getAverageconsumeOn() > 800 && bugrepParser.getConsAvgOn() > 800)
+				{
+					
 				}
 			}
 		
