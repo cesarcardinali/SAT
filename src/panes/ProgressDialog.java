@@ -79,13 +79,13 @@ public class ProgressDialog extends JDialog
 		
 		if (files == remainingCRs)
 		{
+			button.setText("Done");
 			setTitle("Done");
 			setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 			toFront();
 			setAlwaysOnTop(true);
 			setVisible(true);
 			
-			button.setText("Done");
 			frame.toFront();
 		}
 	}
