@@ -53,7 +53,7 @@ public class CrChecker
 				JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
 				                                 SharedObjs.getUser(),
 				                                 SharedObjs.getPass());
-				
+				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.INCOMPLETE,
 				                "The text logs are missing. Could not perform a complete analysis.");
 				
@@ -87,6 +87,7 @@ public class CrChecker
 				                                 SharedObjs.getUser(),
 				                                 SharedObjs.getPass());
 				
+				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
 				
 				// Update cr object
@@ -343,6 +344,7 @@ public class CrChecker
 					                                 SharedObjs.getUser(),
 					                                 SharedObjs.getPass());
 					
+					jira.assignIssue(cr.getJiraID());
 					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO add calling time
 					
 					// Update cr object
@@ -370,6 +372,7 @@ public class CrChecker
 					                                 SharedObjs.getUser(),
 					                                 SharedObjs.getPass());
 					
+					jira.assignIssue(cr.getJiraID());
 					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO
 					
 					// Update cr object

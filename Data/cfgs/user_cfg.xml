@@ -6,7 +6,7 @@
   <crs_jira_pane>
     <path>C:\CRs\Debuging\normal_test</path>
     <assign>false</assign>
-    <label>false</label>
+    <label>true</label>
   </crs_jira_pane>
   <option_pane>
     <full_log>- The process *#pname#* was consuming *~#avgconsume#* of CPU processing power.\n{noformat}\n#logfull#\n{noformat}</full_log>

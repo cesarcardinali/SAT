@@ -114,7 +114,7 @@ public class MainParser
 				{
 					
 					// System.out.println(sCurrentLine);
-					System.out.println(sCurrentLine);
+					//System.out.println(sCurrentLine);
 					nextTime = DateTimeOperator.getMillis(parseLineDate(sCurrentLine)[0]);
 					if ((nextTime - actualTime) > 3600000L)
 					{
