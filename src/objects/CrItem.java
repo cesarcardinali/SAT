@@ -1,5 +1,6 @@
 package objects;
 
+
 import java.util.ArrayList;
 
 
@@ -8,16 +9,17 @@ import java.util.ArrayList;
  */
 public class CrItem
 {
-	private String            b2gID;     // Represents the b2g ID
-	private String            jiraID;    // Represents the Jira ID
-	private String            status;    // Represents CR status
-	private String            resolution; // Represents CR resolution
-	private String            summary;   // Represents CR summary
-	private String            assignee;  // Represents CR assignee
-	private ArrayList<String> labels;    // Represents CR labels
-	private String            dup;       // Represents CR dups
-	private String            comment;   // Represents a comment to be inserted at this CR
-	                                      
+	private String            b2gID;       // Represents the b2g ID
+	private String            jiraID;      // Represents the Jira ID
+	private String            status;      // Represents CR status
+	private String            resolution;  // Represents CR resolution
+	private String            summary;     // Represents CR summary
+	private String            assignee;    // Represents CR assignee
+	private ArrayList<String> labels;      // Represents CR labels
+	private String            dup;         // Represents CR dups
+	private String            comment;     // Represents a comment to be inserted at this CR
+	private String            closure_date;
+	
 	/**
 	 * Class constructor
 	 * 
@@ -143,16 +145,24 @@ public class CrItem
 	{
 		this.dup = dup;
 	}
-
+	
 	public ArrayList<String> getLabels()
 	{
 		return labels;
 	}
-
+	
 	public void setLabels(ArrayList<String> labels)
 	{
 		this.labels = labels;
 	}
 	
+	public String getClosureDate()
+	{
+		return closure_date;
+	}
 	
+	public void setClosureDate(String closure_date)
+	{
+		this.closure_date = closure_date;
+	}
 }

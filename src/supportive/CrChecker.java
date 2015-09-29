@@ -63,9 +63,7 @@ public class CrChecker
 				
 				cr.setResolution(INCOMPLETE);
 				cr.setAssignee(SharedObjs.getUser());
-				
-				// Update cr object
-				// Add to statistic
+				SharedObjs.satDB.insertClosedCR(cr);
 				
 				SharedObjs.crsManagerPane.addLogLine("Logs are missing. Closing CR " + cr.getJiraID()
 				                                     + " as incomplete");
@@ -97,8 +95,9 @@ public class CrChecker
 				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
 				
-				// Update cr object
-				// Add to statistic
+				cr.setResolution(INVALID);
+				cr.setAssignee(SharedObjs.getUser());
+				SharedObjs.satDB.insertClosedCR(cr);
 				
 				SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
 				                                     + " as invalid");
@@ -355,8 +354,9 @@ public class CrChecker
 					jira.assignIssue(cr.getJiraID());
 					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO add calling time
 					
-					// Update cr object
-					// Add to statistic
+					cr.setResolution(CANCELLED);
+					cr.setAssignee(SharedObjs.getUser());
+					SharedObjs.satDB.insertClosedCR(cr);
 					
 					System.out.println(bugrepParser.getCommentReport());
 					
@@ -386,8 +386,9 @@ public class CrChecker
 					jira.assignIssue(cr.getJiraID());
 					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO
 					
-					// Update cr object
-					// Add to statistic
+					cr.setResolution(CANCELLED);
+					cr.setAssignee(SharedObjs.getUser());
+					SharedObjs.satDB.insertClosedCR(cr);
 					
 					System.out.println(bugrepParser.getCommentReport());
 					
