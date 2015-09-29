@@ -60,6 +60,7 @@ public class CrChecker
 				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.INCOMPLETE,
 				                "The text logs are missing. Could not perform a complete analysis.");
+				jira.addLabel(cr.getJiraID(), "sat_closed");
 				
 				cr.setResolution(INCOMPLETE);
 				cr.setAssignee(SharedObjs.getUser());
@@ -94,6 +95,7 @@ public class CrChecker
 				
 				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
+				jira.addLabel(cr.getJiraID(), "sat_closed");
 				
 				cr.setResolution(INVALID);
 				cr.setAssignee(SharedObjs.getUser());
@@ -353,6 +355,7 @@ public class CrChecker
 					
 					jira.assignIssue(cr.getJiraID());
 					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO add calling time
+					jira.addLabel(cr.getJiraID(), "sat_closed");
 					
 					cr.setResolution(CANCELLED);
 					cr.setAssignee(SharedObjs.getUser());
@@ -385,6 +388,7 @@ public class CrChecker
 					
 					jira.assignIssue(cr.getJiraID());
 					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO
+					jira.addLabel(cr.getJiraID(), "sat_closed");
 					
 					cr.setResolution(CANCELLED);
 					cr.setAssignee(SharedObjs.getUser());
