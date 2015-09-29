@@ -29,6 +29,7 @@ public class Tether
 		{
 			String wifitetherData1 = "";
 			String wifitetherData2 = "";
+			String wifitetherData3 = "";
 			String sCurrentLine;
 			String file_report = "";
 			
@@ -64,7 +65,7 @@ public class Tether
 			// Try to open file
 			if (file_report.equals(""))
 			{
-				result = "system not found";
+				result = "system not found\n";
 			}
 			else
 			{
@@ -104,76 +105,125 @@ public class Tether
 			}
 			
 			// Try to open file
-			if (file_report.equals("") && result.equals("system not found"))
-				throw new FileNotFoundException();
-			else
-				br = new BufferedReader(new FileReader(file_report));
-			
-			result = "";
-			String startTether = "", stopTether = "";
-			
-			while ((sCurrentLine = br.readLine()) != null)
+			if (file_report.equals("") && result.equals("main not found"))
 			{
-				if ((sCurrentLine.contains("TetherModeAliveState") && sCurrentLine.contains("what=4"))
-					|| sCurrentLine.contains("processMsg: TetheredState"))
+				result = result + "main not found\n";
+			}
+			else
+			{
+				br = new BufferedReader(new FileReader(file_report));
+				String startTether = "", stopTether = "";
+				
+				while ((sCurrentLine = br.readLine()) != null)
 				{
-					wifitetherData2 = wifitetherData2 + sCurrentLine + "\n";
+					if ((sCurrentLine.contains("TetherModeAliveState") && sCurrentLine.contains("what=4"))
+					    || sCurrentLine.contains("processMsg: TetheredState"))
+					{
+						wifitetherData2 = wifitetherData2 + sCurrentLine + "\n";
+					}
+					else if (sCurrentLine.toLowerCase().contains("starting tether"))
+					{
+						// Logger.log(Logger.TAG_TETHER, sCurrentLine);
+						if (!startTether.equals(""))
+							startTether = startTether + "\n" + sCurrentLine;
+						else
+							startTether = sCurrentLine;
+					}
+					else if (sCurrentLine.toLowerCase().contains("stopping tether"))
+					{
+						// Logger.log(Logger.TAG_TETHER, sCurrentLine);
+						if (!stopTether.equals(""))
+							stopTether = stopTether + "\n" + sCurrentLine;
+						else
+							stopTether = sCurrentLine;
+					}
 				}
-				else if (sCurrentLine.toLowerCase().contains("starting tether"))
+				
+				if (!startTether.equals("") || !stopTether.equals(""))
 				{
-					// Logger.log(Logger.TAG_TETHER, sCurrentLine);
-					if (!startTether.equals(""))
-						startTether = startTether + "\n" + sCurrentLine;
+					if (startTether.length() > stopTether.length())
+					{
+						stopTether = stopTether + "\nUnknown";
+						String starts[] = startTether.split("\n");
+						String stops[] = stopTether.split("\n");
+						
+						for (int i = 0; i < starts.length; i++)
+						{
+							result = result + "\n|Starting Tethering at| " + starts[i] + "|";
+							result = result + "\n|Stopping Tethering at| " + stops[i] + "|";
+						}
+					}
+					else if (startTether.length() < stopTether.length())
+					{
+						startTether = startTether + "Unknown";
+						String starts[] = startTether.split("\n");
+						String stops[] = stopTether.split("\n");
+						
+						for (int i = 0; i < starts.length; i++)
+						{
+							result = result + "\n|Starting Tethering at| " + starts[i] + "|";
+							result = result + "\n|Stopping Tethering at| " + stops[i] + "|";
+						}
+					}
 					else
-						startTether = sCurrentLine;
+					{
+						String starts[] = startTether.split("\n");
+						String stops[] = stopTether.split("\n");
+						
+						for (int i = 0; i < starts.length; i++)
+						{
+							result = result + "\n|Starting Tethering at| " + starts[i] + "|";
+							result = result + "\n|Stopping Tethering at| " + stops[i] + "|";
+						}
+					}
 				}
-				else if (sCurrentLine.toLowerCase().contains("stopping tether"))
+				
+				if (br != null)
+					br.close();
+			}
+			
+			// Look for a file
+			file_report = "";
+			
+			for (int i = 0; i < listOfFiles.length; i++)
+			{
+				if (listOfFiles[i].isFile())
 				{
-					// Logger.log(Logger.TAG_TETHER, sCurrentLine);
-					if (!stopTether.equals(""))
-						stopTether = stopTether + "\n" + sCurrentLine;
-					else
-						stopTether = sCurrentLine;
+					String files = listOfFiles[i].getName();
+					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
+					    && (files.contains("bugreport")))
+					{
+						if (path.equals("."))
+							file_report = files;
+						else
+							file_report = path + "\\" + files;
+						break;
+					}
 				}
 			}
 			
-			if (!startTether.equals("") || !stopTether.equals(""))
+			// Try to open file
+			if (file_report.equals("") && result.contains("main not found")
+			    && result.contains("system not found"))
 			{
-				if (startTether.length() > stopTether.length())
+				throw new FileNotFoundException();
+			}
+			else
+			{
+				br = new BufferedReader(new FileReader(file_report));
+				
+				while ((sCurrentLine = br.readLine()) != null)
 				{
-					stopTether = stopTether + "\nUnknown";
-					String starts[] = startTether.split("\n");
-					String stops[] = stopTether.split("\n");
-					
-					for (int i = 0; i < starts.length; i++)
+					if (sCurrentLine.contains("org=TetheringState dest=TetheredState")
+					    || sCurrentLine.contains("org=TetheredState dest=<null>")
+					    || sCurrentLine.contains("org=TetheredState dest=UntetheringState"))
 					{
-						result = result + "\n|Starting Tethering at| " + starts[i] + "|";
-						result = result + "\n|Stopping Tethering at| " + stops[i] + "|";
+						wifitetherData3 = wifitetherData3 + sCurrentLine + "\n";
 					}
 				}
-				else if (startTether.length() < stopTether.length())
-				{
-					startTether = startTether + "Unknown";
-					String starts[] = startTether.split("\n");
-					String stops[] = stopTether.split("\n");
-					
-					for (int i = 0; i < starts.length; i++)
-					{
-						result = result + "\n|Starting Tethering at| " + starts[i] + "|";
-						result = result + "\n|Stopping Tethering at| " + stops[i] + "|";
-					}
-				}
-				else
-				{
-					String starts[] = startTether.split("\n");
-					String stops[] = stopTether.split("\n");
-					
-					for (int i = 0; i < starts.length; i++)
-					{
-						result = result + "\n|Starting Tethering at| " + starts[i] + "|";
-						result = result + "\n|Stopping Tethering at| " + stops[i] + "|";
-					}
-				}
+				
+				if (br != null)
+					br.close();
 			}
 			
 			if (wifitetherData1.split("\n").length > 1)
@@ -186,18 +236,14 @@ public class Tether
 				result = result + "\n{noformat}\n" + wifitetherData2 + "{noformat}";
 			}
 			
+			if (wifitetherData3.split("\n").length > 6)
+			{
+				result = result + "\n{noformat}\n" + wifitetherData3 + "{noformat}";
+			}
+			
 			if (result.split("\n").length < 12)
 			{
 				result = "- No tethering evidences were found in text logs";
-			}
-			
-			try
-			{
-				br.close();
-			}
-			catch (IOException ex)
-			{
-				ex.printStackTrace();
 			}
 		}
 		catch (FileNotFoundException e)
