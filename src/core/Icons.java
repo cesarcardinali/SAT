@@ -43,4 +43,5 @@ public class Icons
 	public static ImageIcon on                  = new ImageIcon("Data\\pics\\on.png");
 	public static ImageIcon onOff               = new ImageIcon("Data\\pics\\onoff.png");
 	public static ImageIcon refresh             = new ImageIcon("Data\\pics\\refresh.png");
+	public static ImageIcon analyze             = new ImageIcon("Data\\pics\\analyze.png");
 }

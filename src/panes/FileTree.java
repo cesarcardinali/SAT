@@ -1,6 +1,7 @@
 package panes;
 
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -21,6 +22,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -34,23 +36,22 @@ import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import style.FileTreeNodeRenderer;
+import supportive.CrChecker;
+import supportive.UnZip;
 import core.Icons;
 import core.Logger;
 import core.SharedObjs;
-import style.FileTreeNodeRenderer;
-import supportive.UnZip;
-import javax.swing.border.LineBorder;
-import java.awt.Color;
 
 
 @SuppressWarnings("serial")
 public class FileTree extends JPanel
 {
-	private JTree				   fileTree;
-	private JScrollPane			   scrollPaneTree;
+	private JTree                  fileTree;
+	private JScrollPane            scrollPaneTree;
 	private DefaultMutableTreeNode root;
-	private FileSystemView		   fileSystemView;
-	private String				   lastDirectory;
+	private FileSystemView         fileSystemView;
+	private String                 lastDirectory;
 	
 	// File Tree constructor. It will initialize the file tree
 	public FileTree()
@@ -168,7 +169,7 @@ public class FileTree extends JPanel
 				
 				// if right click was detected, get the node where the right click happened
 				if (SwingUtilities.isRightMouseButton(event)
-					&& fileTree.getPathForLocation(event.getX(), event.getY()) != null)
+				    && fileTree.getPathForLocation(event.getX(), event.getY()) != null)
 				{
 					if (fileTree.getSelectionPaths() == null || fileTree.getSelectionPaths().length == 1)
 					{
@@ -284,7 +285,7 @@ public class FileTree extends JPanel
 				if (paths.length > 1)
 				{
 					JOptionPane.showMessageDialog(null, "Can't rename more than one file", "Can't rename",
-												  JOptionPane.ERROR_MESSAGE);
+					                              JOptionPane.ERROR_MESSAGE);
 				}
 				else
 				{
@@ -296,9 +297,9 @@ public class FileTree extends JPanel
 						extension = oldName.getName().split("\\.")[1]; // aaaa.zip --> zip else Selected item doesn't have an extension
 						
 					// Asking user for a new name
-					String newNameString = JOptionPane.showInputDialog(null,
-																	   "Insert a new name for " + "the file:",
-																	   "New name", JOptionPane.PLAIN_MESSAGE);
+					String newNameString = JOptionPane.showInputDialog(null, "Insert a new name for "
+					                                                         + "the file:", "New name",
+					                                                   JOptionPane.PLAIN_MESSAGE);
 					if (newNameString != null)
 					{ // newNameString == null --> user cancelled dialog
 						File newName = new File(newNameParentDirs + "\\" + newNameString + "." + extension);
@@ -307,9 +308,9 @@ public class FileTree extends JPanel
 						{
 							if (!oldName.renameTo(newName)) // renameTo: returns true if successful
 								JOptionPane.showMessageDialog(null,
-															  "Could not rename.\nThis action may not be"
-																	+ " allowed for this file/folder.",
-															  "Couldn't rename", JOptionPane.WARNING_MESSAGE);
+								                              "Could not rename.\nThis action may not be"
+								                                              + " allowed for this file/folder.",
+								                              "Couldn't rename", JOptionPane.WARNING_MESSAGE);
 							DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 							DefaultMutableTreeNode selectedNodeParent = (DefaultMutableTreeNode) selectedNode.getParent();
 							fileTree.setSelectionPath(new TreePath(selectedNodeParent));
@@ -317,7 +318,7 @@ public class FileTree extends JPanel
 						catch (Exception e)
 						{
 							JOptionPane.showMessageDialog(null, "An error occurred while renaming file",
-														  "Error", JOptionPane.ERROR_MESSAGE);
+							                              "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 				}
@@ -341,7 +342,7 @@ public class FileTree extends JPanel
 				else
 				{
 					JOptionPane.showMessageDialog(null, "Only folders can be set as download paths",
-												  "Not a folder", JOptionPane.ERROR_MESSAGE);
+					                              "Not a folder", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -472,7 +473,8 @@ public class FileTree extends JPanel
 		
 		if (isSelectedNodesFolder(fileTree.getSelectionPaths()))
 		{
-			JMenuItem runScript = new JMenuItem("TestsRun build-report");
+			JMenuItem runScript = new JMenuItem("Build report");
+			JMenuItem preAnalyze = new JMenuItem("Pre-Analyze CR");
 			
 			runScript.addActionListener(new ActionListener()
 			{
@@ -486,8 +488,8 @@ public class FileTree extends JPanel
 						{
 							int count = 0;
 							ProgressDialog dialog = new ProgressDialog(SharedObjs.satFrame,
-																	   fileTree.getSelectionPaths().length);
-																	   
+							                                           fileTree.getSelectionPaths().length);
+							
 							for (TreePath p : fileTree.getSelectionPaths())
 							{
 								DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
@@ -510,8 +512,60 @@ public class FileTree extends JPanel
 				}
 			});
 			
+			// TODO SAT does not analyze CRs not downloaded using actual SAT instance
+			preAnalyze.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent event)
+				{
+					Thread thread = new Thread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							
+							int count = 0;
+							ProgressDialog dialog = new ProgressDialog(SharedObjs.satFrame,
+							                                           fileTree.getSelectionPaths().length);
+							
+							for (TreePath p : fileTree.getSelectionPaths())
+							{
+								DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
+								File file = (File) node.getUserObject();
+								
+								SharedObjs.crsManagerPane.addLogLine("Pre analyzing CR ...");
+								
+								CrChecker crChecker = new CrChecker(file.getAbsolutePath());
+								boolean crClosed = crChecker.checkCR();
+								
+								if (crClosed == false)
+								{
+									SharedObjs.crsManagerPane.addLogLine("Nothing detected");
+									try
+									{
+										SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
+									}
+									catch (IOException e)
+									{
+										e.printStackTrace();
+									}
+								}
+								
+								dialog.updateDialogView(++count);
+								
+								SharedObjs.crsManagerPane.addLogLine("All done for " + file.getName() + "\n");
+							}
+						}
+					});
+					
+					thread.start();
+				}
+			});
+			
 			runScript.setIcon(fileSystemView.getSystemIcon(new File("Data\\scripts\\_Base.pl")));
 			popup.add(runScript);
+			preAnalyze.setIcon(Icons.analyze);
+			//popup.add(preAnalyze); TODO
 		}
 		
 		// if the it's a txt file, show the popup to select the text editor
@@ -536,9 +590,9 @@ public class FileTree extends JPanel
 						file = (File) node.getUserObject();
 						try
 						{
-							Runtime.getRuntime()
-								   .exec(new String[] {"Data\\complements\\TextAnalysisTool.exe ",
-													   file.getAbsolutePath()});
+							Runtime.getRuntime().exec(new String[] {
+							                                  "Data\\complements\\TextAnalysisTool.exe ",
+							                                  file.getAbsolutePath()});
 						}
 						catch (IOException e)
 						{
@@ -564,8 +618,9 @@ public class FileTree extends JPanel
 						try
 						{
 							Runtime.getRuntime()
-								   .exec(new String[] {"C:\\Program Files (x86)\\Notepad++\\notepad++.exe ",
-													   file.getAbsolutePath()});
+							       .exec(new String[] {
+							                     "C:\\Program Files (x86)\\Notepad++\\notepad++.exe ",
+							                     file.getAbsolutePath()});
 						}
 						catch (IOException e)
 						{
@@ -583,17 +638,18 @@ public class FileTree extends JPanel
 			openWith.add(notepad);
 		}
 		else if (checkFileExtension(fileTree.getSelectionPaths()).equals("7z")
-				 || checkFileExtension(fileTree.getSelectionPaths()).equals("zip"))
+		         || checkFileExtension(fileTree.getSelectionPaths()).equals("zip"))
 		{
 			JMenuItem unzip = new JMenuItem("Unzip");
 			JMenuItem unzipRun = new JMenuItem("Unzip and run build-report");
+			JMenuItem unzipAnalyze = new JMenuItem("Unzip and pre-analyze");
 			
 			// Get the files selected and unzip them
 			unzip.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent arg0)
 				{
-					unZipFiles(false);
+					unZipFiles(false, false);
 				}
 			});
 			
@@ -602,14 +658,25 @@ public class FileTree extends JPanel
 			{
 				public void actionPerformed(ActionEvent arg0)
 				{
-					unZipFiles(true);
+					unZipFiles(true, false);
+				}
+			});
+			
+			// Get the files selected, unzip them, pre analyze and run the build-report
+			unzipAnalyze.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent arg0)
+				{
+					unZipFiles(true, true);
 				}
 			});
 			
 			unzip.setIcon(Icons.zip);
 			unzipRun.setIcon(fileSystemView.getSystemIcon(new File("Data\\scripts\\_Base.pl")));
+			unzipAnalyze.setIcon(Icons.analyze);
 			popup.add(unzip);
 			popup.add(unzipRun);
+			//popup.add(unzipAnalyze); TODO
 		}
 		
 		popup.add(rename);
@@ -708,9 +775,10 @@ public class FileTree extends JPanel
 	}
 	
 	// Unzip the files and if necessary runs the build report script
-	public void unZipFiles(boolean runScript)
+	public void unZipFiles(boolean runScript, boolean analyze)
 	{
 		final boolean run = runScript;
+		final boolean preanalyze = analyze;
 		
 		Thread thread = new Thread(new Runnable()
 		{
@@ -731,27 +799,45 @@ public class FileTree extends JPanel
 					node = (DefaultMutableTreeNode) node.getParent();
 					
 					UnZip.unZipIt(file.getAbsolutePath(),
-								  file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
-								  
-					newFile = new File(file.getAbsolutePath()
-										   .substring(0, file.getAbsolutePath().length() - 28));
-										   
+					              file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
+					
+					newFile = new File(file.getAbsolutePath().substring(0,
+					                                                    file.getAbsolutePath().length() - 28));
+					
 					Logger.log(Logger.TAG_FILETREE, newFile.getAbsolutePath());
 					
 					if (newFile != null)
 					{
-						node.add(new DefaultMutableTreeNode(newFile));
-						if (run)
+						boolean crClosed = false;
+						
+						if (preanalyze)
 						{
-							try
+							SharedObjs.crsManagerPane.addLogLine("Pre analyzing CR ...");
+							
+							CrChecker crChecker = new CrChecker(newFile.getAbsolutePath());
+							crClosed = crChecker.checkCR();
+							
+							if (crClosed == false)
 							{
-								SharedObjs.crsManagerPane.runScript(newFile.getAbsolutePath());
-							}
-							catch (IOException e)
-							{
-								e.printStackTrace();
+								SharedObjs.crsManagerPane.addLogLine("Nothing detected");
+								
+								if (run)
+								{
+									try
+									{
+										SharedObjs.crsManagerPane.runScript(newFile.getAbsolutePath());
+									}
+									catch (IOException e)
+									{
+										e.printStackTrace();
+									}
+								}
 							}
 						}
+						
+						node.add(new DefaultMutableTreeNode(newFile));
+						
+						SharedObjs.crsManagerPane.addLogLine("All done for " + newFile.getName() + "\n");
 					}
 					
 					fileTree.updateUI();
@@ -781,8 +867,8 @@ public class FileTree extends JPanel
 			for (int i = 0; i < Length; i++)
 			{
 				if (Node.getChildAt(i).toString().toLowerCase().contains("report_info")
-					|| Node.getChildAt(i).toString().toLowerCase().contains(".btd")
-					|| Node.getChildAt(i).toString().toLowerCase().contains("entry.txt"))
+				    || Node.getChildAt(i).toString().toLowerCase().contains(".btd")
+				    || Node.getChildAt(i).toString().toLowerCase().contains("entry.txt"))
 				{
 					return true;
 				}
@@ -798,8 +884,8 @@ public class FileTree extends JPanel
 			for (int i = 0; i < Length; i++)
 			{
 				if (Node.getChildAt(i).toString().toLowerCase().contains("report_info")
-					|| Node.getChildAt(i).toString().toLowerCase().contains(".btd")
-					|| Node.getChildAt(i).toString().toLowerCase().contains("entry.txt"))
+				    || Node.getChildAt(i).toString().toLowerCase().contains(".btd")
+				    || Node.getChildAt(i).toString().toLowerCase().contains("entry.txt"))
 				{
 					return true;
 				}
