@@ -58,10 +58,12 @@ public class Logger
 	{
 		// Read debug mode on/off
 		debugMode = Boolean.parseBoolean(XmlMngr.getSystemValueOf(new String[] {"configs", "debug_mode"}));
+		
 		if (debugMode)
 		{
 			// Generate log file
 			Logger.log(Logger.TAG_LOGGER, "Checking if logs folder exists");
+			
 			if (new File(Strings.getLogsFolder()).exists())
 			{
 				logFile = new File(Strings.getLogsFolder() + "log_"
@@ -78,18 +80,7 @@ public class Logger
 				Logger.log(Logger.TAG_LOGGER, "Logs folder created");
 			}
 			
-			// Start log writer
-			try
-			{
-				logCreated = true;
-				logWriter = new BufferedWriter(new FileWriter(logFile));
-			}
-			catch (IOException e1)
-			{
-				logCreated = false;
-				Logger.log(Logger.TAG_LOGGER, "Log file could not be created");
-				e1.printStackTrace();
-			}
+			logCreated = true;
 		}
 		else
 		{
@@ -109,7 +100,9 @@ public class Logger
 		{
 			try
 			{
-				logWriter.write(tag + ": " + text + "\n");
+				openFile();
+				logWriter.write(tag + "\t : " + text + "\n");
+				close();
 			}
 			catch (IOException e)
 			{
@@ -136,8 +129,26 @@ public class Logger
 		{
 			try
 			{
-				logWriter.write("LOGGER: Closing file");
 				logWriter.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				System.out.println("Log file does not exist");
+			}
+		}
+	}
+	
+	/**
+	 * Opens log file.
+	 */
+	public static void openFile()
+	{
+		if (logCreated)
+		{
+			try
+			{
+				logWriter = new BufferedWriter(new FileWriter(logFile, true));
 			}
 			catch (IOException e)
 			{
