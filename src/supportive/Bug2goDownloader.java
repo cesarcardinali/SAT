@@ -16,6 +16,8 @@ import java.util.concurrent.Semaphore;
 import javax.swing.JOptionPane;
 
 import objects.Bug2goItem;
+import objects.CrItem;
+import panes.ListPane;
 import core.Logger;
 import core.SharedObjs;
 
@@ -440,7 +442,22 @@ public class Bug2goDownloader implements Runnable
 						
 						Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath());
 					}
+					else
+					{
+						SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
+					}
 					
+					ListPane list = new ListPane();
+					for (CrItem cr : SharedObjs.crsManagerPane.getCrsList())
+					{
+						if (cr.getStatus().equals("Closed"))
+						{
+							list.addItemList1(cr.getJiraID());
+							list.addItemList2(cr.getResolution());
+						}
+					}
+					
+					list.setVisible(true);
 					SharedObjs.crsManagerPane.addLogLine("All done for " + file.getName() + "\n");
 				}
 			}
@@ -467,6 +484,10 @@ public class Bug2goDownloader implements Runnable
 //					{
 //						SharedObjs.crsManagerPane.addLogLine("CR is OK");
 //						Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath());
+//					}
+//					else
+//					{
+//						SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
 //					}
 					
 					SharedObjs.crsManagerPane.addLogLine("All done for " + file.getName() + "\n");
