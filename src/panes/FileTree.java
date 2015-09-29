@@ -834,6 +834,20 @@ public class FileTree extends JPanel
 								}
 							}
 						}
+						else
+						{
+							if (run)
+							{
+								try
+								{
+									SharedObjs.crsManagerPane.runScript(newFile.getAbsolutePath());
+								}
+								catch (IOException e)
+								{
+									e.printStackTrace();
+								}
+							}
+						}
 						
 						node.add(new DefaultMutableTreeNode(newFile));
 						
