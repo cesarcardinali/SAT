@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
+import objects.CrItem;
+import objects.CrItemsList;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
 import core.SharedObjs;
@@ -19,12 +21,12 @@ import core.SharedObjs;
  */
 public class DBAdapter
 {
-	private static final String	DB_DRIVER		  = "com.mysql.jdbc.Driver";
-	private String				DB_CONNECTION	  = null;
-	private String				DB_USER			  = null;
-	private String				DB_PASSWORD		  = null;
-	private Connection			dbConnection	  = null;
-	private PreparedStatement	preparedStatement = null;
+	private static final String DB_DRIVER         = "com.mysql.jdbc.Driver";
+	private String              DB_CONNECTION     = null;
+	private String              DB_USER           = null;
+	private String              DB_PASSWORD       = null;
+	private Connection          dbConnection      = null;
+	private PreparedStatement   preparedStatement = null;
 	
 	/**
 	 * Constructor with connection parameter. For special cases when database connections will not be the default. Write the full path to
@@ -136,8 +138,19 @@ public class DBAdapter
 			fitem.setEditable(true);
 		else
 			fitem.setEditable(false);
-			
+		
 		return fitem;
+	}
+	
+	private CrItem setAllCrClosedFields(CrItem crcitem, ResultSet rs) throws SQLException
+	{
+		crcitem.setJiraID(rs.getString("cr_id"));
+		crcitem.setB2gID(rs.getString("b2gid"));
+		crcitem.setAssignee(rs.getString("assignee"));
+		crcitem.setResolution(rs.getString("close_reason"));
+		crcitem.setClosureDate(rs.getTimestamp("closure_date").toString());
+		
+		return crcitem;
 	}
 	
 	/**
@@ -164,7 +177,7 @@ public class DBAdapter
 		boolean boolVar = false;
 		if (bVar == 1)
 			boolVar = true;
-			
+		
 		return boolVar;
 	}
 	
@@ -282,7 +295,7 @@ public class DBAdapter
 	public CustomFiltersList sharedFilters()
 	{
 		String selectSQL = "SELECT * FROM Filters WHERE shared = " + 1 + " AND user_key != '"
-						   + SharedObjs.getUser() + "';";
+		                   + SharedObjs.getUser() + "';";
 		CustomFilterItem aux = new CustomFilterItem();
 		CustomFiltersList flist = new CustomFiltersList();
 		
@@ -343,7 +356,8 @@ public class DBAdapter
 	public CustomFiltersList activeFilters()
 	{
 		String selectSQL = "SELECT Filters.* FROM Filters, ActiveFilters WHERE (ActiveFilters.user = '"
-						   + SharedObjs.getUser() + "' OR  ActiveFilters.user = 'Public') AND ActiveFilters.filter_id = Filters.f_id;";
+		                   + SharedObjs.getUser()
+		                   + "' OR  ActiveFilters.user = 'Public') AND ActiveFilters.filter_id = Filters.f_id;";
 		CustomFilterItem aux = new CustomFilterItem();
 		CustomFiltersList flist = new CustomFiltersList();
 		
@@ -381,7 +395,7 @@ public class DBAdapter
 	public int existsFilterWithOwner(String filterName, String userName)
 	{
 		String selectSQL = "SELECT f_id FROM Filters WHERE name = '" + filterName + "' AND user_key = '"
-						   + userName + "';";
+		                   + userName + "';";
 		int id = -1;
 		
 		try
@@ -423,13 +437,13 @@ public class DBAdapter
 			// Visual query example for reference:
 			// INSERT INTO Filters VALUES (null, 'Test_Filter', '- TestHeader' , '[A-z]', 1, 1, 0, 0, 1, 1, 1, 0, 'testuser', null);
 			String insertSQL = "INSERT INTO Filters VALUES (null, '" + filter.getName() + "', '"
-							   + filter.getHeader() + "', '" + filter.getRegex() + "', "
-							   + boolToByte(filter.isMain()) + ", " + boolToByte(filter.isSystem()) + ", "
-							   + boolToByte(filter.isKernel()) + ", " + boolToByte(filter.isRadio()) + ", "
-							   + boolToByte(filter.isBugreport()) + ", " + boolToByte(filter.isRoutput())
-							   + ", " + boolToByte(filter.isShared()) + ", '"
-							   + (filter.isPublic() ? "Public" : SharedObjs.getUser()) + "', null);";
-							   
+			                   + filter.getHeader() + "', '" + filter.getRegex() + "', "
+			                   + boolToByte(filter.isMain()) + ", " + boolToByte(filter.isSystem()) + ", "
+			                   + boolToByte(filter.isKernel()) + ", " + boolToByte(filter.isRadio()) + ", "
+			                   + boolToByte(filter.isBugreport()) + ", " + boolToByte(filter.isRoutput())
+			                   + ", " + boolToByte(filter.isShared()) + ", '"
+			                   + (filter.isPublic() ? "Public" : SharedObjs.getUser()) + "', null);";
+			
 			preparedStatement = dbConnection.prepareStatement(insertSQL);
 			
 			// Execute insert SQL statement
@@ -449,9 +463,9 @@ public class DBAdapter
 			
 			if (id >= 0)
 			{
-				String activeInsertSQL = "INSERT INTO ActiveFilters VALUES (null, '" + SharedObjs.getUser() + "', "
-										 + id + ")";
-										 
+				String activeInsertSQL = "INSERT INTO ActiveFilters VALUES (null, '" + SharedObjs.getUser()
+				                         + "', " + id + ")";
+				
 				try
 				{
 					preparedStatement = dbConnection.prepareStatement(activeInsertSQL);
@@ -506,16 +520,16 @@ public class DBAdapter
 		// 1, w_bugr = 0, w_rout = 1, shared = 1, active = 0, user_key = 'testuser' WHERE name = 'Test_Adapter' AND user_key = 'testuser';
 		
 		String updateSQL = "UPDATE Filters SET name = '" + editedFilter.getName() + "', header = '"
-						   + editedFilter.getHeader() + "', regex = '" + editedFilter.getRegex()
-						   + "', w_main = " + boolToByte(editedFilter.isMain()) + ", w_syst = "
-						   + boolToByte(editedFilter.isSystem()) + ", w_krnl = "
-						   + boolToByte(editedFilter.isKernel()) + ", w_radio = "
-						   + boolToByte(editedFilter.isRadio()) + ", w_bugr = "
-						   + boolToByte(editedFilter.isBugreport()) + ", w_rout = "
-						   + boolToByte(editedFilter.isRoutput()) + ", shared = "
-						   + boolToByte(editedFilter.isShared()) + ", user_key = '" + editedFilter.getOwner()
-						   + "' WHERE f_id = " + editedFilter.getId() + ";";
-						   
+		                   + editedFilter.getHeader() + "', regex = '" + editedFilter.getRegex()
+		                   + "', w_main = " + boolToByte(editedFilter.isMain()) + ", w_syst = "
+		                   + boolToByte(editedFilter.isSystem()) + ", w_krnl = "
+		                   + boolToByte(editedFilter.isKernel()) + ", w_radio = "
+		                   + boolToByte(editedFilter.isRadio()) + ", w_bugr = "
+		                   + boolToByte(editedFilter.isBugreport()) + ", w_rout = "
+		                   + boolToByte(editedFilter.isRoutput()) + ", shared = "
+		                   + boolToByte(editedFilter.isShared()) + ", user_key = '" + editedFilter.getOwner()
+		                   + "' WHERE f_id = " + editedFilter.getId() + ";";
+		
 		int updateDone = 0;
 		
 		try
@@ -540,7 +554,7 @@ public class DBAdapter
 			{
 				// Execute select SQL statement
 				String findOcc = "SELECT * FROM ActiveFilters WHERE user = '" + SharedObjs.getUser()
-								 + "' AND filter_id = " + editedFilter.getId() + ";";
+				                 + "' AND filter_id = " + editedFilter.getId() + ";";
 				preparedStatement = dbConnection.prepareStatement(findOcc);
 				ResultSet rs = preparedStatement.executeQuery();
 				
@@ -549,12 +563,12 @@ public class DBAdapter
 				if (!rs.next())
 				{
 					System.out.println("--------- Nao encontrado - " + SharedObjs.getUser()
-									   + " - filter_id = " + editedFilter.getId());
+					                   + " - filter_id = " + editedFilter.getId());
 					try
 					{
 						// Execute insert (update) SQL statement
 						String activeInsertSQL = "INSERT INTO ActiveFilters VALUES (null, '"
-												 + SharedObjs.getUser() + "', " + editedFilter.getId() + ")";
+						                         + SharedObjs.getUser() + "', " + editedFilter.getId() + ")";
 						preparedStatement = dbConnection.prepareStatement(activeInsertSQL);
 						System.out.println("-------- Active Insert: " + preparedStatement.executeUpdate());
 					}
@@ -578,7 +592,7 @@ public class DBAdapter
 			{
 				// Execute select SQL statement
 				String findOcc = "SELECT * FROM ActiveFilters WHERE user = '" + SharedObjs.getUser()
-								 + "' AND filter_id = " + editedFilter.getId() + ";";
+				                 + "' AND filter_id = " + editedFilter.getId() + ";";
 				preparedStatement = dbConnection.prepareStatement(findOcc);
 				ResultSet rs = preparedStatement.executeQuery();
 				
@@ -591,7 +605,7 @@ public class DBAdapter
 						// Execute insert (update) SQL statement
 						// DELETE FROM `sat_db`.`ActiveFilters` WHERE `idActiveFilters`='5';
 						String activeInsertSQL = "DELETE FROM ActiveFilters WHERE idActiveFilters = "
-												 + rs.getInt(1) + ";";
+						                         + rs.getInt(1) + ";";
 						preparedStatement = dbConnection.prepareStatement(activeInsertSQL);
 						preparedStatement.executeUpdate();
 					}
@@ -676,6 +690,245 @@ public class DBAdapter
 		}
 		
 		return deleteDone;
+	}
+	
+	public int existsClosedCR(String cr_id)
+	{
+		String selectSQL = "SELECT cr_id FROM ClosedCR_History WHERE cr_id = '" + cr_id + "';";
+		int found = 0;
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			// if a line exists (found a result) then found receives true
+			if (rs.next())
+			{
+				System.out.println("---id found: " + cr_id);
+				found = 1;
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return found;
+	}
+	
+	public int insertClosedCR(CrItem crc_item)
+	{
+		// Visual query example for reference:
+		// INSERT into ClosedCR_History VALUES ('IKUT-1112', '8888888', 'testuser', 'Tethering', '2015-08-05 18:19:03');
+		int insertDone = 0;
+		
+		try
+		{
+			String insertSQL = "INSERT INTO ClosedCR_History VALUES ('" + crc_item.getJiraID() + "', '"
+			                   + crc_item.getB2gID() + "', '" + crc_item.getAssignee() + "', '"
+			                   + crc_item.getResolution() + "', null);";
+			
+			preparedStatement = dbConnection.prepareStatement(insertSQL);
+			
+			// Execute insert SQL statement
+			insertDone = insertDone + preparedStatement.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		return insertDone;
+	}
+	
+	public int deleteClosedCR(CrItem crc_item)
+	{
+		// Visual query example for reference:
+		// DELETE from ClosedCR_History where cr_id = 'IKUT-1111';
+		String deleteSQL = "DELETE from ClosedCR_History where cr_id = " + crc_item.getJiraID() + ";";
+		
+		int deleteDone = 0;
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(deleteSQL);
+			
+			// Execute delete SQL statement
+			deleteDone = preparedStatement.executeUpdate();
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return deleteDone;
+	}
+	
+	/**
+	 *
+	 * Usage example '2013-08-05' or '2014-08-05 18:19:04' on parameters 'from' and 'to'
+	 * @param from String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @param to String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @return
+	 */
+	public CrItemsList closedCRsInRange(String from, String to)
+	{
+		String selectSQL = "SELECT * FROM ClosedCR_History WHERE closure_date >= '" + from
+		                   + "' and closure_date <= '" + to + "';";
+		CrItem aux = new CrItem();
+		CrItemsList crc_list = new CrItemsList();
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			while (rs.next())
+			{
+				aux = new CrItem();
+				crc_list.add(setAllCrClosedFields(aux, rs));
+			}
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return crc_list;
+	}
+	
+	/**
+	 * 
+	 * Usage example '2013-08-05' or '2014-08-05 18:19:04' on parameters 'from' and 'to'
+	 * @param from String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @param to String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @param assignee
+	 * @return
+	 */
+	public CrItemsList closedCRsInRangeWithAssignee(String from, String to, String assignee)
+	{
+		String selectSQL = "SELECT * FROM ClosedCR_History WHERE closure_date >= '" + from
+		                   + "' and closure_date <= '" + to + "' and assignee = '" + assignee + "';";
+		CrItem aux = new CrItem();
+		CrItemsList crc_list = new CrItemsList();
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			while (rs.next())
+			{
+				aux = new CrItem();
+				crc_list.add(setAllCrClosedFields(aux, rs));
+			}
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return crc_list;
+	}
+	
+	/**
+	 * 
+	 * Usage example '2013-08-05' or '2014-08-05 18:19:04' on parameters 'from' and 'to'
+	 * @param from String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @param to String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @param resolution
+	 * @return
+	 */
+	public CrItemsList closedCRsInRangeWithResolution(String from, String to, String resolution)
+	{
+		String selectSQL = "SELECT * FROM ClosedCR_History WHERE closure_date >= '" + from
+		                   + "' and closure_date <= '" + to + "' and close_reason = '" + resolution + "';";
+		CrItem aux = new CrItem();
+		CrItemsList crc_list = new CrItemsList();
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			while (rs.next())
+			{
+				aux = new CrItem();
+				crc_list.add(setAllCrClosedFields(aux, rs));
+			}
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return crc_list;
+	}
+	
+	/**
+	 * 
+	 * Usage example '2013-08-05' or '2014-08-05 18:19:04' on parameters 'from' and 'to'
+	 * @param from String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @param to String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @param assignee
+	 * @param resolution
+	 * @return
+	 */
+	public CrItemsList closedCRsInRangeWithAllFields(String from, String to, String assignee,
+	                                                 String resolution)
+	{
+		String selectSQL = "SELECT * FROM ClosedCR_History WHERE closure_date >= '" + from
+		                   + "' and closure_date <= '" + to + "' and assignee = '" + assignee
+		                   + "' and close_reason = '" + resolution + "';";
+		CrItem aux = new CrItem();
+		CrItemsList crc_list = new CrItemsList();
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			while (rs.next())
+			{
+				aux = new CrItem();
+				crc_list.add(setAllCrClosedFields(aux, rs));
+			}
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return crc_list;
 	}
 	
 	/**

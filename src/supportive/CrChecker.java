@@ -14,24 +14,28 @@ import core.SharedObjs;
 
 public class CrChecker
 {
-	String            crPath;
-	String            falsePositiveComment;
-	String            tetherComment;
-	boolean           btdParsed;
-	boolean           mainParsed;
-	boolean           bugrepParsed;
-	boolean           btdTether;
-	boolean           mainTether;
+	private static final String INCOMPLETE = "Incomplete";
+	private static final String DUPLICATE  = "Duplicate";
+	private static final String CANCELLED  = "Cancelled";
+	private static final String INVALID    = "Invalid";
+	private String              crPath;
+	private String              falsePositiveComment;
+	private String              tetherComment;
+	private boolean             btdParsed;
+	private boolean             mainParsed;
+	private boolean             bugrepParsed;
+	private boolean             btdTether;
+	private boolean             mainTether;
 	
-	ArrayList<String> incompleteFiles;
-	ArrayList<String> filesNames;
-	ArrayList<File>   files;
+	private ArrayList<String>   incompleteFiles;
+	private ArrayList<String>   filesNames;
+	private ArrayList<File>     files;
 	
-	BtdParser         btdParser;
-	BugrepParser      bugrepParser;
-	MainParser        mainParser;
+	private BtdParser           btdParser;
+	private BugrepParser        bugrepParser;
+	private MainParser          mainParser;
 	
-	CrItem            cr;
+	private CrItem              cr;
 	
 	public CrChecker(String crPath)
 	{
@@ -56,6 +60,9 @@ public class CrChecker
 				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.INCOMPLETE,
 				                "The text logs are missing. Could not perform a complete analysis.");
+				
+				cr.setResolution(INCOMPLETE);
+				cr.setAssignee(SharedObjs.getUser());
 				
 				// Update cr object
 				// Add to statistic
@@ -338,7 +345,8 @@ public class CrChecker
 			if (btdParsed && bugrepParsed)
 			{
 				bugrepParser.setBatCap(btdParser.getBatCap());
-				if ((btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110) && upTime == false)
+				if ((btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110)
+				    && upTime == false)
 				{
 					JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
 					                                 SharedObjs.getUser(),
@@ -359,14 +367,17 @@ public class CrChecker
 					           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
 					return true;
 				}
-				else if(btdParser.getAverageconsumeOff() < 100 && bugrepParser.getConsAvgOff() < 100 && lowEbl && btdParser.getAverageconsumeOn() > 800 && bugrepParser.getConsAvgOn() > 800)
+				else if (btdParser.getAverageconsumeOff() < 100 && bugrepParser.getConsAvgOff() < 100
+				         && lowEbl && btdParser.getAverageconsumeOn() > 800
+				         && bugrepParser.getConsAvgOn() > 800)
 				{
 					
 				}
 			}
 			else if (bugrepParsed)
 			{
-				if (btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110 && upTime == false)
+				if (btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110
+				    && upTime == false)
 				{
 					JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
 					                                 SharedObjs.getUser(),
@@ -387,7 +398,9 @@ public class CrChecker
 					           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
 					return true;
 				}
-				else if(btdParser.getAverageconsumeOff() < 100 && bugrepParser.getConsAvgOff() < 100 && lowEbl && btdParser.getAverageconsumeOn() > 800 && bugrepParser.getConsAvgOn() > 800)
+				else if (btdParser.getAverageconsumeOff() < 100 && bugrepParser.getConsAvgOff() < 100
+				         && lowEbl && btdParser.getAverageconsumeOn() > 800
+				         && bugrepParser.getConsAvgOn() > 800)
 				{
 					
 				}
