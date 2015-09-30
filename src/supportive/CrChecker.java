@@ -12,10 +12,11 @@ import core.Logger;
 import core.SharedObjs;
 
 
+@SuppressWarnings("unused")
 public class CrChecker
 {
 	private static final String INCOMPLETE = "Incomplete";
-	private static final String DUPLICATE  = "Duplicate";
+    private static final String DUPLICATE  = "Duplicate";
 	private static final String CANCELLED  = "Cancelled";
 	private static final String INVALID    = "Invalid";
 	private String              crPath;

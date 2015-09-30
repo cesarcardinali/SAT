@@ -2,16 +2,13 @@ package supportive;
 
 
 import java.awt.Desktop;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import java.net.URI;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,15 +18,15 @@ import org.apache.commons.io.FileUtils;
 
 import core.Logger;
 import core.SharedObjs;
-
 import panes.ClosingDiagDialog;
 
 
+@SuppressWarnings("unused")
 public class DiagCrsCloser implements Runnable
 {
-	private static ArrayList<String>	   diagCRs, unknownCRs;
+	private static ArrayList<String>       diagCRs, unknownCRs;
 	private static HashMap<String, String> b2gs_results;
-	private static ClosingDiagDialog	   dialog;
+	private static ClosingDiagDialog       dialog;
 	private static HashMap<String, String> b2g_crid;
 	
 	public DiagCrsCloser(ClosingDiagDialog dialog)
@@ -37,10 +34,11 @@ public class DiagCrsCloser implements Runnable
 		DiagCrsCloser.dialog = dialog;
 	}
 	
-	private static void checkDiag()
+	@SuppressWarnings("null")
+    private static void checkDiag()
 	{
 		String path = SharedObjs.getDownloadPath();
-		HashMap<String, String> b2g_analyzed = null; //SharedObjs.crsManagerPane.getB2g_analyzed();
+		HashMap<String, String> b2g_analyzed = null; // SharedObjs.crsManagerPane.getB2g_analyzed();
 		Logger.log(Logger.TAG_DIAGCRSCLOSER, "Path: " + path);
 		String sCurrentLine, result, crPath;
 		BufferedReader br = null;
@@ -63,9 +61,9 @@ public class DiagCrsCloser implements Runnable
 					file = path + listOfFiles[i].getName();
 					crPath = file.substring(0, file.length() - 28);
 					b2gID = listOfFiles[i].getName().substring(0, listOfFiles[i].getName().length() - 28);
-					Logger.log(Logger.TAG_DIAGCRSCLOSER,
-							   "---------------------\nFile to unzip: " + file + "\nOutput folder: " + crPath
-														 + "\nB2Gid: " + b2gID + "\nUnzipping:");
+					Logger.log(Logger.TAG_DIAGCRSCLOSER, "---------------------\nFile to unzip: " + file
+					                                     + "\nOutput folder: " + crPath + "\nB2Gid: " + b2gID
+					                                     + "\nUnzipping:");
 					UnZip.unZipIt(file, crPath);
 					result = "DIAG_WS wakelock issue:\n" + "{panel}\n";
 					bugreport = null;
@@ -101,24 +99,26 @@ public class DiagCrsCloser implements Runnable
 					if (bugreport == null)
 					{
 						JOptionPane.showMessageDialog(null,
-													  "The bugreport file could not be located inside "
-															+ crPath + "\nPress OK to jump for the next CR.\n"
-															+ "At the end of entire process, a list with the CRs closed "
-															+ "and other with the CRs not diagnosed as DIAG or impossible to check for it will be displayed.");
+						                              "The bugreport file could not be located inside "
+						                                              + crPath
+						                                              + "\nPress OK to jump for the next CR.\n"
+						                                              + "At the end of entire process, a list with the CRs closed "
+						                                              + "and other with the CRs not diagnosed as DIAG or impossible to check for it will be displayed.");
 						unknownCRs.add(listOfFiles[i].getName()
-													 .substring(0, listOfFiles[i].getName().length() - 28));
+						                             .substring(0, listOfFiles[i].getName().length() - 28));
 						b2g_analyzed.put(b2gID, "Incomplete");
 						continue;
 					}
 					if (reportInfo == null)
 					{
 						JOptionPane.showMessageDialog(null,
-													  "The report_info file could not be located inside "
-															+ crPath + "\nPress OK to jump for the next CR.\n"
-															+ "At the end of entire process, a list with the CRs closed "
-															+ "and other with the CRs not diagnosed as DIAG or impossible to check for it will be displayed.");
+						                              "The report_info file could not be located inside "
+						                                              + crPath
+						                                              + "\nPress OK to jump for the next CR.\n"
+						                                              + "At the end of entire process, a list with the CRs closed "
+						                                              + "and other with the CRs not diagnosed as DIAG or impossible to check for it will be displayed.");
 						unknownCRs.add(listOfFiles[i].getName()
-													 .substring(0, listOfFiles[i].getName().length() - 28));
+						                             .substring(0, listOfFiles[i].getName().length() - 28));
 						b2g_analyzed.put(b2gID, "Incomplete");
 						continue;
 					}
@@ -173,16 +173,19 @@ public class DiagCrsCloser implements Runnable
 								}
 								diagMs = Long.parseLong(parts[6]);
 								int horas = (int) (diagMs / 3600000);
-								result = result + "DIAG_WS is held for more than " + horas + " hours:\n"
-										 + "||name		|active_count	|event_count	|wakeup_count	|expire_count	|active_since	|total_time	|max_time	|last_change | prevent_suspend_time|"
-										 + "\n||" + line.replaceAll("\t\t|\t", "|") + "|\n";
+								result = result
+								         + "DIAG_WS is held for more than "
+								         + horas
+								         + " hours:\n"
+								         + "||name		|active_count	|event_count	|wakeup_count	|expire_count	|active_since	|total_time	|max_time	|last_change | prevent_suspend_time|"
+								         + "\n||" + line.replaceAll("\t\t|\t", "|") + "|\n";
 								break;
 							}
 						}
 					}
 					br.close();
 					if (result.toLowerCase().contains("total_time")
-						|| result.toLowerCase().contains("kernel"))
+					    || result.toLowerCase().contains("kernel"))
 					{
 						br = new BufferedReader(new FileReader(reportInfo));
 						long duration = 0;
@@ -192,7 +195,7 @@ public class DiagCrsCloser implements Runnable
 							if (sCurrentLine.toLowerCase().contains("product"))
 							{
 								if (sCurrentLine.toLowerCase().contains("surnia")
-									|| sCurrentLine.toLowerCase().contains("otus"))
+								    || sCurrentLine.toLowerCase().contains("otus"))
 								{
 									result = result + "{panel}\n\nDuplicate of IKSWL-1063";
 									// break;
@@ -208,18 +211,18 @@ public class DiagCrsCloser implements Runnable
 									// break;
 								}
 								else if (sCurrentLine.toLowerCase().contains("titan")
-										 || sCurrentLine.toLowerCase().contains("ghost")
-										 || sCurrentLine.toLowerCase().contains("victara")
-										 || sCurrentLine.toLowerCase().contains("peregrine")
-										 || sCurrentLine.toLowerCase().contains("falcon")
-										 || sCurrentLine.toLowerCase().contains("condor"))
+								         || sCurrentLine.toLowerCase().contains("ghost")
+								         || sCurrentLine.toLowerCase().contains("victara")
+								         || sCurrentLine.toLowerCase().contains("peregrine")
+								         || sCurrentLine.toLowerCase().contains("falcon")
+								         || sCurrentLine.toLowerCase().contains("condor"))
 								{
 									result = result + "{panel}\n\nDuplicate of IKSWL-1063";
 									// break;
 								}
 								else if (sCurrentLine.toLowerCase().contains("osprey")
-										 || sCurrentLine.toLowerCase().contains("lux")
-										 || sCurrentLine.toLowerCase().contains("kinzie"))
+								         || sCurrentLine.toLowerCase().contains("lux")
+								         || sCurrentLine.toLowerCase().contains("kinzie"))
 								{
 									result = result + "{panel}\n\nDuplicate of IKSWL-1063";
 									// break;
@@ -241,11 +244,9 @@ public class DiagCrsCloser implements Runnable
 							}
 							else if (sCurrentLine.toLowerCase().contains("duration"))
 							{
-								duration = Long.parseLong(sCurrentLine.substring(sCurrentLine.indexOf("duration=")
-																				 + 9,
-																				 sCurrentLine.indexOf(";",
-																									  sCurrentLine.indexOf("duration=")
-																										   + 9)));
+								duration = Long.parseLong(sCurrentLine.substring(sCurrentLine.indexOf("duration=") + 9,
+								                                                 sCurrentLine.indexOf(";",
+								                                                                      sCurrentLine.indexOf("duration=") + 9)));
 								if (result.contains("active_count") && diagMs < duration * 0.7)
 								{
 									result = "Following logs, it is not a Diag issue";
@@ -315,10 +316,10 @@ public class DiagCrsCloser implements Runnable
 	{
 		Object[] options = {"It's OK. Go!", "Cancel, I need to check"};
 		int n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
-											 "Please, make sure that your username and password are set correctly at \"CRs and Jira\" tab. Otherwise, cancel this window and "
-																		+ "check your login data.",
-											 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
-											 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		                                     "Please, make sure that your username and password are set correctly at \"CRs and Jira\" tab. Otherwise, cancel this window and "
+		                                                     + "check your login data.", "Warning",
+		                                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+		                                     null, options, options[1]);
 		Logger.log(Logger.TAG_DIAGCRSCLOSER, "Resposta: " + n);
 		if (n == 0)
 		{
@@ -340,17 +341,17 @@ public class DiagCrsCloser implements Runnable
 	
 	private static void finalizeCRs()
 	{
-		Object[] options = new Object[] {"Close Firefox",
-										 "Close Firefox and Open CRs on Chrome",
-										 "Nothing =)"};
+		Object[] options = new Object[] {
+		        "Close Firefox",
+		        "Close Firefox and Open CRs on Chrome",
+		        "Nothing =)"};
 		int n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane, "What do you want to do next?\n",
-											 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
-											 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		                                     "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
+		                                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 		if (n == 0)
 		{/*
-			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing Firefox");
-			if (driver != null)
-				driver.close();*/
+		  * Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing Firefox"); if (driver != null) driver.close();
+		  */
 		}
 		else if (n == 1)
 		{
@@ -358,7 +359,7 @@ public class DiagCrsCloser implements Runnable
 			b2g_crid.values().toArray();
 			try
 			{
-				//driver.close();
+				// driver.close();
 			}
 			catch (NullPointerException e)
 			{
@@ -385,9 +386,9 @@ public class DiagCrsCloser implements Runnable
 		}
 		options = new Object[] {"Yes", "No"};
 		n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
-										 "Do you want to delete the DIAG_WS CRs in your CRs folder?\n",
-										 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
-										 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		                                 "Do you want to delete the DIAG_WS CRs in your CRs folder?\n",
+		                                 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
+		                                 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 		if (n == 0)
 		{
 			String path = SharedObjs.getDownloadPath();
@@ -408,21 +409,21 @@ public class DiagCrsCloser implements Runnable
 					delCRs(folder);
 				}
 				else if (listOfFiles[a].isFile() && diagCRs.contains(folder)
-						 && listOfFiles[a].getName().endsWith(".zip"))
+				         && listOfFiles[a].getName().endsWith(".zip"))
 				{
 					delCRs(folder);
 				}
 			}
 		}
 		n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
-										 "Do you want to generate report_output on each remaining CR in your CRs folder?\n",
-										 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
-										 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		                                 "Do you want to generate report_output on each remaining CR in your CRs folder?\n",
+		                                 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
+		                                 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 		if (n == 0)
 		{
 			dialog.setText("This dialog can be closed anytime you want. It will not stop the build reports work.\n"
-						   + "Is recommended you wait them to be finished before doing something else.\n\n"
-						   + "\n\nRunning build report at:");
+			               + "Is recommended you wait them to be finished before doing something else.\n\n"
+			               + "\n\nRunning build report at:");
 			String crFolder;
 			File folder = new File(SharedObjs.getDownloadPath());
 			Logger.log(Logger.TAG_DIAGCRSCLOSER, "Folder: " + folder);
@@ -452,7 +453,7 @@ public class DiagCrsCloser implements Runnable
 							{
 								String files = filesList[j].getName();
 								if (files.toLowerCase().endsWith(".txt")
-									&& files.toLowerCase().contains("report_info"))
+								    && files.toLowerCase().contains("report_info"))
 								{
 									file = crFolder + "\\" + files;
 									break;
@@ -480,92 +481,91 @@ public class DiagCrsCloser implements Runnable
 									if (sCurrentLine.toLowerCase().contains("condor"))
 									{
 										copyScript(new File("Data\\scripts\\Condor.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else if (sCurrentLine.toLowerCase().contains("falcon")
-											 || sCurrentLine.toLowerCase().contains("peregrine")
-											 || sCurrentLine.toLowerCase().contains("titan"))
+									         || sCurrentLine.toLowerCase().contains("peregrine")
+									         || sCurrentLine.toLowerCase().contains("titan"))
 									{
 										copyScript(new File("Data\\scripts\\Falcon_Peregrine_Titan.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else if (sCurrentLine.toLowerCase().contains("ghost"))
 									{
 										copyScript(new File("Data\\scripts\\Ghost.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else if (sCurrentLine.toLowerCase().contains("osprey"))
 									{
 										copyScript(new File("Data\\scripts\\Osprey.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else if (sCurrentLine.toLowerCase().contains("surnia")
-											 || sCurrentLine.toLowerCase().contains("otus")
-											 || sCurrentLine.toLowerCase().contains("thea"))
+									         || sCurrentLine.toLowerCase().contains("otus")
+									         || sCurrentLine.toLowerCase().contains("thea"))
 									{
 										copyScript(new File("Data\\scripts\\Otus_Surnia_Thea.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else if (sCurrentLine.toLowerCase().contains("quantum"))
 									{
 										copyScript(new File("Data\\scripts\\Quantum.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else if (sCurrentLine.toLowerCase().contains("shamu"))
 									{
 										copyScript(new File("Data\\scripts\\Shamu.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else if (sCurrentLine.toLowerCase().contains("victara"))
 									{
 										copyScript(new File("Data\\scripts\\Victara.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else if (sCurrentLine.toLowerCase().contains("quark"))
 									{
 										copyScript(new File("Data\\scripts\\Quark.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else if (sCurrentLine.toLowerCase().contains("kinzie"))
 									{
 										copyScript(new File("Data\\scripts\\Kinzie.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 									}
 									else if (sCurrentLine.toLowerCase().contains("clark"))
 									{
 										copyScript(new File("Data\\scripts\\Clark.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 									}
 									else if (sCurrentLine.toLowerCase().contains("lux"))
 									{
 										copyScript(new File("Data\\scripts\\Lynx.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 									else
 									{
 										JOptionPane.showMessageDialog(null,
-																	  "Product name not found. Copying default build report (2200mah)");
+										                              "Product name not found. Copying default build report (2200mah)");
 										copyScript(new File("Data\\scripts\\build_report.pl"),
-												   new File(folder + "\\build_report.pl"));
+										           new File(folder + "\\build_report.pl"));
 										break;
 									}
 								}
 							}
 						}
 						br.close();
-						ProcessBuilder builder = new ProcessBuilder("cmd.exe",
-																	"/c",
-																	"cd " + crFolder + " && build_report.pl");
+						ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + crFolder
+						                                                             + " && build_report.pl");
 						builder.redirectErrorStream(true);
 						Process p = builder.start();
 						Logger.log(Logger.TAG_DIAGCRSCLOSER, "Build report started at " + crFolder);
@@ -641,88 +641,30 @@ public class DiagCrsCloser implements Runnable
 	public void run()
 	{
 		/*
-		int step = 1;
-		while (step != 10)
-		{
-			if (step == 1)
-			{
-				if (SharedObjs.crsManagerPane.getB2g_crid() != null
-					&& SharedObjs.crsManagerPane.getB2g_crid().size() > 0)
-				{
-					b2g_crid = SharedObjs.crsManagerPane.getB2g_crid();
-					Logger.log(Logger.TAG_DIAGCRSCLOSER, "Geeting CRs/B2G IDs from the download usage\n"
-														 + "b2g_crid: " + b2g_crid.size());
-					dialog.setText(dialog.getText() + "\nChecking the CRs ...");
-					step = 2;
-				}
-				else
-				{
-					if (SharedObjs.crsManagerPane.getCrsToDownload().length < 1)
-					{
-						JOptionPane.showMessageDialog(null,
-													  "The connection between CR Jira IDs and CR B2G IDs were not found.\n"
-															+ "You can paste the CRs list on the text area below and try again.\n"
-															+ "This way, the tool will be able to generate this connection if needed.");
-						step = 10;
-						dialog.setText(dialog.getText() + "\nCanceling ...");
-					}
-					else
-					{
-						Object[] options = {"OK. Go!", "Cancel"};
-						int n = JOptionPane.showOptionDialog(SharedObjs.crsManagerPane,
-															 "The connection between Jira IDs and B2G IDs were not found.\n"
-																						+ "Click \"OK\" to the Tool generate this connection or \"Cancel\" to cacel the entire process",
-															 "Warning", JOptionPane.YES_NO_CANCEL_OPTION,
-															 JOptionPane.QUESTION_MESSAGE, null, options,
-															 options[1]);
-						Logger.log(Logger.TAG_DIAGCRSCLOSER, "Resposta: " + n);
-						if (n == 0)
-						{
-							dialog.setText(dialog.getText()
-										   + "\nCreating the link between b2g ids and Jira ids ...");
-							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Connecting Jira IDs and B2G IDs");
-							b2g_crid = SharedObjs.crsManagerPane.getB2g_crid();
-							connectB2gidToJiraid();
-							Logger.log(Logger.TAG_DIAGCRSCLOSER, "b2g_crid: " + b2g_crid.size());
-							Logger.log(Logger.TAG_DIAGCRSCLOSER, "Going to step 2");
-							step = 2;
-						}
-						else
-						{
-							step = 10;
-							dialog.setText(dialog.getText() + "\nCanceling ...");
-						}
-					}
-				}
-			}
-			else if (step == 2)
-			{
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Searching for DIAG_WS issues");
-				dialog.setText(dialog.getText() + "\nSearching for DIAG_WS issues in zip files ...");
-				checkDiag();
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "diagCRs: " + diagCRs.size() + "\nDiagList Updated");
-				step = 3;
-			}
-			else if (step == 3)
-			{
-				Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing DIAG_WS issues");
-				dialog.setText(dialog.getText() + "\nClosing DIAG_WS issues on Jira...");
-				SharedObjs.crsManagerPane.updateAllDataUI();
-				closeDiagCrs();
-				step = 4;
-			}
-			else if (step == 4)
-			{
-				dialog.dispose();
-				dialog.setVisible(false);
-				step = 10;
-			}
-		}
-		dialog.dispose();
-		dialog.setVisible(false);
-		SharedObjs.crsManagerPane.updateAllDataUI();
-		Logger.log(Logger.TAG_DIAGCRSCLOSER, ">>>>DiagList Updated");
-		*/
+		 * int step = 1; while (step != 10) { if (step == 1) { if (SharedObjs.crsManagerPane.getB2g_crid() != null &&
+		 * SharedObjs.crsManagerPane.getB2g_crid().size() > 0) { b2g_crid = SharedObjs.crsManagerPane.getB2g_crid();
+		 * Logger.log(Logger.TAG_DIAGCRSCLOSER, "Geeting CRs/B2G IDs from the download usage\n" + "b2g_crid: " + b2g_crid.size());
+		 * dialog.setText(dialog.getText() + "\nChecking the CRs ..."); step = 2; } else { if
+		 * (SharedObjs.crsManagerPane.getCrsToDownload().length < 1) { JOptionPane.showMessageDialog(null,
+		 * "The connection between CR Jira IDs and CR B2G IDs were not found.\n" +
+		 * "You can paste the CRs list on the text area below and try again.\n" +
+		 * "This way, the tool will be able to generate this connection if needed."); step = 10; dialog.setText(dialog.getText() +
+		 * "\nCanceling ..."); } else { Object[] options = {"OK. Go!", "Cancel"}; int n =
+		 * JOptionPane.showOptionDialog(SharedObjs.crsManagerPane, "The connection between Jira IDs and B2G IDs were not found.\n" +
+		 * "Click \"OK\" to the Tool generate this connection or \"Cancel\" to cacel the entire process", "Warning",
+		 * JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]); Logger.log(Logger.TAG_DIAGCRSCLOSER,
+		 * "Resposta: " + n); if (n == 0) { dialog.setText(dialog.getText() + "\nCreating the link between b2g ids and Jira ids ...");
+		 * Logger.log(Logger.TAG_DIAGCRSCLOSER, "Connecting Jira IDs and B2G IDs"); b2g_crid = SharedObjs.crsManagerPane.getB2g_crid();
+		 * connectB2gidToJiraid(); Logger.log(Logger.TAG_DIAGCRSCLOSER, "b2g_crid: " + b2g_crid.size());
+		 * Logger.log(Logger.TAG_DIAGCRSCLOSER, "Going to step 2"); step = 2; } else { step = 10; dialog.setText(dialog.getText() +
+		 * "\nCanceling ..."); } } } } else if (step == 2) { Logger.log(Logger.TAG_DIAGCRSCLOSER, "Searching for DIAG_WS issues");
+		 * dialog.setText(dialog.getText() + "\nSearching for DIAG_WS issues in zip files ..."); checkDiag();
+		 * Logger.log(Logger.TAG_DIAGCRSCLOSER, "diagCRs: " + diagCRs.size() + "\nDiagList Updated"); step = 3; } else if (step == 3) {
+		 * Logger.log(Logger.TAG_DIAGCRSCLOSER, "Closing DIAG_WS issues"); dialog.setText(dialog.getText() +
+		 * "\nClosing DIAG_WS issues on Jira..."); SharedObjs.crsManagerPane.updateAllDataUI(); closeDiagCrs(); step = 4; } else if (step ==
+		 * 4) { dialog.dispose(); dialog.setVisible(false); step = 10; } } dialog.dispose(); dialog.setVisible(false);
+		 * SharedObjs.crsManagerPane.updateAllDataUI(); Logger.log(Logger.TAG_DIAGCRSCLOSER, ">>>>DiagList Updated");
+		 */
 	}
 	
 	public static ArrayList<String> getDiagCRs()

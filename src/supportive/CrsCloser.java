@@ -12,6 +12,7 @@ import core.Logger;
 import core.SharedObjs;
 
 
+@SuppressWarnings("unused")
 public class CrsCloser implements Runnable
 {
 	/*
