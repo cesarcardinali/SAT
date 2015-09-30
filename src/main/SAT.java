@@ -8,11 +8,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -131,26 +127,20 @@ public class SAT extends JFrame
 		updating = true;
 		long dateRemote = 0, dateLocal = 0;
 		
-		try
-        {
-        	Path path = Paths.get(SharedObjs.updateFolder1 + Strings.getToolFileName());
-    		BasicFileAttributes attributes;
-	        attributes = Files.readAttributes(path, BasicFileAttributes.class);
-	        FileTime creationTime = attributes.creationTime();
-	        System.out.println("------- " + creationTime.toMillis());
-	        
-	        path = Paths.get(Strings.getToolFileName());
-	        attributes = Files.readAttributes(path, BasicFileAttributes.class);
-	        FileTime creationTime2 = attributes.creationTime();
-	        System.out.println("------- " + creationTime2.toMillis());
-	        
-	        dateRemote = creationTime.toMillis();
-	        dateLocal = creationTime2.toMillis();
-        }
-        catch (IOException e1)
-        {
-	        e1.printStackTrace();
-        }
+		File f1;
+		File f2;
+		f1 = new File(SharedObjs.updateFolder1 + "/" + Strings.getToolFileName());
+		
+		Logger.log(Logger.TAG_SAT,
+		           "Remote file: " + f1.getAbsolutePath() + " - Modified: " + new Date(f1.lastModified()));
+		
+		f2 = new File(Strings.getToolFileName());
+		
+		Logger.log(Logger.TAG_SAT,
+		           "Local file: " + f2.getAbsolutePath() + " - Modified: " + new Date(f2.lastModified()));
+		
+		dateRemote = f1.lastModified();
+		dateLocal = f2.lastModified();
 		
 		if (dateLocal < dateRemote && dateLocal != 0)
 		{
