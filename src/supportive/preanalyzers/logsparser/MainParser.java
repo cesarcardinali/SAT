@@ -105,15 +105,17 @@ public class MainParser
 			String sCurrentLine;
 			LogState logState = new LogState();
 			wifiPeriod wifiPeriod = new wifiPeriod();
+			Pattern ptDateLine = Pattern.compile("^\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d");//09-27 11:32:45.622
+			Matcher mDate;
 			long actualTime = -1;
 			long nextTime = -1;
 			
 			while ((sCurrentLine = br.readLine()) != null)
 			{
-				if (sCurrentLine.contains(": "))
+				mDate = ptDateLine.matcher(sCurrentLine);
+				if (mDate.find())
 				{
 					
-					// System.out.println(sCurrentLine);
 					//System.out.println(sCurrentLine);
 					nextTime = DateTimeOperator.getMillis(parseLineDate(sCurrentLine)[0]);
 					if ((nextTime - actualTime) > 3600000L)
