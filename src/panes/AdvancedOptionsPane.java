@@ -10,8 +10,12 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,24 +40,24 @@ import core.XmlMngr;
 @SuppressWarnings("serial")
 public class AdvancedOptionsPane extends JFrame
 {
-	private JPanel					contentPane;
-	private JLabel					lblTitle;
-	private JPanel					panel;
-	private JLabel					lblProduct;
-	private JComboBox<String>		cbxDiagProd;
-	private JLabel					lblConfigureDiagwsDup;
-	private JTextField				textDiag;
-	private JSeparator				separator;
-	private JLabel					lblBatCap;
-	private JLabel					lblProduct2;
-	private JComboBox<String>		cbxBatCap;
-	private JTextField				textBatCap;
-	private JSeparator				separator_1;
-	private JPanel					panel_1;
-	private JButton					btnOk;
-	private HashMap<String, String>	dupMap;
-	private HashMap<String, String>	bat_capMap;
-	private JButton btnCancel;
+	private JPanel                  contentPane;
+	private JLabel                  lblTitle;
+	private JPanel                  panel;
+	private JLabel                  lblProduct;
+	private JComboBox<String>       cbxDiagProd;
+	private JLabel                  lblConfigureDiagwsDup;
+	private JTextField              textDiag;
+	private JSeparator              separator;
+	private JLabel                  lblBatCap;
+	private JLabel                  lblProduct2;
+	private JComboBox<String>       cbxBatCap;
+	private JTextField              textBatCap;
+	private JSeparator              separator_1;
+	private JPanel                  panel_1;
+	private JButton                 btnOk;
+	private HashMap<String, String> dupMap;
+	private HashMap<String, String> bat_capMap;
+	private JButton                 btnCancel;
 	
 	/**
 	 * Create the frame.
@@ -217,8 +221,10 @@ public class AdvancedOptionsPane extends JFrame
 		panel_1.add(btnOk);
 		
 		btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		btnCancel.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
 				dispose();
 			}
 		});
@@ -250,6 +256,34 @@ public class AdvancedOptionsPane extends JFrame
 			}
 		});
 		
+		textDiag.addFocusListener(new FocusListener()
+		{	
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+				dupMap.put((String)cbxDiagProd.getSelectedItem(), textDiag.getText());
+			}
+			
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+			}
+		});
+		
+		textBatCap.addFocusListener(new FocusListener()
+		{	
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+				bat_capMap.put((String)cbxBatCap.getSelectedItem(), textBatCap.getText());
+			}
+			
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+			}
+		});
+		
 		btnOk.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -278,17 +312,21 @@ public class AdvancedOptionsPane extends JFrame
 		
 		dupMap.putAll(XmlMngr.getDiagDupItems());
 		System.out.println(dupMap);
+		
 		for (String value : dupMap.keySet())
 		{
 			cbxDiagProd.addItem(value);
 		}
+		
 		textDiag.setText(dupMap.get((String) cbxDiagProd.getSelectedItem()));
 		
 		bat_capMap.putAll(XmlMngr.getBatteryCapacityItems());
+		
 		for (String value : bat_capMap.keySet())
 		{
 			cbxBatCap.addItem(value);
 		}
+		
 		textBatCap.setText(bat_capMap.get((String) cbxBatCap.getSelectedItem()));
 		
 		Logger.log(Logger.TAG_OPTIONS, "Advanced options loaded");
@@ -303,12 +341,6 @@ public class AdvancedOptionsPane extends JFrame
 	{
 		XmlMngr.setBatteryCapacityItems(bat_capMap);
 		XmlMngr.setDiagDupItems(dupMap);
-		
-		dupMap.clear();
-		bat_capMap.clear();
-		
-		dupMap.putAll(XmlMngr.getDiagDupItems());
-		bat_capMap.putAll(XmlMngr.getBatteryCapacityItems());
 		
 		Logger.log(Logger.TAG_OPTIONS, "Advanced Options Saved");
 	}

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SAT>
   <parser_pane>
-    <rootPath>C:\CRs</rootPath>
+    <rootPath />
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\CRs\NormalAutoCloseTest</path>
+    <path>C:\</path>
     <assign>false</assign>
     <label>false</label>
   </crs_jira_pane>
@@ -31,7 +31,7 @@
     <remember>true</remember>
   </option_pane>
   <bat_cap>
-    <clark>30001</clark>
+    <clark>3000</clark>
     <condor>1980</condor>
     <falcon>2070</falcon>
     <ghost>2200</ghost>
@@ -46,6 +46,7 @@
     <thea>2390</thea>
     <titan>2070</titan>
     <victara>2300</victara>
+    <merlin>2470</merlin>
   </bat_cap>
   <diag_dup>
     <surnia>IKSWL-1063</surnia>
@@ -62,6 +63,7 @@
     <osprey>IKUT-4329</osprey>
     <lux>IKSWL-1063</lux>
     <quark>IKUT-4329</quark>
-    <clark>IKUT-43291</clark>
+    <clark>IKUT-43290</clark>
+    <merlin>IKUT-00000</merlin>
   </diag_dup>
 </SAT>

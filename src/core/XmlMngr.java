@@ -666,6 +666,7 @@ public class XmlMngr
 		for (String value : items.keySet())
 		{
 			element.getChild(value).setText(items.get(value));
+			System.out.println(element.getChild(value).getName() + " - " + element.getChild(value).getText());
 		}
 	}
 	
