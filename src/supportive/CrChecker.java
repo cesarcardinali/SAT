@@ -16,7 +16,7 @@ import core.SharedObjs;
 public class CrChecker
 {
 	private static final String INCOMPLETE = "Incomplete";
-    private static final String DUPLICATE  = "Duplicate";
+	private static final String DUPLICATE  = "Duplicate";
 	private static final String CANCELLED  = "Cancelled";
 	private static final String INVALID    = "Invalid";
 	private String              crPath;
@@ -37,6 +37,7 @@ public class CrChecker
 	private MainParser          mainParser;
 	
 	private CrItem              cr;
+	private JiraSatApi          jira;
 	
 	public CrChecker(String crPath)
 	{
@@ -51,13 +52,16 @@ public class CrChecker
 		if (cr != null)
 		{
 			long start = System.currentTimeMillis();
+			
+			SharedObjs.crsManagerPane.addLogLine("Adding pre analyzed label ...");
+			
+			jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
+			jira.addLabel(cr.getJiraID(), "sat_pre_analyzed");
+			
 			SharedObjs.crsManagerPane.addLogLine("Checking if incomplete ...");
 			
 			if (checkIfIncomplete())
 			{
-				JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
-				                                 SharedObjs.getUser(),
-				                                 SharedObjs.getPass());
 				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.INCOMPLETE,
 				                "The text logs are missing. Could not perform a complete analysis.");
@@ -90,10 +94,6 @@ public class CrChecker
 			SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
 			if (checkForTethering())
 			{
-				JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
-				                                 SharedObjs.getUser(),
-				                                 SharedObjs.getPass());
-				
 				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
 				jira.addLabel(cr.getJiraID(), "sat_closed");
@@ -294,7 +294,7 @@ public class CrChecker
 					                + "|\\n";
 				}
 			}
-
+			
 			tetherComment = tetherComment + "\\n";
 		}
 		
@@ -352,10 +352,6 @@ public class CrChecker
 				if ((btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110)
 				    && upTime == false)
 				{
-					JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
-					                                 SharedObjs.getUser(),
-					                                 SharedObjs.getPass());
-					
 					jira.assignIssue(cr.getJiraID());
 					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO add calling time
 					jira.addLabel(cr.getJiraID(), "sat_closed");
@@ -386,10 +382,6 @@ public class CrChecker
 				if (btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110
 				    && upTime == false)
 				{
-					JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
-					                                 SharedObjs.getUser(),
-					                                 SharedObjs.getPass());
-					
 					jira.assignIssue(cr.getJiraID());
 					jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, bugrepParser.getCommentReport());// TODO
 					jira.addLabel(cr.getJiraID(), "sat_closed");

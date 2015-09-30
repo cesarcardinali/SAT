@@ -3,15 +3,17 @@
   <configs>
     <tool_name>Search Analysis Tool</tool_name>
     <tool_version>v2.0 pre-release</tool_version>
-    <tool_file>BatteryTool.jar</tool_file>
-    <updater>Updater.jar</updater>
+    <tool_file>SAT.jar</tool_file>
+    <updater>SAT_Updater.jar</updater>
     <content_folder>Data/</content_folder>
     <usr_config>cfgs/user_cfg.xml</usr_config>
     <pwd_config>cfgs/pass.pwd</pwd_config>
     <pics_folder>pics/</pics_folder>
     <logs_folder>logs/</logs_folder>
-    <update_path1>S:/Rio_Itu/SAT/</update_path1>
+    <update_path1>S:/Rio_Itu/SAT</update_path1>
     <update_path2>S:/Rio_Itu/Temporário/Cesar/</update_path2>
+    <clean_install>true</clean_install>
+    <overwrite_usr_cfg>true</overwrite_usr_cfg>
     <debug_mode>true</debug_mode>
   </configs>
 </SAT>
