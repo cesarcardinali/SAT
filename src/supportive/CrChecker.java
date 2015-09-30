@@ -292,8 +292,9 @@ public class CrChecker
 					                                                                     .getDuration())
 					                + "|\\n";
 				}
-				tetherComment = tetherComment + "\\n";
 			}
+
+			tetherComment = tetherComment + "\\n";
 		}
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER, "BTD Tether: " + btdTether);
@@ -346,6 +347,7 @@ public class CrChecker
 			if (btdParsed && bugrepParsed)
 			{
 				bugrepParser.setBatCap(btdParser.getBatCap());
+				
 				if ((btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110)
 				    && upTime == false)
 				{
@@ -368,6 +370,7 @@ public class CrChecker
 					
 					Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 					           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+					
 					return true;
 				}
 				else if (btdParser.getAverageconsumeOff() < 100 && bugrepParser.getConsAvgOff() < 100
@@ -401,6 +404,7 @@ public class CrChecker
 					
 					Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 					           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+					
 					return true;
 				}
 				else if (btdParser.getAverageconsumeOff() < 100 && bugrepParser.getConsAvgOff() < 100

@@ -48,7 +48,7 @@ public class ListPane extends JFrame
 		setTitle("Automatically closed CRs");
 		setResizable(false);
 		setAlwaysOnTop(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 274, 411);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -59,12 +59,14 @@ public class ListPane extends JFrame
 		contentPane.add(scrollPane);
 		
 		textCrKeyList = new JTextPane();
+		textCrKeyList.setEditable(false);
 		scrollPane.setViewportView(textCrKeyList);
 		
 		scrollPane_1 = new JScrollPane();
 		contentPane.add(scrollPane_1);
 		
 		textCrResolution = new JTextPane();
+		textCrResolution.setEditable(false);
 		scrollPane_1.setViewportView(textCrResolution);
 		
 		textCrKeyList.setText("");

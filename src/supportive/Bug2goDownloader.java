@@ -447,20 +447,21 @@ public class Bug2goDownloader implements Runnable
 						SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
 					}
 					
-					ListPane list = new ListPane();
-					for (CrItem cr : SharedObjs.crsManagerPane.getCrsList())
-					{
-						if (cr.getStatus().equals("Closed"))
-						{
-							list.addItemList1(cr.getJiraID());
-							list.addItemList2(cr.getResolution());
-						}
-					}
-					
-					list.setVisible(true);
 					SharedObjs.crsManagerPane.addLogLine("All done for " + file.getName() + "\n");
 				}
 			}
+			
+			ListPane list = new ListPane();
+			for (CrItem cr : SharedObjs.crsManagerPane.getCrsList())
+			{
+				if (cr.getStatus().equals("Closed"))
+				{
+					list.addItemList1(cr.getJiraID());
+					list.addItemList2(cr.getResolution());
+				}
+			}
+			
+			list.setVisible(true);
 			
 			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane,
 			                              "All b2g files are unzipped and with report output generated.");
