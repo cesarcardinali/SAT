@@ -10,14 +10,14 @@ public class TestIt
 {
 	public static void main(String[] args)
 	{
-		String root = "C:/CRs/Debuging/";
+		String root = "C:/CRs/BugreportStuck/";
 		long now = System.currentTimeMillis();
 		
-		BugrepParser brParser = new BugrepParser(root + "HC1-82203841");
+		BugrepParser brParser = new BugrepParser(root + "83430381");
 		
 		brParser.parse();
 		System.out.println();
-		brParser.showData();
+		//brParser.showData();
 		
 		
 		/*

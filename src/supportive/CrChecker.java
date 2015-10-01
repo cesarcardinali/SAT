@@ -347,7 +347,8 @@ public class CrChecker
 		if (!bugrepParser.getCommentReport().equals(""))
 			if (btdParsed && bugrepParsed)
 			{
-				bugrepParser.setBatCap(btdParser.getBatCap());
+				if(btdParser.getBatCap() > bugrepParser.getBatCap())
+					bugrepParser.setBatCap(btdParser.getBatCap());
 				
 				if ((btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110)
 				    && upTime == false)

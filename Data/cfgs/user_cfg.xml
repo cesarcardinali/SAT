@@ -4,7 +4,7 @@
     <rootPath />
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\</path>
+    <path>C:\CRs\BugreportStuck</path>
     <assign>false</assign>
     <label>false</label>
   </crs_jira_pane>

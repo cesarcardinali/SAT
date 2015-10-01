@@ -153,11 +153,11 @@ public class BugrepParser
 				Pattern ptTimeOnBat = Pattern.compile("Time on battery: (.+) \\((.+)%\\) realtime, (.+) \\((.+)%\\) uptime");
 				Pattern ptScOffTime = Pattern.compile("Time on battery screen off: (.+) \\((.+)%\\) realtime, (.+) \\((.+)%\\) uptime");
 				Pattern ptRemTime = Pattern.compile("Charge time remaining: (.+)");
-				Pattern ptScDark = Pattern.compile("dark (.+) \\((.+)%\\)");
-				Pattern ptScDim = Pattern.compile("dim (.+) \\((.+)%\\)");
-				Pattern ptScMedium = Pattern.compile("medium (.+) \\((.+)%\\)");
-				Pattern ptScLight = Pattern.compile("light (.+) \\((.+)%\\)");
-				Pattern ptScBright = Pattern.compile("bright (.+) \\((.+)%\\)");
+				Pattern ptScDark = Pattern.compile("dark (.+) \\((.+)%\\)$");
+				Pattern ptScDim = Pattern.compile("dim (.+) \\((.+)%\\)$");
+				Pattern ptScMedium = Pattern.compile("medium (.+) \\((.+)%\\)$");
+				Pattern ptScLight = Pattern.compile("light (.+) \\((.+)%\\)$");
+				Pattern ptScBright = Pattern.compile("bright (.+) \\((.+)%\\)$");
 				Pattern ptConnectChanges = Pattern.compile("Connectivity changes: (.+)");
 				Pattern ptSignalNone = Pattern.compile("none (.+) \\((.+)%\\)");
 				Pattern ptSignalPoor = Pattern.compile("poor (.+) \\((.+)%\\)");
@@ -201,7 +201,10 @@ public class BugrepParser
 						// Read next line
 						while ((sCurrentLine = br.readLine()) != null)
 						{
-							if (sCurrentLine.contains("Cell standby: "))
+							if (sCurrentLine.contains("Cell standby: ")
+							    || sCurrentLine.contains("Unaccounted: ")
+							    || sCurrentLine.contains("Screen: ")
+							    || sCurrentLine.contains("Idle: "))
 							{
 								break;
 							}
@@ -461,7 +464,7 @@ public class BugrepParser
 								{
 									batCap = Float.parseFloat(matcher.group(1));
 									System.out.println("32 ptBatCap " + batCap);
-									continue;
+									break;
 								}
 							}
 							sLastLine = sCurrentLine;
@@ -594,25 +597,26 @@ public class BugrepParser
 	{
 		if (rawStats.length() > 80)
 		{
-			String comment = "{panel:title=*Statistics since last charge:*|titleBGColor=#E9F2FF}\\n {noformat}\\n" + rawStats.replaceAll("\n|\r", "\\\\n") + "{noformat}{panel}\\n";
+			String comment = "{panel:title=*Statistics since last charge:*|titleBGColor=#E9F2FF}\\n {noformat}\\n"
+			                 + rawStats.replaceAll("\n|\r", "\\\\n") + "{noformat}{panel}\\n";
 			comment = comment + "{panel:title=*Current drain data*|titleBGColor=#E9F2FF}\\n";
 			// TODO improve
-			comment = comment + "Total time on battery: " + DateTimeOperator.getTimeStringFromMillis(timeOnBat)
-			          + "\\n";
-			comment = comment + "Screen On  time: " + DateTimeOperator.getTimeStringFromMillis(scOnTime) + " ("
-					          + formatNumber(getPercentage(scOnTime, timeOnBat)) + "%)\\n";
+			comment = comment + "Total time on battery: "
+			          + DateTimeOperator.getTimeStringFromMillis(timeOnBat) + "\\n";
+			comment = comment + "Screen On  time: " + DateTimeOperator.getTimeStringFromMillis(scOnTime)
+			          + " (" + formatNumber(getPercentage(scOnTime, timeOnBat)) + "%)\\n";
 			comment = comment + "Screen On consume: *" + formatNumber(getConsAvgOn()) + " mAh*\\n";
-			comment = comment + "Screen Off time: " + DateTimeOperator.getTimeStringFromMillis(scOffTime) + " ("
-			          + formatNumber(getPercentage(scOffTime, timeOnBat)) + "%)\\n";
+			comment = comment + "Screen Off time: " + DateTimeOperator.getTimeStringFromMillis(scOffTime)
+			          + " (" + formatNumber(getPercentage(scOffTime, timeOnBat)) + "%)\\n";
 			comment = comment + "Screen Off consume: *" + formatNumber(getConsAvgOff()) + " mAh* \\n";
-					
 			
 			if (remTime > 1000)
 				comment = comment + "Estimated remaining battery time: "
 				          + DateTimeOperator.getTimeStringFromMillis(remTime) + "\\n";
 			
 			comment = comment + "{panel}\\n";
-			comment = comment + "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
+			comment = comment
+			          + "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
 			
 			long screenBright = scBright + scLight + scMedium;
 			if (getPercentage(screenBright, scOnTime) > 20)
@@ -655,7 +659,8 @@ public class BugrepParser
 				          + formatNumber(getPercentage(wifiScan, wifiOn)) + "%)\\n";
 			}
 			
-			comment = comment + "{panel}\\n\\nNo current drain issues found in this CR. Closing as cancelled.";
+			comment = comment
+			          + "{panel}\\n\\nNo current drain issues found in this CR. Closing as cancelled.";
 			
 			return comment;
 		}
