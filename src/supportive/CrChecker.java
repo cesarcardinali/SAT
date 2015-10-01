@@ -248,8 +248,15 @@ public class CrChecker
 		
 		if (mainParsed)
 		{
-			mainParser.showAcquiredData();
-			mainTether = mainParser.checkForTethering();
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Verifying Main file");
+			if (mainParser.getTotalLogTime() < btdParser.getLongerDischargingPeriod().getDuration())
+			{
+				mainTether = false;
+			}
+			else
+			{
+				mainTether = mainParser.checkForTethering();
+			}
 			mainParser.showTetheringData();
 		}
 		else

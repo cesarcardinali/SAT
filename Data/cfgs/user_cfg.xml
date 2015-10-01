@@ -4,7 +4,7 @@
     <rootPath />
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\CRs\BugreportStuck</path>
+    <path>C:\CRs\TetherStuck</path>
     <assign>false</assign>
     <label>false</label>
   </crs_jira_pane>

@@ -102,9 +102,10 @@ public class MainParser
 		{
 			br = new BufferedReader(new FileReader(path + mainFile));
 			String sCurrentLine;
+			String sLastLine = "";
 			LogState logState = new LogState();
 			wifiPeriod wifiPeriod = new wifiPeriod();
-			Pattern ptDateLine = Pattern.compile("^\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d");//09-27 11:32:45.622
+			Pattern ptDateLine = Pattern.compile("^\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d ");//09-27 11:32:45.622
 			Matcher mDate;
 			long actualTime = -1;
 			long nextTime = -1;
@@ -117,9 +118,20 @@ public class MainParser
 					
 					//System.out.println(sCurrentLine);
 					nextTime = DateTimeOperator.getMillis(parseLineDate(sCurrentLine)[0]);
-					if ((nextTime - actualTime) > 3600000L)
+					
+					if ((nextTime - actualTime) < -60000 && (nextTime - actualTime) > -3600000)
 					{
-						// System.out.println("Diff: " + (nextTime - actualTime) + "\n" + sCurrentLine);
+						System.out.println("-60sec dif ++ " + sLastLine);
+						System.out.println("-60sec dif ++ " + sCurrentLine + "\n");
+						sLastLine = sCurrentLine;
+						continue;
+					}
+					if ((nextTime - actualTime) > 3600000L || (nextTime - actualTime) < -3600000L)
+					{
+						System.out.println("+/-1h dif -- " + sLastLine);
+						System.out.println("+/-1h dif -- " + sCurrentLine + "\n");
+						sLastLine = sCurrentLine;
+						
 						actualTime = nextTime;
 						startTime = actualTime;
 						

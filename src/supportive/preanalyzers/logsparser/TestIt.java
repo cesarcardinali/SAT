@@ -4,42 +4,46 @@ package supportive.preanalyzers.logsparser;
 import java.util.Date;
 
 import supportive.DateTimeOperator;
+import supportive.preanalyzers.btdparser.BtdParser;
 
 
 public class TestIt
 {
 	public static void main(String[] args)
 	{
-		String root = "C:/CRs/BugreportStuck/";
+		String root = "C:/CRs/TetherStuck/";
+		String crPath = root + "83226101";
 		long now = System.currentTimeMillis();
 		
-		BugrepParser brParser = new BugrepParser(root + "83430381");
+//		BugrepParser brParser = new BugrepParser(root + "83226101");
+//		brParser.parse();
+//		System.out.println();
+//		brParser.showData();
 		
-		brParser.parse();
-		System.out.println();
-		//brParser.showData();
 		
 		
-		/*
-		MainParser mainParser = new MainParser(root + "80976191");
 		
 		//System.out.println(DateTimeOperator.getDateStringFromBtdStringMillis(148857));
 		
-		try
-        {
-			mainParser.getMainData();
-			mainParser.checkForTethering();
-			mainParser.showAcquiredData();
-			mainParser.showTetheringData();
-        }
-        catch (IOException e1)
-        {
-	        // TODO Auto-generated catch block
-	        e1.printStackTrace();
-        }
+		BtdParser btdParser = new BtdParser(crPath);
+		System.out.println("Parsing BTD data ...");
+		btdParser.parse();
+		System.out.println("Done");
+		MainParser mainParser = new MainParser(crPath);
+		System.out.println("Parsing Main log data ...");
+		mainParser.parse();
+		mainParser.showAcquiredData();
+		mainParser.checkForTethering();
+		mainParser.showTetheringData();
+		System.out.println("Done");
+		BugrepParser bugrepParser = new BugrepParser(crPath);
+		System.out.println("Parsing Bugreport log data ...");
+		bugrepParser.parse();
+		System.out.println("Done");
 		
-		System.out.println("\n\nIt took " + DateTimeOperator.getDateStringFromBtdStringMillis((System.currentTimeMillis() - now)));
-		*/
+		
+		System.out.println("\n\nIt took " + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - now)));
+		
 		
 		//System.out.println("Started at " + new Date(now) + " stopped at "
 		//                   + new Date(System.currentTimeMillis()));
