@@ -47,7 +47,7 @@ public class CrChecker
 	public boolean checkCR()
 	{
 		File file = new File(crPath);
-		cr = SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName());
+		cr = SharedObjs.getCrsList().getCrByB2gId(file.getName());
 		
 		if (cr != null)
 		{
@@ -69,7 +69,7 @@ public class CrChecker
 				
 				cr.setResolution(INCOMPLETE);
 				cr.setAssignee(SharedObjs.getUser());
-				SharedObjs.satDB.insertClosedCR(cr);
+				SharedObjs.satDB.insertAnalyzedCR(cr);
 				
 				SharedObjs.crsManagerPane.addLogLine("Logs are missing. Closing CR " + cr.getJiraID()
 				                                     + " as incomplete");
@@ -100,7 +100,7 @@ public class CrChecker
 				
 				cr.setResolution(INVALID);
 				cr.setAssignee(SharedObjs.getUser());
-				SharedObjs.satDB.insertClosedCR(cr);
+				SharedObjs.satDB.insertAnalyzedCR(cr);
 				
 				SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
 				                                     + " as invalid");
@@ -121,6 +121,8 @@ public class CrChecker
 			                                     + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
 			Logger.log(Logger.TAG_FALSE_POSITIVE,
 			           DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
+			
+			SharedObjs.satDB.insertAnalyzedCR(cr);
 			
 			return false;
 		}
@@ -366,7 +368,7 @@ public class CrChecker
 					
 					cr.setResolution(CANCELLED);
 					cr.setAssignee(SharedObjs.getUser());
-					SharedObjs.satDB.insertClosedCR(cr);
+					SharedObjs.satDB.insertAnalyzedCR(cr);
 					
 					System.out.println(bugrepParser.getCommentReport());
 					
@@ -396,7 +398,7 @@ public class CrChecker
 					
 					cr.setResolution(CANCELLED);
 					cr.setAssignee(SharedObjs.getUser());
-					SharedObjs.satDB.insertClosedCR(cr);
+					SharedObjs.satDB.insertAnalyzedCR(cr);
 					
 					System.out.println(bugrepParser.getCommentReport());
 					

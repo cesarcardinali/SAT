@@ -444,7 +444,7 @@ public class Bug2goDownloader implements Runnable
 					}
 					else
 					{
-						SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
+						SharedObjs.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
 					}
 					
 					SharedObjs.crsManagerPane.addLogLine("All done for " + file.getName() + "\n");
@@ -452,7 +452,8 @@ public class Bug2goDownloader implements Runnable
 			}
 			
 			ListPane list = new ListPane();
-			for (CrItem cr : SharedObjs.crsManagerPane.getCrsList())
+			list.clear();
+			for (CrItem cr : SharedObjs.getCrsList())
 			{
 				if (cr.getStatus().equals("Closed"))
 				{
@@ -497,8 +498,6 @@ public class Bug2goDownloader implements Runnable
 			
 			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "All b2g files are unzipped.");
 		}
-		
-		SharedObjs.crsManagerPane.getCrsList().clear();
 	}
 	
 	/**

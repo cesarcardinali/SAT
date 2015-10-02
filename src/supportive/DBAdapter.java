@@ -142,13 +142,14 @@ public class DBAdapter
 		return fitem;
 	}
 	
-	private CrItem setAllCrClosedFields(CrItem crcitem, ResultSet rs) throws SQLException
+	private CrItem setAllCrAnalyzedFields(CrItem crcitem, ResultSet rs) throws SQLException
 	{
 		crcitem.setJiraID(rs.getString("cr_id"));
-		crcitem.setB2gID(rs.getString("b2gid"));
+		crcitem.setB2gID(rs.getString("b2g_id"));
 		crcitem.setAssignee(rs.getString("assignee"));
-		crcitem.setResolution(rs.getString("close_reason"));
-		crcitem.setClosureDate(rs.getTimestamp("closure_date").toString());
+		crcitem.setProduct(rs.getString("product"));
+		crcitem.setResolution(rs.getString("resolution"));
+		crcitem.setClosureDate(rs.getTimestamp("date").toString());
 		
 		return crcitem;
 	}
@@ -692,9 +693,35 @@ public class DBAdapter
 		return deleteDone;
 	}
 	
-	public int existsClosedCR(String cr_id)
+	public int insertAnalyzedCR(CrItem crc_item)
 	{
-		String selectSQL = "SELECT cr_id FROM ClosedCR_History WHERE cr_id = '" + cr_id + "';";
+		// Visual query example for reference:
+		// INSERT into Analyzed_CRs VALUES ('IKUT-1112', '8888888', 'testuser', 'Product','Tethering', '2015-08-05 18:19:03');
+		int insertDone = 0;
+		
+		try
+		{
+			String insertSQL = "INSERT INTO Analyzed_CRs VALUES ('" + crc_item.getJiraID() + "', '"
+			                   + crc_item.getB2gID() + "', '" + crc_item.getAssignee() + "', '"
+			                   + crc_item.getProduct() + "', '" + crc_item.getResolution() + "', null);";
+			
+			preparedStatement = dbConnection.prepareStatement(insertSQL);
+			
+			// Execute insert SQL statement
+			insertDone = insertDone + preparedStatement.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		return insertDone;
+	}
+	
+	public int existsAnalyzedCR(String cr_id)
+	{
+		String selectSQL = "SELECT cr_id FROM Analyzed_CRs WHERE cr_id = '" + cr_id + "';";
 		int found = 0;
 		
 		try
@@ -721,37 +748,11 @@ public class DBAdapter
 		return found;
 	}
 	
-	public int insertClosedCR(CrItem crc_item)
+	public int deleteAnalyzedCR(CrItem crc_item)
 	{
 		// Visual query example for reference:
-		// INSERT into ClosedCR_History VALUES ('IKUT-1112', '8888888', 'testuser', 'Product','Tethering', '2015-08-05 18:19:03');
-		int insertDone = 0;
-		
-		try
-		{
-			String insertSQL = "INSERT INTO ClosedCR_History VALUES ('" + crc_item.getJiraID() + "', '"
-			                   + crc_item.getB2gID() + "', '" + crc_item.getAssignee() + "', '"
-			                   + crc_item.getProduct() + "', '" + crc_item.getResolution() + "', null);";
-			
-			preparedStatement = dbConnection.prepareStatement(insertSQL);
-			
-			// Execute insert SQL statement
-			insertDone = insertDone + preparedStatement.executeUpdate();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			System.out.println(e.getMessage());
-		}
-		
-		return insertDone;
-	}
-	
-	public int deleteClosedCR(CrItem crc_item)
-	{
-		// Visual query example for reference:
-		// DELETE from ClosedCR_History where cr_id = 'IKUT-1111';
-		String deleteSQL = "DELETE from ClosedCR_History where cr_id = " + crc_item.getJiraID() + ";";
+		// DELETE from Analyzed_CRs where cr_id = 'IKUT-1111';
+		String deleteSQL = "DELETE from Analyzed_CRs where cr_id = " + crc_item.getJiraID() + ";";
 		
 		int deleteDone = 0;
 		
@@ -767,7 +768,6 @@ public class DBAdapter
 		{
 			e.printStackTrace();
 			System.out.println(e.getMessage());
-			
 		}
 		
 		return deleteDone;
@@ -780,10 +780,10 @@ public class DBAdapter
 	 * @param to String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
 	 * @return
 	 */
-	public CrItemsList closedCRsInRange(String from, String to)
+	public CrItemsList AnalyzedCRsInRange(String from, String to)
 	{
-		String selectSQL = "SELECT * FROM ClosedCR_History WHERE closure_date >= '" + from
-		                   + "' and closure_date <= '" + to + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
+		                   + "' and date <= '" + to + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -797,7 +797,7 @@ public class DBAdapter
 			while (rs.next())
 			{
 				aux = new CrItem();
-				crc_list.add(setAllCrClosedFields(aux, rs));
+				crc_list.add(setAllCrAnalyzedFields(aux, rs));
 			}
 			
 		}
@@ -819,10 +819,10 @@ public class DBAdapter
 	 * @param assignee
 	 * @return
 	 */
-	public CrItemsList closedCRsInRangeWithAssignee(String from, String to, String assignee)
+	public CrItemsList analyzedCRsInRangeWithAssignee(String from, String to, String assignee)
 	{
-		String selectSQL = "SELECT * FROM ClosedCR_History WHERE closure_date >= '" + from
-		                   + "' and closure_date <= '" + to + "' and assignee = '" + assignee + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
+		                   + "' and date <= '" + to + "' and assignee = '" + assignee + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -836,7 +836,7 @@ public class DBAdapter
 			while (rs.next())
 			{
 				aux = new CrItem();
-				crc_list.add(setAllCrClosedFields(aux, rs));
+				crc_list.add(setAllCrAnalyzedFields(aux, rs));
 			}
 			
 		}
@@ -858,10 +858,10 @@ public class DBAdapter
 	 * @param resolution
 	 * @return
 	 */
-	public CrItemsList closedCRsInRangeWithResolution(String from, String to, String resolution)
+	public CrItemsList analyzedCRsInRangeWithResolution(String from, String to, String resolution)
 	{
-		String selectSQL = "SELECT * FROM ClosedCR_History WHERE closure_date >= '" + from
-		                   + "' and closure_date <= '" + to + "' and close_reason = '" + resolution + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
+		                   + "' and date <= '" + to + "' and resolution = '" + resolution + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -875,7 +875,7 @@ public class DBAdapter
 			while (rs.next())
 			{
 				aux = new CrItem();
-				crc_list.add(setAllCrClosedFields(aux, rs));
+				crc_list.add(setAllCrAnalyzedFields(aux, rs));
 			}
 			
 		}
@@ -898,12 +898,12 @@ public class DBAdapter
 	 * @param resolution
 	 * @return
 	 */
-	public CrItemsList closedCRsInRangeWithAllFields(String from, String to, String assignee,
+	public CrItemsList analyzedCRsInRangeWithAssigneeAndResolution(String from, String to, String assignee,
 	                                                 String resolution)
 	{
-		String selectSQL = "SELECT * FROM ClosedCR_History WHERE closure_date >= '" + from
-		                   + "' and closure_date <= '" + to + "' and assignee = '" + assignee
-		                   + "' and close_reason = '" + resolution + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
+		                   + "' and date <= '" + to + "' and assignee = '" + assignee
+		                   + "' and resolution = '" + resolution + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -917,7 +917,45 @@ public class DBAdapter
 			while (rs.next())
 			{
 				aux = new CrItem();
-				crc_list.add(setAllCrClosedFields(aux, rs));
+				crc_list.add(setAllCrAnalyzedFields(aux, rs));
+			}
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return crc_list;
+	}
+	
+	/**
+	 * 
+	 * Usage example '2013-08-05' or '2014-08-05 18:19:04' on parameters 'from' and 'to'
+	 * @param from String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @param to String date field 'yyyy-mm-dd' or 'yyyy-mm-dd hh:mm:ss'
+	 * @return
+	 */
+	public CrItemsList closedCRsInRangeWithResolution(String from, String to)
+	{
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
+		                   + "' and date <= '" + to + "' and resolution = 'Unresolved';";
+		CrItem aux = new CrItem();
+		CrItemsList crc_list = new CrItemsList();
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			while (rs.next())
+			{
+				aux = new CrItem();
+				crc_list.add(setAllCrAnalyzedFields(aux, rs));
 			}
 			
 		}

@@ -47,7 +47,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import objects.CrItem;
-import objects.CrItemsList;
 
 import org.json.simple.parser.ParseException;
 
@@ -70,7 +69,6 @@ public class CrsManagerPane extends JPanel
 	private JTextPane	textPane;
 	private JCheckBox	chckbxAssign;
 	private JCheckBox	chckbxLabels;
-	private CrItemsList	crsList;
 	private String		CRs[];
 	private String		labels[];
 	private JTextField	textLabel;
@@ -374,8 +372,6 @@ public class CrsManagerPane extends JPanel
 		textPane.setPreferredSize(new Dimension(100, 82));
 		textPane.setMinimumSize(new Dimension(50, 42));
 		
-		crsList = new CrItemsList();
-		
 		loadUserData();
 	}
 	
@@ -412,9 +408,8 @@ public class CrsManagerPane extends JPanel
 		
 		// Manage CR
 		for (String crKey : CRs)
-		{	
+		{
 			CrItem crItem = jira.getCrData(crKey);
-			crsList.add(crItem);
 			
 			if (crItem != null)
 			{
@@ -742,15 +737,4 @@ public class CrsManagerPane extends JPanel
 	{
 		return chckbxLabels;
 	}
-	
-	public CrItemsList getCrsList()
-	{
-		return crsList;
-	}
-	
-	public JTextField getTextLabel()
-	{
-		return textLabel;
-	}
-	
 }

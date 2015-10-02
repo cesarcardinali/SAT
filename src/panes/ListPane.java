@@ -82,4 +82,10 @@ public class ListPane extends JFrame
 	{
 		textCrResolution.setText(textCrResolution.getText() + item + "\n");
 	}
+	
+	public void clear()
+	{
+		textCrKeyList.setText("");
+		textCrResolution.setText("");
+	}
 }

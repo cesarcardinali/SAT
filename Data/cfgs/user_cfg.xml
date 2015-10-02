@@ -4,7 +4,7 @@
     <rootPath />
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\CRs\TetherStuck</path>
+    <path>C:\CRs\Statistics</path>
     <assign>false</assign>
     <label>false</label>
   </crs_jira_pane>
@@ -63,7 +63,7 @@
     <osprey>IKUT-4329</osprey>
     <lux>IKSWL-1063</lux>
     <quark>IKUT-4329</quark>
-    <clark>IKUT-43290</clark>
+    <clark>IKUT-4329</clark>
     <merlin>IKUT-00000</merlin>
   </diag_dup>
 </SAT>

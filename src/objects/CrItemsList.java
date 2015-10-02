@@ -9,7 +9,8 @@ import java.util.Comparator;
 @SuppressWarnings("serial")
 public class CrItemsList extends ArrayList<CrItem>
 {
-	public CrItemsList(){
+	public CrItemsList()
+	{
 		super();
 		this.clear();
 	}

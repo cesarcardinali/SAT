@@ -4,7 +4,6 @@ package core;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JOptionPane;
@@ -14,12 +13,14 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.commons.io.FileUtils;
-
 import main.SAT;
 import objects.CrItem;
+import objects.CrItemsList;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
+
+import org.apache.commons.io.FileUtils;
+
 import panes.AdvancedOptionsPane;
 import panes.CrsManagerPane;
 import panes.CustomFiltersPane;
@@ -50,7 +51,7 @@ public class SharedObjs
 	private static String             pass;
 	public static String              updateFolder1;
 	public static String              updateFolder2;
-	private static ArrayList<CrItem>  crsList;
+	private static CrItemsList        crsList;
 	private static Semaphore          unzipSemaphore;
 	private static CustomFiltersList  userFiltersList;
 	private static CustomFiltersList  sharedFiltersList;
@@ -90,7 +91,7 @@ public class SharedObjs
 		sharedFiltersList = new CustomFiltersList();
 		activeFiltersList = new CustomFiltersList();
 		customFiltersPane = new CustomFiltersPane();
-		crsList = new ArrayList<CrItem>();
+		crsList = new CrItemsList();
 		user = XmlMngr.getUserValueOf(new String[] {"option_pane", "uname"});
 		
 		// Create Panes
@@ -245,8 +246,8 @@ public class SharedObjs
 		                                                            + xmlFilters.size()
 		                                                            + "\n\nWhat do you prefer to do?",
 		                                       "Filters files conflict", JOptionPane.YES_NO_OPTION,
-		                                       JOptionPane.QUESTION_MESSAGE, null,
-		                                       new String[] {"Merge files",
+		                                       JOptionPane.QUESTION_MESSAGE, null, new String[] {
+		                                               "Merge files",
 		                                               "Use local file",
 		                                               "Use cloud file"}, "Merge files");
 		
@@ -433,12 +434,12 @@ public class SharedObjs
 		return customFiltersPane;
 	}
 	
-	public ArrayList<CrItem> getCrsList()
+	public static CrItemsList getCrsList()
 	{
 		return crsList;
 	}
 	
-	public CrItem getCrByJira(String jiraID)
+	public static CrItem getCrByJira(String jiraID)
 	{
 		for (CrItem aux : crsList)
 		{
@@ -450,7 +451,7 @@ public class SharedObjs
 		return null;
 	}
 	
-	public CrItem getCrByB2g(String b2gID)
+	public static CrItem getCrByB2g(String b2gID)
 	{
 		for (CrItem aux : crsList)
 		{
@@ -488,7 +489,7 @@ public class SharedObjs
 		SharedObjs.crPath = crPath;
 	}
 	
-	public void setCrsList(ArrayList<CrItem> crsList)
+	public static void setCrsList(CrItemsList crsList)
 	{
 		SharedObjs.crsList = crsList;
 	}

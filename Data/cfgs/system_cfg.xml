@@ -12,7 +12,7 @@
     <logs_folder>logs/</logs_folder>
     <update_path1>S:/Rio_Itu/SAT</update_path1>
     <update_path2>S:/Rio_Itu/Temporário/Cesar/</update_path2>
-    <clean_install>true</clean_install>
+    <clean_install>false</clean_install>
     <overwrite_usr_cfg>true</overwrite_usr_cfg>
     <debug_mode>true</debug_mode>
   </configs>
