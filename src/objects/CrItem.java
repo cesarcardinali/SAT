@@ -15,6 +15,7 @@ public class CrItem
 	private String            resolution;  // Represents CR resolution
 	private String            summary;     // Represents CR summary
 	private String            assignee;    // Represents CR assignee
+	private String            product;    // Represents CR assignee
 	private ArrayList<String> labels;      // Represents CR labels
 	private String            dup;         // Represents CR dups
 	private String            comment;     // Represents a comment to be inserted at this CR
@@ -56,7 +57,7 @@ public class CrItem
 	public String toString()
 	{
 		return "Jira: " + jiraID + " || B2gID: " + b2gID + " || Status: " + status + " || Resolution: "
-		       + resolution + " || Summary: " + summary + " || Assignee: " + assignee + " || Dup: " + dup;
+		       + resolution + " || Summary: " + summary + " || Assignee: " + assignee + " || Labels: " + labels + " || Dup: " + dup;
 	}
 	
 	// Getters and Setters
@@ -164,5 +165,15 @@ public class CrItem
 	public void setClosureDate(String closure_date)
 	{
 		this.closure_date = closure_date;
+	}
+
+	public String getProduct()
+	{
+		return product;
+	}
+
+	public void setProduct(String product)
+	{
+		this.product = product;
 	}
 }

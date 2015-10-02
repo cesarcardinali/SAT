@@ -412,9 +412,7 @@ public class CrsManagerPane extends JPanel
 		
 		// Manage CR
 		for (String crKey : CRs)
-		{
-			Logger.log(Logger.TAG_CRSMANAGER, "-" + crKey + "-");
-			
+		{	
 			CrItem crItem = jira.getCrData(crKey);
 			crsList.add(crItem);
 			

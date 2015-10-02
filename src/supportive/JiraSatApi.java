@@ -614,10 +614,19 @@ public class JiraSatApi
 			cr.setAssignee(aux.get("name").toString());
 		}
 		
+		aux = (JSONObject) fields.get("customfield_18027"); // Get CR assignee
+		if (aux == null) // Check if it is unassigned
+		{
+			cr.setProduct("");
+		}
+		else
+		{
+			cr.setProduct(aux.get("value").toString());
+		}
+		
 		labels = (JSONArray) fields.get("labels"); // Get CR labels
 		if (labels != null) // Check if it is not null
 		{
-			System.out.println(labels);
 			cr.setLabels(labels);
 		}
 		
@@ -631,7 +640,6 @@ public class JiraSatApi
 			cr.setDup(fields.get("customfield_10622").toString()); // Get CR dups
 		}
 		
-		Logger.log(TAG, "HTTP Request input: " + "GET " + key);
 		if (output.contains("{\"errorMessages\":"))
 		{
 			Logger.log(TAG, "Get CR data: Output from Server: \n" + output);

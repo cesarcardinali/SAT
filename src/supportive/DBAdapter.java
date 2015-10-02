@@ -724,14 +724,14 @@ public class DBAdapter
 	public int insertClosedCR(CrItem crc_item)
 	{
 		// Visual query example for reference:
-		// INSERT into ClosedCR_History VALUES ('IKUT-1112', '8888888', 'testuser', 'Tethering', '2015-08-05 18:19:03');
+		// INSERT into ClosedCR_History VALUES ('IKUT-1112', '8888888', 'testuser', 'Product','Tethering', '2015-08-05 18:19:03');
 		int insertDone = 0;
 		
 		try
 		{
 			String insertSQL = "INSERT INTO ClosedCR_History VALUES ('" + crc_item.getJiraID() + "', '"
 			                   + crc_item.getB2gID() + "', '" + crc_item.getAssignee() + "', '"
-			                   + crc_item.getResolution() + "', null);";
+			                   + crc_item.getProduct() + "', '" + crc_item.getResolution() + "', null);";
 			
 			preparedStatement = dbConnection.prepareStatement(insertSQL);
 			
