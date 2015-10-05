@@ -463,9 +463,6 @@ public class Bug2goDownloader implements Runnable
 			}
 			
 			list.setVisible(true);
-			
-			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane,
-			                              "All b2g files are unzipped and with report output generated.");
 		}
 		else if (ans == 1)
 		{

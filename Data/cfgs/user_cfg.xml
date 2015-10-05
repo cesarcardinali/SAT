@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SAT>
   <parser_pane>
-    <rootPath />
+    <rootPath>C:\CRs</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\CRs\Statistics</path>
+    <path>C:\CRs\FalseTethering</path>
     <assign>false</assign>
     <label>false</label>
   </crs_jira_pane>

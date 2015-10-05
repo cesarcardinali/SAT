@@ -11,8 +11,8 @@ public class TestIt
 {
 	public static void main(String[] args)
 	{
-		String root = "C:/CRs/TetherStuck/";
-		String crPath = root + "83226101";
+		String root = "C:/CRs/FalseTethering/";
+		String crPath = root + "83836921";
 		long now = System.currentTimeMillis();
 		
 //		BugrepParser brParser = new BugrepParser(root + "83226101");
@@ -28,18 +28,27 @@ public class TestIt
 		BtdParser btdParser = new BtdParser(crPath);
 		System.out.println("Parsing BTD data ...");
 		btdParser.parse();
+		System.out.println("-- BTD Aquired data");
+		btdParser.showParseResults();
+		btdParser.showPeriods();
+		System.out.println("-- BTD Tether data");
+		btdParser.checkForTethering();
 		System.out.println("Done");
-		MainParser mainParser = new MainParser(crPath);
+		
+		/*MainParser mainParser = new MainParser(crPath);
 		System.out.println("Parsing Main log data ...");
 		mainParser.parse();
+		System.out.println("-- Main Aquired data");
 		mainParser.showAcquiredData();
 		mainParser.checkForTethering();
+		System.out.println("-- Main Tether data");
 		mainParser.showTetheringData();
-		System.out.println("Done");
-		BugrepParser bugrepParser = new BugrepParser(crPath);
+		System.out.println("Done");*/
+		
+		/*BugrepParser bugrepParser = new BugrepParser(crPath);
 		System.out.println("Parsing Bugreport log data ...");
 		bugrepParser.parse();
-		System.out.println("Done");
+		System.out.println("Done");*/
 		
 		
 		System.out.println("\n\nIt took " + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - now)));

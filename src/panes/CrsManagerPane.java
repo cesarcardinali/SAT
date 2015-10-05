@@ -397,14 +397,14 @@ public class CrsManagerPane extends JPanel
 		
 		ArrayList<String> b2gList = new ArrayList<String>();
 		
-		SharedObjs.crsManagerPane.addLogLine("Generating b2g list to download ...");
-		
 		// Get label list
 		labels = textLabel.getText().split(" ");
 		for (String s : labels)
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Label entered: " + s);
 		}
+		
+		SharedObjs.getCrsList().clear();
 		
 		// Manage CR
 		for (String crKey : CRs)
@@ -434,6 +434,8 @@ public class CrsManagerPane extends JPanel
 						   "CR KEY: " + crKey + " seems not to exist. Or your user/password is wrong");
 			}
 		}
+		
+		SharedObjs.crsManagerPane.addLogLine("Generating b2g list to download ...");
 		
 		if (b2gList.size() > 0)
 		{

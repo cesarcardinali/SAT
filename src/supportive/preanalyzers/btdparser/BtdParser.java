@@ -33,7 +33,7 @@ public class BtdParser
 	private long[]        signalData;     // 0- none, 1- poor, 2- moderate, 3- good, 4- great
 	private float[]       cpuTempData;    // 0- min, 1- max, 2- avg
 	private float[]       deviceTempData; // 0- min, 1- max, 2- avg
-	private int           batCap; // Battery capacity
+	private int           batCap;         // Battery capacity
 	private int           bttDischarged[]; // Battery discharge from, to.
 	private long          cellTX;         // Total cell data sent
 	private long          cellRX;         // Total cell data received
@@ -139,7 +139,7 @@ public class BtdParser
 			getTetheringTime();
 			
 			// Show acquired data
-			//showParseResults();
+			// showParseResults();
 			
 			// Print acquired data
 			try
@@ -190,33 +190,35 @@ public class BtdParser
 			lastCTX = rs.getLong(1);
 			lastWRX = rs.getLong(2);
 			lastTime = rs.getLong(3);
-			//int i =0;
+			// int i =0;
 			
 			while (rs.next())
 			{
-				//i++;
+				// i++;
 				actualCTX = rs.getLong(1);
 				actualWRX = rs.getLong(2);
 				actualTime = rs.getLong(3);
 				int timeCorrection = (int) ((actualTime - lastTime) / 10000);
 				
-				 //System.out.println(i + " - " + lastTime);
-				 //System.out.println((actualCTX - lastCTX));
-				 //System.out.println((actualWRX - lastWRX));
-				 //System.out.println(timeCorrection);
+				// System.out.println("CTX  = " + (actualCTX - lastCTX));
+				// System.out.println("WTX  = " + (actualWRX - lastWRX));
+				// System.out.println("Actual Time = " + actualTime + "  >  " + new Date(actualTime));
+				// System.out.println("Last Time   = " + lastTime + "  >  " + new Date(lastTime));
+				// System.out.println("TimeCorrection = " + timeCorrection);
+				// System.out.println("Last - Actual  = " + (actualTime - lastTime));
 				
-				if ((actualCTX - lastCTX) > 10000 * timeCorrection
+				if ((timeCorrection) < 10 && (actualCTX - lastCTX) > 10000 * timeCorrection
 				    && (actualWRX - lastWRX) > 10000 * timeCorrection)
 				{
 					cumulativeTime = cumulativeTime + actualTime - lastTime;
-					 //System.out.println("tethering: " + (actualTime - lastTime));
+					// System.out.println("tethering!");
 				}
 				else
 				{
 					// System.out.println("not tethering");
 				}
 				
-				 //System.out.println();
+				// System.out.println();
 				
 				lastCTX = actualCTX;
 				lastWRX = actualWRX;
@@ -329,12 +331,14 @@ public class BtdParser
 		br.write("Screen OFF: " + getDateStringFromBtdStringMillis(timeOff) + " or " + timeOff + "ms" + "\n");
 		br.write("Total time: " + getDateStringFromBtdStringMillis(finalState.getDuration()) + " or "
 		         + finalState.getDuration() + "ms" + "\n");
-		br.write("Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - " + phoneCall + "ms" + "\n");
+		br.write("Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - " + phoneCall + "ms"
+		         + "\n");
 		br.write("Time on battery: " + getDateStringFromBtdStringMillis(realTimeOnBatt) + " - "
 		         + realTimeOnBatt + "ms" + "\n");
 		br.write("Time awake: " + getDateStringFromBtdStringMillis(awakeTimeOnBatt) + " - " + awakeTimeOnBatt
 		         + "ms" + "\n");
-		br.write("Wifi On time: " + getDateStringFromBtdStringMillis(wifiOnTime) + " - " + wifiOnTime + "ms" + "\n");
+		br.write("Wifi On time: " + getDateStringFromBtdStringMillis(wifiOnTime) + " - " + wifiOnTime + "ms"
+		         + "\n");
 		br.write("Wifi Running time: " + getDateStringFromBtdStringMillis(wifiRunningTime) + " - "
 		         + wifiRunningTime + "ms" + "\n");
 		
@@ -373,7 +377,8 @@ public class BtdParser
 		         + getDateStringFromBtdStringMillis(screenData[4]) + "\n");
 		
 		// Specific detections
-		br.write("Tethering time: " + tetheringTime + " " + getDateStringFromBtdStringMillis(tetheringTime) + "\n");
+		br.write("Tethering time: " + tetheringTime + " " + getDateStringFromBtdStringMillis(tetheringTime)
+		         + "\n");
 		
 		br.close();
 	}
@@ -810,9 +815,9 @@ public class BtdParser
 		
 		millis = timestamp % 1000;
 		seconds = (timestamp / 1000) % 60;
-		minutes = (timestamp / (60*1000)) % 60;
-		hours = (timestamp / (60*60*1000)) % 24;
-		days = timestamp / (24*60*60*1000);
+		minutes = (timestamp / (60 * 1000)) % 60;
+		hours = (timestamp / (60 * 60 * 1000)) % 24;
+		days = timestamp / (24 * 60 * 60 * 1000);
 		
 		return days + "d," + hours + "h," + minutes + "m," + seconds + "s," + millis + "ms";
 	}
@@ -863,7 +868,7 @@ public class BtdParser
 				if (btdState.getStatus() == 0)
 				{
 					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
-					               + btdState.getStart() + " AND PLUG_TYPE = 1 LIMIT 1);");
+					               + btdState.getStart() + " AND PLUG_TYPE != 0 LIMIT 1);");
 				}
 				else
 				{
@@ -894,16 +899,25 @@ public class BtdParser
 		{
 			e.printStackTrace();
 		}
-		/*
-		 * for (BtdState btdState : statesData) { System.out.println("From: " + btdState.getStartDate() + " To: " + btdState.getEndDate() +
-		 * " Status: " + btdState.getStatus()); }
-		 */
+	}
+	
+	public void showPeriods()
+	{
+		System.out.println("Periodos detectados:");
+		for (BtdState btdState : statesData)
+		{
+			System.out.println("From: " + btdState.getStartDate() + " To: " + btdState.getEndDate()
+			                   + " Status: " + btdState.getStatus());
+		}
+		System.out.println();
 	}
 	
 	public BtdState getLongerDischargingPeriod()
 	{
 		if (statesData.size() == 0)
 			getPeriods();
+		
+		System.out.println("");
 		
 		return statesData.getLongerDischargingPeriod();
 	}
@@ -1078,247 +1092,247 @@ public class BtdParser
 	{
 		return (double) (millis / 3600000.0);
 	}
-
+	
 	public int getStatus()
 	{
 		return status;
 	}
-
+	
 	public BtdState getFinalState()
 	{
 		return finalState;
 	}
-
+	
 	public long[] getScreenData()
 	{
 		return screenData;
 	}
-
+	
 	public long[] getSignalData()
 	{
 		return signalData;
 	}
-
+	
 	public float[] getCpuTempData()
 	{
 		return cpuTempData;
 	}
-
+	
 	public float[] getDeviceTempData()
 	{
 		return deviceTempData;
 	}
-
+	
 	public int[] getBttDischarged()
 	{
 		return bttDischarged;
 	}
-
+	
 	public long getCellTX()
 	{
 		return cellTX;
 	}
-
+	
 	public long getCellRX()
 	{
 		return cellRX;
 	}
-
+	
 	public long getWifiTX()
 	{
 		return wifiTX;
 	}
-
+	
 	public long getWifiRX()
 	{
 		return wifiRX;
 	}
-
+	
 	public long getGpsLocation()
 	{
 		return gpsLocation;
 	}
-
+	
 	public long getNetworkLocation()
 	{
 		return networkLocation;
 	}
-
+	
 	public long getConsumeOn()
 	{
 		return consumeOn;
 	}
-
+	
 	public long getConsumeOff()
 	{
 		return consumeOff;
 	}
-
+	
 	public long getTimeOff()
 	{
 		return timeOff;
 	}
-
+	
 	public long getTimeOn()
 	{
 		return timeOn;
 	}
-
+	
 	public long getWifiOnTime()
 	{
 		return wifiOnTime;
 	}
-
+	
 	public long getWifiRunningTime()
 	{
 		return wifiRunningTime;
 	}
-
+	
 	public long getRealTimeOnBatt()
 	{
 		return realTimeOnBatt;
 	}
-
+	
 	public long getAwakeTimeOnBatt()
 	{
 		return awakeTimeOnBatt;
 	}
-
+	
 	public long getPhoneCall()
 	{
 		return phoneCall;
 	}
-
+	
 	public void setStatus(int status)
 	{
 		this.status = status;
 	}
-
+	
 	public void setBtdRows(BtdRowsList btdRows)
 	{
 		this.btdRows = btdRows;
 	}
-
+	
 	public void setFinalState(BtdState finalState)
 	{
 		this.finalState = finalState;
 	}
-
+	
 	public void setStatesData(BtdStatesData statesData)
 	{
 		this.statesData = statesData;
 	}
-
+	
 	public void setScreenData(long[] screenData)
 	{
 		this.screenData = screenData;
 	}
-
+	
 	public void setSignalData(long[] signalData)
 	{
 		this.signalData = signalData;
 	}
-
+	
 	public void setCpuTempData(float[] cpuTempData)
 	{
 		this.cpuTempData = cpuTempData;
 	}
-
+	
 	public void setDeviceTempData(float[] deviceTempData)
 	{
 		this.deviceTempData = deviceTempData;
 	}
-
+	
 	public void setBttDischarged(int[] bttDischarged)
 	{
 		this.bttDischarged = bttDischarged;
 	}
-
+	
 	public void setCellTX(long cellTX)
 	{
 		this.cellTX = cellTX;
 	}
-
+	
 	public void setCellRX(long cellRX)
 	{
 		this.cellRX = cellRX;
 	}
-
+	
 	public void setWifiTX(long wifiTX)
 	{
 		this.wifiTX = wifiTX;
 	}
-
+	
 	public void setWifiRX(long wifiRX)
 	{
 		this.wifiRX = wifiRX;
 	}
-
+	
 	public void setGpsLocation(long gpsLocation)
 	{
 		this.gpsLocation = gpsLocation;
 	}
-
+	
 	public void setNetworkLocation(long networkLocation)
 	{
 		this.networkLocation = networkLocation;
 	}
-
+	
 	public void setConsumeOn(long consumeOn)
 	{
 		this.consumeOn = consumeOn;
 	}
-
+	
 	public void setConsumeOff(long consumeOff)
 	{
 		this.consumeOff = consumeOff;
 	}
-
+	
 	public void setTimeOff(long timeOff)
 	{
 		this.timeOff = timeOff;
 	}
-
+	
 	public void setTimeOn(long timeOn)
 	{
 		this.timeOn = timeOn;
 	}
-
+	
 	public void setWifiOnTime(long wifiOnTime)
 	{
 		this.wifiOnTime = wifiOnTime;
 	}
-
+	
 	public void setWifiRunningTime(long wifiRunningTime)
 	{
 		this.wifiRunningTime = wifiRunningTime;
 	}
-
+	
 	public void setRealTimeOnBatt(long realTimeOnBatt)
 	{
 		this.realTimeOnBatt = realTimeOnBatt;
 	}
-
+	
 	public void setAwakeTimeOnBatt(long awakeTimeOnBatt)
 	{
 		this.awakeTimeOnBatt = awakeTimeOnBatt;
 	}
-
+	
 	public void setPhoneCall(long phoneCall)
 	{
 		this.phoneCall = phoneCall;
 	}
-
+	
 	public void setTetheringTime(long tetheringTime)
 	{
 		this.tetheringTime = tetheringTime;
 	}
-
+	
 	public int getBatCap()
 	{
 		return batCap;
 	}
-
+	
 	public void setBatCap(int batCap)
 	{
 		this.batCap = batCap;
