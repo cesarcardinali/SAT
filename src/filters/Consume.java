@@ -46,8 +46,8 @@ public class Consume
 			String panel = "{panel}\n"; // Jira panel tag
 			
 			// Regex configuration
-			String regexBTT = "([0-9]{2})-([0-9]{2}).*([0-2][0-9]):([0-5][0-9]):([0-5][0-9]).*BTTopWriter: ([1-9][0-9].*)\\%.*PID:(.+).*\\((.+)\\)";
-			String regexBTToff = "([0-9]{2})-([0-9]{2}).*([0-2][0-9]):([0-5][0-9]):([0-5][0-9]).*BTTopWriter: ([1-9][\\.|\\,].*)\\%.*PID:(.+).*\\((.+)\\)";
+			String regexBTT = "([0-9]{2})-([0-9]{2}).*([0-2][0-9]):([0-5][0-9]):([0-5][0-9]).*BTTopWriter: ([1-9][0-9].*)\\%.*PID:(.+).*\\(+([A-Za-z0-9_./\\\\]+)\\)+";
+			String regexBTToff = "([0-9]{2})-([0-9]{2}).*([0-2][0-9]):([0-5][0-9]):([0-5][0-9]).*BTTopWriter: ([1-9][\\.|\\,].*)\\%.*PID:(.+).*\\(+([A-Za-z0-9_./\\\\]+)\\)+";
 			String regexScOnOff = ".*BatteryTracerSvc: Data collection.*Screen.*";
 			
 			Pattern patternBTT = Pattern.compile(regexBTT);
