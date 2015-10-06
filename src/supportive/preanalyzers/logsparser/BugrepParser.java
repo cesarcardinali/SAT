@@ -87,7 +87,7 @@ public class BugrepParser
 	private long                      radioEvdo      = -1;
 	private long                      radio1xrtt     = -1;
 	private long                      radioActive    = -1;
-	private long                      wifiOn         = -1;
+	private long                      wifiRun        = -1;
 	private long                      wifiScan       = -1;
 	private long                      wifiLevel0     = -1;
 	private long                      wifiLevel1     = -1;
@@ -171,7 +171,7 @@ public class BugrepParser
 				Pattern ptRadioEvdo = Pattern.compile("Evdo (.+) \\((.+)%\\) ");
 				Pattern ptRadio1xrtt = Pattern.compile("1xrtt (.+) \\((.+)%\\) ");
 				Pattern ptRadioActive = Pattern.compile("Mobile radio active time: (.+) \\((.+)%\\) ");
-				Pattern ptWifiOn = Pattern.compile("Wifi on: (.+) \\((.+)%\\), ");
+				Pattern ptWifiRun = Pattern.compile(", Wifi running: (.+) \\((.+)%\\)$");
 				Pattern ptWifiScan = Pattern.compile("scanning (.+) \\((.+)%\\) ");
 				Pattern ptWifiLevel0 = Pattern.compile("level\\(0\\) (.+) \\((.+)%\\) ");
 				Pattern ptWifiLevel1 = Pattern.compile("level\\(1\\) (.+) \\((.+)%\\) ");
@@ -203,8 +203,7 @@ public class BugrepParser
 						{
 							if (sCurrentLine.contains("Cell standby: ")
 							    || sCurrentLine.contains("Unaccounted: ")
-							    || sCurrentLine.contains("Screen: ")
-							    || sCurrentLine.contains("Idle: "))
+							    || sCurrentLine.contains("Screen: ") || sCurrentLine.contains("Idle: "))
 							{
 								break;
 							}
@@ -379,11 +378,11 @@ public class BugrepParser
 									continue;
 								}
 								
-								matcher = ptWifiOn.matcher(sCurrentLine);
+								matcher = ptWifiRun.matcher(sCurrentLine);
 								if (matcher.find())
 								{
-									wifiOn = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
-									System.out.println("22 ptWifiOn " + wifiOn);
+									wifiRun = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
+									System.out.println("22 ptwifiRun " + wifiRun);
 									continue;
 								}
 								
@@ -593,7 +592,7 @@ public class BugrepParser
 		return df.format(number);
 	}
 	
-	public String getCommentReport()
+	public String currentDrainStatistics()
 	{
 		if (rawStats.length() > 80)
 		{
@@ -605,67 +604,100 @@ public class BugrepParser
 			          + DateTimeOperator.getTimeStringFromMillis(timeOnBat) + "\\n";
 			comment = comment + "Screen On  time: " + DateTimeOperator.getTimeStringFromMillis(scOnTime)
 			          + " (" + formatNumber(getPercentage(scOnTime, timeOnBat)) + "%)\\n";
-			comment = comment + "Screen On consume: *" + formatNumber(getConsAvgOn()) + " mAh*\\n";
+			if (getConsAvgOn() > 740 && getPercentage(scOnTime, timeOnBat) > 15)
+			{
+				comment = comment + "Screen On consume: *" + formatNumber(getConsAvgOn()) + " mAh*\\n";
+			}
+			else
+			{
+				comment = comment + "Screen On consume: " + formatNumber(getConsAvgOn()) + " mAh\\n";
+			}
 			comment = comment + "Screen Off time: " + DateTimeOperator.getTimeStringFromMillis(scOffTime)
 			          + " (" + formatNumber(getPercentage(scOffTime, timeOnBat)) + "%)\\n";
-			comment = comment + "Screen Off consume: *" + formatNumber(getConsAvgOff()) + " mAh* \\n";
+			if (getConsAvgOff() < 100)
+			{
+				comment = comment + "Screen Off consume: *" + formatNumber(getConsAvgOff())
+				          + " mAh* --> *Low* sc off consume\\n";
+			}
+			else
+			{
+				comment = comment + "Screen Off consume: *" + formatNumber(getConsAvgOff()) + " mAh* \\n";
+			}
 			
 			if (remTime > 1000)
 				comment = comment + "Estimated remaining battery time: "
 				          + DateTimeOperator.getTimeStringFromMillis(remTime) + "\\n";
 			
 			comment = comment + "{panel}\\n";
-			comment = comment
-			          + "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
 			
-			long screenBright = scBright + scLight + scMedium;
-			if (getPercentage(screenBright, scOnTime) > 20)
+			return comment;
+		}
+		else
+		{
+			System.out.println("no comment generated");
+		}
+		
+		return "";
+	}
+	
+	public String eblDecreasedReasons()
+	{
+		if (rawStats.length() > 80)
+		{
+			String eblIncrease = "";
+			if (getPercentage(scOnTime, timeOnBat) > 15) // BATTRIAGE-165
 			{
-				comment = comment + "Screen was Bright/Light/Moderate for "
-				          + DateTimeOperator.getTimeStringFromMillis(screenBright) + " ("
-				          + formatNumber(getPercentage(screenBright, scOnTime)) + "%)\\n";
-				comment = comment + "\\n";
+				long screenBright = scBright + scLight + scMedium;
+				if (getPercentage(screenBright, scOnTime) > 20)
+				{
+					eblIncrease = eblIncrease + "Screen was Bright/Light/Moderate for "
+					              + DateTimeOperator.getTimeStringFromMillis(screenBright) + " ("
+					              + formatNumber(getPercentage(screenBright, scOnTime)) + "%)\\n";
+					eblIncrease = eblIncrease + "\\n";
+				}
 			}
 			
 			long phoneBadSignal = signalNone + signalPoor + signalModerate;
 			if (getPercentage(phoneBadSignal, timeOnBat) > 20)
 			{
-				comment = comment + "Phone signal quality was bad (None/Poor/Moderate) for "
-				          + DateTimeOperator.getTimeStringFromMillis(phoneBadSignal) + " ("
-				          + formatNumber(getPercentage(phoneBadSignal, timeOnBat)) + "%)\\n";
-				comment = comment + "\\n";
+				eblIncrease = eblIncrease + "Phone signal quality was bad (None/Poor/Moderate) for "
+				              + DateTimeOperator.getTimeStringFromMillis(phoneBadSignal) + " ("
+				              + formatNumber(getPercentage(phoneBadSignal, timeOnBat)) + "%)\\n";
+				eblIncrease = eblIncrease + "\\n";
 			}
 			
 			long phoneBadRadio = radio1xrtt + radioEvdo + radioUmts + radioGprs;
 			if (getPercentage(phoneBadRadio, radioActive) > 20)
 			{
-				comment = comment + "Radio network was not good for "
-				          + DateTimeOperator.getTimeStringFromMillis(phoneBadRadio) + " ("
-				          + formatNumber(getPercentage(phoneBadRadio, radioActive)) + "%)\\n";
-				comment = comment + "\\n";
+				eblIncrease = eblIncrease + "Radio network was not good for "
+				              + DateTimeOperator.getTimeStringFromMillis(phoneBadRadio) + " ("
+				              + formatNumber(getPercentage(phoneBadRadio, radioActive)) + "%)\\n";
+				eblIncrease = eblIncrease + "\\n";
 			}
 			
 			long wifiBadSignal = wifiLevel0 + wifiLevel1 + wifiLevel2;
-			if (getPercentage(wifiBadSignal, wifiOn) > 20)
+			if (getPercentage(wifiBadSignal, wifiRun) > 20)
 			{
-				comment = comment + "Wifi signal quality was bad (Level0/Level1/Level2) for "
-				          + DateTimeOperator.getTimeStringFromMillis(wifiBadSignal) + " ("
-				          + formatNumber(getPercentage(wifiBadSignal, wifiOn)) + "%)\\n";
+				eblIncrease = eblIncrease + "Wifi signal quality was bad (Level0/Level1/Level2) for "
+				              + DateTimeOperator.getTimeStringFromMillis(wifiBadSignal) + " ("
+				              + formatNumber(getPercentage(wifiBadSignal, wifiRun)) + "%)\\n";
 			}
-			if (getPercentage(wifiScan, wifiOn) > 20)
+			if (getPercentage(wifiScan, wifiRun) > 20)
 			{
-				comment = comment + "Scanning for better wifi network for "
-				          + DateTimeOperator.getTimeStringFromMillis(wifiScan) + " ("
-				          + formatNumber(getPercentage(wifiScan, wifiOn)) + "%)\\n";
+				eblIncrease = eblIncrease + "Scanning for better wifi network for "
+				              + DateTimeOperator.getTimeStringFromMillis(wifiScan) + " ("
+				              + formatNumber(getPercentage(wifiScan, wifiRun)) + "%)\\n";
 			}
 			
-			comment = comment
-			          + "{panel}\\n\\nNo current drain issues found in this CR. Closing as cancelled.";
-			
-			return comment;
+			return eblIncrease;
+		}
+		else
+		{
+			System.out.println("no comment generated");
 		}
 		
 		return "";
+		
 	}
 	
 	// Get specific data
@@ -800,9 +832,9 @@ public class BugrepParser
 		return radioActive;
 	}
 	
-	public long getWifiOn()
+	public long getWifiRun()
 	{
-		return wifiOn;
+		return wifiRun;
 	}
 	
 	public long getWifiScan()

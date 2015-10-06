@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import supportive.DateTimeOperator;
+
 
 @SuppressWarnings("resource")
 public class BtdParser
@@ -160,6 +162,32 @@ public class BtdParser
 		}
 	}
 	
+	public String eblDecreasers()
+	{
+		String reasons = "";
+		
+		if (getPercentage(phoneCall, realTimeOnBatt) > 7.5)
+		{
+			reasons = reasons + "Phone calls for " + DateTimeOperator.getTimeStringFromMillis(phoneCall)
+			          + " (" + formatNumber(getPercentage(phoneCall, realTimeOnBatt)) + "%)\\n";
+		}
+		if (getPercentage(tetheringTime, realTimeOnBatt) > 5)
+		{
+			reasons = reasons + "Some possible tethering for "
+			          + DateTimeOperator.getTimeStringFromMillis(tetheringTime) + " ("
+			          + formatNumber(getPercentage(tetheringTime, realTimeOnBatt)) + "%)\\n";
+		}
+		if (deviceTempData[1] > 46)
+		{
+			reasons = reasons + "Device got hot for while: " + deviceTempData[1] + "\\n";
+		}
+		
+		// TODO Network location math
+		// TODO GPS activity math
+		
+		return reasons;
+	}
+	
 	public void checkForIssuesIndications()
 	{
 		
@@ -176,6 +204,7 @@ public class BtdParser
 			return false;
 	}
 	
+	// Acquire specific data ------------------------------------------------------------------------
 	private long getTetheringTime()
 	{
 		long lastCTX, actualCTX, lastWRX, actualWRX;
@@ -234,153 +263,6 @@ public class BtdParser
 			e.printStackTrace();
 			return -1;
 		}
-	}
-	
-	public void showParseResults()
-	{
-		System.out.println("The longer discharge period is from "
-		                   + finalState.getStart()
-		                   + " ("
-		                   + formatDate(finalState.getStartDate())
-		                   + ") to "
-		                   + finalState.getEnd()
-		                   + " ("
-		                   + formatDate(finalState.getEndDate())
-		                   + ")\nA total time of "
-		                   + dateDiff(finalState.getStartDate(), finalState.getEndDate())
-		                   + " or "
-		                   + getMillisFromBtdStringDate(dateDiff(finalState.getStartDate(),
-		                                                         finalState.getEndDate())) + "ms\n");
-		System.out.println("Cell Rx: " + cellRX + " KBytes  ||  Cell TX: " + cellTX + " KBytes");
-		System.out.println("Wifi Rx: " + wifiRX + " KBytes  ||  Wifi TX: " + wifiTX + " KBytes");
-		System.out.println("Btt: " + bttDischarged[0] + "% --> " + bttDischarged[1] + "%");
-		System.out.println("GPS Location: " + gpsLocation);
-		System.out.println("Network Location: " + networkLocation);
-		System.out.println("Screen ON: " + getDateStringFromBtdStringMillis(timeOn) + " or " + timeOn + "ms");
-		System.out.println("Screen OFF: " + getDateStringFromBtdStringMillis(timeOff) + " or " + timeOff
-		                   + "ms");
-		System.out.println("Total time: " + getDateStringFromBtdStringMillis(finalState.getDuration())
-		                   + " or " + finalState.getDuration() + "ms");
-		System.out.println("Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - "
-		                   + phoneCall + "ms");
-		System.out.println("Time on battery: " + getDateStringFromBtdStringMillis(realTimeOnBatt) + " - "
-		                   + realTimeOnBatt + "ms");
-		System.out.println("Time awake: " + getDateStringFromBtdStringMillis(awakeTimeOnBatt) + " - "
-		                   + awakeTimeOnBatt + "ms");
-		System.out.println("Wifi On time: " + getDateStringFromBtdStringMillis(wifiOnTime) + " - "
-		                   + wifiOnTime + "ms");
-		System.out.println("Wifi Running time: " + getDateStringFromBtdStringMillis(wifiRunningTime) + " - "
-		                   + wifiRunningTime + "ms");
-		
-		System.out.println("Total discharge ms: " + (timeOn + timeOff));
-		System.out.println("Total discharge hours: " + (millisToHours(timeOn) + millisToHours(timeOff)));
-		System.out.println("Total discharge capacity: " + (consumeOn + consumeOff));
-		
-		System.out.print("Total On mAh: " + consumeOn + " - Total ms: " + timeOn);
-		System.out.println(" - Average On mAh: " + getAverageconsumeOn() + " - " + millisToHours(timeOn));
-		
-		System.out.print("Total Off mAh: " + consumeOff + " - Total ms: " + timeOff);
-		System.out.println(" - Average Off mAh: " + getAverageconsumeOff() + " - " + millisToHours(timeOff));
-		
-		System.out.println("Signal data:");
-		System.out.println("\tnone: \t\t" + millisToHours(signalData[0]) + "\t"
-		                   + getDateStringFromBtdStringMillis(signalData[0]));
-		System.out.println("\tpoor: \t\t" + millisToHours(signalData[1]) + "\t"
-		                   + getDateStringFromBtdStringMillis(signalData[1]));
-		System.out.println("\tmoderate:\t" + millisToHours(signalData[2]) + "\t"
-		                   + getDateStringFromBtdStringMillis(signalData[2]));
-		System.out.println("\tgood: \t\t" + millisToHours(signalData[3]) + "\t"
-		                   + getDateStringFromBtdStringMillis(signalData[3]));
-		System.out.println("\tgreat: \t\t" + millisToHours(signalData[4]) + "\t"
-		                   + getDateStringFromBtdStringMillis(signalData[4]));
-		
-		System.out.println("Screen brightnesses:");
-		System.out.println("\tdark: \t\t" + millisToHours(screenData[0]) + "\t"
-		                   + getDateStringFromBtdStringMillis(screenData[0]));
-		System.out.println("\tdim: \t\t" + millisToHours(screenData[1]) + "\t"
-		                   + getDateStringFromBtdStringMillis(screenData[1]));
-		System.out.println("\tmedium:\t\t" + millisToHours(screenData[2]) + "\t"
-		                   + getDateStringFromBtdStringMillis(screenData[2]));
-		System.out.println("\tlight: \t\t" + millisToHours(screenData[3]) + "\t"
-		                   + getDateStringFromBtdStringMillis(screenData[3]));
-		System.out.println("\tbright:\t\t" + millisToHours(screenData[4]) + "\t"
-		                   + getDateStringFromBtdStringMillis(screenData[4]));
-		
-		// Specific detections
-		System.out.println("Tethering time: " + tetheringTime + " "
-		                   + getDateStringFromBtdStringMillis(tetheringTime) + "\n");
-	}
-	
-	public void printResultToFile() throws IOException
-	{
-		File output = new File(path + "/BTD output.txt");
-		BufferedWriter br = new BufferedWriter(new FileWriter(output));
-		
-		br.write("The longer discharge period is from " + finalState.getStart() + " ("
-		         + formatDate(finalState.getStartDate()) + ") to " + finalState.getEnd() + " ("
-		         + formatDate(finalState.getEndDate()) + ")\nA total time of "
-		         + dateDiff(finalState.getStartDate(), finalState.getEndDate()) + " or "
-		         + getMillisFromBtdStringDate(dateDiff(finalState.getStartDate(), finalState.getEndDate()))
-		         + "ms\n" + "\n");
-		br.write("Cell Rx: " + cellRX + " KBytes  ||  Cell TX: " + cellTX + " KBytes" + "\n");
-		br.write("Wifi Rx: " + wifiRX + " KBytes  ||  Wifi TX: " + wifiTX + " KBytes" + "\n");
-		br.write("Btt: " + bttDischarged[0] + "% --> " + bttDischarged[1] + "%" + "\n");
-		br.write("GPS Location: " + gpsLocation + "\n");
-		br.write("Network Location: " + networkLocation + "\n");
-		br.write("Screen ON: " + getDateStringFromBtdStringMillis(timeOn) + " or " + timeOn + "ms" + "\n");
-		br.write("Screen OFF: " + getDateStringFromBtdStringMillis(timeOff) + " or " + timeOff + "ms" + "\n");
-		br.write("Total time: " + getDateStringFromBtdStringMillis(finalState.getDuration()) + " or "
-		         + finalState.getDuration() + "ms" + "\n");
-		br.write("Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - " + phoneCall + "ms"
-		         + "\n");
-		br.write("Time on battery: " + getDateStringFromBtdStringMillis(realTimeOnBatt) + " - "
-		         + realTimeOnBatt + "ms" + "\n");
-		br.write("Time awake: " + getDateStringFromBtdStringMillis(awakeTimeOnBatt) + " - " + awakeTimeOnBatt
-		         + "ms" + "\n");
-		br.write("Wifi On time: " + getDateStringFromBtdStringMillis(wifiOnTime) + " - " + wifiOnTime + "ms"
-		         + "\n");
-		br.write("Wifi Running time: " + getDateStringFromBtdStringMillis(wifiRunningTime) + " - "
-		         + wifiRunningTime + "ms" + "\n");
-		
-		br.write("Total discharge ms: " + (timeOn + timeOff) + "\n");
-		br.write("Total discharge hours: " + (millisToHours(timeOn) + millisToHours(timeOff)) + "\n");
-		br.write("Total discharge capacity: " + (consumeOn + consumeOff) + "\n");
-		
-		br.write("Total On mAh: " + consumeOn + " - Total ms: " + timeOn + "\n");
-		br.write("Average On mAh: " + getAverageconsumeOn() + " - " + millisToHours(timeOn) + "\n");
-		
-		br.write("Total Off mAh: " + consumeOff + " - Total ms: " + timeOff + "\n");
-		br.write("Average Off mAh: " + getAverageconsumeOff() + " - " + millisToHours(timeOff) + "\n");
-		
-		br.write("Signal data:" + "\n");
-		br.write("\tnone: \t\t" + millisToHours(signalData[0]) + "\t"
-		         + getDateStringFromBtdStringMillis(signalData[0]) + "\n");
-		br.write("\tpoor: \t\t" + millisToHours(signalData[1]) + "\t"
-		         + getDateStringFromBtdStringMillis(signalData[1]) + "\n");
-		br.write("\tmoderate:\t" + millisToHours(signalData[2]) + "\t"
-		         + getDateStringFromBtdStringMillis(signalData[2]) + "\n");
-		br.write("\tgood: \t\t" + millisToHours(signalData[3]) + "\t"
-		         + getDateStringFromBtdStringMillis(signalData[3]) + "\n");
-		br.write("\tgreat: \t\t" + millisToHours(signalData[4]) + "\t"
-		         + getDateStringFromBtdStringMillis(signalData[4]) + "\n");
-		
-		br.write("Screen brightnesses:" + "\n");
-		br.write("\tdark: \t\t" + millisToHours(screenData[0]) + "\t"
-		         + getDateStringFromBtdStringMillis(screenData[0]) + "\n");
-		br.write("\tdim: \t\t" + millisToHours(screenData[1]) + "\t"
-		         + getDateStringFromBtdStringMillis(screenData[1]) + "\n");
-		br.write("\tmedium:\t\t" + millisToHours(screenData[2]) + "\t"
-		         + getDateStringFromBtdStringMillis(screenData[2]) + "\n");
-		br.write("\tlight: \t\t" + millisToHours(screenData[3]) + "\t"
-		         + getDateStringFromBtdStringMillis(screenData[3]) + "\n");
-		br.write("\tbright:\t\t" + millisToHours(screenData[4]) + "\t"
-		         + getDateStringFromBtdStringMillis(screenData[4]) + "\n");
-		
-		// Specific detections
-		br.write("Tethering time: " + tetheringTime + " " + getDateStringFromBtdStringMillis(tetheringTime)
-		         + "\n");
-		
-		br.close();
 	}
 	
 	private boolean getDischargeBatteryData(BtdState finalState)
@@ -482,7 +364,7 @@ public class BtdParser
 		String[] intialSignalParts = results[0][0].split(", ");
 		String[] finalSignalParts = results[0][1].split(", ");
 		
-		signalData = new long[5];
+		signalData = new long[6];
 		
 		for (String s : finalSignalParts)
 		{
@@ -533,6 +415,8 @@ public class BtdParser
 					break;
 			}
 		}
+		
+		signalData[5] = signalData[0] + signalData[1] + signalData[2] + signalData[3] + signalData[4];
 		/*
 		 * for (long d : signalData) { System.out.println(millisToHours(d)); }
 		 */
@@ -547,7 +431,7 @@ public class BtdParser
 		String[] intialScreenParts = results[0][0].split(", ");
 		String[] finalScreenParts = results[0][1].split(", ");
 		
-		screenData = new long[5];
+		screenData = new long[6];
 		
 		for (String s : finalScreenParts)
 		{
@@ -598,6 +482,8 @@ public class BtdParser
 					break;
 			}
 		}
+		
+		screenData[5] = screenData[0] + screenData[1] + screenData[2] + screenData[3] + screenData[4];
 		/*
 		 * for (long d : screenData) { System.out.println(millisToHours(d)); }
 		 */
@@ -632,26 +518,6 @@ public class BtdParser
 		{
 			e.printStackTrace();
 		}
-	}
-	
-	public long getMillisFromBtdStringDate(String time)
-	{
-		int[] parts = timeParser(time);
-		long millis = parts[0];
-		
-		try
-		{
-			millis = millis + parts[1] * 1000;
-			millis = millis + parts[2] * 1000 * 60;
-			millis = millis + parts[3] * 1000 * 60 * 60;
-			millis = millis + parts[4] * 1000 * 60 * 60 * 24;
-		}
-		catch (ArrayIndexOutOfBoundsException e)
-		{
-			// e.printStackTrace();
-		}
-		
-		return millis;
 	}
 	
 	public BtdRowsList getDischargeBtdData(long timezone)
@@ -710,6 +576,27 @@ public class BtdParser
 		}
 		
 		return btdRows;
+	}
+	
+	// Supportive ----------------------------------------------------------------------------------
+	public long getMillisFromBtdStringDate(String time)
+	{
+		int[] parts = timeParser(time);
+		long millis = parts[0];
+		
+		try
+		{
+			millis = millis + parts[1] * 1000;
+			millis = millis + parts[2] * 1000 * 60;
+			millis = millis + parts[3] * 1000 * 60 * 60;
+			millis = millis + parts[4] * 1000 * 60 * 60 * 24;
+		}
+		catch (ArrayIndexOutOfBoundsException e)
+		{
+			// e.printStackTrace();
+		}
+		
+		return millis;
 	}
 	
 	public String[][] getMinMaxDiffData(String[] minsMaxs, long[] fromToTimestamp)
@@ -829,7 +716,7 @@ public class BtdParser
 	
 	public String formatDate(Date date)
 	{
-		SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm:ss");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		format.setTimeZone(TimeZone.getTimeZone(getTimeZoneName()));
 		return format.format(date);
 	}
@@ -846,6 +733,18 @@ public class BtdParser
 		}
 		
 		return time;
+	}
+	
+	private float getPercentage(long percentageOf, long from)
+	{
+		return (float) (100.0 * percentageOf / from);
+	}
+	
+	private String formatNumber(float number)
+	{
+		DecimalFormat df = new DecimalFormat("##.##");
+		df.setRoundingMode(RoundingMode.HALF_UP);
+		return df.format(number);
 	}
 	
 	public void getPeriods()
@@ -899,17 +798,6 @@ public class BtdParser
 		{
 			e.printStackTrace();
 		}
-	}
-	
-	public void showPeriods()
-	{
-		System.out.println("Periodos detectados:");
-		for (BtdState btdState : statesData)
-		{
-			System.out.println("From: " + btdState.getStartDate() + " To: " + btdState.getEndDate()
-			                   + " Status: " + btdState.getStatus());
-		}
-		System.out.println();
 	}
 	
 	public BtdState getLongerDischargingPeriod()
@@ -1057,20 +945,7 @@ public class BtdParser
 		btd.setWifirunningTime(rs.getString("WifiRunningTime"));
 	}
 	
-	// Getters and Setters
-	public BtdRowsList getBtdRows()
-	{
-		return btdRows;
-	}
-	
-	public BtdStatesData getStatesData()
-	{
-		if (statesData.size() == 0)
-			getPeriods();
-		
-		return statesData;
-	}
-	
+	// Complementary -------------------------------------------------------------------------------------
 	public int getAverageconsumeOn()
 	{
 		return (int) (consumeOn / (timeOn / 3600000.0));
@@ -1081,7 +956,12 @@ public class BtdParser
 		return (int) (consumeOff / (timeOff / 3600000.0));
 	}
 	
-	public String getTetherPercentage()
+	public float phoneCallPercentage()
+	{
+		return getPercentage(phoneCall, realTimeOnBatt);
+	}
+	
+	public String tetherPercentage()
 	{
 		DecimalFormat df = new DecimalFormat("##.##");
 		df.setRoundingMode(RoundingMode.DOWN);
@@ -1093,6 +973,221 @@ public class BtdParser
 		return (double) (millis / 3600000.0);
 	}
 	
+	// Printers ------------------------------------------------------------------------------------------
+	public void showParseResults()
+	{
+		System.out.println("The longer discharge period is from "
+		                   + finalState.getStart()
+		                   + " ("
+		                   + formatDate(finalState.getStartDate())
+		                   + ") to "
+		                   + finalState.getEnd()
+		                   + " ("
+		                   + formatDate(finalState.getEndDate())
+		                   + ")\nA total time of "
+		                   + dateDiff(finalState.getStartDate(), finalState.getEndDate())
+		                   + " or "
+		                   + getMillisFromBtdStringDate(dateDiff(finalState.getStartDate(),
+		                                                         finalState.getEndDate())) + "ms\n");
+		System.out.println("Cell Rx: " + cellRX + " KBytes  ||  Cell TX: " + cellTX + " KBytes");
+		System.out.println("Wifi Rx: " + wifiRX + " KBytes  ||  Wifi TX: " + wifiTX + " KBytes");
+		System.out.println("Btt: " + bttDischarged[0] + "% --> " + bttDischarged[1] + "%");
+		System.out.println("GPS Location: " + gpsLocation);
+		System.out.println("Network Location: " + networkLocation);
+		System.out.println("Screen ON: " + getDateStringFromBtdStringMillis(timeOn) + " or " + timeOn + "ms");
+		System.out.println("Screen OFF: " + getDateStringFromBtdStringMillis(timeOff) + " or " + timeOff
+		                   + "ms");
+		System.out.println("Total time: " + getDateStringFromBtdStringMillis(finalState.getDuration())
+		                   + " or " + finalState.getDuration() + "ms");
+		System.out.println("Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - "
+		                   + phoneCall + "ms");
+		System.out.println("Time on battery: " + getDateStringFromBtdStringMillis(realTimeOnBatt) + " - "
+		                   + realTimeOnBatt + "ms");
+		System.out.println("Time awake: " + getDateStringFromBtdStringMillis(awakeTimeOnBatt) + " - "
+		                   + awakeTimeOnBatt + "ms");
+		System.out.println("Wifi On time: " + getDateStringFromBtdStringMillis(wifiOnTime) + " - "
+		                   + wifiOnTime + "ms");
+		System.out.println("Wifi Running time: " + getDateStringFromBtdStringMillis(wifiRunningTime) + " - "
+		                   + wifiRunningTime + "ms");
+		
+		System.out.println("Total discharge ms: " + (timeOn + timeOff));
+		System.out.println("Total discharge hours: " + (millisToHours(timeOn) + millisToHours(timeOff)));
+		System.out.println("Total discharge capacity: " + (consumeOn + consumeOff));
+		
+		System.out.print("Total On mAh: " + consumeOn + " - Total ms: " + timeOn);
+		System.out.println(" - Average On mAh: " + getAverageconsumeOn() + " - " + millisToHours(timeOn));
+		
+		System.out.print("Total Off mAh: " + consumeOff + " - Total ms: " + timeOff);
+		System.out.println(" - Average Off mAh: " + getAverageconsumeOff() + " - " + millisToHours(timeOff));
+		
+		System.out.println("Signal data:");
+		System.out.println("\tnone: \t\t" + millisToHours(signalData[0]) + "\t"
+		                   + getDateStringFromBtdStringMillis(signalData[0]));
+		System.out.println("\tpoor: \t\t" + millisToHours(signalData[1]) + "\t"
+		                   + getDateStringFromBtdStringMillis(signalData[1]));
+		System.out.println("\tmoderate:\t" + millisToHours(signalData[2]) + "\t"
+		                   + getDateStringFromBtdStringMillis(signalData[2]));
+		System.out.println("\tgood: \t\t" + millisToHours(signalData[3]) + "\t"
+		                   + getDateStringFromBtdStringMillis(signalData[3]));
+		System.out.println("\tgreat: \t\t" + millisToHours(signalData[4]) + "\t"
+		                   + getDateStringFromBtdStringMillis(signalData[4]));
+		
+		System.out.println("Screen brightnesses:");
+		System.out.println("\tdark: \t\t" + millisToHours(screenData[0]) + "\t"
+		                   + getDateStringFromBtdStringMillis(screenData[0]));
+		System.out.println("\tdim: \t\t" + millisToHours(screenData[1]) + "\t"
+		                   + getDateStringFromBtdStringMillis(screenData[1]));
+		System.out.println("\tmedium:\t\t" + millisToHours(screenData[2]) + "\t"
+		                   + getDateStringFromBtdStringMillis(screenData[2]));
+		System.out.println("\tlight: \t\t" + millisToHours(screenData[3]) + "\t"
+		                   + getDateStringFromBtdStringMillis(screenData[3]));
+		System.out.println("\tbright:\t\t" + millisToHours(screenData[4]) + "\t"
+		                   + getDateStringFromBtdStringMillis(screenData[4]));
+		
+		// Specific detections
+		System.out.println("Tethering time: " + tetheringTime + " "
+		                   + getDateStringFromBtdStringMillis(tetheringTime) + "\n");
+	}
+	
+	public void printResultToFile() throws IOException
+	{
+		File output = new File(path + "/BTD output.txt");
+		BufferedWriter br = new BufferedWriter(new FileWriter(output));
+		
+		br.write("The longer discharge period is from " + finalState.getStart() + " ("
+		         + formatDate(finalState.getStartDate()) + ") to " + finalState.getEnd() + " ("
+		         + formatDate(finalState.getEndDate()) + ")\nA total time of "
+		         + dateDiff(finalState.getStartDate(), finalState.getEndDate()) + " or "
+		         + getMillisFromBtdStringDate(dateDiff(finalState.getStartDate(), finalState.getEndDate()))
+		         + "ms\n" + "\n");
+		br.write("Cell Rx: " + cellRX + " KBytes  ||  Cell TX: " + cellTX + " KBytes" + "\n");
+		br.write("Wifi Rx: " + wifiRX + " KBytes  ||  Wifi TX: " + wifiTX + " KBytes" + "\n");
+		br.write("Btt: " + bttDischarged[0] + "% --> " + bttDischarged[1] + "%" + "\n");
+		br.write("GPS Location: " + gpsLocation + "\n");
+		br.write("Network Location: " + networkLocation + "\n");
+		br.write("Screen ON: " + getDateStringFromBtdStringMillis(timeOn) + " or " + timeOn + "ms" + "\n");
+		br.write("Screen OFF: " + getDateStringFromBtdStringMillis(timeOff) + " or " + timeOff + "ms" + "\n");
+		br.write("Total time: " + getDateStringFromBtdStringMillis(finalState.getDuration()) + " or "
+		         + finalState.getDuration() + "ms" + "\n");
+		br.write("Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - " + phoneCall + "ms"
+		         + "\n");
+		br.write("Time on battery: " + getDateStringFromBtdStringMillis(realTimeOnBatt) + " - "
+		         + realTimeOnBatt + "ms" + "\n");
+		br.write("Time awake: " + getDateStringFromBtdStringMillis(awakeTimeOnBatt) + " - " + awakeTimeOnBatt
+		         + "ms" + "\n");
+		br.write("Wifi On time: " + getDateStringFromBtdStringMillis(wifiOnTime) + " - " + wifiOnTime + "ms"
+		         + "\n");
+		br.write("Wifi Running time: " + getDateStringFromBtdStringMillis(wifiRunningTime) + " - "
+		         + wifiRunningTime + "ms" + "\n");
+		
+		br.write("Total discharge ms: " + (timeOn + timeOff) + "\n");
+		br.write("Total discharge hours: " + (millisToHours(timeOn) + millisToHours(timeOff)) + "\n");
+		br.write("Total discharge capacity: " + (consumeOn + consumeOff) + "\n");
+		
+		br.write("Total On mAh: " + consumeOn + " - Total ms: " + timeOn + "\n");
+		br.write("Average On mAh: " + getAverageconsumeOn() + " - " + millisToHours(timeOn) + "\n");
+		
+		br.write("Total Off mAh: " + consumeOff + " - Total ms: " + timeOff + "\n");
+		br.write("Average Off mAh: " + getAverageconsumeOff() + " - " + millisToHours(timeOff) + "\n");
+		
+		br.write("Signal data:" + "\n");
+		br.write("\tnone: \t\t" + millisToHours(signalData[0]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[0]) + "\n");
+		br.write("\tpoor: \t\t" + millisToHours(signalData[1]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[1]) + "\n");
+		br.write("\tmoderate:\t" + millisToHours(signalData[2]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[2]) + "\n");
+		br.write("\tgood: \t\t" + millisToHours(signalData[3]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[3]) + "\n");
+		br.write("\tgreat: \t\t" + millisToHours(signalData[4]) + "\t"
+		         + getDateStringFromBtdStringMillis(signalData[4]) + "\n");
+		
+		br.write("Screen brightnesses:" + "\n");
+		br.write("\tdark: \t\t" + millisToHours(screenData[0]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[0]) + "\n");
+		br.write("\tdim: \t\t" + millisToHours(screenData[1]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[1]) + "\n");
+		br.write("\tmedium:\t\t" + millisToHours(screenData[2]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[2]) + "\n");
+		br.write("\tlight: \t\t" + millisToHours(screenData[3]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[3]) + "\n");
+		br.write("\tbright:\t\t" + millisToHours(screenData[4]) + "\t"
+		         + getDateStringFromBtdStringMillis(screenData[4]) + "\n");
+		
+		// Specific detections
+		br.write("Tethering time: " + tetheringTime + " " + getDateStringFromBtdStringMillis(tetheringTime)
+		         + "\n");
+		
+		br.close();
+	}
+	
+	public String parseResult()
+	{
+		String data = "";
+		
+		data = data + "The longer discharge period is from " + finalState.getStart() + " ("
+		       + formatDate(finalState.getStartDate()) + ") to " + finalState.getEnd() + " ("
+		       + formatDate(finalState.getEndDate()) + ")\nA total time of "
+		       + dateDiff(finalState.getStartDate(), finalState.getEndDate()) + " or "
+		       + getMillisFromBtdStringDate(dateDiff(finalState.getStartDate(), finalState.getEndDate()))
+		       + "ms\n" + "\n";
+		
+		data = data + "Time awake: " + getDateStringFromBtdStringMillis(awakeTimeOnBatt) + " - "
+		       + awakeTimeOnBatt + "ms" + "\n";
+		data = data + "Total discharged capacity: " + (consumeOn + consumeOff) + "\n";
+		data = data + "Battery from/to: " + bttDischarged[0] + "% --> " + bttDischarged[1] + "%" + "\n";
+		
+		// data = data + "Total On mAh: " + consumeOn + " - Total ms: " + timeOn + "\n";
+		data = data + "Average Screen On mAh: " + getAverageconsumeOn() + " - "
+		       + getDateStringFromBtdStringMillis(timeOn) + "\n";
+		
+		// data = data + "Total Off mAh: " + consumeOff + " - Total ms: " + timeOff + "\n";
+		data = data + "Average Screen Off mAh: " + getAverageconsumeOff() + " - "
+		       + getDateStringFromBtdStringMillis(timeOff) + "\n";
+		
+		data = data + "Cell Rx: " + cellRX + " KBytes  ||  Cell TX: " + cellTX + " KBytes" + "\n";
+		data = data + "Wifi Rx: " + wifiRX + " KBytes  ||  Wifi TX: " + wifiTX + " KBytes" + "\n";
+		data = data + "GPS Location: " + gpsLocation + "\n";
+		data = data + "Network Location: " + networkLocation + "\n";
+		
+		data = data + "Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + " - " + phoneCall
+		       + "ms" + "\n";
+		
+		data = data + "Wifi Running time: " + getDateStringFromBtdStringMillis(wifiRunningTime) + " - "
+		       + wifiRunningTime + "ms" + "\n";
+		
+		data = data + "Tethering time: " + tetheringTime + " "
+		       + getDateStringFromBtdStringMillis(tetheringTime) + "\n";
+		
+		data = data + "Signal data:" + "\n";
+		data = data + "\tnone: \t\t" + getDateStringFromBtdStringMillis(signalData[0]) + " - " + formatNumber(getPercentage(signalData[0], signalData[5])) + "%\n";
+		data = data + "\tpoor: \t\t" + getDateStringFromBtdStringMillis(signalData[1]) + " - " + formatNumber(getPercentage(signalData[1], signalData[5])) + "%\n";
+		data = data + "\tmoderate:\t" + getDateStringFromBtdStringMillis(signalData[2]) + " - " + formatNumber(getPercentage(signalData[2], signalData[5])) + "%\n";
+		data = data + "\tgood: \t\t" + getDateStringFromBtdStringMillis(signalData[3]) + " - " + formatNumber(getPercentage(signalData[3], signalData[5])) + "%\n";
+		data = data + "\tgreat: \t\t" + getDateStringFromBtdStringMillis(signalData[4]) + " - " + formatNumber(getPercentage(signalData[4], signalData[5])) + "%\n";
+		
+		data = data + "Screen brightnesses:" + "\n";
+		data = data + "\tdark: \t\t" + getDateStringFromBtdStringMillis(screenData[0]) + " - " + formatNumber(getPercentage(screenData[0], screenData[5])) + "%\n";
+		data = data + "\tdim: \t\t" + getDateStringFromBtdStringMillis(screenData[1]) + " - " + formatNumber(getPercentage(screenData[1], screenData[5])) + "%\n";
+		data = data + "\tmedium:\t\t" + getDateStringFromBtdStringMillis(screenData[2]) + " - " + formatNumber(getPercentage(screenData[2], screenData[5])) + "%\n";
+		data = data + "\tlight: \t\t" + getDateStringFromBtdStringMillis(screenData[3]) + " - " + formatNumber(getPercentage(screenData[3], screenData[5])) + "%\n";
+		data = data + "\tbright:\t\t" + getDateStringFromBtdStringMillis(screenData[4]) + " - " + formatNumber(getPercentage(screenData[4], screenData[5])) + "%\n";
+		
+		return data;
+	}
+	
+	public void showPeriods()
+	{
+		System.out.println("Periodos detectados:");
+		for (BtdState btdState : statesData)
+		{
+			System.out.println("From: " + btdState.getStartDate() + " To: " + btdState.getEndDate()
+			                   + " Status: " + btdState.getStatus());
+		}
+		System.out.println();
+	}
+	
+	// Getters and Setters -------------------------------------------------------------------------------
 	public int getStatus()
 	{
 		return status;
@@ -1101,6 +1196,19 @@ public class BtdParser
 	public BtdState getFinalState()
 	{
 		return finalState;
+	}
+	
+	public BtdRowsList getBtdRows()
+	{
+		return btdRows;
+	}
+	
+	public BtdStatesData getStatesData()
+	{
+		if (statesData.size() == 0)
+			getPeriods();
+		
+		return statesData;
 	}
 	
 	public long[] getScreenData()
