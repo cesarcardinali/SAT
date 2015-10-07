@@ -235,6 +235,7 @@ public class CrChecker
 		}
 		else
 		{
+			btdTether = false;
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Could not parse BTD file");
 		}
 		
@@ -251,7 +252,7 @@ public class CrChecker
 		if (mainParsed)
 		{
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Verifying Main file");
-			if (mainParser.getTotalLogTime() < btdParser.getLongerDischargingPeriod().getDuration())
+			if (btdParsed && mainParser.getTotalLogTime() < btdParser.getLongerDischargingPeriod().getDuration())
 			{
 				mainTether = false;
 			}
@@ -333,9 +334,6 @@ public class CrChecker
 		boolean ntTime = false;
 		boolean lowEbl = false;
 		boolean highCurr = false;
-		
-		System.out.println("-- Call time");
-		System.out.println(btdParser.phoneCallPercentage());
 		
 		for (String label : cr.getLabels())
 		{

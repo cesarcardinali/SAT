@@ -31,6 +31,7 @@ public class BtdParser
 	private BtdRowsList   btdRows;
 	private BtdState      finalState;
 	private BtdStatesData statesData;
+	private BtdWLList     kernelWLs;
 	private long[]        screenData;     // 0- dark, 1- dim, 2- medium, 3- light, 4- bright
 	private long[]        signalData;     // 0- none, 1- poor, 2- moderate, 3- good, 4- great
 	private float[]       cpuTempData;    // 0- min, 1- max, 2- avg
@@ -91,7 +92,7 @@ public class BtdParser
 				stmt = c.createStatement();
 				
 				statesData = new BtdStatesData();
-				btdRows = null;
+				btdRows = new BtdRowsList();
 				
 				status = 1;
 				
@@ -119,6 +120,7 @@ public class BtdParser
 		if (status == 1)
 		{
 			bttDischarged = new int[2];
+			kernelWLs = new BtdWLList();
 			
 			// Get charge and discharge periods
 			getPeriods();
@@ -139,6 +141,9 @@ public class BtdParser
 			getDischargeTemperatureData(finalState);
 			
 			getTetheringTime();
+			
+			getDischargeBtdData(finalState, getTimeZoneMillis());
+			System.out.println("--- Size: " + btdRows.size());
 			
 			// Show acquired data
 			// showParseResults();
@@ -520,14 +525,15 @@ public class BtdParser
 		}
 	}
 	
-	public BtdRowsList getDischargeBtdData(long timezone)
+	public BtdRowsList getDischargeBtdData(BtdState finalState, long timezone)
 	{
 		btdRows = new BtdRowsList();
 		
 		try
 		{
 			// Get all BTD data -------------------------------------
-			rs = stmt.executeQuery("SELECT rowid, * FROM t_fgdata WHERE t_fgdata.BATTERY_STATUS = 3 ORDER BY rowid DESC;");
+			rs = stmt.executeQuery("SELECT rowid, * FROM t_fgdata WHERE timestamp BETWEEN "
+			                       + finalState.getStart() + " AND " + finalState.getEnd() + ";");
 			
 			btdRows = new BtdRowsList();
 			
@@ -535,9 +541,37 @@ public class BtdParser
 			{
 				btdRow = new BtdRow();
 				setupBtdRow(btdRow, rs, timezone);
+				String[] kWLs = btdRow.getActiveKernels().split("\\|");
+				//System.out.println(btdRow.getActiveKernels());
+				for (String kwl : kWLs)
+				{
+					if (kwl.equals(""))
+						continue;
+					
+					BtdWL wl = new BtdWL(kwl);
+					int index = kernelWLs.indexOf(wl);
+					//System.out.println(index);
+					
+					if(index >= 0)
+					{
+						kernelWLs.update(index, wl);
+					}
+					else
+					{
+						kernelWLs.add(wl);
+					}
+				}
 				btdRows.add(btdRow);
 			}
 			
+			System.out.println("--- Kernels: " + btdRows.get(btdRows.size()-1).getActiveKernels());
+			System.out.println("--- Kernels: " + kernelWLs.size());
+			kernelWLs.sortItens();
+			
+			for (BtdWL item : kernelWLs)
+			{
+				System.out.println(item);
+			}
 			// rs.close();
 			// stmt.close();
 		}
@@ -549,14 +583,15 @@ public class BtdParser
 		return btdRows;
 	}
 	
-	public BtdRowsList getDischargeBtdData()
+	public BtdRowsList getDischargeBtdData(BtdState finalState)
 	{
 		btdRows = new BtdRowsList();
 		
 		try
 		{
 			// Get all BTD data -------------------------------------
-			rs = stmt.executeQuery("SELECT rowid, * FROM t_fgdata WHERE t_fgdata.BATTERY_STATUS = 3 ORDER BY rowid DESC;");
+			rs = stmt.executeQuery("SELECT rowid, * FROM t_fgdata WHERE timestamp BETWEEN "
+			                       + finalState.getStart() + " AND " + finalState.getEnd() + ";");
 			
 			btdRows = new BtdRowsList();
 			
@@ -1160,18 +1195,28 @@ public class BtdParser
 		       + getDateStringFromBtdStringMillis(tetheringTime) + "\n";
 		
 		data = data + "Signal data:" + "\n";
-		data = data + "\tnone: \t\t" + getDateStringFromBtdStringMillis(signalData[0]) + " - " + formatNumber(getPercentage(signalData[0], signalData[5])) + "%\n";
-		data = data + "\tpoor: \t\t" + getDateStringFromBtdStringMillis(signalData[1]) + " - " + formatNumber(getPercentage(signalData[1], signalData[5])) + "%\n";
-		data = data + "\tmoderate:\t" + getDateStringFromBtdStringMillis(signalData[2]) + " - " + formatNumber(getPercentage(signalData[2], signalData[5])) + "%\n";
-		data = data + "\tgood: \t\t" + getDateStringFromBtdStringMillis(signalData[3]) + " - " + formatNumber(getPercentage(signalData[3], signalData[5])) + "%\n";
-		data = data + "\tgreat: \t\t" + getDateStringFromBtdStringMillis(signalData[4]) + " - " + formatNumber(getPercentage(signalData[4], signalData[5])) + "%\n";
+		data = data + "\tnone: \t\t" + getDateStringFromBtdStringMillis(signalData[0]) + " - "
+		       + formatNumber(getPercentage(signalData[0], signalData[5])) + "%\n";
+		data = data + "\tpoor: \t\t" + getDateStringFromBtdStringMillis(signalData[1]) + " - "
+		       + formatNumber(getPercentage(signalData[1], signalData[5])) + "%\n";
+		data = data + "\tmoderate:\t" + getDateStringFromBtdStringMillis(signalData[2]) + " - "
+		       + formatNumber(getPercentage(signalData[2], signalData[5])) + "%\n";
+		data = data + "\tgood: \t\t" + getDateStringFromBtdStringMillis(signalData[3]) + " - "
+		       + formatNumber(getPercentage(signalData[3], signalData[5])) + "%\n";
+		data = data + "\tgreat: \t\t" + getDateStringFromBtdStringMillis(signalData[4]) + " - "
+		       + formatNumber(getPercentage(signalData[4], signalData[5])) + "%\n";
 		
 		data = data + "Screen brightnesses:" + "\n";
-		data = data + "\tdark: \t\t" + getDateStringFromBtdStringMillis(screenData[0]) + " - " + formatNumber(getPercentage(screenData[0], screenData[5])) + "%\n";
-		data = data + "\tdim: \t\t" + getDateStringFromBtdStringMillis(screenData[1]) + " - " + formatNumber(getPercentage(screenData[1], screenData[5])) + "%\n";
-		data = data + "\tmedium:\t\t" + getDateStringFromBtdStringMillis(screenData[2]) + " - " + formatNumber(getPercentage(screenData[2], screenData[5])) + "%\n";
-		data = data + "\tlight: \t\t" + getDateStringFromBtdStringMillis(screenData[3]) + " - " + formatNumber(getPercentage(screenData[3], screenData[5])) + "%\n";
-		data = data + "\tbright:\t\t" + getDateStringFromBtdStringMillis(screenData[4]) + " - " + formatNumber(getPercentage(screenData[4], screenData[5])) + "%\n";
+		data = data + "\tdark: \t\t" + getDateStringFromBtdStringMillis(screenData[0]) + " - "
+		       + formatNumber(getPercentage(screenData[0], screenData[5])) + "%\n";
+		data = data + "\tdim: \t\t" + getDateStringFromBtdStringMillis(screenData[1]) + " - "
+		       + formatNumber(getPercentage(screenData[1], screenData[5])) + "%\n";
+		data = data + "\tmedium:\t\t" + getDateStringFromBtdStringMillis(screenData[2]) + " - "
+		       + formatNumber(getPercentage(screenData[2], screenData[5])) + "%\n";
+		data = data + "\tlight: \t\t" + getDateStringFromBtdStringMillis(screenData[3]) + " - "
+		       + formatNumber(getPercentage(screenData[3], screenData[5])) + "%\n";
+		data = data + "\tbright:\t\t" + getDateStringFromBtdStringMillis(screenData[4]) + " - "
+		       + formatNumber(getPercentage(screenData[4], screenData[5])) + "%\n";
 		
 		return data;
 	}
