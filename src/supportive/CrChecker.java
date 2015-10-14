@@ -3,9 +3,12 @@ package supportive;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import objects.CrItem;
 import supportive.preanalyzers.btdparser.BtdParser;
+import supportive.preanalyzers.logsparser.BugRepJavaWL;
+import supportive.preanalyzers.logsparser.BugRepKernelWL;
 import supportive.preanalyzers.logsparser.BugrepParser;
 import supportive.preanalyzers.logsparser.MainParser;
 import core.Logger;
@@ -27,6 +30,7 @@ public class CrChecker
 	private boolean             bugrepParsed;
 	private boolean             btdTether;
 	private boolean             mainTether;
+	private int                 batThreshold;
 	
 	private ArrayList<String>   incompleteFiles;
 	private ArrayList<String>   filesNames;
@@ -42,6 +46,7 @@ public class CrChecker
 	public CrChecker(String crPath)
 	{
 		this.crPath = crPath;
+		batThreshold = 110;
 	}
 	
 	public boolean checkCR()
@@ -80,41 +85,96 @@ public class CrChecker
 				return true;
 			}
 			
-			// Try to parse log files
+			// Try to parse log files ---------------------------------------------------
 			btdParser = new BtdParser(crPath);
 			SharedObjs.crsManagerPane.addLogLine("Parsing BTD data ...");
 			btdParsed = btdParser.parse();
+			if (btdParsed)
+			{
+				SharedObjs.crsManagerPane.addLogLine("Done");
+			}
+			else
+			{
+				SharedObjs.crsManagerPane.addLogLine("Not possible to parse BTD");
+			}
 			mainParser = new MainParser(crPath);
 			SharedObjs.crsManagerPane.addLogLine("Parsing Main log data ...");
 			mainParsed = mainParser.parse();
+			if (mainParsed)
+			{
+				SharedObjs.crsManagerPane.addLogLine("Done");
+			}
+			else
+			{
+				SharedObjs.crsManagerPane.addLogLine("Not possible to parse Main");
+			}
 			bugrepParser = new BugrepParser(crPath);
 			SharedObjs.crsManagerPane.addLogLine("Parsing Bugreport log data ...");
 			bugrepParsed = bugrepParser.parse();
-			
-			SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
-			if (checkForTethering())
+			if (bugrepParsed)
 			{
-				jira.assignIssue(cr.getJiraID());
-				jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
-				jira.addLabel(cr.getJiraID(), "sat_closed");
-				
-				cr.setResolution(INVALID);
-				cr.setAssignee(SharedObjs.getUser());
-				SharedObjs.satDB.insertAnalyzedCR(cr);
-				
-				SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
-				                                     + " as invalid");
-				
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
-				                                        + ". Closed as incomplete");
-				
-				return true;
+				SharedObjs.crsManagerPane.addLogLine("Done");
+			}
+			else
+			{
+				SharedObjs.crsManagerPane.addLogLine("Not possible to parse Bugreport");
 			}
 			
-			SharedObjs.crsManagerPane.addLogLine("Checking if false positive ...");
-			if (checkIfFalsePositive())
+			// Check for issues ---------------------------------------------------------------------------------------------------------
+			if (!(cr.getLabels().contains("high_background_uptime_percentage") || cr.getLabels()
+			                                                                        .contains("high_background_uptime_percentage_btd")))
 			{
-				return true;
+				// TODO Check for uptime
+				
+				SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
+				if (checkForTethering())
+				{
+					jira.assignIssue(cr.getJiraID());
+					jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
+					jira.addLabel(cr.getJiraID(), "sat_closed");
+					
+					cr.setResolution(INVALID);
+					cr.setAssignee(SharedObjs.getUser());
+					SharedObjs.satDB.insertAnalyzedCR(cr);
+					
+					SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
+					                                     + " as invalid");
+					
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+					                                        + ". Closed as incomplete");
+					
+					return true;
+				}
+				
+				SharedObjs.crsManagerPane.addLogLine("Checking if false positive ...");
+				if (checkIfFalsePositive())
+				{
+					return true;
+				}
+			}
+			else
+			{
+				SharedObjs.crsManagerPane.addLogLine("Very high uptime case, SAT will list\n\tthe top wakelocks as a comment in the CR");
+				String commentWakeLocks = "{panel:title=*Kernel wake locks:*|titleBGColor=#E9F2FF}\\n";
+				commentWakeLocks = commentWakeLocks + "||Name||Duration||AcquireCount||\\n";
+				for (BugRepKernelWL k : bugrepParser.getKernelWLs())
+				{
+					commentWakeLocks = commentWakeLocks + "|" + k.getName().replace("*", "\\\\*") + "|" + DateTimeOperator.getTimeStringFromMillis(k.getDuration()) + "|" + k.getTimesAcquired() + "|\\n";
+				}
+				commentWakeLocks = commentWakeLocks + "{panel}\\n\\n\\n";
+				
+				commentWakeLocks = commentWakeLocks + "{panel:title=*Java wake locks:*|titleBGColor=#E9F2FF}\\n";
+				commentWakeLocks = commentWakeLocks + "||Name||Process Uid||Duration||AcquireCount||\\n";
+				for (BugRepJavaWL k : bugrepParser.getJavaWLs())
+				{
+					commentWakeLocks = commentWakeLocks + "|" + k.getName().replace("*", "\\\\*") + "|" + k.getUid() + "|" + DateTimeOperator.getTimeStringFromMillis(k.getDuration()) + "|" + k.getTimesAcquired() + "|\\n";
+				}
+				commentWakeLocks = commentWakeLocks + "{panel}\\n\\n\\n";
+				
+				jira.addComment(cr.getJiraID(), commentWakeLocks);
+				
+//				Scanner keyboard = new Scanner(System.in);
+//				String a = keyboard.nextLine();
 			}
 			
 			SharedObjs.crsManagerPane.addLogLine("Nothing was detected. "
@@ -229,7 +289,7 @@ public class CrChecker
 		
 		if (btdParsed)
 		{
-			btdTether = btdParser.checkForTethering();
+			btdTether = btdParser.tethering();
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Tethering issue? " + btdTether);
 			btdParser.close();
 		}
@@ -252,7 +312,8 @@ public class CrChecker
 		if (mainParsed)
 		{
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Verifying Main file");
-			if (btdParsed && mainParser.getTotalLogTime() < btdParser.getLongerDischargingPeriod().getDuration())
+			if (btdParsed
+			    && mainParser.getTotalLogTime() < btdParser.getLongerDischargingPeriod().getDuration())
 			{
 				mainTether = false;
 			}
@@ -322,7 +383,7 @@ public class CrChecker
 		}
 	}
 	
-	public boolean checkIfFalsePositive() // TODO mudar pra private
+	public boolean checkIfFalsePositive()
 	{
 		if (!btdParsed && !bugrepParsed)
 		{
@@ -365,10 +426,12 @@ public class CrChecker
 		if (btdParsed && bugrepParsed)
 		{
 			if (btdParser.getBatCap() > bugrepParser.getBatCap())
+			{
 				bugrepParser.setBatCap(btdParser.getBatCap());
+			}
 			
 			if ((btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110)
-			    && upTime == false)
+			    && upTime == false && btdParser.uptime())
 			{
 				String comment = bugrepParser.currentDrainStatistics();
 				String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
@@ -381,7 +444,8 @@ public class CrChecker
 					comment = comment + eblDecresed;
 				}
 				
-				comment = comment + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
+				comment = comment
+				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
 				
 				System.out.println("-- Comments:");
 				System.out.println(comment.replaceAll("\\n", "\n"));
@@ -418,7 +482,8 @@ public class CrChecker
 					comment = comment + eblDecresed;
 				}
 				
-				comment = comment + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
+				comment = comment
+				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
 				
 				System.out.println("-- Comments:");
 				System.out.println(comment.replaceAll("\\n", "\n"));
@@ -459,7 +524,8 @@ public class CrChecker
 					comment = comment + eblDecresed;
 				}
 				
-				comment = comment + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
+				comment = comment
+				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
 				
 				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);// TODO add calling time
@@ -502,7 +568,8 @@ public class CrChecker
 					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Could not detect EBL decreasers");
 				}
 				
-				comment = comment + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
+				comment = comment
+				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
 				
 				jira.assignIssue(cr.getJiraID());
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);// TODO add calling time

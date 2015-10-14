@@ -4,7 +4,7 @@
     <rootPath>C:\CRs</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\CRs\TetherStuck</path>
+    <path>C:\CRs\WakeLocksTests</path>
     <assign>false</assign>
     <label>false</label>
   </crs_jira_pane>

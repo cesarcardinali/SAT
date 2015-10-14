@@ -1,51 +1,221 @@
 package supportive.preanalyzers.btdparser;
 
+
+import java.util.ArrayList;
 import supportive.DateTimeOperator;
 
 
 public class BtdWL
 {
-	private String name;
-	private long   wakeCount;
-	private long   dischargeWakeCount;
-	private long   activeSince;
-	private long   totalTime;
-	private long   totalDischargeTime;
+	private String            name;
+	private long              longerPeriod;
+	private long              totalTime;
 	
-	public BtdWL(String builder)
+	private WLdata            actualWL;
+	private ArrayList<WLdata> dataList;
+	
+	public BtdWL(String builder, long timestamp)
 	{
+		dataList = new ArrayList<BtdWL.WLdata>();
+		
 		String[] pieces = builder.split(":");
+		
 		if (pieces.length < 6)
 			System.out.println("-- ERROR: " + builder);
+		
 		name = pieces[0];
-		wakeCount = Long.parseLong(pieces[3]);
-		activeSince = Long.parseLong(pieces[4])/1000000;
-		totalTime = Long.parseLong(pieces[5])/1000000;
-		totalDischargeTime = 0;
+		totalTime = 0;
+		longerPeriod = -1;
+		
+		actualWL = new WLdata();
+		actualWL.setActiveSince(Long.parseLong(pieces[4]) / 1000000); // /1000000 to cast it to ms
+		actualWL.setInitialCount(Long.parseLong(pieces[1]));
+		actualWL.setCount(1);
+		actualWL.setStart(timestamp);
+		actualWL.setStop(timestamp);
 	}
 	
 	public boolean update(BtdWL wl)
 	{
-		if(wl.getActiveSince() > activeSince)
+		if (wl.getActualWL().getActiveSince() >= actualWL.getActiveSince() && wl.getActualWL().getStop() - actualWL.getStop() < 60000)
 		{
-			activeSince = wl.getActiveSince();
+			actualWL.setActiveSince(wl.getActualWL().getActiveSince());
+			actualWL.setCount(actualWL.getCount() + wl.getActualWL().getCount() - actualWL.getInitialCount());
+			actualWL.setStop(wl.getActualWL().getStop());
+			//System.out.print("update > ");
 		}
-		totalDischargeTime = wl.getTotalTime() - totalTime;
-		dischargeWakeCount = wl.getWakeCount() - wakeCount;
+		else if (dataList.size() >= 1)
+		{
+			if (actualWL.getDuration() >= 15 * 60000
+			    && (actualWL.getStop() - getLastData().getStop() < 2 * 60000))
+			{
+				totalTime = totalTime + actualWL.getDuration();
+				getLastData().setCount(actualWL.getCount() + getLastData().getCount());
+				getLastData().setStop(actualWL.getStop());
+				if (getLastData().getActiveSince() < actualWL.getActiveSince())
+					getLastData().setActiveSince(actualWL.getActiveSince());
+				
+				//System.out.println("\nConcatenated > ");
+			}
+			else if (actualWL.getDuration() >= 30 * 60000)
+			{
+				dataList.add(actualWL);
+				if (longerPeriod < actualWL.getDuration())
+				{
+					longerPeriod = actualWL.getDuration();
+					//System.out.println("LONGER");
+				}
+				totalTime = totalTime + actualWL.getDuration();
+				
+				//System.out.println("\nAdded1 > ");
+			}
+			
+			actualWL = wl.getActualWL();
+		}
+		else if (actualWL.getDuration() >= 30 * 60000)
+		{
+			dataList.add(actualWL);
+			totalTime = totalTime + actualWL.getDuration();
+			if (longerPeriod < actualWL.getDuration())
+			{
+				longerPeriod = actualWL.getDuration();
+				//System.out.println("LONGER");
+			}
+			
+			actualWL = wl.getActualWL();
+			//System.out.println("\nAdded 2 > ");
+		}
+		else
+		{
+			actualWL = wl.getActualWL();
+			//System.out.println("\nDiscarted > ");
+		}
 		
 		return false;
 	}
 	
+	public void finalize()
+	{
+		if (dataList.size() >= 1)
+		{
+			if (actualWL.getDuration() >= 15 * 60000
+			    && (actualWL.getStop() - getLastData().getStop() < 2 * 60000))
+			{
+				totalTime = totalTime + actualWL.getDuration();
+				getLastData().setCount(actualWL.getCount() + getLastData().getCount());
+				getLastData().setStop(actualWL.getStop());
+				if (getLastData().getActiveSince() < actualWL.getActiveSince())
+					getLastData().setActiveSince(actualWL.getActiveSince());
+				
+				//System.out.println("\nConcatenated > ");
+			}
+			else if (actualWL.getDuration() >= 30 * 60000)
+			{
+				dataList.add(actualWL);
+				if (longerPeriod < actualWL.getDuration())
+				{
+					longerPeriod = actualWL.getDuration();
+					//System.out.println("LONGER");
+				}
+				totalTime = totalTime + actualWL.getDuration();
+				
+				//System.out.println("\nAdded1 > ");
+			}
+		}
+		else if (actualWL.getDuration() >= 30 * 60000)
+		{
+			dataList.add(actualWL);
+			totalTime = totalTime + actualWL.getDuration();
+			if (longerPeriod < actualWL.getDuration())
+			{
+				longerPeriod = actualWL.getDuration();
+				//System.out.println("LONGER");
+			}
+			//System.out.println("\nAdded 2 > ");
+		}
+	}
+	
 	public String toString()
 	{
-		String tostring = "------------------------------------\n"
-						+ "Name: " + name + "\n"
-						+ "Wakeups count: " + wakeCount + "\n"
-						+ "Longer active time: " + DateTimeOperator.getTimeStringFromMillis(activeSince) + "(" + activeSince + "ms)\n"
-						+ "Total discharge time: " + DateTimeOperator.getTimeStringFromMillis(totalDischargeTime) + "(" + totalDischargeTime + "ms)\n"
-						+ "Total time: " + (totalDischargeTime+totalTime) + "\n"
-						+ "------------------------------------";
+		String tostring = "\tName: " + name + "\n" + "\tLonger period: " + DateTimeOperator.getTimeStringFromMillis(longerPeriod) + "\n"
+		                  + "\tTotal active: " + DateTimeOperator.getTimeStringFromMillis(totalTime)  + "\n";
+		int i = 0;
+		for (WLdata d : dataList)
+		{
+			i++;
+			tostring = tostring + "\t\tPeriodo" + i + ":\n" + "\t\tStart at " + BtdParser.formatDate(BtdParser.generateDate(d.getStart())) + " (" + d.getStart() + ")\n"
+							+ "\t\tStop at " + BtdParser.formatDate(BtdParser.generateDate(d.getStop())) + " (" + d.getStop() + ")\n\n";
+		}
+		
+		tostring = tostring + "\t\tActive Since: " + DateTimeOperator.getTimeStringFromMillis(getLongerActiveSince()) + " (" + getLongerActiveSince() + ")\n\n";
+		
 		return tostring;
+	}
+	
+	private class WLdata
+	{
+		private long initialCount;
+		private long start;
+		
+		private long count;
+		private long activeSince;
+		private long stop;
+		
+		// Getters and Setters
+		public long getInitialCount()
+		{
+			return initialCount;
+		}
+		
+		public void setInitialCount(long initialCount)
+		{
+			this.initialCount = initialCount;
+		}
+		
+		public long getCount()
+		{
+			return count;
+		}
+		
+		public void setCount(long wakes)
+		{
+			count = wakes;
+		}
+		
+		public long getActiveSince()
+		{
+			return activeSince;
+		}
+		
+		public void setActiveSince(long activeSince)
+		{
+			this.activeSince = activeSince;
+		}
+		
+		public long getStart()
+		{
+			return start;
+		}
+		
+		public void setStart(long start)
+		{
+			this.start = start;
+		}
+		
+		public long getStop()
+		{
+			return stop;
+		}
+		
+		public void setStop(long stop)
+		{
+			this.stop = stop;
+		}
+		
+		public long getDuration()
+		{
+			return stop - start;
+		}
 	}
 	
 	// Getters and Setters
@@ -54,9 +224,29 @@ public class BtdWL
 		return name;
 	}
 	
-	public long getActiveSince()
+	public void setName(String name)
 	{
-		return activeSince;
+		this.name = name;
+	}
+	
+	public long getLongerPeriod()
+	{
+		return longerPeriod;
+	}
+	
+	public void setLongerPeriod(long longerPeriod)
+	{
+		this.longerPeriod = longerPeriod;
+	}
+	
+	public ArrayList<WLdata> getDataList()
+	{
+		return dataList;
+	}
+	
+	public void setDataList(ArrayList<WLdata> dataList)
+	{
+		this.dataList = dataList;
 	}
 	
 	public long getTotalTime()
@@ -64,68 +254,37 @@ public class BtdWL
 		return totalTime;
 	}
 	
-	public long getTotalDischargeTime()
-	{
-		return totalDischargeTime;
-	}
-	
-	public long getWakeCount()
-	{
-		return wakeCount;
-	}
-	
-	public long getDischargeWakeCount()
-	{
-		return dischargeWakeCount;
-	}
-
-	public void setDischargeWakeCount(long dischargeWakeCount)
-	{
-		this.dischargeWakeCount = dischargeWakeCount;
-	}
-
-	public void setTotalDischargeTime(long totalDischargeTime)
-	{
-		this.totalDischargeTime = totalDischargeTime;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-	
-	public void setInitialWakeCount(long wakes)
-	{
-		wakeCount = wakes;
-	}
-	
-	public void setActiveSince(long activeSince)
-	{
-		this.activeSince = activeSince/1000000;
-	}
-	
-	public void setActiveSince(String activeSince)
-	{
-		this.activeSince = Long.parseLong(activeSince)/1000000;
-	}
-	
 	public void setTotalTime(long totalTime)
 	{
-		this.totalTime = totalTime/1000000;
+		this.totalTime = totalTime;
 	}
 	
-	public void setTotaDischargelTime(long totalTime)
+	public WLdata getActualWL()
 	{
-		this.totalDischargeTime = totalTime/1000000;
+		return actualWL;
+	}
+
+	public void setActualWL(WLdata actualWL)
+	{
+		this.actualWL = actualWL;
+	}
+
+	// Others
+	private WLdata getLastData()
+	{
+		return dataList.get(dataList.size() - 1);
 	}
 	
-	public void setTotalTime(String totalTime)
+	private long getLongerActiveSince()
 	{
-		this.totalTime = Long.parseLong(totalTime)/1000000;
-	}
-	
-	public void setTotaDischargelTime(String totalTime)
-	{
-		this.totalDischargeTime = Long.parseLong(totalTime)/1000000;
+		long longer = -1;
+		for (WLdata wl : dataList)
+		{
+			if (wl.getActiveSince() > longer)
+			{
+				longer = wl.getActiveSince();
+			}
+		}
+		return longer; 
 	}
 }

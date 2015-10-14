@@ -11,8 +11,8 @@ public class TestIt
 {
 	public static void main(String[] args)
 	{
-		String root = "C:/CRs/Debuging/";
-		String crPath = root + "80976191";
+		String root = "C:/CRs/WakeLocksTests/";
+		String crPath = root + "86069161";
 		long now = System.currentTimeMillis();
 		
 //		BugrepParser brParser = new BugrepParser(root + "83226101");
@@ -34,6 +34,17 @@ public class TestIt
 //		System.out.println("-- BTD Tether data");
 //		btdParser.checkForTethering();
 //		System.out.println("\n" + btdParser.parseResult());
+//		btdParser.showUptimes();
+//		System.out.println("\n<><><><><><><><><><><><><><><><><><><><>\n");
+//		btdParser.showUptimesScOff();
+//		System.out.println("\n<><><><><><><><><><><><><><><><><><><><>\n");
+		System.out.println(btdParser.uptime());
+		System.out.println(btdParser.uptimeScOff());
+		System.out.println(btdParser.wakeLocks());
+		//btdParser.tethering();
+		//System.out.println("Longer uptime\n" + btdParser.getLongerUptime());
+		//System.out.println("Longer wakelock\n" + btdParser.getLongerWakeLock());
+		//btdParser.showWakeLocks();
 		System.out.println("Done");
 		
 		/*MainParser mainParser = new MainParser(crPath);

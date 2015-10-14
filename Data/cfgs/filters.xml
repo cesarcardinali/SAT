@@ -133,6 +133,23 @@
       <active>false</active>
       <last_update>2015-09-11 14:09:46</last_update>
     </item_4>
+    <item_5>
+      <name>Kernel</name>
+      <regex>(^  Kernel.*realtime&#xD;
+){3}</regex>
+      <header>All kernel wake locks:</header>
+      <owner>user</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2015-10-14 10:28:42</last_update>
+    </item_5>
   </sharedFilters>
   <!-- Active filters: !-->
   <activeFilters>

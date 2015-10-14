@@ -17,44 +17,49 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import supportive.DateTimeOperator;
+import core.Logger;
 
 
 @SuppressWarnings("resource")
 public class BtdParser
 {
-	private Connection    c;
-	private Statement     stmt;
-	private ResultSet     rs;
-	private String        path;
-	private int           status;
-	private BtdRow        btdRow;
-	private BtdRowsList   btdRows;
-	private BtdState      finalState;
-	private BtdStatesData statesData;
-	private BtdWLList     kernelWLs;
-	private long[]        screenData;     // 0- dark, 1- dim, 2- medium, 3- light, 4- bright
-	private long[]        signalData;     // 0- none, 1- poor, 2- moderate, 3- good, 4- great
-	private float[]       cpuTempData;    // 0- min, 1- max, 2- avg
-	private float[]       deviceTempData; // 0- min, 1- max, 2- avg
-	private int           batCap;         // Battery capacity
-	private int           bttDischarged[]; // Battery discharge from, to.
-	private long          cellTX;         // Total cell data sent
-	private long          cellRX;         // Total cell data received
-	private long          wifiTX;         // Total wifi data sent
-	private long          wifiRX;         // Total wifi data received
-	private long          gpsLocation;    // Total GPS location count
-	private long          networkLocation; // Total GPS location count
-	private long          consumeOn  = 0;
-	private long          consumeOff = 0;
-	private long          timeOff    = 0;
-	private long          timeOn     = 0;
-	private long          wifiOnTime;
-	private long          wifiRunningTime;
-	private long          realTimeOnBatt;
-	private long          awakeTimeOnBatt;
-	private long          phoneCall;
-	private long          tetheringTime;
+	private Connection       c;
+	private static Statement stmt;
+	private static ResultSet rs;
+	private String           path;
+	private int              status;
+	private BtdRow           btdRow;
+	private BtdRowsList      btdRows;
+	private BtdState         finalState;
+	private BtdStatesData    statesData;
+	private BtdWLList        kernelWLs;
+	private BtdUptimesList   uptimes;
+	private BtdUptimesList   uptimesScOff;
+	private long[]           screenData;        // 0- dark, 1- dim, 2- medium, 3- light, 4- bright
+	private long[]           signalData;        // 0- none, 1- poor, 2- moderate, 3- good, 4- great
+	private float[]          cpuTempData;       // 0- min, 1- max, 2- avg
+	private float[]          deviceTempData;    // 0- min, 1- max, 2- avg
+	private int              batCap;            // Battery capacity
+	private int              bttDischarged[];   // Battery discharge from, to.
+	private long             cellTX;            // Total cell data sent
+	private long             cellRX;            // Total cell data received
+	private long             wifiTX;            // Total wifi data sent
+	private long             wifiRX;            // Total wifi data received
+	private long             gpsLocation;       // Total GPS location count
+	private long             networkLocation;   // Total GPS location count
+	private long             consumeOn  = 0;
+	private long             consumeOff = 0;
+	private long             timeOff    = 0;
+	private long             timeOn     = 0;
+	private long             wifiOnTime;
+	private long             wifiRunningTime;
+	private long             realTimeOnBatt;
+	private long             awakeTimeOnBatt;
+	private long             phoneCall;
+	private long             tetheringTime;
+	private boolean          highUptime = false;
 	
+	// Configure parser
 	public BtdParser(String path)
 	{
 		this.path = path;
@@ -115,6 +120,7 @@ public class BtdParser
 		}
 	}
 	
+	// Parse all data
 	public boolean parse()
 	{
 		if (status == 1)
@@ -142,8 +148,8 @@ public class BtdParser
 			
 			getTetheringTime();
 			
-			getDischargeBtdData(finalState, getTimeZoneMillis());
-			System.out.println("--- Size: " + btdRows.size());
+			getDischargeBtdData(finalState, 0);
+			System.out.println("Rows read: " + btdRows.size());
 			
 			// Show acquired data
 			// showParseResults();
@@ -167,49 +173,122 @@ public class BtdParser
 		}
 	}
 	
+	// Look for issues
+	// {{
 	public String eblDecreasers()
 	{
 		String reasons = "";
-		
-		if (getPercentage(phoneCall, realTimeOnBatt) > 7.5)
+
+		// Call time
+		if (getPercentage(phoneCall, realTimeOnBatt) > 5 && phoneCall/60000 > 10)
 		{
 			reasons = reasons + "Phone calls for " + DateTimeOperator.getTimeStringFromMillis(phoneCall)
 			          + " (" + formatNumber(getPercentage(phoneCall, realTimeOnBatt)) + "%)\\n";
 		}
-		if (getPercentage(tetheringTime, realTimeOnBatt) > 5)
+		
+		// Tethering time
+		if (getPercentage(tetheringTime, realTimeOnBatt) > 2 && tetheringTime/60000 > 10)
 		{
 			reasons = reasons + "Some possible tethering for "
 			          + DateTimeOperator.getTimeStringFromMillis(tetheringTime) + " ("
 			          + formatNumber(getPercentage(tetheringTime, realTimeOnBatt)) + "%)\\n";
 		}
+		
+		// High temperature
 		if (deviceTempData[1] > 46)
 		{
 			reasons = reasons + "Device got hot for while: " + deviceTempData[1] + "\\n";
 		}
 		
-		// TODO Network location math
-		// TODO GPS activity math
+		// GPS service
+		if(gpsLocation/(realTimeOnBatt/3600000) > 400)
+		{
+			reasons = reasons + "Heavy GPS activity: " + gpsLocation + "\\n";
+		}
+		else if(gpsLocation/(realTimeOnBatt/3600000) > 150)
+		{
+			reasons = reasons + "Reasonable GPS activity: " + gpsLocation + "\\n";
+		}
+		
+		// Network location service
+		if(networkLocation/(realTimeOnBatt/3600000) > 35)
+		{
+			reasons = reasons + "Heavy network location activity: " + networkLocation + "\\n";
+		}
+		else if(networkLocation/(realTimeOnBatt/3600000) > 20)
+		{
+			reasons = reasons + "Reasonable network location activity: " + networkLocation + "\\n";
+		}
+		else if(networkLocation/(realTimeOnBatt/3600000) > 12)
+		{
+			reasons = reasons + "Considerable network location activity: " + networkLocation + "\\n";
+		}
 		
 		return reasons;
 	}
 	
-	public void checkForIssuesIndications()
+	// Uptime detected
+	public boolean uptime()
 	{
+		Logger.log(Logger.TAG_BTD_PARSER, "Uptime: " + formatNumber(getPercentage(uptimes.getLongerPeriod().getDuration(), realTimeOnBatt)) + "%");
+		if (uptimes.getLongerPeriod().getDuration() / 60000 > 30
+		    && getPercentage(uptimes.getLongerPeriod().getDuration(), realTimeOnBatt) > 5)
+		{
+			return true;
+		}
 		
+		return false;
 	}
 	
-	public boolean checkForTethering()
+	// Uptime while screen off detected
+	public boolean uptimeScOff()
 	{
-		System.out.println("Checking for tethering resolution:\nTotal on battery time: " + realTimeOnBatt
-		                   + "\nTotal tethering time: " + tetheringTime + "\nProportion: "
-		                   + (100.0 * tetheringTime / realTimeOnBatt) + "%");
+		Logger.log(Logger.TAG_BTD_PARSER, "ScOff Uptime: " + formatNumber(getPercentage(uptimesScOff.getLongerPeriod().getDuration(), realTimeOnBatt)) + "%");
+		if (uptimesScOff.getLongerPeriod().getDuration() / 60000 > 20
+		    && getPercentage(uptimesScOff.getLongerPeriod().getDuration(), realTimeOnBatt) > 5)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean wakeLocks()
+	{
+		/*for (BtdWL item : kernelWLs)
+		{
+			if (item.getName().contains("PowerManagerService.Display"))
+				continue;
+			
+			if (getPercentage(item.getLongerPeriod(), realTimeOnBatt) > 5 && item.getLongerPeriod() >= 30 * 60000)
+				return true;
+			else
+				return false;
+		}*/
+		if (getPercentage(kernelWLs.getLongerWL().getLongerPeriod(), realTimeOnBatt) > 5 && kernelWLs.getLongerWL().getLongerPeriod() >= 30 * 60000)
+		{
+			System.out.println(kernelWLs.getLongerWL());
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean tethering()
+	{
+		System.out.println("Checking for tethering resolution:\nTotal on battery time: " + DateTimeOperator.getTimeStringFromMillis(realTimeOnBatt)
+		                   + "\nTotal tethering time: " + DateTimeOperator.getTimeStringFromMillis(tetheringTime) + "\nProportion: "
+		                   + formatNumber((float)(100.0 * tetheringTime / realTimeOnBatt)) + "%");
 		if (tetheringTime >= realTimeOnBatt * 0.10)
 			return true;
 		else
 			return false;
 	}
 	
-	// Acquire specific data ------------------------------------------------------------------------
+	// }}
+	
+	// Acquire specific data -----------------------------------------------------------------------------------
+	// {{
 	private long getTetheringTime()
 	{
 		long lastCTX, actualCTX, lastWRX, actualWRX;
@@ -221,19 +300,19 @@ public class BtdParser
 			               + finalState.getStart() + " AND " + finalState.getEnd()
 			               + " AND WIFI_LABEL = ''  AND CELL_LABEL != '';");
 			
-			lastCTX = rs.getLong(1);
-			lastWRX = rs.getLong(2);
+			lastCTX = rs.getLong(1); // Received (BTD error)
+			lastWRX = rs.getLong(2); // Transferred (BTD error)
 			lastTime = rs.getLong(3);
 			// int i =0;
 			
 			while (rs.next())
 			{
-				// i++;
 				actualCTX = rs.getLong(1);
 				actualWRX = rs.getLong(2);
 				actualTime = rs.getLong(3);
 				int timeCorrection = (int) ((actualTime - lastTime) / 10000);
 				
+				// i++;
 				// System.out.println("CTX  = " + (actualCTX - lastCTX));
 				// System.out.println("WTX  = " + (actualWRX - lastWRX));
 				// System.out.println("Actual Time = " + actualTime + "  >  " + new Date(actualTime));
@@ -528,6 +607,8 @@ public class BtdParser
 	public BtdRowsList getDischargeBtdData(BtdState finalState, long timezone)
 	{
 		btdRows = new BtdRowsList();
+		uptimes = new BtdUptimesList();
+		uptimesScOff = new BtdUptimesList();
 		
 		try
 		{
@@ -536,23 +617,150 @@ public class BtdParser
 			                       + finalState.getStart() + " AND " + finalState.getEnd() + ";");
 			
 			btdRows = new BtdRowsList();
+			BtdUptimePeriod actualUptime = new BtdUptimePeriod();
+			BtdUptimePeriod uptimeOff = new BtdUptimePeriod();
 			
 			while (rs.next())
 			{
 				btdRow = new BtdRow();
 				setupBtdRow(btdRow, rs, timezone);
+				
+				// Uptimes
+				if (actualUptime.getStart() == -1)
+				{
+					// System.out.println("1");
+					actualUptime.setStart(btdRow.getTimestamp());
+				}
+				else if (btdRow.getTimestamp() - actualUptime.getEnd() < 20000 || actualUptime.getEnd() == -1)
+				{
+					// System.out.println("2");
+					actualUptime.setEnd(btdRow.getTimestamp());
+				}
+				else
+				{
+					// System.out.println("Duration = " + actualUptime.getDuration());
+					if (actualUptime.getDuration() > 300000)
+					{
+						// System.out.println("4");
+						if (uptimes.size() <= 0)
+						{
+							uptimes.add(actualUptime);
+							actualUptime = new BtdUptimePeriod();
+						}
+						else
+						{
+							// System.out.println("4 -");
+							if (actualUptime.getStart() - uptimes.get(uptimes.size() - 1).getEnd() < 49600)
+							{
+								uptimes.get(uptimes.size() - 1).setEnd(actualUptime.getEnd());
+								actualUptime = new BtdUptimePeriod();
+							}
+							else
+							{
+								uptimes.add(actualUptime);
+								actualUptime = new BtdUptimePeriod();
+							}
+						}
+					}
+					else
+					{
+						// System.out.println("5 ---- " + actualUptime.getDuration());
+						if (uptimes.size() > 0 && actualUptime.getDuration() > 30000
+						    && (actualUptime.getStart() - uptimes.get(uptimes.size() - 1).getEnd()) < 49600
+						    && uptimes.get(uptimes.size() - 1).getDuration() > 300000)
+						{
+							uptimes.get(uptimes.size() - 1).setEnd(actualUptime.getEnd());
+						}
+						actualUptime = new BtdUptimePeriod();
+					}
+				}
+				
+				// Uptimes Sc Off
+				if (btdRow.getScreenOn() == 1 && !btdRow.getTopProcesses().contains("mediaserver")  && !btdRow.getTopProcesses().contains("spotify"))
+				{
+//					System.out.println("> ScOff: " + btdRow.getTimestamp() + " - " + uptimeOff.getEnd());
+					//System.out.print(">Sc Off ");
+					if (uptimeOff.getStart() == -1)
+					{
+						//System.out.println("1");
+						uptimeOff.setStart(btdRow.getTimestamp());
+						uptimeOff.setEnd(btdRow.getTimestamp());
+						//System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()), "America/Chicago"));
+					}
+					else if (btdRow.getTimestamp() - uptimeOff.getEnd() < 20000)
+					{
+						////System.out.println("2");
+						uptimeOff.setEnd(btdRow.getTimestamp());
+					}
+					else if (uptimeOff.getDuration() < 300000)
+					{
+						//System.out.println("3");
+						uptimeOff = new BtdUptimePeriod();
+					} else if (uptimeOff.getDuration() >= 300000)
+					{
+						//System.out.println("99");
+						uptimesScOff.add(uptimeOff);
+						uptimeOff = new BtdUptimePeriod();
+					}
+				}
+				else
+				{
+					//System.out.println("> ScOn");
+					if (uptimeOff.getDuration() >= 300000)
+					{
+						//System.out.println("Duration long enought");
+						if (uptimesScOff.size() <= 0)
+						{
+							//System.out.println("4");
+							//System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()), "America/Chicago"));
+							//System.out.println("End: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getEnd()), "America/Chicago"));
+							uptimesScOff.add(uptimeOff);
+							uptimeOff = new BtdUptimePeriod();
+						}
+						else
+						{
+							if (uptimeOff.getStart() - uptimesScOff.get(uptimesScOff.size() - 1).getEnd() < 49600)
+							{
+								//System.out.println("5");
+								//System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()), "America/Chicago"));
+								//System.out.println("End: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getEnd()), "America/Chicago"));
+								uptimesScOff.get(uptimesScOff.size() - 1).setEnd(uptimeOff.getEnd());
+								uptimeOff = new BtdUptimePeriod();
+							}
+							else
+							{
+								//System.out.println("6");
+								uptimesScOff.add(uptimeOff);
+								uptimeOff = new BtdUptimePeriod();
+							}
+						}
+					}
+					else
+					{
+						//System.out.println("Duration not long enought");
+						if (uptimesScOff.size() > 0 && uptimeOff.getDuration() > 30000
+						    && (uptimeOff.getStart() - uptimesScOff.get(uptimesScOff.size() - 1).getEnd()) < 49600)
+						{
+							//System.out.println("But enought to concate");
+							uptimesScOff.get(uptimesScOff.size() - 1).setEnd(uptimeOff.getEnd());
+						}
+						//System.out.println("8");
+						uptimeOff = new BtdUptimePeriod();
+					}	
+				}
+				
+				// Look for stuck wake locks --------------------------------
 				String[] kWLs = btdRow.getActiveKernels().split("\\|");
-				//System.out.println(btdRow.getActiveKernels());
 				for (String kwl : kWLs)
 				{
 					if (kwl.equals(""))
 						continue;
 					
-					BtdWL wl = new BtdWL(kwl);
+					BtdWL wl = new BtdWL(kwl, btdRow.getTimestamp());
 					int index = kernelWLs.indexOf(wl);
-					//System.out.println(index);
+					// System.out.println(index);
 					
-					if(index >= 0)
+					if (index >= 0)
 					{
 						kernelWLs.update(index, wl);
 					}
@@ -564,14 +772,29 @@ public class BtdParser
 				btdRows.add(btdRow);
 			}
 			
-			System.out.println("--- Kernels: " + btdRows.get(btdRows.size()-1).getActiveKernels());
-			System.out.println("--- Kernels: " + kernelWLs.size());
-			kernelWLs.sortItens();
+			kernelWLs.finalize();
 			
-			for (BtdWL item : kernelWLs)
+			if(actualUptime.getDuration() > 300000)
+				uptimes.add(actualUptime);
+			
+			if(uptimeOff.getDuration() > 300000)
+				uptimesScOff.add(uptimeOff);
+			
+			kernelWLs.sortItens();
+			System.out.println("------------" + kernelWLs.size());
+			for (BtdWL wl : kernelWLs)
 			{
-				System.out.println(item);
+				System.out.println(wl);
+				
+				/*if (wl.getLongerPeriod() <= 30 * 60000)
+				{
+					kernelWLs.remove(wl);
+				}*/
 			}
+			System.out.println("------------" + kernelWLs.size());
+			uptimes.sortByStart();
+			uptimesScOff.sortByDuration();
+			
 			// rs.close();
 			// stmt.close();
 		}
@@ -583,37 +806,88 @@ public class BtdParser
 		return btdRows;
 	}
 	
-	public BtdRowsList getDischargeBtdData(BtdState finalState)
+	public void getPeriods()
 	{
-		btdRows = new BtdRowsList();
-		
 		try
 		{
-			// Get all BTD data -------------------------------------
-			rs = stmt.executeQuery("SELECT rowid, * FROM t_fgdata WHERE timestamp BETWEEN "
-			                       + finalState.getStart() + " AND " + finalState.getEnd() + ";");
+			BtdState btdState = new BtdState();
+			rs = null;
 			
-			btdRows = new BtdRowsList();
-			
-			while (rs.next())
+			do
 			{
-				btdRow = new BtdRow();
-				setupBtdRow(btdRow, rs);
-				btdRows.add(btdRow);
+				// Pega valor inicial
+				rs = execQuery("select timestamp, PLUG_TYPE from t_fgdata where timestamp > "
+				               + btdState.getEnd() + " LIMIT 1;");
+				btdState = new BtdState();
+				btdState.setStart(rs.getLong(1));
+				btdState.setStatus(rs.getInt(2));
+				
+				// Busca uma mudança de estado
+				if (btdState.getStatus() == 0)
+				{
+					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
+					               + btdState.getStart() + " AND PLUG_TYPE != 0 LIMIT 1);");
+				}
+				else
+				{
+					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
+					               + btdState.getStart() + " AND PLUG_TYPE = 0 LIMIT 1);");
+				}
+				
+				// Se existe mudança, pega o valor final do estado atual, adiciona o estado na lista e busca pelo novo estado.
+				if (!rs.isClosed())
+				{
+					btdState.setEnd(rs.getLong(1));
+					statesData.add(btdState);
+				}
+				// Se nao existir mais mudanças de estado, finaliza o atual com o ponto final do log e para a busca.
+				else
+				{
+					rs = execQuery("select timestamp from t_fgdata where rowid = (select MAX(rowid) from t_fgdata);");
+					btdState.setEnd(rs.getLong(1));
+					statesData.add(btdState);
+					// rs.close();
+					rs = null;
+				}
+				
 			}
-			
-			// rs.close();
-			// stmt.close();
+			while (rs != null);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			e.printStackTrace();
 		}
-		
-		return btdRows;
 	}
 	
-	// Supportive ----------------------------------------------------------------------------------
+	public BtdState getLongerDischargingPeriod()
+	{
+		if (statesData.size() == 0)
+			getPeriods();
+		
+		System.out.println("");
+		
+		return statesData.getLongerDischargingPeriod();
+	}
+	
+	public BtdWL getLongerWakeLock()
+	{
+		return kernelWLs.getLongerWL();
+	}
+	
+	public BtdUptimePeriod getLongerUptime()
+	{
+		return uptimes.getLongerPeriod();
+	}
+	
+	// }}
+	
+	// Supportive ----------------------------------------------------------------------------------------------
+	// {{
+	public double millisToHours(long millis)
+	{
+		return (double) (millis / 3600000.0);
+	}
+	
 	public long getMillisFromBtdStringDate(String time)
 	{
 		int[] parts = timeParser(time);
@@ -744,15 +1018,22 @@ public class BtdParser
 		return days + "d," + hours + "h," + minutes + "m," + seconds + "s," + millis + "ms";
 	}
 	
-	public Date generateDate(long timestamp)
+	public static Date generateDate(long timestamp)
 	{
 		return new Date(timestamp);
 	}
 	
-	public String formatDate(Date date)
+	public static String formatDate(Date date)
 	{
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		format.setTimeZone(TimeZone.getTimeZone(getTimeZoneName()));
+		return format.format(date);
+	}
+	
+	public static String formatDate(Date date, String timezone)
+	{
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		format.setTimeZone(TimeZone.getTimeZone(timezone));
 		return format.format(date);
 	}
 	
@@ -782,69 +1063,6 @@ public class BtdParser
 		return df.format(number);
 	}
 	
-	public void getPeriods()
-	{
-		try
-		{
-			BtdState btdState = new BtdState();
-			rs = null;
-			
-			do
-			{
-				// Pega valor inicial
-				rs = execQuery("select timestamp, PLUG_TYPE from t_fgdata where timestamp > "
-				               + btdState.getEnd() + " LIMIT 1;");
-				btdState = new BtdState();
-				btdState.setStart(rs.getLong(1));
-				btdState.setStatus(rs.getInt(2));
-				
-				// Busca uma mudança de estado
-				if (btdState.getStatus() == 0)
-				{
-					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
-					               + btdState.getStart() + " AND PLUG_TYPE != 0 LIMIT 1);");
-				}
-				else
-				{
-					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
-					               + btdState.getStart() + " AND PLUG_TYPE = 0 LIMIT 1);");
-				}
-				
-				// Se existe mudança, pega o valor final do estado atual, adiciona o estado na lista e busca pelo novo estado.
-				if (!rs.isClosed())
-				{
-					btdState.setEnd(rs.getLong(1));
-					statesData.add(btdState);
-				}
-				// Se nao existir mais mudanças de estado, finaliza o atual com o ponto final do log e para a busca.
-				else
-				{
-					rs = execQuery("select timestamp from t_fgdata where rowid = (select MAX(rowid) from t_fgdata);");
-					btdState.setEnd(rs.getLong(1));
-					statesData.add(btdState);
-					// rs.close();
-					rs = null;
-				}
-				
-			}
-			while (rs != null);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public BtdState getLongerDischargingPeriod()
-	{
-		if (statesData.size() == 0)
-			getPeriods();
-		
-		System.out.println("");
-		
-		return statesData.getLongerDischargingPeriod();
-	}
-	
 	public long getTimeZoneMillis()
 	{
 		try
@@ -865,13 +1083,13 @@ public class BtdParser
 		}
 		catch (Exception e)
 		{
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			e.printStackTrace();
 		}
 		
 		return -1;
 	}
 	
-	public String getTimeZoneName()
+	public static String getTimeZoneName()
 	{
 		try
 		{
@@ -884,7 +1102,7 @@ public class BtdParser
 		}
 		catch (Exception e)
 		{
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -899,7 +1117,7 @@ public class BtdParser
 		}
 		catch (Exception e)
 		{
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -914,7 +1132,7 @@ public class BtdParser
 		}
 		catch (SQLException e)
 		{
-			// e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	
@@ -980,35 +1198,10 @@ public class BtdParser
 		btd.setWifirunningTime(rs.getString("WifiRunningTime"));
 	}
 	
-	// Complementary -------------------------------------------------------------------------------------
-	public int getAverageconsumeOn()
-	{
-		return (int) (consumeOn / (timeOn / 3600000.0));
-	}
+	// }}
 	
-	public int getAverageconsumeOff()
-	{
-		return (int) (consumeOff / (timeOff / 3600000.0));
-	}
-	
-	public float phoneCallPercentage()
-	{
-		return getPercentage(phoneCall, realTimeOnBatt);
-	}
-	
-	public String tetherPercentage()
-	{
-		DecimalFormat df = new DecimalFormat("##.##");
-		df.setRoundingMode(RoundingMode.DOWN);
-		return df.format(100.0 * tetheringTime / realTimeOnBatt);
-	}
-	
-	public double millisToHours(long millis)
-	{
-		return (double) (millis / 3600000.0);
-	}
-	
-	// Printers ------------------------------------------------------------------------------------------
+	// Printers ------------------------------------------------------------------------------------------------
+	// {{
 	public void showParseResults()
 	{
 		System.out.println("The longer discharge period is from "
@@ -1156,6 +1349,16 @@ public class BtdParser
 		br.close();
 	}
 	
+	public void showWakeLocks()
+	{
+		System.out.println("------------------------------------\n");
+		for (BtdWL item : kernelWLs)
+		{
+			Logger.log(Logger.TAG_BTD_PARSER, item.toString());
+			System.out.println("------------------------------------\n");
+		}
+	}
+	
 	public String parseResult()
 	{
 		String data = "";
@@ -1232,7 +1435,69 @@ public class BtdParser
 		System.out.println();
 	}
 	
-	// Getters and Setters -------------------------------------------------------------------------------
+	public void showUptimes()
+	{
+		int i = 1;
+		System.out.println("----------------------------------------------");
+		long total = 0;
+		for (BtdUptimePeriod ut : uptimes)
+		{
+			System.out.println("Uptime " + i);
+			System.out.println(ut);
+			total = total + ut.getDuration();
+			System.out.println("----------------------------------------------");
+			i++;
+		}
+		
+		System.out.println("Total discharge duration: "
+		                   + DateTimeOperator.getTimeStringFromMillis(realTimeOnBatt));
+		System.out.println("Total long uptimes time detected: "
+		                   + DateTimeOperator.getTimeStringFromMillis(total));
+		System.out.println("Longer uptime: \n" + uptimes.getLongerPeriod());
+		
+		highUptime = uptime();
+		
+		if (highUptime)
+			System.out.println("This log has periods where AP is ON for more than 20 minutes");
+		
+		System.out.println("Longer uptime percentage: "
+		                   + formatNumber((float) (100.0 * uptimes.getLongerPeriod().getDuration() / realTimeOnBatt))
+		                   + "% of total discharge period");
+	}
+	
+	public void showUptimesScOff()
+	{
+		int i = 1;
+		System.out.println("----------------------------------------------");
+		long total = 0;
+		for (BtdUptimePeriod ut : uptimesScOff)
+		{
+			System.out.println("Uptime " + i);
+			System.out.println(ut);
+			total = total + ut.getDuration();
+			System.out.println("----------------------------------------------");
+			i++;
+		}
+		
+		System.out.println("Total discharge duration: "
+		                   + DateTimeOperator.getTimeStringFromMillis(realTimeOnBatt));
+		System.out.println("Total long uptimes time detected: "
+		                   + DateTimeOperator.getTimeStringFromMillis(total));
+		System.out.println("Longer uptime: \n" + uptimesScOff.getLongerPeriod());
+		
+//		highUptimeScOff = uptime();
+//		
+//		if (highUptime)
+//			System.out.println("This log has periods where AP is ON for more than 20 minutes");
+		
+		System.out.println("Longer uptime percentage: "
+		                   + formatNumber((float) (100.0 * uptimesScOff.getLongerPeriod().getDuration() / realTimeOnBatt))
+		                   + "% of total discharge period");
+	}
+	// }}
+	
+	// Basic Getters and Setters -------------------------------------------------------------------------------
+	// {{
 	public int getStatus()
 	{
 		return status;
@@ -1490,4 +1755,31 @@ public class BtdParser
 	{
 		this.batCap = batCap;
 	}
+	
+	// }}
+	
+	// Complementary Getters -----------------------------------------------------------------------------------
+	// {{
+	public int getAverageconsumeOn()
+	{
+		return (int) (consumeOn / (timeOn / 3600000.0));
+	}
+	
+	public int getAverageconsumeOff()
+	{
+		return (int) (consumeOff / (timeOff / 3600000.0));
+	}
+	
+	public float phoneCallPercentage()
+	{
+		return getPercentage(phoneCall, realTimeOnBatt);
+	}
+	
+	public String tetherPercentage()
+	{
+		DecimalFormat df = new DecimalFormat("##.##");
+		df.setRoundingMode(RoundingMode.DOWN);
+		return df.format(100.0 * tetheringTime / realTimeOnBatt);
+	}
+	// }}
 }

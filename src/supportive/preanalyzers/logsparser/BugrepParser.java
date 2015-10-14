@@ -19,50 +19,6 @@ import core.Logger;
 
 public class BugrepParser
 {
-	private class BugRepKernelWL
-	{
-		String name;
-		long   duration;
-		int    timesAcquired;
-		
-		public BugRepKernelWL(String name, String duration, String timesAcquired) throws ParseException
-		{
-			this.name = name.replaceAll(" +$", "");
-			this.duration = DateTimeOperator.getMillisFromBtdStringDate(duration);
-			this.timesAcquired = Integer.parseInt(timesAcquired);
-		}
-		
-		public String toString()
-		{
-			return "[" + "name=" + name + ", duration=" + duration + "ms > "
-			       + DateTimeOperator.getTimeStringFromMillis(duration) + ", timesAcquired=" + timesAcquired
-			       + "]";
-		}
-	}
-	
-	private class BugRepJavaWL
-	{
-		String name;
-		String uid;
-		long   duration;
-		int    timesAcquired;
-		
-		public BugRepJavaWL(String uid, String name, String duration, String timesAcquired) throws ParseException
-		{
-			this.name = name.replaceAll(" +$", "");
-			this.uid = uid;
-			this.duration = DateTimeOperator.getMillisFromBtdStringDate(duration);
-			this.timesAcquired = Integer.parseInt(timesAcquired);
-		}
-		
-		public String toString()
-		{
-			return "[" + "name=" + name + ", uid=" + uid + ", duration=" + duration + "ms > "
-			       + DateTimeOperator.getTimeStringFromMillis(duration) + ", timesAcquired=" + timesAcquired
-			       + "]";
-		}
-	}
-	
 	// All long variables represent time in millis
 	private String                    path;
 	private String                    rawStats;

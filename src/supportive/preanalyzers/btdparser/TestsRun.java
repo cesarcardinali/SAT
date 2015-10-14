@@ -19,7 +19,7 @@ public class TestsRun
 		boolean ok = btdParser0.parse();
 		if (ok)
 		{
-			System.out.println("Tethering issue? " + btdParser0.checkForTethering());
+			System.out.println("Tethering issue? " + btdParser0.tethering());
 			btdParser0.close();
 		}
 		
@@ -44,7 +44,7 @@ public class TestsRun
 					ok = btdParser.parse();
 					if (ok)
 					{
-						System.out.println("Tethering issue? " + btdParser.checkForTethering());
+						System.out.println("Tethering issue? " + btdParser.tethering());
 						btdParser.close();
 					}
 					

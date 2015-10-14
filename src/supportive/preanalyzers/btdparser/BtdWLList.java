@@ -10,7 +10,7 @@ public class BtdWLList extends ArrayList<BtdWL>
 {
 	public boolean update(int index, BtdWL wl)
 	{
-		if(index >= 0)
+		if (index >= 0)
 		{
 			return get(index).update(wl);
 		}
@@ -44,11 +44,35 @@ public class BtdWLList extends ArrayList<BtdWL>
 		return -1;
 	}
 	
+	public BtdWL getLongerWL()
+	{
+		BtdWL longer = null;
+		
+		for (BtdWL wl : this)
+		{
+			if (longer == null)
+				longer = wl;
+			else if (longer.getLongerPeriod() < wl.getLongerPeriod())
+				longer = wl;
+		}
+		return longer;
+	}
+	
+	public void finalize()
+	{
+		
+		for (BtdWL wl : this)
+		{
+			wl.finalize();
+		}
+	}
+	
+	// Comparator and sort
 	public class itensComparator implements Comparator<BtdWL>
 	{
 		public int compare(BtdWL p1, BtdWL p2)
 		{
-			return (int) (Float.compare(p1.getActiveSince(), p2.getActiveSince()));
+			return (int) (Float.compare(p1.getLongerPeriod(), p2.getLongerPeriod()));
 		}
 	}
 	
