@@ -562,10 +562,21 @@ public class BugrepParser
 		}
 	}
 	
-	public boolean checkIfWakelocks()
+	public boolean checkIfWakelocks(boolean btdDetected)
 	{
 		wakelocksComment = "";
-		if (kernelWLs.size() > 0 && kernelWLs.get(0).getDuration() > getTimeOnBat() * 0.2)
+		float threashold;
+		
+		if (btdDetected)
+		{
+			threashold = (float) 0.1;
+		}
+		else
+		{
+			threashold = (float) 0.3;
+		}
+		
+		if (kernelWLs.size() > 0 && kernelWLs.get(0).getDuration() > getTimeOnBat() * threashold) // Update from 20% to 10%
 		{
 			wakelocksComment += "{panel:title=*Bugreport Kernel wake locks:*|titleBGColor=#E9F2FF}\\n";
 			wakelocksComment += kernelWLs.get(0).toJiraComment();
@@ -574,7 +585,7 @@ public class BugrepParser
 			wakelocksComment += "{panel}";
 		}
 		
-		if (javaWLs.size() > 0 && javaWLs.get(0).getDuration() > getTimeOnBat() * 0.15)
+		if (javaWLs.size() > 0 && kernelWLs.get(0).getName().contains("Wakelocks") /* && javaWLs.get(0).getDuration() > getTimeOnBat() * 0.15*/)
 		{
 			wakelocksComment += "{panel:title=*Bugreport Java wake locks:*|titleBGColor=#E9F2FF}\\n";
 			if (kernelWLs.get(0).getName().contains("Service.WakeLocks"))
@@ -589,6 +600,17 @@ public class BugrepParser
 				wakelocksComment += javaWLs.get(0).toJiraComment();
 				wakelocksComment += "\\n";
 				wakelocksComment += javaWLs.get(1).toJiraComment();
+			}
+			if (wakelocksComment.toLowerCase().contains("spotify") ||
+							javaWLs.get(0).getProcessName().toLowerCase().contains("tunein") ||
+							javaWLs.get(0).getProcessName().toLowerCase().contains("slacker") ||
+							javaWLs.get(0).getProcessName().toLowerCase().contains("pandora") ||
+							javaWLs.get(0).getProcessName().toLowerCase().contains("sirius") ||
+							javaWLs.get(0).getProcessName().toLowerCase().contains("android.music") ||
+							javaWLs.get(0).getProcessName().toLowerCase().contains("saavn") ||
+							javaWLs.get(0).getProcessName().toLowerCase().contains("com.audible.application"))
+			{
+				wakelocksComment += "\\n\\n- _Probably audio is running in background and the held wake lock does not represent an issue_\\n";
 			}
 			wakelocksComment += "{panel}";
 		}
@@ -667,52 +689,52 @@ public class BugrepParser
 	{
 		if (rawStats.length() > 80)
 		{
-			String eblIncrease = "";
+			String eblDecrease = "";
 			if (getPercentage(scOnTime, timeOnBat) > 15) // BATTRIAGE-165
 			{
 				long screenBright = scBright + scLight + scMedium;
 				if (getPercentage(screenBright, scOnTime) > 20)
 				{
-					eblIncrease = eblIncrease + "Screen was Bright/Light/Moderate for "
+					eblDecrease = eblDecrease + "Screen was Bright/Light/Moderate for "
 					              + DateTimeOperator.getTimeStringFromMillis(screenBright) + " ("
 					              + formatNumber(getPercentage(screenBright, scOnTime)) + "%)\\n";
-					eblIncrease = eblIncrease + "\\n";
+					eblDecrease = eblDecrease + "\\n";
 				}
 			}
 			
 			long phoneBadSignal = signalNone + signalPoor + signalModerate;
 			if (getPercentage(phoneBadSignal, timeOnBat) > 20)
 			{
-				eblIncrease = eblIncrease + "Phone signal quality was bad (None/Poor/Moderate) for "
+				eblDecrease = eblDecrease + "Phone signal quality was bad (None/Poor/Moderate) for "
 				              + DateTimeOperator.getTimeStringFromMillis(phoneBadSignal) + " ("
 				              + formatNumber(getPercentage(phoneBadSignal, timeOnBat)) + "%)\\n";
-				eblIncrease = eblIncrease + "\\n";
+				eblDecrease = eblDecrease + "\\n";
 			}
 			
 			long phoneBadRadio = radio1xrtt + radioEvdo + radioUmts + radioGprs;
 			if (getPercentage(phoneBadRadio, radioActive) > 20)
 			{
-				eblIncrease = eblIncrease + "Radio network was not good for "
+				eblDecrease = eblDecrease + "Radio network was not good for "
 				              + DateTimeOperator.getTimeStringFromMillis(phoneBadRadio) + " ("
 				              + formatNumber(getPercentage(phoneBadRadio, radioActive)) + "%)\\n";
-				eblIncrease = eblIncrease + "\\n";
+				eblDecrease = eblDecrease + "\\n";
 			}
 			
 			long wifiBadSignal = wifiLevel0 + wifiLevel1 + wifiLevel2;
 			if (getPercentage(wifiBadSignal, timeOnBat) > 20)
 			{
-				eblIncrease = eblIncrease + "Wifi signal quality was bad (Level0/Level1/Level2) for "
+				eblDecrease = eblDecrease + "Wifi signal quality was bad (Level0/Level1/Level2) for "
 				              + DateTimeOperator.getTimeStringFromMillis(wifiBadSignal) + " ("
 				              + formatNumber(getPercentage(wifiBadSignal, timeOnBat)) + "%)\\n";
 			}
 			if (getPercentage(wifiScan, timeOnBat) > 20)
 			{
-				eblIncrease = eblIncrease + "Scanning for better wifi network for "
+				eblDecrease = eblDecrease + "Scanning for better wifi network for "
 				              + DateTimeOperator.getTimeStringFromMillis(wifiScan) + " ("
 				              + formatNumber(getPercentage(wifiScan, timeOnBat)) + "%)\\n";
 			}
 			
-			return eblIncrease;
+			return eblDecrease;
 		}
 		else
 		{

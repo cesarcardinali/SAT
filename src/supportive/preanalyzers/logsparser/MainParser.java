@@ -105,7 +105,7 @@ public class MainParser
 			String sLastLine = "";
 			LogState logState = new LogState();
 			wifiPeriod wifiPeriod = new wifiPeriod();
-			Pattern ptDateLine = Pattern.compile("^\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d ");//09-27 11:32:45.622
+			Pattern ptDateLine = Pattern.compile("^\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d ");// 09-27 11:32:45.622
 			Matcher mDate;
 			long actualTime = -1;
 			long nextTime = -1;
@@ -116,7 +116,7 @@ public class MainParser
 				if (mDate.find())
 				{
 					
-					//System.out.println(sCurrentLine);
+					// System.out.println(sCurrentLine);
 					nextTime = DateTimeOperator.getMillis(parseLineDate(sCurrentLine)[0]);
 					
 					if ((nextTime - actualTime) < -60000 && (nextTime - actualTime) > -3600000)
@@ -400,6 +400,31 @@ public class MainParser
 	
 	public long getTotalTetherTime()
 	{
+		if (totalTetherTime == 0)
+		{
+			for (wifiPeriod w : wifiPeriods)
+			{
+				if (w.startTime < longerDischarge.getStart())
+				{
+					w.startTime = longerDischarge.getStart();
+					if (w.endTime < longerDischarge.getStart())
+					{
+						w.endTime = longerDischarge.getStart();
+					}
+				}
+				
+				if (w.endTime > longerDischarge.getEnd())
+				{
+					w.endTime = longerDischarge.getEnd();
+					if (w.startTime > longerDischarge.getEnd())
+					{
+						w.startTime = longerDischarge.getEnd();
+					}
+				}
+				
+				totalTetherTime = totalTetherTime + w.getDuration();
+			}
+		}
 		return totalTetherTime;
 	}
 	

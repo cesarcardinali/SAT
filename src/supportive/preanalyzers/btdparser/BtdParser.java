@@ -235,10 +235,9 @@ public class BtdParser
 		                           + formatNumber(getPercentage(uptimes.getLongerPeriod().getDuration(),
 		                                                        realTimeOnBatt)) + "%");
 		Logger.log(Logger.TAG_BTD_PARSER,
-		           "Total Uptime: "
-		                           + formatNumber(getPercentage(uptimes.getTotalTime(),
-		                                                        realTimeOnBatt)) + "%");
-		if (uptimes.getLongerPeriod().getDuration() / 60000 > 45 //TODO Update to 45 from 30
+		           "Total Uptime: " + formatNumber(getPercentage(uptimes.getTotalTime(), realTimeOnBatt))
+		                           + "%");
+		if (uptimes.getLongerPeriod().getDuration() / 60000 > 60 // TODO Update to 60 from 30
 		    && getPercentage(uptimes.getLongerPeriod().getDuration(), realTimeOnBatt) > 7)
 		{
 			return true;
@@ -256,8 +255,8 @@ public class BtdParser
 		                                                        realTimeOnBatt)) + "%");
 		Logger.log(Logger.TAG_BTD_PARSER,
 		           "ScOff Total Uptime: "
-		                           + formatNumber(getPercentage(uptimesScOff.getTotalTime(),
-		                                                        realTimeOnBatt)) + "%");
+		                           + formatNumber(getPercentage(uptimesScOff.getTotalTime(), realTimeOnBatt))
+		                           + "%");
 		if (uptimesScOff.getLongerPeriod().getDuration() / 60000 > 30 // TODO Updated to 30 from 15
 		    && getPercentage(uptimesScOff.getLongerPeriod().getDuration(), realTimeOnBatt) > 6)
 		{
@@ -276,8 +275,10 @@ public class BtdParser
 		 * false; }
 		 */
 		// TODO Updated to 45 from 30
-		if (kernelWLs.getLongerWL() != null && getPercentage(kernelWLs.getLongerWL().getLongerPeriod(), realTimeOnBatt) > 7
-		    && kernelWLs.getLongerWL().getLongerPeriod() >= 45 * 60000 && !kernelWLs.getLongerWL().getName().contains("PowerManagerService.Display"))
+		if (kernelWLs.getLongerWL() != null
+		    && getPercentage(kernelWLs.getLongerWL().getLongerPeriod(), realTimeOnBatt) > 7
+		    && kernelWLs.getLongerWL().getLongerPeriod() >= 45 * 60000
+		    && !kernelWLs.getLongerWL().getName().contains("PowerManagerService.Display"))
 		{
 			Logger.log(Logger.TAG_BTD_PARSER, "Wakelocks detected: " + kernelWLs.size());
 			Logger.log(Logger.TAG_BTD_PARSER, kernelWLs.getLongerWL().toString());
@@ -693,8 +694,16 @@ public class BtdParser
 				}
 				
 				// Uptimes Sc Off
-				if (btdRow.getScreenOn() == 1 && !btdRow.getTopProcesses().contains("mediaserver")
-				    && !btdRow.getTopProcesses().contains("spotify"))
+				if (btdRow.getScreenOn() == 1
+				    || (btdRow.getTopProcesses().contains("mediaserver")
+				        || btdRow.getTopProcesses().contains("tunein")
+				        || btdRow.getTopProcesses().contains("slacker")
+				        || btdRow.getTopProcesses().contains("pandora")
+				        || btdRow.getTopProcesses().contains("sirius")
+				        || btdRow.getTopProcesses().contains("android.music")
+				        || btdRow.getTopProcesses().contains("saavn")
+				        || btdRow.getTopProcesses().contains("com.audible.application")
+				        || btdRow.getTopProcesses().contains("spotify")))
 				{
 					// System.out.println("> ScOff: " + btdRow.getTimestamp() + " - " + uptimeOff.getEnd());
 					// System.out.print(">Sc Off ");
@@ -728,10 +737,10 @@ public class BtdParser
 					// System.out.println("> ScOn");
 					if (uptimeOff.getDuration() >= 300000)
 					{
-//						System.out.println("Duration long enought");
+						// System.out.println("Duration long enought");
 						if (uptimesScOff.size() <= 0)
 						{
-//							System.out.println("4");
+							// System.out.println("4");
 							// System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()),
 							// "America/Chicago"));
 							// System.out.println("End: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getEnd()),
@@ -743,7 +752,7 @@ public class BtdParser
 						{
 							if (uptimeOff.getStart() - uptimesScOff.get(uptimesScOff.size() - 1).getEnd() < 49600)
 							{
-//								System.out.println("5");
+								// System.out.println("5");
 								// System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()),
 								// "America/Chicago"));
 								// System.out.println("End: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getEnd()),
@@ -753,7 +762,7 @@ public class BtdParser
 							}
 							else
 							{
-//								System.out.println("6");
+								// System.out.println("6");
 								uptimesScOff.add(uptimeOff);
 								uptimeOff = new BtdUptimePeriod();
 							}
@@ -766,11 +775,12 @@ public class BtdParser
 						    && uptimeOff.getDuration() > 30000
 						    && (uptimeOff.getStart() - uptimesScOff.get(uptimesScOff.size() - 1).getEnd()) < 49600)
 						{
-//							System.out.println("But enought to concate");
+							// System.out.println("But enought to concate");
 							uptimesScOff.get(uptimesScOff.size() - 1).setEnd(uptimeOff.getEnd());
 						}
-//						System.out.println("8 "
-//						                   + BtdParser.formatDate(BtdParser.generateDate(btdRow.getTimestamp())) + " - " + DateTimeOperator.getTimeStringFromMillis(uptimeOff.getDuration()));
+						// System.out.println("8 "
+						// + BtdParser.formatDate(BtdParser.generateDate(btdRow.getTimestamp())) + " - " +
+						// DateTimeOperator.getTimeStringFromMillis(uptimeOff.getDuration()));
 						uptimeOff = new BtdUptimePeriod();
 					}
 				}
@@ -798,19 +808,19 @@ public class BtdParser
 				btdRows.add(btdRow);
 			}
 			
-			if (actualUptime.getDuration() > 300000)
+			if (actualUptime.getDuration() > 600000)
 				uptimes.add(actualUptime);
 			
-			if (uptimeOff.getDuration() > 300000)
+			if (uptimeOff.getDuration() > 600000) //Tempo uptime off
 				uptimesScOff.add(uptimeOff);
 			
 			kernelWLs.finalize();
 			kernelWLs.sortItens();
 			
-//			for (BtdWL wl : kernelWLs)
-//			{
-//				System.out.println(wl);
-//			}
+			// for (BtdWL wl : kernelWLs)
+			// {
+			// System.out.println(wl);
+			// }
 			
 			uptimes.sortByStart();
 			uptimesScOff.sortByStart();

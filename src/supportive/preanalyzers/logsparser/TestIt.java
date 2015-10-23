@@ -11,11 +11,11 @@ public class TestIt
 {
 	public static void main(String[] args)
 	{
-		String root = "C:/CRs/WakeLocksTests/";
-		String crPath = root + "86069161";
+		String root = "C:/CRs/26-10 L/";
+		String crPath = root + "87966501";
 		long now = System.currentTimeMillis();
 		
-//		BugrepParser brParser = new BugrepParser(root + "83226101");
+//		BugrepParser brParser = new BugrepParser(crPath);
 //		brParser.parse();
 //		System.out.println();
 //		brParser.showData();
@@ -33,8 +33,7 @@ public class TestIt
 //		btdParser.showParseResults();
 //		btdParser.showPeriods();
 //		System.out.println("-- BTD Tether data");
-//		btdParser.checkForTethering();
-//		btdParser.tethering();
+		btdParser.tethering();
 //		btdParser.showUptimes();
 //		System.out.println("\n<><><><><><><><><><><><><><><><><><><><>\n");
 //		btdParser.showUptimesScOff();
@@ -49,21 +48,22 @@ public class TestIt
 		btdParser.showWakeLocks();
 		System.out.println("Done");
 		
-		/*MainParser mainParser = new MainParser(crPath);
+		MainParser mainParser = new MainParser(crPath);
 		System.out.println("Parsing Main log data ...");
 		mainParser.parse();
-		System.out.println("-- Main Aquired data");
-		mainParser.showAcquiredData();
-		mainParser.checkForTethering();
-		System.out.println("-- Main Tether data");
+//		System.out.println("-- Main Aquired data");
+//		mainParser.showAcquiredData();
+//		mainParser.checkForTethering();
+//		System.out.println("-- Main Tether data");
+		System.out.println(mainParser.checkForTethering());
 		mainParser.showTetheringData();
-		System.out.println("Done");*/
-		
-		BugrepParser bugrepParser = new BugrepParser(crPath);
-		System.out.println("Parsing Bugreport log data ...");
-		bugrepParser.parse();
-		System.out.println(bugrepParser.currentDrainStatistics() + "\n" + bugrepParser.eblDecreasedReasons());
 		System.out.println("Done");
+		
+//		BugrepParser bugrepParser = new BugrepParser(crPath);
+//		System.out.println("Parsing Bugreport log data ...");
+//		bugrepParser.parse();
+//		System.out.println(bugrepParser.currentDrainStatistics() + "\n" + bugrepParser.eblDecreasedReasons());
+//		System.out.println("Done");
 		
 		
 		System.out.println("\n\nIt took " + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - now)));

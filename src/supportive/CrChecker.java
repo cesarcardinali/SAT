@@ -139,7 +139,7 @@ public class CrChecker
 				
 				if (bugrepParsed)
 				{
-					bugrepParser.checkIfWakelocks();
+					bugrepParser.checkIfWakelocks(false);
 					if (bugrepParser.getKernelWLs().size() > 0)
 					{
 						commentWakeLocks += "\\n\\n" + bugrepParser.getWakelocksComment();
@@ -202,6 +202,7 @@ public class CrChecker
 					Logger.log(Logger.TAG_CR_CHECKER, "SAT could not find wake locks data");
 				}
 			}
+			
 			else
 			{
 				SharedObjs.crsManagerPane.addLogLine("Checking for wakelocks ...");
@@ -224,6 +225,26 @@ public class CrChecker
 					return false;
 				}
 				
+				SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
+				if (checkIfTethering())
+				{
+					jira.assignIssue(cr.getJiraID());
+					jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
+					jira.addLabel(cr.getJiraID(), "sat_closed");
+					
+					cr.setResolution(INVALID);
+					cr.setAssignee(SharedObjs.getUser());
+					SharedObjs.satDB.insertAnalyzedCR(cr);
+					
+					SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
+					                                     + " as invalid");
+					
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+					                                        + ". Closed as invalid");
+					
+					return true;
+				}
+				
 				SharedObjs.crsManagerPane.addLogLine("Checking for uptime ...");
 				if (checkIfUptime())
 				{
@@ -240,26 +261,6 @@ public class CrChecker
 					                                        + ". Uptimes detected. Needs manual analysis.");
 					
 					return false;
-				}
-				
-				SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
-				if (checkIfTethering())
-				{
-					jira.assignIssue(cr.getJiraID());
-					jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
-					jira.addLabel(cr.getJiraID(), "sat_closed");
-					
-					cr.setResolution(INVALID);
-					cr.setAssignee(SharedObjs.getUser());
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-					
-					SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
-					                                     + " as invalid");
-					
-					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
-					                                        + ". Closed as incomplete");
-					
-					return true;
 				}
 				
 				SharedObjs.crsManagerPane.addLogLine("Checking if false positive ...");
@@ -396,7 +397,6 @@ public class CrChecker
 		{
 			btdTether = btdParser.tethering();
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Tethering issue? " + btdTether);
-			btdParser.close();
 		}
 		else
 		{
@@ -535,8 +535,8 @@ public class CrChecker
 				bugrepParser.setBatCap(btdParser.getBatCap());
 			}
 			
-			if ((btdParser.getAverageconsumeOff() <= 110 && bugrepParser.getConsAvgOff() <= 110)
-			    && upTime == false && btdParser.uptime())
+			if ((btdParser.getAverageconsumeOff() <= 115 && bugrepParser.getConsAvgOff() <= 115)
+			    && (btdParser.eblDecreasers().length() > 10 || bugrepParser.eblDecreasedReasons().length() > 10))
 			{
 				String comment = bugrepParser.currentDrainStatistics();
 				String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
@@ -573,8 +573,8 @@ public class CrChecker
 				
 				return true;
 			}
-			else if ((btdParser.getAverageconsumeOff() <= 120 && bugrepParser.getConsAvgOff() <= 120)
-			         && upTime == false && btdParser.phoneCallPercentage() > 9)
+			else if ((btdParser.getAverageconsumeOff() <= 125 && bugrepParser.getConsAvgOff() <= 125)
+			         && btdParser.phoneCallPercentage() > 9)
 			{
 				String comment = bugrepParser.currentDrainStatistics();
 				String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
@@ -699,41 +699,49 @@ public class CrChecker
 		uptimesComment = "";
 		if (btdParsed)
 		{
-			if (btdParser.uptime())
+			if (mainParsed && mainParser.getTotalTetherTime() >= btdParser.getUptimes().getTotalTime() * 0.7)
 			{
-				uptimesComment = "{panel:title=*All long uptimes detected*|titleBGColor=#E9F2FF}\\n";
-				int i = 1;
-				long total = 0;
-				
-				for (BtdUptimePeriod ut : btdParser.getUptimes())
-				{
-					uptimesComment += "- *Uptime " + i + "*\\n";
-					uptimesComment += ut.toJiraComment();
-					total = total + ut.getDuration();
-					i++;
-				}
-				uptimesComment += "\\n\\n||TOTAL TIME|| " + DateTimeOperator.getTimeStringFromMillis(total)
-				                  + "|";
-				
-				uptimesComment += "\\n{panel}\\n\\n";
+				return false;
 			}
-			
-			if (btdParser.uptimeScOff())
+			else
 			{
-				uptimesComment = "{panel:title=*Long uptimes while screen continuously OFF*|titleBGColor=#E9F2FF}\\n";
-				int i = 1;
-				long total = 0;
-				
-				for (BtdUptimePeriod ut : btdParser.getUptimesScOff())
+				if (btdParser.uptime())
 				{
-					uptimesComment += "- *Uptime " + i + "*\\n";
-					uptimesComment += ut.toJiraComment();
-					total = total + ut.getDuration();
-					i++;
+					uptimesComment = "{panel:title=*All long uptimes detected*|titleBGColor=#E9F2FF}\\n";
+					int i = 1;
+					long total = 0;
+					
+					for (BtdUptimePeriod ut : btdParser.getUptimes())
+					{
+						uptimesComment += "- *Uptime " + i + "*\\n";
+						uptimesComment += ut.toJiraComment();
+						total = total + ut.getDuration();
+						i++;
+					}
+					uptimesComment += "\\n\\n||TOTAL TIME|| "
+					                  + DateTimeOperator.getTimeStringFromMillis(total) + "|";
+					
+					uptimesComment += "\\n{panel}\\n\\n";
 				}
-				uptimesComment += "||TOTAL TIME|| " + DateTimeOperator.getTimeStringFromMillis(total) + "|";
 				
-				uptimesComment += "\\n{panel}\\n\\n";
+				if (btdParser.uptimeScOff())
+				{
+					uptimesComment = "{panel:title=*Long uptimes while screen continuously OFF*|titleBGColor=#E9F2FF}\\n";
+					int i = 1;
+					long total = 0;
+					
+					for (BtdUptimePeriod ut : btdParser.getUptimesScOff())
+					{
+						uptimesComment += "- *Uptime " + i + "*\\n";
+						uptimesComment += ut.toJiraComment();
+						total = total + ut.getDuration();
+						i++;
+					}
+					uptimesComment += "\\n\\n||TOTAL TIME|| " + DateTimeOperator.getTimeStringFromMillis(total)
+					                  + "|";
+					
+					uptimesComment += "\\n{panel}\\n\\n";
+				}
 			}
 			
 			if (uptimesComment.length() > 80)
@@ -748,6 +756,7 @@ public class CrChecker
 	public boolean checkIfWakelocks()
 	{
 		wakelocksComment = "";
+		boolean btdWake = false;
 		
 		if (btdParsed && btdParser.wakeLocks())
 		{
@@ -766,9 +775,11 @@ public class CrChecker
 			                    + "\\n";
 			
 			wakelocksComment += "\\n{panel}\\n\\n";
+			
+			btdWake = true;
 		}
 		
-		if (bugrepParser.checkIfWakelocks())
+		if (bugrepParser.checkIfWakelocks(btdWake))
 		{
 			wakelocksComment += "\\n\\n" + bugrepParser.getWakelocksComment();
 		}
