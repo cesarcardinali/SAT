@@ -26,25 +26,27 @@ public class TestIt
 		//System.out.println(DateTimeOperator.getDateStringFromBtdStringMillis(148857));
 		
 		BtdParser btdParser = new BtdParser(crPath);
-		System.out.println("Parsing BTD data ...");
+//		System.out.println("Parsing BTD data ...");
 		btdParser.parse();
+		
 //		System.out.println("-- BTD Aquired data");
 //		btdParser.showParseResults();
 //		btdParser.showPeriods();
 //		System.out.println("-- BTD Tether data");
 //		btdParser.checkForTethering();
-//		System.out.println("\n" + btdParser.parseResult());
+//		btdParser.tethering();
 //		btdParser.showUptimes();
 //		System.out.println("\n<><><><><><><><><><><><><><><><><><><><>\n");
 //		btdParser.showUptimesScOff();
 //		System.out.println("\n<><><><><><><><><><><><><><><><><><><><>\n");
+		
 		System.out.println(btdParser.uptime());
 		System.out.println(btdParser.uptimeScOff());
 		System.out.println(btdParser.wakeLocks());
-		//btdParser.tethering();
+		
 		//System.out.println("Longer uptime\n" + btdParser.getLongerUptime());
 		//System.out.println("Longer wakelock\n" + btdParser.getLongerWakeLock());
-		//btdParser.showWakeLocks();
+		btdParser.showWakeLocks();
 		System.out.println("Done");
 		
 		/*MainParser mainParser = new MainParser(crPath);
@@ -57,11 +59,11 @@ public class TestIt
 		mainParser.showTetheringData();
 		System.out.println("Done");*/
 		
-		/*BugrepParser bugrepParser = new BugrepParser(crPath);
+		BugrepParser bugrepParser = new BugrepParser(crPath);
 		System.out.println("Parsing Bugreport log data ...");
 		bugrepParser.parse();
 		System.out.println(bugrepParser.currentDrainStatistics() + "\n" + bugrepParser.eblDecreasedReasons());
-		System.out.println("Done");*/
+		System.out.println("Done");
 		
 		
 		System.out.println("\n\nIt took " + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - now)));

@@ -25,6 +25,13 @@ public class BugRepKernelWL
 		       + DateTimeOperator.getTimeStringFromMillis(duration) + ", timesAcquired=" + timesAcquired
 		       + "]";
 	}
+	
+	public String toJiraComment()
+	{
+		return "||Name|" + name + "|\\n|Duration|" 
+		       + DateTimeOperator.getTimeStringFromMillis(duration) + " (" + duration + " ms)" + "|\\n|Times Acquired|" + timesAcquired
+		       + "|\\n";
+	}
 
 	public String getName()
 	{

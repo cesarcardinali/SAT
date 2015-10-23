@@ -22,6 +22,7 @@ public class BugrepParser
 	// All long variables represent time in millis
 	private String                    path;
 	private String                    rawStats;
+	private String                    wakelocksComment;
 	private long                      timeOnBat      = -1;
 	private long                      scOffTime      = -1;
 	private long                      scOnTime       = -1;
@@ -150,6 +151,10 @@ public class BugrepParser
 				// Search for b2g evidences
 				while ((sCurrentLine = br.readLine()) != null)
 				{
+					if (sCurrentLine.contains("DUMP OF SERVICE appops:"))
+					{
+						br.mark((int) (new File(file_report).length() - 10));
+					}
 					if (sCurrentLine.contains("Statistics since last charge:"))
 					{
 						Logger.log(Logger.TAG_BUGREPORT_PARSER, "Statistics line found: " + sCurrentLine);
@@ -481,8 +486,31 @@ public class BugrepParser
 						}
 					}
 					
-					if (sCurrentLine.contains("All wakeup reasons:"))
+					if (sCurrentLine.contains("All wakeup reasons:")
+					    || sCurrentLine.contains("DUMP OF SERVICE consumer_ir:"))
 					{
+						for (BugRepJavaWL j : javaWLs)
+						{
+							br.reset();
+							while ((sCurrentLine = br.readLine()) != null
+							       && !sCurrentLine.contains("DUMP OF SERVICE appwidget:"))
+							{
+								if (sCurrentLine.contains("  Uid " + j.getUid() + ":"))
+								{
+									sCurrentLine = br.readLine();
+									j.setProcessName(sCurrentLine.replace(" ", "").replace(":", "")
+									                             .replace("Package", ""));
+									break;
+								}
+							}
+						}
+						
+						for (BugRepJavaWL j : javaWLs)
+						{
+							System.out.println(j);
+							System.out.println(j.getProcessName());
+						}
+						
 						break;
 					}
 				}
@@ -532,6 +560,45 @@ public class BugrepParser
 		{
 			return false;
 		}
+	}
+	
+	public boolean checkIfWakelocks()
+	{
+		wakelocksComment = "";
+		if (kernelWLs.size() > 0 && kernelWLs.get(0).getDuration() > getTimeOnBat() * 0.2)
+		{
+			wakelocksComment += "{panel:title=*Bugreport Kernel wake locks:*|titleBGColor=#E9F2FF}\\n";
+			wakelocksComment += kernelWLs.get(0).toJiraComment();
+			wakelocksComment += "\\n";
+			wakelocksComment += kernelWLs.get(1).toJiraComment();
+			wakelocksComment += "{panel}";
+		}
+		
+		if (javaWLs.size() > 0 && javaWLs.get(0).getDuration() > getTimeOnBat() * 0.15)
+		{
+			wakelocksComment += "{panel:title=*Bugreport Java wake locks:*|titleBGColor=#E9F2FF}\\n";
+			if (kernelWLs.get(0).getName().contains("Service.WakeLocks"))
+			{
+				// TODO Probably the main issue is item 0
+				wakelocksComment += javaWLs.get(0).toJiraComment();
+				wakelocksComment += "\\n";
+				wakelocksComment += javaWLs.get(1).toJiraComment();
+			}
+			else
+			{
+				wakelocksComment += javaWLs.get(0).toJiraComment();
+				wakelocksComment += "\\n";
+				wakelocksComment += javaWLs.get(1).toJiraComment();
+			}
+			wakelocksComment += "{panel}";
+		}
+		
+		if (wakelocksComment.length() > 10)
+		{
+			return true;
+		}
+		
+		return false;
 	}
 	
 	// Show all acquired data -------------------------------------------------
@@ -632,17 +699,17 @@ public class BugrepParser
 			}
 			
 			long wifiBadSignal = wifiLevel0 + wifiLevel1 + wifiLevel2;
-			if (getPercentage(wifiBadSignal, wifiRun) > 20)
+			if (getPercentage(wifiBadSignal, timeOnBat) > 20)
 			{
 				eblIncrease = eblIncrease + "Wifi signal quality was bad (Level0/Level1/Level2) for "
 				              + DateTimeOperator.getTimeStringFromMillis(wifiBadSignal) + " ("
-				              + formatNumber(getPercentage(wifiBadSignal, wifiRun)) + "%)\\n";
+				              + formatNumber(getPercentage(wifiBadSignal, timeOnBat)) + "%)\\n";
 			}
-			if (getPercentage(wifiScan, wifiRun) > 20)
+			if (getPercentage(wifiScan, timeOnBat) > 20)
 			{
 				eblIncrease = eblIncrease + "Scanning for better wifi network for "
 				              + DateTimeOperator.getTimeStringFromMillis(wifiScan) + " ("
-				              + formatNumber(getPercentage(wifiScan, wifiRun)) + "%)\\n";
+				              + formatNumber(getPercentage(wifiScan, timeOnBat)) + "%)\\n";
 			}
 			
 			return eblIncrease;
@@ -670,6 +737,11 @@ public class BugrepParser
 	private float getPercentage(long percentageOf, long from)
 	{
 		return (float) (100.0 * percentageOf / from);
+	}
+	
+	public String getWakelocksComment()
+	{
+		return wakelocksComment;
 	}
 	
 	// Getters and Setters ---------------------------------------------------

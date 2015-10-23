@@ -60,10 +60,15 @@ public class BtdWLList extends ArrayList<BtdWL>
 	
 	public void finalize()
 	{
-		
-		for (BtdWL wl : this)
+		for (int i = 0; i < this.size(); i++)
 		{
-			wl.finalize();
+			this.get(i).finalize();
+			
+			if (this.get(i).getLongerPeriod() < 15 * 60000)
+			{
+				this.remove(i);
+				i = -1;
+			}
 		}
 	}
 	

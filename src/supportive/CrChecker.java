@@ -1,12 +1,15 @@
 package supportive;
 
 
+import java.awt.image.Kernel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import objects.CrItem;
 import supportive.preanalyzers.btdparser.BtdParser;
+import supportive.preanalyzers.btdparser.BtdUptimePeriod;
+import supportive.preanalyzers.btdparser.BtdWL;
 import supportive.preanalyzers.logsparser.BugRepJavaWL;
 import supportive.preanalyzers.logsparser.BugRepKernelWL;
 import supportive.preanalyzers.logsparser.BugrepParser;
@@ -25,6 +28,8 @@ public class CrChecker
 	private String              crPath;
 	private String              falsePositiveComment;
 	private String              tetherComment;
+	private String              uptimesComment;
+	private String              wakelocksComment;
 	private boolean             btdParsed;
 	private boolean             mainParsed;
 	private boolean             bugrepParsed;
@@ -59,12 +64,10 @@ public class CrChecker
 			long start = System.currentTimeMillis();
 			
 			SharedObjs.crsManagerPane.addLogLine("Adding pre analyzed label ...");
-			
 			jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
 			jira.addLabel(cr.getJiraID(), "sat_pre_analyzed");
 			
 			SharedObjs.crsManagerPane.addLogLine("Checking if incomplete ...");
-			
 			if (checkIfIncomplete())
 			{
 				jira.assignIssue(cr.getJiraID());
@@ -86,6 +89,7 @@ public class CrChecker
 			}
 			
 			// Try to parse log files ---------------------------------------------------
+			// Parse BTD
 			btdParser = new BtdParser(crPath);
 			SharedObjs.crsManagerPane.addLogLine("Parsing BTD data ...");
 			btdParsed = btdParser.parse();
@@ -97,6 +101,8 @@ public class CrChecker
 			{
 				SharedObjs.crsManagerPane.addLogLine("Not possible to parse BTD");
 			}
+			
+			// Parse Main
 			mainParser = new MainParser(crPath);
 			SharedObjs.crsManagerPane.addLogLine("Parsing Main log data ...");
 			mainParsed = mainParser.parse();
@@ -108,6 +114,8 @@ public class CrChecker
 			{
 				SharedObjs.crsManagerPane.addLogLine("Not possible to parse Main");
 			}
+			
+			// Parse Bugreport
 			bugrepParser = new BugrepParser(crPath);
 			SharedObjs.crsManagerPane.addLogLine("Parsing Bugreport log data ...");
 			bugrepParsed = bugrepParser.parse();
@@ -121,13 +129,121 @@ public class CrChecker
 			}
 			
 			// Check for issues ---------------------------------------------------------------------------------------------------------
-			if (!(cr.getLabels().contains("high_background_uptime_percentage") || cr.getLabels()
-			                                                                        .contains("high_background_uptime_percentage_btd")))
+			if (cr.getLabels().contains("high_background_uptime_percentage")
+			    || cr.getLabels().contains("high_background_uptime_percentage_btd"))
 			{
-				// TODO Check for uptime
+				SharedObjs.crsManagerPane.addLogLine("Very high uptime case, SAT will list\n\tthe top wakelocks as a comment in the CR");
+				
+				int n = 0;
+				String commentWakeLocks = "";
+				
+				if (bugrepParsed)
+				{
+					bugrepParser.checkIfWakelocks();
+					if (bugrepParser.getKernelWLs().size() > 0)
+					{
+						commentWakeLocks += "\\n\\n" + bugrepParser.getWakelocksComment();
+						commentWakeLocks += "\\n\\n";
+					}
+				}
+				
+				if (btdParsed && btdParser.getWakeLocks().size() > 0)
+				{
+					commentWakeLocks = commentWakeLocks
+					                   + "{panel:title=*BTD kernel stuck wake locks:*|titleBGColor=#E9F2FF}\\n{html}\\n";
+					
+					String commentPattern1 = "<p> <b>Name: </b>#name# <br/> <b>Total time: </b>#ttime#<br/> <b>Longer Period: </b>#longer#</p>";
+					String commentPattern2 = "<span style=\\\"padding-left:2em;\\\"> <b> Period ##: </b> <br/> </span><span style=\\\"padding-left:4em;\\\">"
+					                         + "<b>Start:</b> #starttime#<br/> </span><span style=\\\"padding-left:4em;\\\"> <b>Stop:</b> #stoptime# <br/> </span>"
+					                         + "<span style=\\\"padding-left:4em;\\\"> <b>Duration:</b> #duration# <br/> </span>";
+					
+					for (BtdWL wl : btdParser.getWakeLocks())
+					{
+						commentWakeLocks = commentWakeLocks
+						                   + commentPattern1.replace("#name#", wl.getName())
+						                                    .replace("#ttime#",
+						                                             DateTimeOperator.getTimeStringFromMillis(wl.getTotalTime()))
+						                                    .replace("#longer#",
+						                                             DateTimeOperator.getTimeStringFromMillis(wl.getLongerPeriod()));
+						for (int i = 0; i < wl.getDataList().size(); i++)
+						{
+							commentWakeLocks = commentWakeLocks
+							                   + commentPattern2.replace("##", "" + (i + 1))
+							                                    .replace("#starttime#",
+							                                             ""
+							                                                             + BtdParser.formatDate(BtdParser.generateDate(wl.getDataList()
+							                                                                                                             .get(i)
+							                                                                                                             .getStart())))
+							                                    .replace("#stoptime#",
+							                                             BtdParser.formatDate(BtdParser.generateDate(wl.getDataList()
+							                                                                                           .get(i)
+							                                                                                           .getStop())))
+							                                    .replace("#duration#",
+							                                             DateTimeOperator.getTimeStringFromMillis(wl.getDataList()
+							                                                                                        .get(i)
+							                                                                                        .getDuration()));
+						}
+						commentWakeLocks = commentWakeLocks + "\\n<hr>\\n";
+					}
+					commentWakeLocks = commentWakeLocks + "\\n{html}";
+					commentWakeLocks = commentWakeLocks + "\\n{panel}\\n\\n\\n";
+				}
+				
+				System.out.println("\n\n\n" + commentWakeLocks.replace("\\n", "\n") + "\n\n");
+				
+				if (commentWakeLocks.length() > 10)
+				{
+					jira.addComment(cr.getJiraID(), commentWakeLocks);
+					Logger.log(Logger.TAG_CR_CHECKER, "Wake locks detected");
+				}
+				else
+				{
+					jira.addComment(cr.getJiraID(), "SAT could not find wake locks data");
+					Logger.log(Logger.TAG_CR_CHECKER, "SAT could not find wake locks data");
+				}
+			}
+			else
+			{
+				SharedObjs.crsManagerPane.addLogLine("Checking for wakelocks ...");
+				if (checkIfWakelocks())
+				{
+					if (checkIfUptime())
+					{
+						wakelocksComment += "\\n\\n" + uptimesComment;
+					}
+					jira.addComment(cr.getJiraID(), wakelocksComment);
+					
+					cr.setAssignee(SharedObjs.getUser());
+					SharedObjs.satDB.insertAnalyzedCR(cr);
+					
+					SharedObjs.crsManagerPane.addLogLine("Wakelocks detected. Needs manual analysis.");
+					
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+					                                        + ". Wakelocks detected. Needs manual analysis.");
+					
+					return false;
+				}
+				
+				SharedObjs.crsManagerPane.addLogLine("Checking for uptime ...");
+				if (checkIfUptime())
+				{
+					jira.addComment(cr.getJiraID(),
+					                "Some long uptimes were detected. This CR shall be manually analized in order to ensure if there are issues or not in this CR.\\n\\n"
+					                                + uptimesComment);
+					
+					cr.setAssignee(SharedObjs.getUser());
+					SharedObjs.satDB.insertAnalyzedCR(cr);
+					
+					SharedObjs.crsManagerPane.addLogLine("Uptimes detected. Needs manual analysis.");
+					
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+					                                        + ". Uptimes detected. Needs manual analysis.");
+					
+					return false;
+				}
 				
 				SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
-				if (checkForTethering())
+				if (checkIfTethering())
 				{
 					jira.assignIssue(cr.getJiraID());
 					jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
@@ -152,33 +268,22 @@ public class CrChecker
 					return true;
 				}
 			}
-			else
-			{
-				SharedObjs.crsManagerPane.addLogLine("Very high uptime case, SAT will list\n\tthe top wakelocks as a comment in the CR");
-				String commentWakeLocks = "{panel:title=*Kernel wake locks:*|titleBGColor=#E9F2FF}\\n";
-				commentWakeLocks = commentWakeLocks + "||Name||Duration||AcquireCount||\\n";
-				for (BugRepKernelWL k : bugrepParser.getKernelWLs())
-				{
-					commentWakeLocks = commentWakeLocks + "|" + k.getName().replace("*", "\\\\*") + "|" + DateTimeOperator.getTimeStringFromMillis(k.getDuration()) + "|" + k.getTimesAcquired() + "|\\n";
-				}
-				commentWakeLocks = commentWakeLocks + "{panel}\\n\\n\\n";
-				
-				commentWakeLocks = commentWakeLocks + "{panel:title=*Java wake locks:*|titleBGColor=#E9F2FF}\\n";
-				commentWakeLocks = commentWakeLocks + "||Name||Process Uid||Duration||AcquireCount||\\n";
-				for (BugRepJavaWL k : bugrepParser.getJavaWLs())
-				{
-					commentWakeLocks = commentWakeLocks + "|" + k.getName().replace("*", "\\\\*") + "|" + k.getUid() + "|" + DateTimeOperator.getTimeStringFromMillis(k.getDuration()) + "|" + k.getTimesAcquired() + "|\\n";
-				}
-				commentWakeLocks = commentWakeLocks + "{panel}\\n\\n\\n";
-				
-				jira.addComment(cr.getJiraID(), commentWakeLocks);
-				
-//				Scanner keyboard = new Scanner(System.in);
-//				String a = keyboard.nextLine();
-			}
 			
 			SharedObjs.crsManagerPane.addLogLine("Nothing was detected. "
 			                                     + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
+			
+			String comment = bugrepParser.currentDrainStatistics();
+			String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
+			eblDecresed = eblDecresed + bugrepParser.eblDecreasedReasons();
+			eblDecresed = eblDecresed + btdParser.eblDecreasers();
+			eblDecresed = eblDecresed + "{panel}\\n";
+			if (eblDecresed.split("\\\\n|\\n|\n").length > 2)
+			{
+				comment = comment + eblDecresed;
+			}
+			
+			jira.addComment(cr.getJiraID(), comment);
+			
 			Logger.log(Logger.TAG_FALSE_POSITIVE,
 			           DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
 			
@@ -277,7 +382,7 @@ public class CrChecker
 			return false;
 	}
 	
-	private boolean checkForTethering()
+	private boolean checkIfTethering()
 	{
 		long start = System.currentTimeMillis();
 		
@@ -504,11 +609,6 @@ public class CrChecker
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
 			}
-			else if (btdParser.getAverageconsumeOff() < 100 && bugrepParser.getConsAvgOff() < 100 && lowEbl
-			         && btdParser.getAverageconsumeOn() > 800 && bugrepParser.getConsAvgOn() > 800)
-			{
-				// TODO
-			}
 		}
 		else if (bugrepParsed)
 		{
@@ -528,7 +628,7 @@ public class CrChecker
 				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
 				
 				jira.assignIssue(cr.getJiraID());
-				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);// TODO add calling time
+				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				jira.addLabel(cr.getJiraID(), "sat_closed");
 				
 				cr.setResolution(CANCELLED);
@@ -572,7 +672,7 @@ public class CrChecker
 				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
 				
 				jira.assignIssue(cr.getJiraID());
-				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);// TODO add calling time
+				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				jira.addLabel(cr.getJiraID(), "sat_closed");
 				
 				cr.setResolution(CANCELLED);
@@ -589,6 +689,93 @@ public class CrChecker
 				
 				return true;
 			}
+		}
+		
+		return false;
+	}
+	
+	public boolean checkIfUptime()
+	{
+		uptimesComment = "";
+		if (btdParsed)
+		{
+			if (btdParser.uptime())
+			{
+				uptimesComment = "{panel:title=*All long uptimes detected*|titleBGColor=#E9F2FF}\\n";
+				int i = 1;
+				long total = 0;
+				
+				for (BtdUptimePeriod ut : btdParser.getUptimes())
+				{
+					uptimesComment += "- *Uptime " + i + "*\\n";
+					uptimesComment += ut.toJiraComment();
+					total = total + ut.getDuration();
+					i++;
+				}
+				uptimesComment += "\\n\\n||TOTAL TIME|| " + DateTimeOperator.getTimeStringFromMillis(total)
+				                  + "|";
+				
+				uptimesComment += "\\n{panel}\\n\\n";
+			}
+			
+			if (btdParser.uptimeScOff())
+			{
+				uptimesComment = "{panel:title=*Long uptimes while screen continuously OFF*|titleBGColor=#E9F2FF}\\n";
+				int i = 1;
+				long total = 0;
+				
+				for (BtdUptimePeriod ut : btdParser.getUptimesScOff())
+				{
+					uptimesComment += "- *Uptime " + i + "*\\n";
+					uptimesComment += ut.toJiraComment();
+					total = total + ut.getDuration();
+					i++;
+				}
+				uptimesComment += "||TOTAL TIME|| " + DateTimeOperator.getTimeStringFromMillis(total) + "|";
+				
+				uptimesComment += "\\n{panel}\\n\\n";
+			}
+			
+			if (uptimesComment.length() > 80)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean checkIfWakelocks()
+	{
+		wakelocksComment = "";
+		
+		if (btdParsed && btdParser.wakeLocks())
+		{
+			wakelocksComment = "{panel:title=*BTD wake locks detected*|titleBGColor=#E9F2FF}\\n";
+			int i = 1;
+			long total = 0;
+			
+			for (BtdWL ut : btdParser.getWakeLocks())
+			{
+				wakelocksComment += "- *Wakelock " + i + "*\\n";
+				wakelocksComment += ut.toJiraComment();
+				total = total + ut.getTotalTime();
+				i++;
+			}
+			wakelocksComment += "\\n\\n*TOTAL HELD TIME:* " + DateTimeOperator.getTimeStringFromMillis(total)
+			                    + "\\n";
+			
+			wakelocksComment += "\\n{panel}\\n\\n";
+		}
+		
+		if (bugrepParser.checkIfWakelocks())
+		{
+			wakelocksComment += "\\n\\n" + bugrepParser.getWakelocksComment();
+		}
+		
+		if (wakelocksComment.length() > 100)
+		{
+			return true;
 		}
 		
 		return false;

@@ -14,12 +14,14 @@ public class BtdUptimesList extends ArrayList<BtdUptimePeriod>
 {
 	// Complementary variables
 	private BtdUptimePeriod longerPeriod;
+	private long totalTime;
 	
 	// List methods override -----------------------------------
 	public BtdUptimesList()
 	{
 		super();
 		longerPeriod = new BtdUptimePeriod();
+		totalTime = 0;
 	}
 	
 	public boolean add(BtdUptimePeriod obj)
@@ -29,7 +31,6 @@ public class BtdUptimesList extends ArrayList<BtdUptimePeriod>
 		if (obj.getDuration() > longerPeriod.getDuration())
 		{
 			longerPeriod = obj;
-			
 		}
 		
 		return true;
@@ -90,11 +91,30 @@ public class BtdUptimesList extends ArrayList<BtdUptimePeriod>
 	// Getters and Setters -----------------------------------
 	public BtdUptimePeriod getLongerPeriod()
 	{
+		for (BtdUptimePeriod u : this)
+		{
+			if(u.getDuration() > longerPeriod.getDuration())
+			{
+				longerPeriod = u;
+			}
+		}
+		
 		return longerPeriod;
 	}
 	
 	public void setLongerPeriod(BtdUptimePeriod longerPeriod)
 	{
 		this.longerPeriod = longerPeriod;
+	}
+	
+	public long getTotalTime()
+	{
+		totalTime = 0;
+		for (BtdUptimePeriod u : this)
+		{
+			totalTime = totalTime + u.getDuration(); 
+		}
+		
+		return totalTime;
 	}
 }

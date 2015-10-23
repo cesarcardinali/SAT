@@ -64,4 +64,12 @@ public class BtdUptimePeriod
 		                  + DateTimeOperator.getTimeStringFromMillis(duration);
 		return tostring;
 	}
+	
+	public String toJiraComment()
+	{
+		String tostring = "||Started|" + BtdParser.formatDate(BtdParser.generateDate(start)) + "|\\n||Ended|"
+		                  + BtdParser.formatDate(BtdParser.generateDate(end)) + "|\\n||Duration|"
+		                  + DateTimeOperator.getTimeStringFromMillis(duration) + "|\\n";
+		return tostring;
+	}
 }

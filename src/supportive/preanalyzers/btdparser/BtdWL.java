@@ -37,12 +37,13 @@ public class BtdWL
 	
 	public boolean update(BtdWL wl)
 	{
-		if (wl.getActualWL().getActiveSince() >= actualWL.getActiveSince() && wl.getActualWL().getStop() - actualWL.getStop() < 60000)
+		if (wl.getActualWL().getActiveSince() >= actualWL.getActiveSince()
+		    && wl.getActualWL().getStop() - actualWL.getStop() < 60000)
 		{
 			actualWL.setActiveSince(wl.getActualWL().getActiveSince());
 			actualWL.setCount(actualWL.getCount() + wl.getActualWL().getCount() - actualWL.getInitialCount());
 			actualWL.setStop(wl.getActualWL().getStop());
-			//System.out.print("update > ");
+			// System.out.print("update > ");
 		}
 		else if (dataList.size() >= 1)
 		{
@@ -55,7 +56,7 @@ public class BtdWL
 				if (getLastData().getActiveSince() < actualWL.getActiveSince())
 					getLastData().setActiveSince(actualWL.getActiveSince());
 				
-				//System.out.println("\nConcatenated > ");
+				// System.out.println("\nConcatenated > ");
 			}
 			else if (actualWL.getDuration() >= 30 * 60000)
 			{
@@ -63,11 +64,11 @@ public class BtdWL
 				if (longerPeriod < actualWL.getDuration())
 				{
 					longerPeriod = actualWL.getDuration();
-					//System.out.println("LONGER");
+					// System.out.println("LONGER");
 				}
 				totalTime = totalTime + actualWL.getDuration();
 				
-				//System.out.println("\nAdded1 > ");
+				// System.out.println("\nAdded1 > ");
 			}
 			
 			actualWL = wl.getActualWL();
@@ -79,16 +80,16 @@ public class BtdWL
 			if (longerPeriod < actualWL.getDuration())
 			{
 				longerPeriod = actualWL.getDuration();
-				//System.out.println("LONGER");
+				// System.out.println("LONGER");
 			}
 			
 			actualWL = wl.getActualWL();
-			//System.out.println("\nAdded 2 > ");
+			// System.out.println("\nAdded 2 > ");
 		}
 		else
 		{
 			actualWL = wl.getActualWL();
-			//System.out.println("\nDiscarted > ");
+			// System.out.println("\nDiscarted > ");
 		}
 		
 		return false;
@@ -107,7 +108,7 @@ public class BtdWL
 				if (getLastData().getActiveSince() < actualWL.getActiveSince())
 					getLastData().setActiveSince(actualWL.getActiveSince());
 				
-				//System.out.println("\nConcatenated > ");
+				// System.out.println("\nConcatenated > ");
 			}
 			else if (actualWL.getDuration() >= 30 * 60000)
 			{
@@ -115,11 +116,11 @@ public class BtdWL
 				if (longerPeriod < actualWL.getDuration())
 				{
 					longerPeriod = actualWL.getDuration();
-					//System.out.println("LONGER");
+					// System.out.println("LONGER");
 				}
 				totalTime = totalTime + actualWL.getDuration();
 				
-				//System.out.println("\nAdded1 > ");
+				// System.out.println("\nAdded1 > ");
 			}
 		}
 		else if (actualWL.getDuration() >= 30 * 60000)
@@ -129,30 +130,58 @@ public class BtdWL
 			if (longerPeriod < actualWL.getDuration())
 			{
 				longerPeriod = actualWL.getDuration();
-				//System.out.println("LONGER");
+				// System.out.println("LONGER");
 			}
-			//System.out.println("\nAdded 2 > ");
+			// System.out.println("\nAdded 2 > ");
 		}
 	}
 	
 	public String toString()
 	{
-		String tostring = "\tName: " + name + "\n" + "\tLonger period: " + DateTimeOperator.getTimeStringFromMillis(longerPeriod) + "\n"
-		                  + "\tTotal active: " + DateTimeOperator.getTimeStringFromMillis(totalTime)  + "\n";
+		String tostring = "-Name: " + name + "\n" + "\tLonger period: "
+		                  + DateTimeOperator.getTimeStringFromMillis(longerPeriod) + "\n"
+		                  + "\tTotal active: " + DateTimeOperator.getTimeStringFromMillis(totalTime) + "\n";
+		tostring = tostring + "\tLonger Active Since: "
+		           + DateTimeOperator.getTimeStringFromMillis(getLongerActiveSince()) + " ("
+		           + getLongerActiveSince() + ")\n\n";
+		
 		int i = 0;
 		for (WLdata d : dataList)
 		{
 			i++;
-			tostring = tostring + "\t\tPeriodo" + i + ":\n" + "\t\tStart at " + BtdParser.formatDate(BtdParser.generateDate(d.getStart())) + " (" + d.getStart() + ")\n"
-							+ "\t\tStop at " + BtdParser.formatDate(BtdParser.generateDate(d.getStop())) + " (" + d.getStop() + ")\n\n";
+			tostring = tostring + "\t\tPeriod " + i + ":\n" + "\t\tStart at "
+			           + BtdParser.formatDate(BtdParser.generateDate(d.getStart())) + " (" + d.getStart()
+			           + ")\n" + "\t\tStop at " + BtdParser.formatDate(BtdParser.generateDate(d.getStop()))
+			           + " (" + d.getStop() + ")\n\n";
 		}
-		
-		tostring = tostring + "\t\tActive Since: " + DateTimeOperator.getTimeStringFromMillis(getLongerActiveSince()) + " (" + getLongerActiveSince() + ")\n\n";
 		
 		return tostring;
 	}
 	
-	private class WLdata
+	public String toJiraComment()
+	{
+		String tostring = "*Name:* " + name + "\\n" + "*Longer period:* "
+		                  + DateTimeOperator.getTimeStringFromMillis(longerPeriod) + "\\n"
+		                  + "*Total active:* " + DateTimeOperator.getTimeStringFromMillis(totalTime) + "\\n";
+		tostring += "*Periods:*\\n{quote}\\n";
+		
+		int i = 0;
+		for (WLdata d : dataList)
+		{
+			i++;
+			tostring = tostring + "*Period " + i + ":*\\n" + "*Start:* "
+			           + BtdParser.formatDate(BtdParser.generateDate(d.getStart())) + " (" + d.getStart()
+			           + ")\\n" + "*Stop:* " + BtdParser.formatDate(BtdParser.generateDate(d.getStop()))
+			           + " (" + d.getStop() + ")\\n" + "*Duration:* "
+			           + DateTimeOperator.getTimeStringFromMillis(d.getDuration()) + " ("
+			           + d.getDuration() + ")\\n";
+		}
+		tostring += "{quote}\\n----\\n\\n";
+		
+		return tostring;
+	}
+	
+	public class WLdata
 	{
 		private long initialCount;
 		private long start;
@@ -263,12 +292,12 @@ public class BtdWL
 	{
 		return actualWL;
 	}
-
+	
 	public void setActualWL(WLdata actualWL)
 	{
 		this.actualWL = actualWL;
 	}
-
+	
 	// Others
 	private WLdata getLastData()
 	{
@@ -285,6 +314,6 @@ public class BtdWL
 				longer = wl.getActiveSince();
 			}
 		}
-		return longer; 
+		return longer;
 	}
 }

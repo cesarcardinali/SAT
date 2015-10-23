@@ -23,41 +23,41 @@ import core.Logger;
 @SuppressWarnings("resource")
 public class BtdParser
 {
-	private Connection       c;
-	private static Statement stmt;
-	private static ResultSet rs;
-	private String           path;
-	private int              status;
-	private BtdRow           btdRow;
-	private BtdRowsList      btdRows;
-	private BtdState         finalState;
-	private BtdStatesData    statesData;
-	private BtdWLList        kernelWLs;
-	private BtdUptimesList   uptimes;
-	private BtdUptimesList   uptimesScOff;
-	private long[]           screenData;        // 0- dark, 1- dim, 2- medium, 3- light, 4- bright
-	private long[]           signalData;        // 0- none, 1- poor, 2- moderate, 3- good, 4- great
-	private float[]          cpuTempData;       // 0- min, 1- max, 2- avg
-	private float[]          deviceTempData;    // 0- min, 1- max, 2- avg
-	private int              batCap;            // Battery capacity
-	private int              bttDischarged[];   // Battery discharge from, to.
-	private long             cellTX;            // Total cell data sent
-	private long             cellRX;            // Total cell data received
-	private long             wifiTX;            // Total wifi data sent
-	private long             wifiRX;            // Total wifi data received
-	private long             gpsLocation;       // Total GPS location count
-	private long             networkLocation;   // Total GPS location count
-	private long             consumeOn  = 0;
-	private long             consumeOff = 0;
-	private long             timeOff    = 0;
-	private long             timeOn     = 0;
-	private long             wifiOnTime;
-	private long             wifiRunningTime;
-	private long             realTimeOnBatt;
-	private long             awakeTimeOnBatt;
-	private long             phoneCall;
-	private long             tetheringTime;
-	private boolean          highUptime = false;
+	private static Connection c;
+	private static Statement  stmt;
+	private static ResultSet  rs;
+	private String            path;
+	private int               status;
+	private BtdRow            btdRow;
+	private BtdRowsList       btdRows;
+	private BtdState          finalState;
+	private BtdStatesData     statesData;
+	private BtdWLList         kernelWLs;
+	private BtdUptimesList    uptimes;
+	private BtdUptimesList    uptimesScOff;
+	private long[]            screenData;        // 0- dark, 1- dim, 2- medium, 3- light, 4- bright
+	private long[]            signalData;        // 0- none, 1- poor, 2- moderate, 3- good, 4- great
+	private float[]           cpuTempData;       // 0- min, 1- max, 2- avg
+	private float[]           deviceTempData;    // 0- min, 1- max, 2- avg
+	private int               batCap;            // Battery capacity
+	private int               bttDischarged[];   // Battery discharge from, to.
+	private long              cellTX;            // Total cell data sent
+	private long              cellRX;            // Total cell data received
+	private long              wifiTX;            // Total wifi data sent
+	private long              wifiRX;            // Total wifi data received
+	private long              gpsLocation;       // Total GPS location count
+	private long              networkLocation;   // Total GPS location count
+	private long              consumeOn  = 0;
+	private long              consumeOff = 0;
+	private long              timeOff    = 0;
+	private long              timeOn     = 0;
+	private long              wifiOnTime;
+	private long              wifiRunningTime;
+	private long              realTimeOnBatt;
+	private long              awakeTimeOnBatt;
+	private long              phoneCall;
+	private long              tetheringTime;
+	private boolean           highUptime = false;
 	
 	// Configure parser
 	public BtdParser(String path)
@@ -178,16 +178,16 @@ public class BtdParser
 	public String eblDecreasers()
 	{
 		String reasons = "";
-
+		
 		// Call time
-		if (getPercentage(phoneCall, realTimeOnBatt) > 5 && phoneCall/60000 > 10)
+		if (getPercentage(phoneCall, realTimeOnBatt) > 5 && phoneCall / 60000 > 10)
 		{
 			reasons = reasons + "Phone calls for " + DateTimeOperator.getTimeStringFromMillis(phoneCall)
 			          + " (" + formatNumber(getPercentage(phoneCall, realTimeOnBatt)) + "%)\\n";
 		}
 		
 		// Tethering time
-		if (getPercentage(tetheringTime, realTimeOnBatt) > 2 && tetheringTime/60000 > 10)
+		if (getPercentage(tetheringTime, realTimeOnBatt) > 2 && tetheringTime / 60000 > 10)
 		{
 			reasons = reasons + "Some possible tethering for "
 			          + DateTimeOperator.getTimeStringFromMillis(tetheringTime) + " ("
@@ -201,25 +201,25 @@ public class BtdParser
 		}
 		
 		// GPS service
-		if(gpsLocation/(realTimeOnBatt/3600000) > 400)
+		if (gpsLocation / (realTimeOnBatt / 3600000) > 400)
 		{
 			reasons = reasons + "Heavy GPS activity: " + gpsLocation + "\\n";
 		}
-		else if(gpsLocation/(realTimeOnBatt/3600000) > 150)
+		else if (gpsLocation / (realTimeOnBatt / 3600000) > 150)
 		{
 			reasons = reasons + "Reasonable GPS activity: " + gpsLocation + "\\n";
 		}
 		
 		// Network location service
-		if(networkLocation/(realTimeOnBatt/3600000) > 35)
+		if (networkLocation / (realTimeOnBatt / 3600000) > 35)
 		{
 			reasons = reasons + "Heavy network location activity: " + networkLocation + "\\n";
 		}
-		else if(networkLocation/(realTimeOnBatt/3600000) > 20)
+		else if (networkLocation / (realTimeOnBatt / 3600000) > 20)
 		{
 			reasons = reasons + "Reasonable network location activity: " + networkLocation + "\\n";
 		}
-		else if(networkLocation/(realTimeOnBatt/3600000) > 12)
+		else if (networkLocation / (realTimeOnBatt / 3600000) > 12)
 		{
 			reasons = reasons + "Considerable network location activity: " + networkLocation + "\\n";
 		}
@@ -230,9 +230,16 @@ public class BtdParser
 	// Uptime detected
 	public boolean uptime()
 	{
-		Logger.log(Logger.TAG_BTD_PARSER, "Uptime: " + formatNumber(getPercentage(uptimes.getLongerPeriod().getDuration(), realTimeOnBatt)) + "%");
-		if (uptimes.getLongerPeriod().getDuration() / 60000 > 30
-		    && getPercentage(uptimes.getLongerPeriod().getDuration(), realTimeOnBatt) > 5)
+		Logger.log(Logger.TAG_BTD_PARSER,
+		           "Longer Uptime: "
+		                           + formatNumber(getPercentage(uptimes.getLongerPeriod().getDuration(),
+		                                                        realTimeOnBatt)) + "%");
+		Logger.log(Logger.TAG_BTD_PARSER,
+		           "Total Uptime: "
+		                           + formatNumber(getPercentage(uptimes.getTotalTime(),
+		                                                        realTimeOnBatt)) + "%");
+		if (uptimes.getLongerPeriod().getDuration() / 60000 > 45 //TODO Update to 45 from 30
+		    && getPercentage(uptimes.getLongerPeriod().getDuration(), realTimeOnBatt) > 7)
 		{
 			return true;
 		}
@@ -243,9 +250,16 @@ public class BtdParser
 	// Uptime while screen off detected
 	public boolean uptimeScOff()
 	{
-		Logger.log(Logger.TAG_BTD_PARSER, "ScOff Uptime: " + formatNumber(getPercentage(uptimesScOff.getLongerPeriod().getDuration(), realTimeOnBatt)) + "%");
-		if (uptimesScOff.getLongerPeriod().getDuration() / 60000 > 20
-		    && getPercentage(uptimesScOff.getLongerPeriod().getDuration(), realTimeOnBatt) > 5)
+		Logger.log(Logger.TAG_BTD_PARSER,
+		           "ScOff Longer Uptime: "
+		                           + formatNumber(getPercentage(uptimesScOff.getLongerPeriod().getDuration(),
+		                                                        realTimeOnBatt)) + "%");
+		Logger.log(Logger.TAG_BTD_PARSER,
+		           "ScOff Total Uptime: "
+		                           + formatNumber(getPercentage(uptimesScOff.getTotalTime(),
+		                                                        realTimeOnBatt)) + "%");
+		if (uptimesScOff.getLongerPeriod().getDuration() / 60000 > 30 // TODO Updated to 30 from 15
+		    && getPercentage(uptimesScOff.getLongerPeriod().getDuration(), realTimeOnBatt) > 6)
 		{
 			return true;
 		}
@@ -255,19 +269,19 @@ public class BtdParser
 	
 	public boolean wakeLocks()
 	{
-		/*for (BtdWL item : kernelWLs)
+		/*
+		 * for (BtdWL item : kernelWLs) { if (item.getName().contains("PowerManagerService.Display")) continue;
+		 * 
+		 * if (getPercentage(item.getLongerPeriod(), realTimeOnBatt) > 5 && item.getLongerPeriod() >= 30 * 60000) return true; else return
+		 * false; }
+		 */
+		// TODO Updated to 45 from 30
+		if (kernelWLs.getLongerWL() != null && getPercentage(kernelWLs.getLongerWL().getLongerPeriod(), realTimeOnBatt) > 7
+		    && kernelWLs.getLongerWL().getLongerPeriod() >= 45 * 60000 && !kernelWLs.getLongerWL().getName().contains("PowerManagerService.Display"))
 		{
-			if (item.getName().contains("PowerManagerService.Display"))
-				continue;
-			
-			if (getPercentage(item.getLongerPeriod(), realTimeOnBatt) > 5 && item.getLongerPeriod() >= 30 * 60000)
-				return true;
-			else
-				return false;
-		}*/
-		if (getPercentage(kernelWLs.getLongerWL().getLongerPeriod(), realTimeOnBatt) > 5 && kernelWLs.getLongerWL().getLongerPeriod() >= 30 * 60000)
-		{
-			System.out.println(kernelWLs.getLongerWL());
+			Logger.log(Logger.TAG_BTD_PARSER, "Wakelocks detected: " + kernelWLs.size());
+			Logger.log(Logger.TAG_BTD_PARSER, kernelWLs.getLongerWL().toString());
+			// System.out.println(kernelWLs.getLongerWL());
 			return true;
 		}
 		
@@ -276,9 +290,11 @@ public class BtdParser
 	
 	public boolean tethering()
 	{
-		System.out.println("Checking for tethering resolution:\nTotal on battery time: " + DateTimeOperator.getTimeStringFromMillis(realTimeOnBatt)
-		                   + "\nTotal tethering time: " + DateTimeOperator.getTimeStringFromMillis(tetheringTime) + "\nProportion: "
-		                   + formatNumber((float)(100.0 * tetheringTime / realTimeOnBatt)) + "%");
+		System.out.println("Checking for tethering resolution:\nTotal on battery time: "
+		                   + DateTimeOperator.getTimeStringFromMillis(realTimeOnBatt)
+		                   + "\nTotal tethering time: "
+		                   + DateTimeOperator.getTimeStringFromMillis(tetheringTime) + "\nProportion: "
+		                   + formatNumber((float) (100.0 * tetheringTime / realTimeOnBatt)) + "%");
 		if (tetheringTime >= realTimeOnBatt * 0.10)
 			return true;
 		else
@@ -607,6 +623,7 @@ public class BtdParser
 	public BtdRowsList getDischargeBtdData(BtdState finalState, long timezone)
 	{
 		btdRows = new BtdRowsList();
+		kernelWLs = new BtdWLList();
 		uptimes = new BtdUptimesList();
 		uptimesScOff = new BtdUptimesList();
 		
@@ -631,7 +648,7 @@ public class BtdParser
 					// System.out.println("1");
 					actualUptime.setStart(btdRow.getTimestamp());
 				}
-				else if (btdRow.getTimestamp() - actualUptime.getEnd() < 20000 || actualUptime.getEnd() == -1)
+				else if (btdRow.getTimestamp() - actualUptime.getEnd() < 20000 || actualUptime.getEnd() == -1) // TODO Verificar audio?
 				{
 					// System.out.println("2");
 					actualUptime.setEnd(btdRow.getTimestamp());
@@ -676,44 +693,49 @@ public class BtdParser
 				}
 				
 				// Uptimes Sc Off
-				if (btdRow.getScreenOn() == 1 && !btdRow.getTopProcesses().contains("mediaserver")  && !btdRow.getTopProcesses().contains("spotify"))
+				if (btdRow.getScreenOn() == 1 && !btdRow.getTopProcesses().contains("mediaserver")
+				    && !btdRow.getTopProcesses().contains("spotify"))
 				{
-//					System.out.println("> ScOff: " + btdRow.getTimestamp() + " - " + uptimeOff.getEnd());
-					//System.out.print(">Sc Off ");
+					// System.out.println("> ScOff: " + btdRow.getTimestamp() + " - " + uptimeOff.getEnd());
+					// System.out.print(">Sc Off ");
 					if (uptimeOff.getStart() == -1)
 					{
-						//System.out.println("1");
+						// System.out.println("1");
 						uptimeOff.setStart(btdRow.getTimestamp());
 						uptimeOff.setEnd(btdRow.getTimestamp());
-						//System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()), "America/Chicago"));
+						// System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()),
+						// "America/Chicago"));
 					}
 					else if (btdRow.getTimestamp() - uptimeOff.getEnd() < 20000)
 					{
-						////System.out.println("2");
+						// //System.out.println("2");
 						uptimeOff.setEnd(btdRow.getTimestamp());
 					}
 					else if (uptimeOff.getDuration() < 300000)
 					{
-						//System.out.println("3");
+						// System.out.println("3");
 						uptimeOff = new BtdUptimePeriod();
-					} else if (uptimeOff.getDuration() >= 300000)
+					}
+					else if (uptimeOff.getDuration() >= 300000)
 					{
-						//System.out.println("99");
+						// System.out.println("99");
 						uptimesScOff.add(uptimeOff);
 						uptimeOff = new BtdUptimePeriod();
 					}
 				}
 				else
 				{
-					//System.out.println("> ScOn");
+					// System.out.println("> ScOn");
 					if (uptimeOff.getDuration() >= 300000)
 					{
-						//System.out.println("Duration long enought");
+//						System.out.println("Duration long enought");
 						if (uptimesScOff.size() <= 0)
 						{
-							//System.out.println("4");
-							//System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()), "America/Chicago"));
-							//System.out.println("End: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getEnd()), "America/Chicago"));
+//							System.out.println("4");
+							// System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()),
+							// "America/Chicago"));
+							// System.out.println("End: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getEnd()),
+							// "America/Chicago"));
 							uptimesScOff.add(uptimeOff);
 							uptimeOff = new BtdUptimePeriod();
 						}
@@ -721,15 +743,17 @@ public class BtdParser
 						{
 							if (uptimeOff.getStart() - uptimesScOff.get(uptimesScOff.size() - 1).getEnd() < 49600)
 							{
-								//System.out.println("5");
-								//System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()), "America/Chicago"));
-								//System.out.println("End: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getEnd()), "America/Chicago"));
+//								System.out.println("5");
+								// System.out.println("Start: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getStart()),
+								// "America/Chicago"));
+								// System.out.println("End: " + BtdParser.formatDate(BtdParser.generateDate(uptimeOff.getEnd()),
+								// "America/Chicago"));
 								uptimesScOff.get(uptimesScOff.size() - 1).setEnd(uptimeOff.getEnd());
 								uptimeOff = new BtdUptimePeriod();
 							}
 							else
 							{
-								//System.out.println("6");
+//								System.out.println("6");
 								uptimesScOff.add(uptimeOff);
 								uptimeOff = new BtdUptimePeriod();
 							}
@@ -737,16 +761,18 @@ public class BtdParser
 					}
 					else
 					{
-						//System.out.println("Duration not long enought");
-						if (uptimesScOff.size() > 0 && uptimeOff.getDuration() > 30000
+						// System.out.println("Duration not long enought");
+						if (uptimesScOff.size() > 0
+						    && uptimeOff.getDuration() > 30000
 						    && (uptimeOff.getStart() - uptimesScOff.get(uptimesScOff.size() - 1).getEnd()) < 49600)
 						{
-							//System.out.println("But enought to concate");
+//							System.out.println("But enought to concate");
 							uptimesScOff.get(uptimesScOff.size() - 1).setEnd(uptimeOff.getEnd());
 						}
-						//System.out.println("8");
+//						System.out.println("8 "
+//						                   + BtdParser.formatDate(BtdParser.generateDate(btdRow.getTimestamp())) + " - " + DateTimeOperator.getTimeStringFromMillis(uptimeOff.getDuration()));
 						uptimeOff = new BtdUptimePeriod();
-					}	
+					}
 				}
 				
 				// Look for stuck wake locks --------------------------------
@@ -772,28 +798,22 @@ public class BtdParser
 				btdRows.add(btdRow);
 			}
 			
-			kernelWLs.finalize();
-			
-			if(actualUptime.getDuration() > 300000)
+			if (actualUptime.getDuration() > 300000)
 				uptimes.add(actualUptime);
 			
-			if(uptimeOff.getDuration() > 300000)
+			if (uptimeOff.getDuration() > 300000)
 				uptimesScOff.add(uptimeOff);
 			
+			kernelWLs.finalize();
 			kernelWLs.sortItens();
-			System.out.println("------------" + kernelWLs.size());
-			for (BtdWL wl : kernelWLs)
-			{
-				System.out.println(wl);
-				
-				/*if (wl.getLongerPeriod() <= 30 * 60000)
-				{
-					kernelWLs.remove(wl);
-				}*/
-			}
-			System.out.println("------------" + kernelWLs.size());
+			
+//			for (BtdWL wl : kernelWLs)
+//			{
+//				System.out.println(wl);
+//			}
+			
 			uptimes.sortByStart();
-			uptimesScOff.sortByDuration();
+			uptimesScOff.sortByStart();
 			
 			// rs.close();
 			// stmt.close();
@@ -1095,7 +1115,9 @@ public class BtdParser
 		{
 			String timezone;
 			
-			rs = stmt.executeQuery("SELECT VALUE FROM t_phoneinfo WHERE NAME LIKE 'TZ_ID';");
+			Statement localStmt;
+			localStmt = c.createStatement();
+			ResultSet rs = localStmt.executeQuery("SELECT VALUE FROM t_phoneinfo WHERE NAME LIKE 'TZ_ID';");
 			timezone = rs.getString(1);
 			
 			return timezone;
@@ -1485,15 +1507,16 @@ public class BtdParser
 		                   + DateTimeOperator.getTimeStringFromMillis(total));
 		System.out.println("Longer uptime: \n" + uptimesScOff.getLongerPeriod());
 		
-//		highUptimeScOff = uptime();
-//		
-//		if (highUptime)
-//			System.out.println("This log has periods where AP is ON for more than 20 minutes");
+		// highUptimeScOff = uptime();
+		//
+		// if (highUptime)
+		// System.out.println("This log has periods where AP is ON for more than 20 minutes");
 		
 		System.out.println("Longer uptime percentage: "
 		                   + formatNumber((float) (100.0 * uptimesScOff.getLongerPeriod().getDuration() / realTimeOnBatt))
 		                   + "% of total discharge period");
 	}
+	
 	// }}
 	
 	// Basic Getters and Setters -------------------------------------------------------------------------------
@@ -1780,6 +1803,21 @@ public class BtdParser
 		DecimalFormat df = new DecimalFormat("##.##");
 		df.setRoundingMode(RoundingMode.DOWN);
 		return df.format(100.0 * tetheringTime / realTimeOnBatt);
+	}
+	
+	public BtdWLList getWakeLocks()
+	{
+		return kernelWLs;
+	}
+	
+	public BtdUptimesList getUptimes()
+	{
+		return uptimes;
+	}
+	
+	public BtdUptimesList getUptimesScOff()
+	{
+		return uptimesScOff;
 	}
 	// }}
 }

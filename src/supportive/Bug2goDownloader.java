@@ -455,7 +455,7 @@ public class Bug2goDownloader implements Runnable
 			list.clear();
 			for (CrItem cr : SharedObjs.getCrsList())
 			{
-				if (cr.getStatus().equals("Closed"))
+				if (cr.getStatus().equals("Closed") && !cr.getResolution().equals(""))
 				{
 					list.addItemList1(cr.getJiraID());
 					list.addItemList2(cr.getResolution());
