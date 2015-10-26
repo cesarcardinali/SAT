@@ -585,7 +585,7 @@ public class BugrepParser
 			wakelocksComment += "{panel}";
 		}
 		
-		if (javaWLs.size() > 0 && kernelWLs.get(0).getName().contains("Wakelocks") /* && javaWLs.get(0).getDuration() > getTimeOnBat() * 0.15*/)
+		if (javaWLs.size() > 0 && wakelocksComment.contains("WakeLocks") /* && javaWLs.get(0).getDuration() > getTimeOnBat() * 0.15*/)
 		{
 			wakelocksComment += "{panel:title=*Bugreport Java wake locks:*|titleBGColor=#E9F2FF}\\n";
 			if (kernelWLs.get(0).getName().contains("Service.WakeLocks"))

@@ -689,10 +689,16 @@ public class CrsManagerPane extends JPanel
 													"/c",
 													"cd \"" + folder + "\" && build_report.pl " + bugreport
 														  + " > report-output.txt");
+		Logger.log(Logger.TAG_CRSMANAGER, "Bugreport file: " + bugreport);
+		for (String c : builder.command())
+		{
+			Logger.log(Logger.TAG_CRSMANAGER, "Commands: " + c);
+		}
 		builder.redirectErrorStream(true);
 		Process p = builder.start();
 		BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String line;
+		String line = "";
+		String output = ""; // workaround for report outout 0kb
 		
 		while (true)
 		{
@@ -701,7 +707,15 @@ public class CrsManagerPane extends JPanel
 			{
 				break;
 			}
-			// Logger.log(Logger.TAG_CRSMANAGER, line);
+			output += line + "\n";
+			Logger.log(Logger.TAG_CRSMANAGER, line);
+		}
+		
+		if (new File(folder + "/report-output.txt").length() < 10)
+		{
+			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(folder + "/report-output.txt")));
+			bw.write(output);
+			bw.close();
 		}
 		
 		addLogLine("Bugreport generated for " + f.getName());
