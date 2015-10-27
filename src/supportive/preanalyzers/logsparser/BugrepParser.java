@@ -567,9 +567,9 @@ public class BugrepParser
 		wakelocksComment = "";
 		float threashold;
 		
-		if (btdDetected) // Changed to 0.2-0.4 from 0.1-0.3
+		if (btdDetected) // Changed to 0.4 from 0.3
 		{
-			threashold = (float) 0.2;
+			threashold = (float) 0.1;
 		}
 		else
 		{

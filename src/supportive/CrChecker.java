@@ -612,7 +612,7 @@ public class CrChecker
 		}
 		else if (bugrepParsed)
 		{
-			if (bugrepParser.getConsAvgOff() <= 110 && upTime == false)
+			if (bugrepParser.getConsAvgOff() <= 115 && bugrepParser.eblDecreasedReasons().length() > 10)
 			{
 				String comment = bugrepParser.currentDrainStatistics();
 				String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
@@ -648,7 +648,7 @@ public class CrChecker
 		}
 		else if (btdParsed)
 		{
-			if (btdParser.getAverageconsumeOff() <= 110 && upTime == false)
+			if (btdParser.getAverageconsumeOff() <= 115 && btdParser.eblDecreasers().length() > 10)
 			{
 				String comment = "Bugreport could not be parsed or does not have device statistics\\n\\n"
 				                 + "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
