@@ -955,7 +955,7 @@ public class FiltersResultsTree extends JTree
 					Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Showing all results.");
 					break;
 				case 1: // Leaf filter selected
-					if (selectedNode.toString().contains("Alarms"))
+					if (selectedNode.toString().contains("Alarms") && !selectedNode.toString().contains(" - Running"))
 					{
 						if (selectedNode.getChildCount() == 0)
 						{
@@ -973,7 +973,7 @@ public class FiltersResultsTree extends JTree
 							SharedObjs.parserPane.setResultsPaneTxt(Alarm.getResult());
 						}
 					}
-					else if (selectedNode.toString().contains("Bug2Go"))
+					else if (selectedNode.toString().contains("Bug2Go") && !selectedNode.toString().contains(" - Running"))
 					{
 						if (selectedNode.getChildCount() == 0)
 						{
@@ -991,7 +991,7 @@ public class FiltersResultsTree extends JTree
 							SharedObjs.parserPane.setResultsPaneTxt(B2G.getResult());
 						}
 					}
-					else if (selectedNode.toString().contains("Diag"))
+					else if (selectedNode.toString().contains("Diag") && !selectedNode.toString().contains(" - Running"))
 					{
 						if (selectedNode.getChildCount() == 0)
 						{
@@ -1009,7 +1009,7 @@ public class FiltersResultsTree extends JTree
 							SharedObjs.parserPane.setResultsPaneTxt(Diag.getResult());
 						}
 					}
-					else if (selectedNode.toString().contains("WakeLocks"))
+					else if (selectedNode.toString().contains("WakeLocks") && !selectedNode.toString().contains(" - Running"))
 					{
 						if (selectedNode.getChildCount() == 0)
 						{
@@ -1029,7 +1029,7 @@ public class FiltersResultsTree extends JTree
 					}
 					else if (selectedNode.toString().contains("High Consumption"))
 					{
-						if (selectedNode.getChildCount() == 0)
+						if (selectedNode.getChildCount() == 0 && !selectedNode.toString().contains(" - Running"))
 						{
 							new Thread(new Runnable()
 							{
@@ -1045,7 +1045,7 @@ public class FiltersResultsTree extends JTree
 							SharedObjs.parserPane.setResultsPaneTxt(Consume.getResult());
 						}
 					}
-					else if (selectedNode.toString().contains("Summary"))
+					else if (selectedNode.toString().contains("Summary") && !selectedNode.toString().contains(" - Running"))
 					{
 						if (selectedNode.getChildCount() == 0)
 						{
@@ -1063,7 +1063,7 @@ public class FiltersResultsTree extends JTree
 							SharedObjs.parserPane.setResultsPaneTxt(Normal.getResult());
 						}
 					}
-					else if (selectedNode.toString().contains("Suspicious"))
+					else if (selectedNode.toString().contains("Suspicious") && !selectedNode.toString().contains(" - Running"))
 					{
 						if (selectedNode.getChildCount() == 0)
 						{
@@ -1081,7 +1081,7 @@ public class FiltersResultsTree extends JTree
 							SharedObjs.parserPane.setResultsPaneTxt(Suspicious.getResult());
 						}
 					}
-					else if (selectedNode.toString().contains("Tethering"))
+					else if (selectedNode.toString().contains("Tethering") && !selectedNode.toString().contains(" - Running"))
 					{
 						if (selectedNode.getChildCount() == 0)
 						{
@@ -1106,7 +1106,7 @@ public class FiltersResultsTree extends JTree
 																   .replace(" - Error", ""));
 						if (index >= 0)
 						{
-							if (selectedNode.getChildCount() == 0)
+							if (selectedNode.getChildCount() == 0 && !selectedNode.toString().contains(" - Running"))
 							{
 								new Thread(new Runnable()
 								{

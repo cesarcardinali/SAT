@@ -6,9 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -18,9 +16,9 @@ import com.google.common.base.Throwables;
 
 import core.Logger;
 import core.SharedObjs;
-
 import objects.AlarmItem;
 import objects.Alarms_List;
+import supportive.DateTimeOperator;
 
 
 /**
@@ -28,10 +26,10 @@ import objects.Alarms_List;
  */
 public class Alarm
 {
-	private static Alarms_List	  alarmList;
-	private static String		  result;
+	private static Alarms_List    alarmList;
+	private static String         result;
 	private static BufferedReader reader;
-	private static boolean		  enabled = true;
+	private static boolean        enabled = true;
 	
 	public static String makelog(String path)
 	{
@@ -39,13 +37,12 @@ public class Alarm
 		reader = null; // File reader
 		alarmList = new Alarms_List(); // List of Apps with high consume
 		
+		long now = System.currentTimeMillis();
 		String sCurrentLine; // Read line to be parsed
 		String file = ""; // File name to be parsed
 		String panel = "{panel}\n"; // Panel tag
-		String regexAlarmLine = "([0-9]{2}-[0-9]{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]).*send.*\\*(.+)\\*:([a-z\\W_/$]+)([A-Z]+.+)\\}.*"
-								+ "|([0-9]{2}-[0-9]{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]).*send.*\\*(.+)\\*:(.+)(\\}.*)"; // Regex
-																														 // configuration
-								
+		String regexAlarmLine = "([0-9]{2}-[0-9]{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]).*send.*\\*(.+)\\*:([a-z\\W_/$]*)([A-Z]+.+)\\}.*";
+		
 		Pattern patternAlarmLine = Pattern.compile(regexAlarmLine); // Pattern configuration
 		Matcher matcherAlarmLine = null; // Matcher
 		
@@ -62,8 +59,9 @@ public class Alarm
 		// Search for file to be parsed
 		for (int i = 0; i < listOfFiles.length; i++)
 		{
-			if (listOfFiles[i].isFile() && (listOfFiles[i].getName().toLowerCase().endsWith(".txt")
-											&& listOfFiles[i].getName().contains("system")))
+			if (listOfFiles[i].isFile()
+			    && (listOfFiles[i].getName().toLowerCase().endsWith(".txt") && listOfFiles[i].getName()
+			                                                                                 .contains("system")))
 			{
 				file = listOfFiles[i].getName();
 				
@@ -98,7 +96,7 @@ public class Alarm
 				matcherAlarmLine = patternAlarmLine.matcher(sCurrentLine); // Try to match regex
 				if (!sCurrentLine.contains("TIME_TICK") && matcherAlarmLine.matches())
 				{
-					AlarmItem alarm;
+					AlarmItem alarm = null;
 					
 					if (matcherAlarmLine.group(3) != null)
 					{
@@ -110,60 +108,48 @@ public class Alarm
 						catch (Exception e)
 						{
 							Logger.log(Logger.TAG_ALARM,
-									   "********Error: " + Throwables.getStackTraceAsString(e));
+							           "********Error: " + Throwables.getStackTraceAsString(e));
 						}
 						
 						// Create a Alarm item
-						alarm = new AlarmItem(parsedDate,
-											  matcherAlarmLine.group(2),
-											  matcherAlarmLine.group(3).substring(0,
-																				  matcherAlarmLine.group(3)
-																								  .length()
-																					 - 1),
-											  matcherAlarmLine.group(4),
-											  matcherAlarmLine.group(0));
-					}
-					else
-					{
-						try
+						if (matcherAlarmLine.group(3).length() > 0)
 						{
-							dateFormat = new SimpleDateFormat("MM-dd hh:mm:ss"); // Format
-							// date
-							parsedDate = dateFormat.parse(matcherAlarmLine.group(5));
+							alarm = new AlarmItem(parsedDate,
+							                      matcherAlarmLine.group(2),
+							                      matcherAlarmLine.group(3)
+							                                      .substring(0,
+							                                                 matcherAlarmLine.group(3)
+							                                                                 .length() - 1),
+							                      matcherAlarmLine.group(4),
+							                      matcherAlarmLine.group(0));
 						}
-						catch (Exception e)
+						else
 						{
-							Logger.log(Logger.TAG_ALARM,
-									   "********Error: " + Throwables.getStackTraceAsString(e));
+							alarm = new AlarmItem(parsedDate,
+							                      matcherAlarmLine.group(2),
+							                      "Unknown",
+							                      matcherAlarmLine.group(4),
+							                      matcherAlarmLine.group(0));
+						}
+					}
+					
+					if (alarm != null)
+					{
+						int index = alarmList.alarmIndexOf(alarm); // Try to find the Alarm in the Alarm List
+						
+						if (index == -1) // If not found create a new entrance
+						{
+							alarmList.add(alarm);
+						}
+						else
+						// If found update the entrance
+						{
+							alarmList.get(index).alarmUpdate(parsedDate, sCurrentLine);
 						}
 						
-						// Create new Alarm item
-						if (Character.isUpperCase(matcherAlarmLine.group(7).charAt(0)))
-							alarm = new AlarmItem(parsedDate,
-												  matcherAlarmLine.group(6),
-												  "Unknown",
-												  matcherAlarmLine.group(7),
-												  matcherAlarmLine.group(0));
-						else
-							alarm = new AlarmItem(parsedDate,
-												  matcherAlarmLine.group(6),
-												  matcherAlarmLine.group(7),
-												  "Unknown",
-												  matcherAlarmLine.group(0));
+						averageOccurrences++; // Increase occurrences count
 					}
 					
-					int index = alarmList.alarmIndexOf(alarm); // Try to find the Alarm in the Alarm List
-					
-					if (index == -1) // If not found create a new entrance
-					{
-						alarmList.add(alarm);
-					}
-					else // If found update the entrance
-					{
-						alarmList.get(index).alarmUpdate(parsedDate, sCurrentLine);
-					}
-					
-					averageOccurrences++; // Increase occurrences count
 				}
 			}
 			reader.close();
@@ -200,6 +186,8 @@ public class Alarm
 			{
 				result = result + panel + alarmList.get(i).toString() + panel;
 			}
+			
+			result += "\n" + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - now));
 		}
 		else
 		{
