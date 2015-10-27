@@ -567,13 +567,13 @@ public class BugrepParser
 		wakelocksComment = "";
 		float threashold;
 		
-		if (btdDetected)
+		if (btdDetected) // Changed to 0.2-0.4 from 0.1-0.3
 		{
-			threashold = (float) 0.1;
+			threashold = (float) 0.2;
 		}
 		else
 		{
-			threashold = (float) 0.3;
+			threashold = (float) 0.4;
 		}
 		
 		if (kernelWLs.size() > 0 && kernelWLs.get(0).getDuration() > getTimeOnBat() * threashold) // Update from 20% to 10%
