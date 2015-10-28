@@ -585,7 +585,7 @@ public class BugrepParser
 			wakelocksComment += "{panel}";
 		}
 		
-		if (javaWLs.size() > 0 && wakelocksComment.contains("WakeLocks") /* && javaWLs.get(0).getDuration() > getTimeOnBat() * 0.15*/)
+		if (javaWLs.size() > 0 && wakelocksComment.contains("WakeLocks") /* && javaWLs.get(0).getDuration() > getTimeOnBat() * 0.15 */)
 		{
 			wakelocksComment += "{panel:title=*Bugreport Java wake locks:*|titleBGColor=#E9F2FF}\\n";
 			if (kernelWLs.get(0).getName().contains("Service.WakeLocks"))
@@ -601,14 +601,14 @@ public class BugrepParser
 				wakelocksComment += "\\n";
 				wakelocksComment += javaWLs.get(1).toJiraComment();
 			}
-			if (wakelocksComment.toLowerCase().contains("spotify") ||
-							javaWLs.get(0).getProcessName().toLowerCase().contains("tunein") ||
-							javaWLs.get(0).getProcessName().toLowerCase().contains("slacker") ||
-							javaWLs.get(0).getProcessName().toLowerCase().contains("pandora") ||
-							javaWLs.get(0).getProcessName().toLowerCase().contains("sirius") ||
-							javaWLs.get(0).getProcessName().toLowerCase().contains("android.music") ||
-							javaWLs.get(0).getProcessName().toLowerCase().contains("saavn") ||
-							javaWLs.get(0).getProcessName().toLowerCase().contains("com.audible.application"))
+			if (wakelocksComment.toLowerCase().contains("spotify")
+			    || javaWLs.get(0).getProcessName().toLowerCase().contains("tunein")
+			    || javaWLs.get(0).getProcessName().toLowerCase().contains("slacker")
+			    || javaWLs.get(0).getProcessName().toLowerCase().contains("pandora")
+			    || javaWLs.get(0).getProcessName().toLowerCase().contains("sirius")
+			    || javaWLs.get(0).getProcessName().toLowerCase().contains("android.music")
+			    || javaWLs.get(0).getProcessName().toLowerCase().contains("saavn")
+			    || javaWLs.get(0).getProcessName().toLowerCase().contains("com.audible.application"))
 			{
 				wakelocksComment += "\\n\\n- _Probably audio is running in background and the held wake lock does not represent an issue_\\n";
 			}
@@ -639,7 +639,7 @@ public class BugrepParser
 	
 	public String currentDrainStatistics()
 	{
-		if (rawStats.length() > 80)
+		if (rawStats != null && rawStats.length() > 80)
 		{
 			String comment = "{panel:title=*Statistics since last charge:*|titleBGColor=#E9F2FF}\\n {noformat}\\n"
 			                 + rawStats.replaceAll("\n|\r", "\\\\n") + "{noformat}{panel}\\n";
@@ -687,7 +687,7 @@ public class BugrepParser
 	
 	public String eblDecreasedReasons()
 	{
-		if (rawStats.length() > 80)
+		if (rawStats != null && rawStats.length() > 80)
 		{
 			String eblDecrease = "";
 			if (getPercentage(scOnTime, timeOnBat) > 15) // BATTRIAGE-165

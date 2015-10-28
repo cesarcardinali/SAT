@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import supportive.DateTimeOperator;
 import core.Logger;
+import core.SharedObjs;
 
 
 public class MainParser
@@ -61,6 +62,12 @@ public class MainParser
 	
 	public boolean parse()
 	{
+		if(year.equals(""))
+		{
+			Logger.log(Logger.TAG_CONSUME, "Could not parse year from logs. So, SAT can not parse Main log.");
+			SharedObjs.crsManagerPane.addLogLine("Could not find 'year' from bugreport. SAT will not parse main log.");
+			return false;
+		}
 		System.out.println("Running at " + path);
 		
 		File folder = new File(path);
