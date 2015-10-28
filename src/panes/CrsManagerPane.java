@@ -606,7 +606,7 @@ public class CrsManagerPane extends JPanel
 	
 	public void runScript(String folder) throws IOException
 	{
-		Logger.log(Logger.TAG_CRSMANAGER, "Generating bugreport for " + folder);
+		Logger.log(Logger.TAG_CRSMANAGER, "Generating report output for " + folder);
 		
 		// File seek and load configuration
 		File f = new File(folder);
@@ -718,7 +718,7 @@ public class CrsManagerPane extends JPanel
 			bw.close();
 		}
 		
-		addLogLine("Bugreport generated for " + f.getName());
+		addLogLine("Report output generated for " + f.getName());
 	}
 	
 	/**

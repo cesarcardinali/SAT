@@ -17,10 +17,10 @@ import core.Logger;
  */
 public class B2G
 {
-	private static String  result;			// Parser result
-	private static boolean edited  = false;	// If result edited by the user
-	private static boolean enabled = true;	// If filter is enabled
-	
+	private static String  result;         // Parser result
+	private static boolean edited  = false; // If result edited by the user
+	private static boolean enabled = true; // If filter is enabled
+	                                        
 	public static String makelog(String path)
 	{
 		BufferedReader br = null;
@@ -54,7 +54,7 @@ public class B2G
 							file_report = files;
 						else
 							file_report = path + "\\" + files;
-							
+						
 						break;
 					}
 				}
@@ -71,7 +71,7 @@ public class B2G
 				while ((sCurrentLine = br.readLine()) != null)
 				{
 					if (sCurrentLine.contains("tag=\"BUG2GO-UploadWorker\"")
-						|| sCurrentLine.contains("tag=BUG2GO-UploadWorker"))
+					    || sCurrentLine.contains("tag=BUG2GO-UploadWorker"))
 					{
 						bug2goData = bug2goData + sCurrentLine + "\n";
 					}
@@ -80,7 +80,7 @@ public class B2G
 				// Close file reader
 				if (br != null)
 					br.close();
-					
+				
 				// If found a reasonable amount of evidences
 				if (bug2goData.length() > 12)
 				{
@@ -101,7 +101,7 @@ public class B2G
 						String files = listOfFiles[i].getName();
 						Logger.log(Logger.TAG_B2G, "" + files);
 						if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
-							&& (files.contains("main")))
+						    && (files.contains("main")))
 						{
 							if (path.equals("."))
 								file_report = files;
@@ -124,21 +124,16 @@ public class B2G
 				br = new BufferedReader(new FileReader(file_report));
 				String newData;
 				newData = "";
-				int ok = 0;
 				
 				while ((sCurrentLine = br.readLine()) != null) // Search for more evidences
 				{
 					if (sCurrentLine.contains("BUG2GO-DBAdapter: update"))
 					{
 						newData = newData + sCurrentLine + "\n";
-						ok = 1;
-					}
-					
-					if (sCurrentLine.contains("BUG2GO-DBAdapter:") && ok == 1)
-					{
-						newData = newData + sCurrentLine + "\n";
 					}
 				}
+				
+				Logger.log(Logger.TAG_B2G, "File read");
 				
 				if (newData.length() > 20)
 				{
@@ -154,33 +149,29 @@ public class B2G
 				result = bug2goData;
 			else
 				result = "- No B2G evidences were found in text logs";
-				
-			return result;
 		}
 		catch (FileNotFoundException e)
 		{
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
-			return result;
 		}
 		catch (IOException e)
 		{
 			result = "IOException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
-			return result;
 		}
-		finally
+		
+		
+		try
 		{
-			try
-			{
-				if (br != null)
-					br.close();
-			}
-			catch (IOException ex)
-			{
-				ex.printStackTrace();
-			}
+			if (br != null)
+				br.close();
 		}
+		catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
+		return result;
 	}
 	
 	// Getters and Setters
