@@ -634,7 +634,9 @@ public class CrsManagerPane extends JPanel
 		BufferedReader br = null;
 		if (reportFile == null)
 		{
-			Logger.log(Logger.TAG_CRSMANAGER, "Log de sistema nao encontrado: " + reportFile);
+			Logger.log(Logger.TAG_CRSMANAGER, "Log not found: " + reportFile);
+			Logger.log(Logger.TAG_CRSMANAGER, "Not possible to find product name");
+			JOptionPane.showMessageDialog(null, "Could not find product name! Report output not being generated for this CR");
 			return;
 		}
 		else
@@ -643,6 +645,7 @@ public class CrsManagerPane extends JPanel
 		}
 		
 		// Parse file
+		boolean parsed = false;
 		while ((sCurrentLine = br.readLine()) != null)
 		{
 			if (sCurrentLine.toLowerCase().contains("product"))
@@ -666,12 +669,34 @@ public class CrsManagerPane extends JPanel
 					PrintWriter out = new PrintWriter(folder + "\\build_report.pl");
 					out.println(content);
 					out.close();
+					parsed = true;
 				}
 				catch (FileNotFoundException e)
 				{
 					e.printStackTrace();
 				}
 				break;
+			}
+		}
+		
+		if(!parsed)
+		{
+			try
+			{
+				Logger.log(Logger.TAG_CRSMANAGER, "Could not find product name or product battery capacity. Using 3000 as bat cap");
+				JOptionPane.showMessageDialog(null, "Could not find product name or product battery capacity.\nUsing 3000 as battery capacity");
+				@SuppressWarnings("resource")
+				Scanner scanner = new Scanner(new File(folder + "\\build_report.pl"));
+				String content = scanner.useDelimiter("\\Z").next();
+				content = content.replace("#bat_cap#","3000");
+				PrintWriter out = new PrintWriter(folder + "\\build_report.pl");
+				out.println(content);
+				out.close();
+				parsed = true;
+			}
+			catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
 			}
 		}
 		
