@@ -558,8 +558,8 @@ public class CrChecker
 				System.out.println(bugrepParser.eblDecreasedReasons());
 				
 				jira.assignIssue(cr.getJiraID());
-				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				jira.addLabel(cr.getJiraID(), "sat_closed");
+				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
@@ -596,8 +596,8 @@ public class CrChecker
 				System.out.println(bugrepParser.eblDecreasedReasons());
 				
 				jira.assignIssue(cr.getJiraID());
-				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				jira.addLabel(cr.getJiraID(), "sat_closed");
+				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
@@ -628,8 +628,8 @@ public class CrChecker
 				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
 				
 				jira.assignIssue(cr.getJiraID());
-				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				jira.addLabel(cr.getJiraID(), "sat_closed");
+				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
@@ -672,8 +672,8 @@ public class CrChecker
 				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
 				
 				jira.assignIssue(cr.getJiraID());
-				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				jira.addLabel(cr.getJiraID(), "sat_closed");
+				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
