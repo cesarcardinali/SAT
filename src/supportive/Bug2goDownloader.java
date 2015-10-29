@@ -518,4 +518,8 @@ public class Bug2goDownloader implements Runnable
 		this.semaphore = semaphore;
 	}
 	
+	public void setError(int value)
+	{
+		errors = value;
+	}
 }

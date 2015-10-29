@@ -27,21 +27,21 @@ import objects.CrItem;
  */
 public class JiraSatApi
 {
-	private String			   username;
-	private String			   password;
-	private String			   baseURL;
-	private Client			   client;
-	private final String	   TAG							   = "JIRA REST";
-	private final String	   COMMENT_TAG					   = "/comment";
-	private final String	   ASSIGN_TAG					   = "/assignee";
-	private final String	   TRANSITION_TAG				   = "/transitions";
-	public static final String DEFAULT_JIRA_URL				   = "http://idart.mot.com/";
-	public static final String CANCELLED					   = "7";
-	public static final String INVALID						   = "13";
-	public static final String INCOMPLETE					   = "4";
-	public static final String UNREPRODUCIBLE				   = "5";
-	public static final String FIXED_ON_3RD_PARTY_LOAD		   = "16";
-	public static final String BUSINESS_DECISION_NOT_TO_FIX	   = "17";
+	private String             username;
+	private String             password;
+	private String             baseURL;
+	private Client             client;
+	private final String       TAG                             = "JIRA REST";
+	private final String       COMMENT_TAG                     = "/comment";
+	private final String       ASSIGN_TAG                      = "/assignee";
+	private final String       TRANSITION_TAG                  = "/transitions";
+	public static final String DEFAULT_JIRA_URL                = "http://idart.mot.com/";
+	public static final String CANCELLED                       = "7";
+	public static final String INVALID                         = "13";
+	public static final String INCOMPLETE                      = "4";
+	public static final String UNREPRODUCIBLE                  = "5";
+	public static final String FIXED_ON_3RD_PARTY_LOAD         = "16";
+	public static final String BUSINESS_DECISION_NOT_TO_FIX    = "17";
 	public static final String FIXED_IN_GOOGLE_ANDROID_RELEASE = "14";
 	
 	/**
@@ -55,7 +55,7 @@ public class JiraSatApi
 	{
 		this.username = username;
 		
-		if (url.charAt(url.length()-1) == '/')
+		if (url.charAt(url.length() - 1) == '/')
 		{
 			this.baseURL = url + "rest/api/2/issue/";
 		}
@@ -81,15 +81,16 @@ public class JiraSatApi
 		WebResource webResource = client.resource(baseURL + key + COMMENT_TAG);
 		
 		ClientResponse response = webResource.type("application/json")
-											 .post(ClientResponse.class, "{\"body\": \"" + comment + "\"}");
-											 
+		                                     .post(ClientResponse.class, "{\"body\": \"" + comment + "\"}");
+		
 		String output = response.getEntity(String.class);
 		
 		Logger.log(TAG, "Add comment: Output from Server:\n" + output);
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -127,10 +128,10 @@ public class JiraSatApi
 		if (!id.equals(""))
 		{
 			WebResource webResource = client.resource(baseURL + key + COMMENT_TAG + id);
-			ClientResponse response = webResource.type("application/json")
-												 .put(ClientResponse.class,
-													  "{\"body\": \"" + newComment + "\"}");
-													  
+			ClientResponse response = webResource.type("application/json").put(ClientResponse.class,
+			                                                                   "{\"body\": \"" + newComment
+			                                                                                   + "\"}");
+			
 			if (response.getStatus() != 204)
 			{
 				output = response.getEntity(String.class);
@@ -144,7 +145,8 @@ public class JiraSatApi
 			
 			if (output.contains("error") && output.contains("403"))
 			{
-				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+				JOptionPane.showMessageDialog(null,
+				                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 			}
 		}
 		
@@ -167,7 +169,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -201,7 +204,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -241,7 +245,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -275,7 +280,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -317,7 +323,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -352,7 +359,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -386,7 +394,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -420,7 +429,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -455,7 +465,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -492,7 +503,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -529,7 +541,8 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
@@ -562,14 +575,15 @@ public class JiraSatApi
 		
 		if (output.contains("error") && output.contains("403"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
 		
 		return output;
 	}
 	
 	@SuppressWarnings("unchecked")
-    public CrItem getCrData(String key) throws ParseException
+	public CrItem getCrData(String key) throws ParseException
 	{
 		CrItem cr = new CrItem();
 		
@@ -577,8 +591,14 @@ public class JiraSatApi
 		ClientResponse response = webResource.type("application/json").get(ClientResponse.class);
 		
 		String output = response.getEntity(String.class);
-
-		if(output.contains("Unauthorized (401)")){
+		
+		if (output.contains("Unauthorized (401)"))
+		{
+			return null;
+		}
+		else if (output.contains("Issue Does Not Exist"))
+		{
+			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "The CR " + key + " does not exists");
 			return null;
 		}
 		
@@ -631,7 +651,7 @@ public class JiraSatApi
 		}
 		
 		if (fields.get("customfield_10622") == null
-			|| fields.get("customfield_10622").toString().equals("null")) // Check if it has dups
+		    || fields.get("customfield_10622").toString().equals("null")) // Check if it has dups
 		{
 			cr.setDup("");
 		}
@@ -645,7 +665,8 @@ public class JiraSatApi
 			Logger.log(TAG, "Get CR data: Output from Server: \n" + output);
 			if (output.contains("403"))
 			{
-				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+				JOptionPane.showMessageDialog(null,
+				                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 			}
 		}
 		else

@@ -1,44 +1,38 @@
 package panes;
 
+
 import java.awt.EventQueue;
-import java.awt.GridLayout;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
+import java.awt.Desktop;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+
+import javax.swing.JButton;
+
+import core.SharedObjs;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.net.URI;
+
+
 public class ListPane extends JFrame
 {
 	
-	private JPanel contentPane;
+	private JPanel      contentPane;
 	private JScrollPane scrollPane;
-	private JTextPane textCrKeyList;
+	private JTextPane   textCrKeyList;
 	private JScrollPane scrollPane_1;
-	private JTextPane textCrResolution;
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				try
-				{
-					ListPane frame = new ListPane();
-					frame.setVisible(true);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private JTextPane   textCrResolution;
+	private JButton     btnOpen;
 	
 	/**
 	 * Create the frame.
@@ -49,28 +43,58 @@ public class ListPane extends JFrame
 		setResizable(false);
 		setAlwaysOnTop(true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 274, 411);
+		setBounds(100, 100, 274, 434);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new GridLayout(1, 2, 0, 0));
+		GridBagLayout gbl_contentPane = new GridBagLayout();
+		gbl_contentPane.columnWidths = new int[] {129, 129, 0};
+		gbl_contentPane.rowHeights = new int[] {373, 0, 0};
+		gbl_contentPane.columnWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPane.rowWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
+		contentPane.setLayout(gbl_contentPane);
 		
 		scrollPane = new JScrollPane();
-		contentPane.add(scrollPane);
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
+		gbc_scrollPane.gridx = 0;
+		gbc_scrollPane.gridy = 0;
+		contentPane.add(scrollPane, gbc_scrollPane);
 		
 		textCrKeyList = new JTextPane();
 		textCrKeyList.setEditable(false);
 		scrollPane.setViewportView(textCrKeyList);
 		
+		textCrKeyList.setText("");
+		
 		scrollPane_1 = new JScrollPane();
-		contentPane.add(scrollPane_1);
+		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
+		gbc_scrollPane_1.insets = new Insets(0, 0, 5, 0);
+		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_1.gridx = 1;
+		gbc_scrollPane_1.gridy = 0;
+		contentPane.add(scrollPane_1, gbc_scrollPane_1);
 		
 		textCrResolution = new JTextPane();
 		textCrResolution.setEditable(false);
 		scrollPane_1.setViewportView(textCrResolution);
-		
-		textCrKeyList.setText("");
 		textCrResolution.setText("");
+		
+		btnOpen = new JButton("Open on browser");
+		btnOpen.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				btnOpenAction();
+			}
+		});
+		GridBagConstraints gbc_btnOpen = new GridBagConstraints();
+		gbc_btnOpen.gridwidth = 2;
+		gbc_btnOpen.insets = new Insets(0, 0, 0, 5);
+		gbc_btnOpen.gridx = 0;
+		gbc_btnOpen.gridy = 1;
+		contentPane.add(btnOpen, gbc_btnOpen);
 	}
 	
 	public void addItemList1(String item)
@@ -87,5 +111,30 @@ public class ListPane extends JFrame
 	{
 		textCrKeyList.setText("");
 		textCrResolution.setText("");
+	}
+	
+	private void btnOpenAction()
+	{
+		for (String s : textCrKeyList.getText().split("\n"))
+		{
+			try
+			{
+				s = s.replaceAll("\n", "");
+				s = s.replaceAll("\r", "");
+				s = s.replaceAll(" ", "");
+				Desktop.getDesktop().browse(new URI("http://idart.mot.com/browse/" + s));
+				Thread.sleep(500);
+			}
+			catch (Exception ex)
+			{
+				JOptionPane.showMessageDialog(this, "Exception: " + ex.getMessage());
+			}
+		}
+	}
+	
+	public void showWindow()
+	{
+		setLocationRelativeTo(SharedObjs.crsManagerPane);
+		setVisible(true);
 	}
 }

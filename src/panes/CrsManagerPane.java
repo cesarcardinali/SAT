@@ -72,6 +72,7 @@ public class CrsManagerPane extends JPanel
 	private String		CRs[];
 	private String		labels[];
 	private JTextField	textLabel;
+	private int errors;
 	
 	/**
 	 * Create the panel.
@@ -373,6 +374,7 @@ public class CrsManagerPane extends JPanel
 		textPane.setMinimumSize(new Dimension(50, 42));
 		
 		loadUserData();
+		errors = 0;
 	}
 	
 	/**
@@ -384,6 +386,7 @@ public class CrsManagerPane extends JPanel
 	private void downloadCRs() throws ParseException
 	{
 		SharedObjs.crsManagerPane.addLogLine("Acquiring CRs data ...");
+		errors = 0;
 		
 		// Setup jira connection
 		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
@@ -409,6 +412,12 @@ public class CrsManagerPane extends JPanel
 		// Manage CR
 		for (String crKey : CRs)
 		{
+			if (crKey.equals(""))
+			{
+				SharedObjs.crsManagerPane.addLogLine("CR list is empty");
+				return;
+			}
+			
 			CrItem crItem = jira.getCrData(crKey);
 			
 			if (crItem != null)
@@ -432,6 +441,8 @@ public class CrsManagerPane extends JPanel
 			{
 				Logger.log(Logger.TAG_CRSMANAGER,
 						   "CR KEY: " + crKey + " seems not to exist. Or your user/password is wrong");
+				SharedObjs.crsManagerPane.addLogLine("CR KEY: " + crKey + " seems not to exist. Or your user/password is wrong");
+				errors++;
 			}
 		}
 		
@@ -444,6 +455,7 @@ public class CrsManagerPane extends JPanel
 			try
 			{
 				b2gDownloader.addBugIdList(b2gList);
+				b2gDownloader.setError(errors);
 			}
 			catch (InterruptedException e)
 			{
