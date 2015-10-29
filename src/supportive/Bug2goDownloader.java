@@ -407,22 +407,24 @@ public class Bug2goDownloader implements Runnable
 		                                               "Unzip/Build report",
 		                                               "Just unzip them all",
 		                                               "Nothing, I am ok"}, null);
+		
 		if (ans == 0)
 		{
 			File[] filesName = new File(SharedObjs.getDownloadPath()).listFiles();
 			
 			for (File file : filesName)
 			{
-				if (file.isFile() && file.getName().contains(".zip") && file.getName().contains("_B2G_"))
+				if (file.isFile() && file.getName().contains(".zip") && file.getName().contains("_B2G_")
+				    && b2gdoneListContains(file.getName().substring(0, file.getName().indexOf("_"))))
 				{
-					SharedObjs.crsManagerPane.addLogLine("Unzipping " + file.getName() + " ...");
+					SharedObjs.crsManagerPane.addLogLine("Unzipping " + file.getName().substring(0, file.getName().indexOf("_")) + " ...");
 					
 					UnZip.unZipIt(file.getAbsolutePath(),
 					              file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
 					
 					file = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
 					
-					SharedObjs.crsManagerPane.addLogLine("Unzipping done for " + file.getName());
+					SharedObjs.crsManagerPane.addLogLine("Done");
 					
 					SharedObjs.crsManagerPane.addLogLine("Pre analyzing CR ...");
 					
@@ -439,7 +441,8 @@ public class Bug2goDownloader implements Runnable
 						SharedObjs.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
 					}
 					
-					try //BATTRIAGE-175 
+					try
+					// BATTRIAGE-175
 					{
 						SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
 					}
@@ -447,8 +450,6 @@ public class Bug2goDownloader implements Runnable
 					{
 						e.printStackTrace();
 					}
-					
-					SharedObjs.crsManagerPane.addLogLine("All done for " + file.getName() + "\n");
 				}
 			}
 			
@@ -471,31 +472,37 @@ public class Bug2goDownloader implements Runnable
 			
 			for (File file : filesName)
 			{
-				if (file.isFile() && file.getName().contains(".zip") && file.getName().contains("_B2G_"))
+				if (file.isFile() && file.getName().contains(".zip") && file.getName().contains("_B2G_")
+				    && b2gdoneListContains(file.getName().substring(0, file.getName().indexOf("_"))))
 				{
+					SharedObjs.crsManagerPane.addLogLine("Unzipping " + file.getName().substring(0, file.getName().indexOf("_")) + " ...");
+					
 					UnZip.unZipIt(file.getAbsolutePath(),
 					              file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
 					
 					file = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
 					
-//					CrChecker crChecker = new CrChecker(file.getAbsolutePath());
-//					
-//					if (!crChecker.checkCR())
-//					{
-//						SharedObjs.crsManagerPane.addLogLine("CR is OK");
-//						Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath());
-//					}
-//					else
-//					{
-//						SharedObjs.crsManagerPane.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
-//					}
-					
-					SharedObjs.crsManagerPane.addLogLine("All done for " + file.getName() + "\n");
+					SharedObjs.crsManagerPane.addLogLine("Done");
 				}
 			}
 			
 			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "All b2g files are unzipped.");
 		}
+	}
+	
+	/**
+	 * Others
+	 */
+	public boolean b2gdoneListContains(String b2gID)
+	{
+		for (Bug2goItem i : bug2goListDone)
+		{
+			if (i.getBugId().equals(b2gID))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**

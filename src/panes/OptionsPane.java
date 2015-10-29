@@ -41,6 +41,7 @@ import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
 import supportive.Encryptation;
+import javax.swing.ImageIcon;
 
 
 public class OptionsPane extends JPanel
@@ -70,6 +71,8 @@ public class OptionsPane extends JPanel
 	private JCheckBox      chkbxRemember;
 	private JPanel         panel_2;
 	private JLabel         lblServerStatus;
+	private JLabel         label_6;
+	
 	// }}
 	
 	/**
@@ -239,57 +242,118 @@ public class OptionsPane extends JPanel
 		gbc_chkbxRemember.gridy = 0;
 		panel_7.add(chkbxRemember, gbc_chkbxRemember);
 		
-		JLabel label = new JLabel("Comments personalization:");
+		JPanel panel_8 = new JPanel();
+		GridBagConstraints gbc_panel_8 = new GridBagConstraints();
+		gbc_panel_8.fill = GridBagConstraints.BOTH;
+		gbc_panel_8.insets = new Insets(10, 5, 5, 5);
+		gbc_panel_8.gridx = 0;
+		gbc_panel_8.gridy = 2;
+		panel.add(panel_8, gbc_panel_8);
+		GridBagLayout gbl_panel_8 = new GridBagLayout();
+		gbl_panel_8.columnWidths = new int[] {150, 0, 0};
+		gbl_panel_8.rowHeights = new int[] {0};
+		gbl_panel_8.columnWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_8.rowWeights = new double[] {0.0};
+		panel_8.setLayout(gbl_panel_8);
+		
+		JLabel label = new JLabel("Comments personalization");
+		label.setHorizontalAlignment(SwingConstants.LEFT);
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.insets = new Insets(0, 0, 0, 5);
+		gbc_label.anchor = GridBagConstraints.WEST;
+		gbc_label.gridx = 0;
+		gbc_label.gridy = 0;
+		panel_8.add(label, gbc_label);
 		label.setToolTipText("Click to hide/show");
 		label.addMouseListener(new MouseListener()
 		{
-			
 			@Override
 			public void mouseReleased(MouseEvent e)
 			{
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void mousePressed(MouseEvent e)
 			{
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void mouseExited(MouseEvent e)
 			{
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void mouseEntered(MouseEvent e)
 			{
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
 				if (panel_2.isVisible())
+				{
 					panel_2.setVisible(false);
+					label_6.setIcon(new ImageIcon("Data\\pics\\expand.png"));
+				}
 				else
+				{
 					panel_2.setVisible(true);
+					label_6.setIcon(new ImageIcon("Data\\pics\\collapse.png"));
+				}
 			}
 		});
-		GridBagConstraints gbc_label = new GridBagConstraints();
-		gbc_label.gridwidth = 2;
-		gbc_label.anchor = GridBagConstraints.WEST;
-		gbc_label.insets = new Insets(10, 5, 5, 0);
-		gbc_label.gridx = 0;
-		gbc_label.gridy = 2;
-		panel.add(label, gbc_label);
 		label.setFont(new Font("Tahoma", Font.BOLD, 16));
 		label.setAlignmentX(0.5f);
+		
+		label_6 = new JLabel("");
+		label_6.setVerticalAlignment(SwingConstants.BOTTOM);
+		label_6.addMouseListener(new MouseListener()
+		{
+			@Override
+			public void mouseReleased(MouseEvent e)
+			{
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e)
+			{
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e)
+			{
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e)
+			{
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				if (panel_2.isVisible())
+				{
+					panel_2.setVisible(false);
+					label_6.setIcon(new ImageIcon("Data\\pics\\expand.png"));
+				}
+				else
+				{
+					panel_2.setVisible(true);
+					label_6.setIcon(new ImageIcon("Data\\pics\\collapse.png"));
+				}
+			}
+		});
+		GridBagConstraints gbc_label_6 = new GridBagConstraints();
+		gbc_label_6.anchor = GridBagConstraints.SOUTHWEST;
+		gbc_label_6.insets = new Insets(0, 0, 0, 5);
+		gbc_label_6.gridx = 1;
+		gbc_label_6.gridy = 0;
+		panel_8.add(label_6, gbc_label_6);
+		label_6.setIcon(new ImageIcon("Data\\pics\\collapse.png"));
+		label_6.setToolTipText("Click to hide/show");
+		label_6.setFont(new Font("Tahoma", Font.BOLD, 16));
+		label_6.setAlignmentX(0.5f);
 		
 		panel_2 = new JPanel();
 		panel_2.setBorder(new LineBorder(new Color(192, 192, 192), 1, true));
@@ -302,7 +366,8 @@ public class OptionsPane extends JPanel
 		panel.add(panel_2, gbc_panel_2);
 		GridBagLayout gbl_panel_2 = new GridBagLayout();
 		gbl_panel_2.columnWidths = new int[] {175, 450, 30, 0};
-		gbl_panel_2.rowHeights = new int[] {0,
+		gbl_panel_2.rowHeights = new int[] {
+		        0,
 		        0,
 		        0,
 		        0,
@@ -329,7 +394,8 @@ public class OptionsPane extends JPanel
 		        0,
 		        0};
 		gbl_panel_2.columnWeights = new double[] {0.0, 2.0, 0.0, Double.MIN_VALUE};
-		gbl_panel_2.rowWeights = new double[] {0.0,
+		gbl_panel_2.rowWeights = new double[] {
+		        0.0,
 		        0.0,
 		        0.0,
 		        0.0,
@@ -1090,7 +1156,8 @@ public class OptionsPane extends JPanel
 			e2.printStackTrace();
 		}
 		
-		chkbxRemember.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(new String[] {"option_pane",
+		chkbxRemember.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(new String[] {
+		        "option_pane",
 		        "remember"})));
 		
 		getComments();
