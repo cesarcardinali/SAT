@@ -206,6 +206,7 @@ public class CrChecker
 			else
 			{
 				SharedObjs.crsManagerPane.addLogLine("Checking for wakelocks ...");
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for wakelocks");
 				if (checkIfWakelocks())
 				{
 					if (checkIfUptime())
@@ -226,6 +227,7 @@ public class CrChecker
 				}
 				
 				SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for tethering");
 				if (checkIfTethering())
 				{
 					jira.assignIssue(cr.getJiraID());
@@ -246,6 +248,7 @@ public class CrChecker
 				}
 				
 				SharedObjs.crsManagerPane.addLogLine("Checking for uptime ...");
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for uptime");
 				if (checkIfUptime())
 				{
 					jira.addComment(cr.getJiraID(),
@@ -264,12 +267,14 @@ public class CrChecker
 				}
 				
 				SharedObjs.crsManagerPane.addLogLine("Checking if false positive ...");
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for false positive");
 				if (checkIfFalsePositive())
 				{
 					return true;
 				}
 			}
 			
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Nothing detected");
 			SharedObjs.crsManagerPane.addLogLine("Nothing was detected. "
 			                                     + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
 			
@@ -496,38 +501,51 @@ public class CrChecker
 			return false;
 		}
 		
-		boolean upTime = false;
-		boolean ntTime = false;
-		boolean lowEbl = false;
-		boolean highCurr = false;
+//		boolean upTime = false;
+//		boolean ntTime = false;
+//		boolean lowEbl = false;
+//		boolean highCurr = false;
+//		
+//		for (String label : cr.getLabels())
+//		{
+//			if (label.equals("high_background_uptime_percentage")
+//			    || label.equals("high_background_uptime_percentage_btd"))
+//			{
+//				upTime = true;
+//			}
+//			
+//			if (label.equals("high_background_current_drain_btd")
+//			    || label.equals("high_background_current_drain"))
+//			{
+//				highCurr = true;
+//			}
+//			
+//			if (label.equals("low_ebl_btd") || label.equals("low_ebl"))
+//			{
+//				lowEbl = true;
+//			}
+//			
+//			if (label.equals("high_nt_current_drain"))
+//			{
+//				ntTime = true;
+//			}
+//		}
 		
-		for (String label : cr.getLabels())
+		System.out.println("btd: " + btdParsed);
+		System.out.println("bugrep: " + bugrepParsed);
+		if (btdParsed)
 		{
-			if (label.equals("high_background_uptime_percentage")
-			    || label.equals("high_background_uptime_percentage_btd"))
-			{
-				upTime = true;
-			}
-			
-			if (label.equals("high_background_current_drain_btd")
-			    || label.equals("high_background_current_drain"))
-			{
-				highCurr = true;
-			}
-			
-			if (label.equals("low_ebl_btd") || label.equals("low_ebl"))
-			{
-				lowEbl = true;
-			}
-			
-			if (label.equals("high_nt_current_drain"))
-			{
-				ntTime = true;
-			}
+			System.out.println("cd btd: " + btdParser.getAverageconsumeOff());
+			System.out.println("len btd: " + btdParser.eblDecreasers().length());
+			System.out.println("phone btd: " + btdParser.phoneCallPercentage());
+		}
+		if (bugrepParsed)
+		{
+			System.out.println("cd btd: " + bugrepParser.getConsAvgOff());
+			System.out.println("len btd: " + bugrepParser.eblDecreasedReasons().length());
 		}
 		
 		// Get battery capacity from BTD file
-		
 		if (btdParsed && bugrepParsed)
 		{
 			if (btdParser.getBatCap() > bugrepParser.getBatCap())
@@ -535,11 +553,13 @@ public class CrChecker
 				bugrepParser.setBatCap(btdParser.getBatCap());
 			}
 			
-			if ((btdParser.getAverageconsumeOff() <= 115 && bugrepParser.getConsAvgOff() <= 115)
+			
+			if ((btdParser.getAverageconsumeOff() <= 115 || bugrepParser.getConsAvgOff() <= 115)
 			    && (btdParser.eblDecreasers().length() > 10 || bugrepParser.eblDecreasedReasons().length() > 10))
 			{
 				String comment = bugrepParser.currentDrainStatistics();
-				String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
+				comment += "\\n\\n" + btdParser.currentDrainStatistics();
+				String eblDecresed = "\\n{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
 				eblDecresed = eblDecresed + bugrepParser.eblDecreasedReasons();
 				eblDecresed = eblDecresed + btdParser.eblDecreasers();
 				eblDecresed = eblDecresed + "{panel}\\n";
@@ -635,7 +655,8 @@ public class CrChecker
 				cr.setAssignee(SharedObjs.getUser());
 				SharedObjs.satDB.insertAnalyzedCR(cr);
 				
-				System.out.println(comment);
+				System.out.println("-- Comments:");
+				System.out.println(comment.replaceAll("\\n", "\n"));
 				
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
@@ -679,7 +700,8 @@ public class CrChecker
 				cr.setAssignee(SharedObjs.getUser());
 				SharedObjs.satDB.insertAnalyzedCR(cr);
 				
-				System.out.println(comment);
+				System.out.println("-- Comments:");
+				System.out.println(comment.replaceAll("\\n", "\n"));
 				
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
@@ -689,6 +711,41 @@ public class CrChecker
 				
 				return true;
 			}
+			else if (btdParser.getAverageconsumeOff() <= 125 && btdParser.phoneCallPercentage() > 9)
+					{
+						String comment = bugrepParser.currentDrainStatistics();
+						String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
+						eblDecresed = eblDecresed + bugrepParser.eblDecreasedReasons();
+						eblDecresed = eblDecresed + btdParser.eblDecreasers();
+						eblDecresed = eblDecresed + "{panel}\\n";
+						
+						if (eblDecresed.split("\\\\n|\\n|\n").length > 2)
+						{
+							comment = comment + eblDecresed;
+						}
+						
+						comment = comment
+						          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
+						
+						System.out.println("-- Comments:");
+						System.out.println(comment.replaceAll("\\n", "\n"));
+						System.out.println(btdParser.eblDecreasers());
+						System.out.println(bugrepParser.eblDecreasedReasons());
+						
+						jira.assignIssue(cr.getJiraID());
+						jira.addLabel(cr.getJiraID(), "sat_closed");
+						jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
+						
+						cr.setResolution(CANCELLED);
+						cr.setAssignee(SharedObjs.getUser());
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+						
+						SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
+						                                     + " as cancelled");
+						
+						Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+						           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+					}
 		}
 		
 		return false;

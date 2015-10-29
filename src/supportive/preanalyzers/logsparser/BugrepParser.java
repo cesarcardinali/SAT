@@ -643,37 +643,37 @@ public class BugrepParser
 		{
 			String comment = "{panel:title=*Statistics since last charge:*|titleBGColor=#E9F2FF}\\n {noformat}\\n"
 			                 + rawStats.replaceAll("\n|\r", "\\\\n") + "{noformat}{panel}\\n";
-			comment = comment + "{panel:title=*Current drain data*|titleBGColor=#E9F2FF}\\n";
+			comment += "{panel:title=*Bugreport Current drain data*|titleBGColor=#E9F2FF}\\n";
 			// TODO improve
-			comment = comment + "Total time on battery: "
+			comment += "Total time on battery: "
 			          + DateTimeOperator.getTimeStringFromMillis(timeOnBat) + "\\n";
-			comment = comment + "Screen On  time: " + DateTimeOperator.getTimeStringFromMillis(scOnTime)
+			comment += "Screen On  time: " + DateTimeOperator.getTimeStringFromMillis(scOnTime)
 			          + " (" + formatNumber(getPercentage(scOnTime, timeOnBat)) + "%)\\n";
 			if (getConsAvgOn() > 740 && getPercentage(scOnTime, timeOnBat) > 15)
 			{
-				comment = comment + "Screen On consume: *" + formatNumber(getConsAvgOn()) + " mAh*\\n";
+				comment += "Screen On consume: *" + formatNumber(getConsAvgOn()) + " mAh*\\n";
 			}
 			else
 			{
-				comment = comment + "Screen On consume: " + formatNumber(getConsAvgOn()) + " mAh\\n";
+				comment += "Screen On consume: " + formatNumber(getConsAvgOn()) + " mAh\\n";
 			}
-			comment = comment + "Screen Off time: " + DateTimeOperator.getTimeStringFromMillis(scOffTime)
+			comment += "Screen Off time: " + DateTimeOperator.getTimeStringFromMillis(scOffTime)
 			          + " (" + formatNumber(getPercentage(scOffTime, timeOnBat)) + "%)\\n";
 			if (getConsAvgOff() < 100)
 			{
-				comment = comment + "Screen Off consume: *" + formatNumber(getConsAvgOff())
+				comment += "Screen Off consume: *" + formatNumber(getConsAvgOff())
 				          + " mAh* --> *Low* sc off consume\\n";
 			}
 			else
 			{
-				comment = comment + "Screen Off consume: *" + formatNumber(getConsAvgOff()) + " mAh* \\n";
+				comment += "Screen Off consume: *" + formatNumber(getConsAvgOff()) + " mAh* \\n";
 			}
 			
 			if (remTime > 1000)
-				comment = comment + "Estimated remaining battery time: "
+				comment += "Estimated remaining battery time: "
 				          + DateTimeOperator.getTimeStringFromMillis(remTime) + "\\n";
 			
-			comment = comment + "{panel}\\n";
+			comment += "{panel}\\n";
 			
 			return comment;
 		}
@@ -698,7 +698,6 @@ public class BugrepParser
 					eblDecrease = eblDecrease + "Screen was Bright/Light/Moderate for "
 					              + DateTimeOperator.getTimeStringFromMillis(screenBright) + " ("
 					              + formatNumber(getPercentage(screenBright, scOnTime)) + "%)\\n";
-					eblDecrease = eblDecrease + "\\n";
 				}
 			}
 			
@@ -708,7 +707,6 @@ public class BugrepParser
 				eblDecrease = eblDecrease + "Phone signal quality was bad (None/Poor/Moderate) for "
 				              + DateTimeOperator.getTimeStringFromMillis(phoneBadSignal) + " ("
 				              + formatNumber(getPercentage(phoneBadSignal, timeOnBat)) + "%)\\n";
-				eblDecrease = eblDecrease + "\\n";
 			}
 			
 			long phoneBadRadio = radio1xrtt + radioEvdo + radioUmts + radioGprs;
@@ -717,7 +715,6 @@ public class BugrepParser
 				eblDecrease = eblDecrease + "Radio network was not good for "
 				              + DateTimeOperator.getTimeStringFromMillis(phoneBadRadio) + " ("
 				              + formatNumber(getPercentage(phoneBadRadio, radioActive)) + "%)\\n";
-				eblDecrease = eblDecrease + "\\n";
 			}
 			
 			long wifiBadSignal = wifiLevel0 + wifiLevel1 + wifiLevel2;

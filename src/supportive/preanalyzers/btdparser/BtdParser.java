@@ -197,7 +197,7 @@ public class BtdParser
 		// High temperature
 		if (deviceTempData[1] > 46)
 		{
-			reasons = reasons + "Device got hot for while: " + deviceTempData[1] + "\\n";
+			reasons = reasons + "Device got hot for while: " + deviceTempData[1] + " - _No issue -> Game/GPS Apps/Heavy Usage_\\n";
 		}
 		
 		// GPS service
@@ -1828,6 +1828,39 @@ public class BtdParser
 	public BtdUptimesList getUptimesScOff()
 	{
 		return uptimesScOff;
+	}
+	
+	public String currentDrainStatistics()
+	{
+		String cdData = "{panel:title=*BTD Current drain data*|titleBGColor=#E9F2FF}\\n";
+		
+		cdData += "Total time on battery: "
+				          + DateTimeOperator.getTimeStringFromMillis(realTimeOnBatt) + "\\n";
+		cdData += "Screen On  time: " + DateTimeOperator.getTimeStringFromMillis(timeOn)
+		          + " (" + formatNumber(getPercentage(timeOn, realTimeOnBatt)) + "%)\\n";
+		if (getAverageconsumeOn() > 740 && getPercentage(timeOn, realTimeOnBatt) > 15)
+		{
+			cdData += "Screen On consume: *" + formatNumber(getAverageconsumeOn()) + " mAh*\\n";
+		}
+		else
+		{
+			cdData += "Screen On consume: " + formatNumber(getAverageconsumeOn()) + " mAh\\n";
+		}
+		cdData += "Screen Off time: " + DateTimeOperator.getTimeStringFromMillis(timeOff)
+		          + " (" + formatNumber(getPercentage(timeOff, realTimeOnBatt)) + "%)\\n";
+		if (getAverageconsumeOff() < 100)
+		{
+			cdData += "Screen Off consume: *" + formatNumber(getAverageconsumeOff())
+			          + " mAh* --> *Low* sc off consume\\n";
+		}
+		else
+		{
+			cdData += "Screen Off consume: *" + formatNumber(getAverageconsumeOff()) + " mAh* \\n";
+		}
+		
+		cdData += "{panel}\\n";
+		
+		return cdData;
 	}
 	// }}
 }
