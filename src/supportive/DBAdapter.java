@@ -719,6 +719,32 @@ public class DBAdapter
 		return insertDone;
 	}
 	
+	public int updateAnalyzedCR(CrItem crc_item)
+	{
+		// Visual query example for reference:
+		// INSERT into Analyzed_CRs VALUES ('IKUT-1112', '8888888', 'testuser', 'Product','Tethering', '2015-08-05 18:19:03');
+		int insertDone = 0;
+		
+		try
+		{
+			String insertSQL = "UPDATE Analyzed_CRs " + "SET assignee='" + crc_item.getAssignee() + "', "
+			                   + "resolution='" + crc_item.getResolution() + "' " + "WHERE cr_id='"
+			                   + crc_item.getJiraID() + "';";
+			
+			preparedStatement = dbConnection.prepareStatement(insertSQL);
+			
+			// Execute insert SQL statement
+			insertDone = insertDone + preparedStatement.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		return insertDone;
+	}
+	
 	public int existsAnalyzedCR(String cr_id)
 	{
 		String selectSQL = "SELECT cr_id FROM Analyzed_CRs WHERE cr_id = '" + cr_id + "';";
@@ -782,8 +808,8 @@ public class DBAdapter
 	 */
 	public CrItemsList AnalyzedCRsInRange(String from, String to)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
-		                   + "' and date <= '" + to + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
+		                   + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -821,8 +847,8 @@ public class DBAdapter
 	 */
 	public CrItemsList analyzedCRsInRangeWithAssignee(String from, String to, String assignee)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
-		                   + "' and date <= '" + to + "' and assignee = '" + assignee + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
+		                   + "' and assignee = '" + assignee + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -860,8 +886,8 @@ public class DBAdapter
 	 */
 	public CrItemsList analyzedCRsInRangeWithResolution(String from, String to, String resolution)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
-		                   + "' and date <= '" + to + "' and resolution = '" + resolution + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
+		                   + "' and resolution = '" + resolution + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -899,11 +925,10 @@ public class DBAdapter
 	 * @return
 	 */
 	public CrItemsList analyzedCRsInRangeWithAssigneeAndResolution(String from, String to, String assignee,
-	                                                 String resolution)
+	                                                               String resolution)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
-		                   + "' and date <= '" + to + "' and assignee = '" + assignee
-		                   + "' and resolution = '" + resolution + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
+		                   + "' and assignee = '" + assignee + "' and resolution = '" + resolution + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -940,8 +965,8 @@ public class DBAdapter
 	 */
 	public CrItemsList closedCRsInRangeWithResolution(String from, String to)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from
-		                   + "' and date <= '" + to + "' and resolution = 'Unresolved';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
+		                   + "' and resolution = 'Unresolved';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
