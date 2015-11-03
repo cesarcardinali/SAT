@@ -133,6 +133,10 @@ public class BtdParser
 			
 			// Get the longer discharge period
 			finalState = getLongerDischargingPeriod();
+			if (finalState == null)
+			{
+				return false;
+			}
 			
 			getDischargeInternetData(finalState);
 			
@@ -161,6 +165,7 @@ public class BtdParser
 			}
 			catch (IOException e)
 			{
+				Logger.log(Logger.TAG_BTD_PARSER, "Error: " + e.getMessage());
 				e.printStackTrace();
 			}
 			
@@ -649,7 +654,7 @@ public class BtdParser
 					// System.out.println("1");
 					actualUptime.setStart(btdRow.getTimestamp());
 				}
-				else if (btdRow.getTimestamp() - actualUptime.getEnd() < 20000 || actualUptime.getEnd() == -1) // TODO Verificar audio?
+				else if (actualUptime.getEnd() == -1 || (btdRow.getTimestamp() - actualUptime.getEnd() < 20000)) // TODO Verificar audio?
 				{
 					// System.out.println("2");
 					actualUptime.setEnd(btdRow.getTimestamp());
@@ -703,7 +708,8 @@ public class BtdParser
 				        || btdRow.getTopProcesses().contains("android.music")
 				        || btdRow.getTopProcesses().contains("saavn")
 				        || btdRow.getTopProcesses().contains("com.audible.application")
-				        || btdRow.getTopProcesses().contains("spotify")))
+				        || btdRow.getTopProcesses().contains("spotify")
+				        || btdRow.getTopProcesses().contains("fmradio")))
 				{
 					// System.out.println("> ScOff: " + btdRow.getTimestamp() + " - " + uptimeOff.getEnd());
 					// System.out.print(">Sc Off ");
@@ -865,7 +871,7 @@ public class BtdParser
 				}
 				
 				// Se existe mudança, pega o valor final do estado atual, adiciona o estado na lista e busca pelo novo estado.
-				if (!rs.isClosed())
+				if (!rs.isAfterLast() || !rs.isClosed())
 				{
 					btdState.setEnd(rs.getLong(1));
 					statesData.add(btdState);
@@ -882,6 +888,16 @@ public class BtdParser
 				
 			}
 			while (rs != null);
+			
+			if (statesData.size() == 0)
+			{
+				rs = execQuery("select MIN(timestamp), MAX(timestamp), PLUG_TYPE from t_fgdata;");
+				btdState = new BtdState();
+				btdState.setStart(rs.getLong(1));
+				btdState.setEnd(rs.getLong(2));
+				btdState.setStatus(rs.getInt(3));
+				statesData.add(btdState);
+			}
 		}
 		catch (SQLException e)
 		{

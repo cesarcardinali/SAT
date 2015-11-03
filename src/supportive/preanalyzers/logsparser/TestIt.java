@@ -5,14 +5,16 @@ import java.util.Date;
 
 import supportive.DateTimeOperator;
 import supportive.preanalyzers.btdparser.BtdParser;
+import supportive.preanalyzers.btdparser.BtdRow;
+import supportive.preanalyzers.btdparser.BtdUptimePeriod;
 
 
 public class TestIt
 {
 	public static void main(String[] args)
 	{
-		String root = "C:/CRs/26-10 L/";
-		String crPath = root + "87966501";
+		String root = "C:/CRs/Demo/";
+		String crPath = root + "84623411";
 		long now = System.currentTimeMillis();
 		
 //		BugrepParser brParser = new BugrepParser(crPath);
@@ -26,38 +28,73 @@ public class TestIt
 		//System.out.println(DateTimeOperator.getDateStringFromBtdStringMillis(148857));
 		
 		BtdParser btdParser = new BtdParser(crPath);
-//		System.out.println("Parsing BTD data ...");
+		System.out.println("Parsing BTD data ...");
 		btdParser.parse();
-		
+		int audio, count;
+		for (BtdUptimePeriod up : btdParser.getUptimes())
+		{
+			audio = 0;
+			count = 0;
+			System.out.println(BtdParser.formatDate(BtdParser.generateDate(up.getStart())));
+			System.out.println(BtdParser.formatDate(BtdParser.generateDate(up.getEnd())));
+			System.out.println(DateTimeOperator.getTimeStringFromMillis(up.getDuration()));
+			for (BtdRow btdRow : btdParser.getBtdRows())
+			{
+				if (btdRow.getTimestamp() >= up.getStart() && btdRow.getTimestamp() <= up.getEnd() && !btdRow.getTopProcesses().contains("null"))
+				{
+					count++;
+					if (btdRow.getTopProcesses().contains("mediaserver")
+							        || btdRow.getTopProcesses().contains("tunein")
+							        || btdRow.getTopProcesses().contains("slacker")
+							        || btdRow.getTopProcesses().contains("pandora")
+							        || btdRow.getTopProcesses().contains("sirius")
+							        || btdRow.getTopProcesses().contains("android.music")
+							        || btdRow.getTopProcesses().contains("saavn")
+							        || btdRow.getTopProcesses().contains("com.audible.application")
+							        || btdRow.getTopProcesses().contains("spotify")
+							        || btdRow.getTopProcesses().contains("fmradio"))
+					{
+						audio++;
+						System.out.println(btdRow.getTopProcesses());
+					}
+					else
+					{
+						System.out.println("++++++ " + btdRow.getTopProcesses());
+					}
+				}
+			}
+			System.out.println(audio);
+			System.out.println(count);
+			System.out.println("audio%" + (float)audio*100/count);
+		}
 //		System.out.println("-- BTD Aquired data");
 //		btdParser.showParseResults();
 //		btdParser.showPeriods();
 //		System.out.println("-- BTD Tether data");
-		btdParser.tethering();
+//		btdParser.tethering();
 //		btdParser.showUptimes();
 //		System.out.println("\n<><><><><><><><><><><><><><><><><><><><>\n");
 //		btdParser.showUptimesScOff();
 //		System.out.println("\n<><><><><><><><><><><><><><><><><><><><>\n");
-		
-		System.out.println(btdParser.uptime());
-		System.out.println(btdParser.uptimeScOff());
-		System.out.println(btdParser.wakeLocks());
+//		System.out.println(btdParser.uptime());
+//		System.out.println(btdParser.uptimeScOff());
+//		System.out.println(btdParser.wakeLocks());
 		
 		//System.out.println("Longer uptime\n" + btdParser.getLongerUptime());
 		//System.out.println("Longer wakelock\n" + btdParser.getLongerWakeLock());
-		btdParser.showWakeLocks();
+//		btdParser.showWakeLocks();
 		System.out.println("Done");
 		
-		MainParser mainParser = new MainParser(crPath);
-		System.out.println("Parsing Main log data ...");
-		mainParser.parse();
+//		MainParser mainParser = new MainParser(crPath);
+//		System.out.println("Parsing Main log data ...");
+//		mainParser.parse();
 //		System.out.println("-- Main Aquired data");
 //		mainParser.showAcquiredData();
 //		mainParser.checkForTethering();
 //		System.out.println("-- Main Tether data");
-		System.out.println(mainParser.checkForTethering());
-		mainParser.showTetheringData();
-		System.out.println("Done");
+//		System.out.println(mainParser.checkForTethering());
+//		mainParser.showTetheringData();
+//		System.out.println("Done");
 		
 //		BugrepParser bugrepParser = new BugrepParser(crPath);
 //		System.out.println("Parsing Bugreport log data ...");
