@@ -35,7 +35,6 @@ public class CrChecker
 	private boolean             bugrepParsed;
 	private boolean             btdTether;
 	private boolean             mainTether;
-	private int                 batThreshold;
 	
 	private ArrayList<String>   incompleteFiles;
 	private ArrayList<String>   filesNames;
@@ -51,7 +50,6 @@ public class CrChecker
 	public CrChecker(String crPath)
 	{
 		this.crPath = crPath;
-		batThreshold = 110;
 	}
 	
 	public boolean checkCR()
@@ -135,176 +133,97 @@ public class CrChecker
 				SharedObjs.crsManagerPane.addLogLine("Not possible to parse Bugreport");
 			}
 			
-			// Check for issues ---------------------------------------------------------------------------------------------------------
-			// if (cr.getLabels().contains("high_background_uptime_percentage")
-			// || cr.getLabels().contains("high_background_uptime_percentage_btd"))
-			// {
-			// SharedObjs.crsManagerPane.addLogLine("Very high uptime case, SAT will list\n\tthe top wakelocks as a comment in the CR");
-			//
-			// int n = 0;
-			// String commentWakeLocks = "";
-			//
-			// if (bugrepParsed)
-			// {
-			// bugrepParser.checkIfWakelocks(false);
-			// if (bugrepParser.getKernelWLs().size() > 0)
-			// {
-			// commentWakeLocks += "\\n\\n" + bugrepParser.getWakelocksComment();
-			// commentWakeLocks += "\\n\\n";
-			// }
-			// }
-			//
-			// if (btdParsed && btdParser.getWakeLocks().size() > 0)
-			// {
-			// commentWakeLocks = commentWakeLocks
-			// + "{panel:title=*BTD kernel stuck wake locks:*|titleBGColor=#E9F2FF}\\n{html}\\n";
-			//
-			// String commentPattern1 = "<p> <b>Name: </b>#name# <br/> <b>Total time: </b>#ttime#<br/> <b>Longer Period: </b>#longer#</p>";
-			// String commentPattern2 =
-			// "<span style=\\\"padding-left:2em;\\\"> <b> Period ##: </b> <br/> </span><span style=\\\"padding-left:4em;\\\">"
-			// + "<b>Start:</b> #starttime#<br/> </span><span style=\\\"padding-left:4em;\\\"> <b>Stop:</b> #stoptime# <br/> </span>"
-			// + "<span style=\\\"padding-left:4em;\\\"> <b>Duration:</b> #duration# <br/> </span>";
-			//
-			// for (BtdWL wl : btdParser.getWakeLocks())
-			// {
-			// commentWakeLocks = commentWakeLocks
-			// + commentPattern1.replace("#name#", wl.getName())
-			// .replace("#ttime#",
-			// DateTimeOperator.getTimeStringFromMillis(wl.getTotalTime()))
-			// .replace("#longer#",
-			// DateTimeOperator.getTimeStringFromMillis(wl.getLongerPeriod()));
-			// for (int i = 0; i < wl.getDataList().size(); i++)
-			// {
-			// commentWakeLocks = commentWakeLocks
-			// + commentPattern2.replace("##", "" + (i + 1))
-			// .replace("#starttime#",
-			// ""
-			// + BtdParser.formatDate(BtdParser.generateDate(wl.getDataList()
-			// .get(i)
-			// .getStart())))
-			// .replace("#stoptime#",
-			// BtdParser.formatDate(BtdParser.generateDate(wl.getDataList()
-			// .get(i)
-			// .getStop())))
-			// .replace("#duration#",
-			// DateTimeOperator.getTimeStringFromMillis(wl.getDataList()
-			// .get(i)
-			// .getDuration()));
-			// }
-			// commentWakeLocks = commentWakeLocks + "\\n<hr>\\n";
-			// }
-			// commentWakeLocks = commentWakeLocks + "\\n{html}";
-			// commentWakeLocks = commentWakeLocks + "\\n{panel}\\n\\n\\n";
-			// }
-			//
-			// System.out.println("\n\n\n" + commentWakeLocks.replace("\\n", "\n") + "\n\n");
-			//
-			// if (commentWakeLocks.length() > 10)
-			// {
-			// jira.addComment(cr.getJiraID(), commentWakeLocks);
-			// Logger.log(Logger.TAG_CR_CHECKER, "Wake locks detected");
-			// }
-			// else
-			// {
-			// jira.addComment(cr.getJiraID(), "SAT could not find wake locks data");
-			// Logger.log(Logger.TAG_CR_CHECKER, "SAT could not find wake locks data");
-			// }
-			// }
-			//
-			// else
+			SharedObjs.crsManagerPane.addLogLine("Checking for wakelocks ...");
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for wakelocks");
+			if (checkIfWakelocks())
 			{
-				SharedObjs.crsManagerPane.addLogLine("Checking for wakelocks ...");
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for wakelocks");
-				if (checkIfWakelocks())
-				{
-					if (checkIfUptime())
-					{
-						wakelocksComment += "\\n\\n" + uptimesComment;
-					}
-					jira.addComment(cr.getJiraID(), wakelocksComment);
-					
-					cr.setAssignee(SharedObjs.getUser());
-					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-					{
-						SharedObjs.satDB.updateAnalyzedCR(cr);
-					}
-					else
-					{
-						SharedObjs.satDB.insertAnalyzedCR(cr);
-					}
-					
-					SharedObjs.crsManagerPane.addLogLine("Wakelocks detected. Needs manual analysis.");
-					
-					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
-					                                        + ". Wakelocks detected. Needs manual analysis.");
-					
-					return false;
-				}
-				
-				SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for tethering");
-				if (checkIfTethering())
-				{
-					jira.assignIssue(cr.getJiraID());
-					jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
-					jira.addLabel(cr.getJiraID(), "sat_closed");
-					
-					cr.setResolution(INVALID);
-					cr.setAssignee(SharedObjs.getUser());
-					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-					{
-						SharedObjs.satDB.updateAnalyzedCR(cr);
-					}
-					else
-					{
-						SharedObjs.satDB.insertAnalyzedCR(cr);
-					}
-					
-					SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
-					                                     + " as invalid");
-					
-					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
-					                                        + ". Closed as invalid");
-					
-					return true;
-				}
-				
-				SharedObjs.crsManagerPane.addLogLine("Checking for uptime ...");
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for uptime");
 				if (checkIfUptime())
 				{
-					jira.addComment(cr.getJiraID(),
-					                "Some long uptimes were detected. This CR shall be manually analized in order to ensure if there are issues or not in this CR.\\n\\n"
-					                                + uptimesComment);
-					
-					cr.setAssignee(SharedObjs.getUser());
-					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-					{
-						SharedObjs.satDB.updateAnalyzedCR(cr);
-					}
-					else
-					{
-						SharedObjs.satDB.insertAnalyzedCR(cr);
-					}
-					
-					SharedObjs.crsManagerPane.addLogLine("Uptimes detected. Needs manual analysis.");
-					
-					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
-					                                        + ". Uptimes detected. Needs manual analysis.");
-					
-					return false;
+					wakelocksComment += "\\n\\n" + uptimesComment;
+				}
+				jira.addComment(cr.getJiraID(), wakelocksComment);
+				
+				cr.setAssignee(SharedObjs.getUser());
+				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+				{
+					SharedObjs.satDB.updateAnalyzedCR(cr);
+				}
+				else
+				{
+					SharedObjs.satDB.insertAnalyzedCR(cr);
 				}
 				
-				SharedObjs.crsManagerPane.addLogLine("Checking if false positive ...");
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for false positive");
-				if (checkIfFalsePositive())
+				SharedObjs.crsManagerPane.addLogLine("Wakelocks detected. Needs manual analysis.");
+				
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+				                                        + ". Wakelocks detected. Needs manual analysis.");
+				
+				return false;
+			}
+			
+			SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for tethering");
+			if (checkIfTethering())
+			{
+				jira.assignIssue(cr.getJiraID());
+				jira.closeIssue(cr.getJiraID(), JiraSatApi.INVALID, tetherComment);
+				jira.addLabel(cr.getJiraID(), "sat_closed");
+				
+				cr.setResolution(INVALID);
+				cr.setAssignee(SharedObjs.getUser());
+				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
 				{
-					return true;
+					SharedObjs.satDB.updateAnalyzedCR(cr);
 				}
+				else
+				{
+					SharedObjs.satDB.insertAnalyzedCR(cr);
+				}
+				
+				SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
+				                                     + " as invalid");
+				
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+				                                        + ". Closed as invalid");
+				
+				return true;
+			}
+			
+			SharedObjs.crsManagerPane.addLogLine("Checking for uptime ...");
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for uptime");
+			if (checkIfUptime())
+			{
+				jira.addComment(cr.getJiraID(),
+				                "Some long uptimes were detected. This CR shall be manually analized in order to ensure if there are issues or not in this CR.\\n\\n"
+				                                + uptimesComment);
+				
+				cr.setAssignee(SharedObjs.getUser());
+				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+				{
+					SharedObjs.satDB.updateAnalyzedCR(cr);
+				}
+				else
+				{
+					SharedObjs.satDB.insertAnalyzedCR(cr);
+				}
+				
+				SharedObjs.crsManagerPane.addLogLine("Uptimes detected. Needs manual analysis.");
+				
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
+				                                        + ". Uptimes detected. Needs manual analysis.");
+				
+				return false;
+			}
+			
+			SharedObjs.crsManagerPane.addLogLine("Checking if false positive ...");
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for false positive");
+			if (checkIfFalsePositive())
+			{
+				return true;
 			}
 			
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Nothing detected");
-			SharedObjs.crsManagerPane.addLogLine("Nothing was detected. "
+			SharedObjs.crsManagerPane.addLogLine("Nothing detected. "
 			                                     + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
 			
 			String comment = bugrepParser.currentDrainStatistics();
@@ -367,6 +286,7 @@ public class CrChecker
 		{
 			filesNames.add(file.getName());
 			files.add(file);
+			System.out.println("file: " + file.getName() + " - " + file.length() / 1048576);
 		}
 		
 		for (String f : filesNames)
@@ -381,45 +301,31 @@ public class CrChecker
 			}
 			else if (f.contains("aplogcat-main"))
 			{
-				bugrep = true;
+				main = true;
 			}
 			else if (f.contains("aplogcat-system"))
 			{
-				bugrep = true;
+				system = true;
 			}
 			else if (f.contains("aplogcat-kernel"))
 			{
-				bugrep = true;
+				kernel = true;
 			}
 		}
 		
-		if (btd)
-		{
-			for (File f : files)
-			{
-				if (f.getName().contains(".btd"))
-				{
-					if (f.length() / 1048576 < 3)
-					{
-						incompleteFiles.add("btd");
-						Logger.log(Logger.TAG_CR_CHECKER, "BTD file is too short");
-					}
-					break;
-				}
-			}
-		}
-		else
+		if (!btd)
 		{
 			incompleteFiles.add("btd");
 			Logger.log(Logger.TAG_CR_CHECKER, "BTD file is missing");
 		}
+		
 		if (bugrep)
 		{
 			for (File f : files)
 			{
 				if (f.getName().contains("bugreport"))
 				{
-					if (f.length() / 1048576 < 3)
+					if (f.length() / 1023999 < 3)
 					{
 						incompleteFiles.add("bugreport");
 						Logger.log(Logger.TAG_CR_CHECKER, "Bugreport file is too short");
@@ -437,22 +343,22 @@ public class CrChecker
 		if (main)
 		{
 			File f = new File(crPath + "/aplogcat-main.txt");
-			if (f.length() / 1048576 < 2)
+			if (f.length() / 1023999 < 2)
 			{
 				incompleteFiles.add("main");
-				Logger.log(Logger.TAG_CR_CHECKER, "Main file is too short");
+				Logger.log(Logger.TAG_CR_CHECKER, "Main file is too short " + f.length());
 			}
 		}
 		else
 		{
 			incompleteFiles.add("main");
-			Logger.log(Logger.TAG_CR_CHECKER, "Main file is missing");
+			Logger.log(Logger.TAG_CR_CHECKER, "Main file is missing ");
 		}
 		
 		if (system)
 		{
 			File f = new File(crPath + "/aplogcat-system.txt");
-			if (f.length() / 1048576 < 2)
+			if (f.length() / 1023999 < 2)
 			{
 				incompleteFiles.add("system");
 				Logger.log(Logger.TAG_CR_CHECKER, "System file is too short");
@@ -467,7 +373,7 @@ public class CrChecker
 		if (kernel)
 		{
 			File f = new File(crPath + "/aplogcat-kernel.txt");
-			if (f.length() / 1048576 < 2)
+			if (f.length() / 1023999 < 2)
 			{
 				incompleteFiles.add("kernel");
 				Logger.log(Logger.TAG_CR_CHECKER, "Kernel file is too short");
@@ -620,7 +526,24 @@ public class CrChecker
 				bugrepParser.setBatCap(btdParser.getBatCap());
 			}
 			
-			if ((btdParser.getAverageconsumeOff() <= 115 || bugrepParser.getConsAvgOff() <= 115)
+			int cdThreashold = 90;
+			Logger.log(Logger.TAG_CR_CHECKER, "BTD Threshold: " + btdParser.getThresholdInc());
+			Logger.log(Logger.TAG_CR_CHECKER, "Bugrep Threshold: " + bugrepParser.getThresholdInc());
+			cdThreashold += btdParser.getThresholdInc();
+			cdThreashold += bugrepParser.getThresholdInc();
+			if (cdThreashold > 150)
+			{
+				Logger.log(Logger.TAG_CR_CHECKER, "Calculated Threshold: " + cdThreashold);
+				cdThreashold = 150;
+				Logger.log(Logger.TAG_CR_CHECKER, "Threshold limited to 150");
+			}
+			else
+			{
+				Logger.log(Logger.TAG_CR_CHECKER, "Calculated Threshold: " + cdThreashold);
+			}
+			
+			
+			if ((btdParser.getAverageconsumeOff() <= cdThreashold || bugrepParser.getConsAvgOff() <= cdThreashold)
 			    && (btdParser.eblDecreasers().length() > 10 || bugrepParser.eblDecreasedReasons().length() > 10))
 			{
 				String comment = bugrepParser.currentDrainStatistics();

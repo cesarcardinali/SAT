@@ -31,6 +31,7 @@ public class TestIt
 		System.out.println("Parsing BTD data ...");
 		btdParser.parse();
 		int audio, count;
+		BtdRow lastRow = null;
 		for (BtdUptimePeriod up : btdParser.getUptimes())
 		{
 			audio = 0;
@@ -40,32 +41,53 @@ public class TestIt
 			System.out.println(DateTimeOperator.getTimeStringFromMillis(up.getDuration()));
 			for (BtdRow btdRow : btdParser.getBtdRows())
 			{
-				if (btdRow.getTimestamp() >= up.getStart() && btdRow.getTimestamp() <= up.getEnd() && !btdRow.getTopProcesses().contains("null"))
+				if (btdRow.getTimestamp() >= up.getStart() && btdRow.getTimestamp() <= up.getEnd())
 				{
-					count++;
-					if (btdRow.getTopProcesses().contains("mediaserver")
-							        || btdRow.getTopProcesses().contains("tunein")
-							        || btdRow.getTopProcesses().contains("slacker")
-							        || btdRow.getTopProcesses().contains("pandora")
-							        || btdRow.getTopProcesses().contains("sirius")
-							        || btdRow.getTopProcesses().contains("android.music")
-							        || btdRow.getTopProcesses().contains("saavn")
-							        || btdRow.getTopProcesses().contains("com.audible.application")
-							        || btdRow.getTopProcesses().contains("spotify")
-							        || btdRow.getTopProcesses().contains("fmradio"))
+					if (btdRow.getTopProcesses().contains("null"))
 					{
-						audio++;
-						System.out.println(btdRow.getTopProcesses());
+						if (lastRow == null)
+						{
+							continue;
+						}
+						if (lastRow.getTopProcesses().contains("mediaserver")
+						    || lastRow.getTopProcesses().contains("tunein")
+						    || lastRow.getTopProcesses().contains("slacker")
+						    || lastRow.getTopProcesses().contains("pandora")
+						    || lastRow.getTopProcesses().contains("sirius")
+						    || lastRow.getTopProcesses().contains("android.music")
+						    || lastRow.getTopProcesses().contains("saavn")
+						    || lastRow.getTopProcesses().contains("com.audible.application")
+						    || lastRow.getTopProcesses().contains("spotify")
+						    || lastRow.getTopProcesses().contains("fmradio"))
+						{
+							audio++;
+						}
 					}
 					else
 					{
-						System.out.println("++++++ " + btdRow.getTopProcesses());
+						if (btdRow.getTopProcesses().contains("mediaserver")
+						    || btdRow.getTopProcesses().contains("tunein")
+						    || btdRow.getTopProcesses().contains("slacker")
+						    || btdRow.getTopProcesses().contains("pandora")
+						    || btdRow.getTopProcesses().contains("sirius")
+						    || btdRow.getTopProcesses().contains("android.music")
+						    || btdRow.getTopProcesses().contains("saavn")
+						    || btdRow.getTopProcesses().contains("com.audible.application")
+						    || btdRow.getTopProcesses().contains("spotify")
+						    || btdRow.getTopProcesses().contains("fmradio"))
+						{
+							audio++;
+						}
+						
+						lastRow = btdRow;
 					}
+					
+					count++;
 				}
 			}
 			System.out.println(audio);
 			System.out.println(count);
-			System.out.println("audio%" + (float)audio*100/count);
+			System.out.println("audio%" + (float)audio*100/count + "\n");
 		}
 //		System.out.println("-- BTD Aquired data");
 //		btdParser.showParseResults();

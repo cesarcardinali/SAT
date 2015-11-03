@@ -28,6 +28,7 @@ public class BtdParser
 	private static ResultSet  rs;
 	private String            path;
 	private int               status;
+	private int               thresholdInc;
 	private BtdRow            btdRow;
 	private BtdRowsList       btdRows;
 	private BtdState          finalState;
@@ -64,6 +65,7 @@ public class BtdParser
 	{
 		this.path = path;
 		System.out.println("CR path: " + path);
+		thresholdInc = 0;
 		
 		try
 		{
@@ -123,6 +125,8 @@ public class BtdParser
 	// Parse all data
 	public boolean parse()
 	{
+		thresholdInc = 0;
+		
 		if (status == 1)
 		{
 			bttDischarged = new int[2];
@@ -182,6 +186,7 @@ public class BtdParser
 	// {{
 	public String eblDecreasers()
 	{
+		thresholdInc = 0;
 		String reasons = "";
 		
 		// Call time
@@ -189,6 +194,7 @@ public class BtdParser
 		{
 			reasons = reasons + "Phone calls for " + DateTimeOperator.getTimeStringFromMillis(phoneCall)
 			          + " (" + formatNumber(getPercentage(phoneCall, realTimeOnBatt)) + "%)\\n";
+			thresholdInc += 2.5 * (getPercentage(phoneCall, realTimeOnBatt));
 		}
 		
 		// Tethering time
@@ -197,18 +203,20 @@ public class BtdParser
 			reasons = reasons + "Some possible tethering for "
 			          + DateTimeOperator.getTimeStringFromMillis(tetheringTime) + " ("
 			          + formatNumber(getPercentage(tetheringTime, realTimeOnBatt)) + "%)\\n";
+			thresholdInc += 3 * (getPercentage(tetheringTime, realTimeOnBatt));
 		}
 		
 		// High temperature
 		if (deviceTempData[1] > 46)
 		{
-			reasons = reasons + "Device got hot for while: " + deviceTempData[1] + " - _No issue -> Game/GPS Apps/Heavy Usage_\\n";
+			reasons = reasons + "Device got hot for while: " + deviceTempData[1] + " - _Not an issue -> Game/GPS Apps/Heavy Usage_\\n";
 		}
 		
 		// GPS service
 		if (gpsLocation / (realTimeOnBatt / 3600000) > 400)
 		{
 			reasons = reasons + "Heavy GPS activity: " + gpsLocation + "\\n";
+			thresholdInc += 0.007 * (gpsLocation / (realTimeOnBatt / 3600000));
 		}
 		else if (gpsLocation / (realTimeOnBatt / 3600000) > 150)
 		{
@@ -219,14 +227,17 @@ public class BtdParser
 		if (networkLocation / (realTimeOnBatt / 3600000) > 35)
 		{
 			reasons = reasons + "Heavy network location activity: " + networkLocation + "\\n";
+			thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
 		}
 		else if (networkLocation / (realTimeOnBatt / 3600000) > 20)
 		{
 			reasons = reasons + "Reasonable network location activity: " + networkLocation + "\\n";
+			thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
 		}
 		else if (networkLocation / (realTimeOnBatt / 3600000) > 12)
 		{
 			reasons = reasons + "Considerable network location activity: " + networkLocation + "\\n";
+			thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
 		}
 		
 		return reasons;
@@ -1877,6 +1888,11 @@ public class BtdParser
 		cdData += "{panel}\\n";
 		
 		return cdData;
+	}
+
+	public int getThresholdInc()
+	{
+		return thresholdInc;
 	}
 	// }}
 }
