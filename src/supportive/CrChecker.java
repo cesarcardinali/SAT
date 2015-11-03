@@ -527,15 +527,23 @@ public class CrChecker
 			}
 			
 			int cdThreashold = 90;
+			String bugrepEblDrecresers = bugrepParser.eblDecreasedReasons();
+			String btdEblDrecresers = bugrepParser.eblDecreasedReasons();
 			Logger.log(Logger.TAG_CR_CHECKER, "BTD Threshold: " + btdParser.getThresholdInc());
 			Logger.log(Logger.TAG_CR_CHECKER, "Bugrep Threshold: " + bugrepParser.getThresholdInc());
 			cdThreashold += btdParser.getThresholdInc();
 			cdThreashold += bugrepParser.getThresholdInc();
-			if (cdThreashold > 150)
+			if (cdThreashold > 155)
 			{
 				Logger.log(Logger.TAG_CR_CHECKER, "Calculated Threshold: " + cdThreashold);
-				cdThreashold = 150;
-				Logger.log(Logger.TAG_CR_CHECKER, "Threshold limited to 150");
+				cdThreashold = 155;
+				Logger.log(Logger.TAG_CR_CHECKER, "Threshold limited to 155");
+			}
+			else if (cdThreashold < 100)
+			{
+				Logger.log(Logger.TAG_CR_CHECKER, "Calculated Threshold: " + cdThreashold);
+				cdThreashold = 115;
+				Logger.log(Logger.TAG_CR_CHECKER, "Threshold set to 115");
 			}
 			else
 			{
@@ -544,7 +552,7 @@ public class CrChecker
 			
 			
 			if ((btdParser.getAverageconsumeOff() <= cdThreashold || bugrepParser.getConsAvgOff() <= cdThreashold)
-			    && (btdParser.eblDecreasers().length() > 10 || bugrepParser.eblDecreasedReasons().length() > 10))
+			    && (btdEblDrecresers.length() > 10 || bugrepEblDrecresers.length() > 10))
 			{
 				String comment = bugrepParser.currentDrainStatistics();
 				comment += "\\n\\n" + btdParser.currentDrainStatistics();

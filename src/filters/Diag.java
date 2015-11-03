@@ -67,7 +67,7 @@ public class Diag
 				{
 					String files = listOfFiles[i].getName();
 					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
-						&& (files.contains("bugreport")))
+					    && (files.contains("bugreport")))
 					{
 						file_report = path + "\\" + files;
 						break;
@@ -147,14 +147,17 @@ public class Diag
 				
 				// Find kernel ms's data
 				if (line.contains("DIAG_WS") && !line.contains(",") && !line.contains(";")
-					&& !line.contains(".") && !line.contains("Kernel"))
+				    && !line.contains(".") && !line.contains("Kernel") && !line.contains("ms")
+				    && !line.contains("\"") && !line.contains("(") && !line.contains(":"))
 				{
-					String parts[] = line.split("\t\t|\t");
+					System.out.println(line);
+					String parts[] = line.split("\t\t\t|\t\t|\t");
 					diagDuration = Long.parseLong(parts[6]);
-					diagMs = "DIAG_WS is held for more than " + (diagDuration / 3600000)
-							 + " hours following max_time:\n"
-							 + "||name		|active_count	|event_count	|wakeup_count	|expire_count	|active_since	|total_time	|max_time	|last_change | prevent_suspend_time|"
-							 + "\n||" + line.replaceAll("\t\t|\t", "|") + "|\n";
+					diagMs = "DIAG_WS is held for more than "
+					         + (diagDuration / 3600000)
+					         + " hours following max_time:\n"
+					         + "||name		|active_count	|event_count	|wakeup_count	|expire_count	|active_since	|total_time	|max_time	|last_change | prevent_suspend_time|"
+					         + "\n||" + line.replaceAll("\t\t|\t", "|") + "|\n";
 				}
 				
 				if (line.contains("DUMP OF SERVICE entropy:"))
@@ -185,9 +188,9 @@ public class Diag
 			if (!diagAllKernel.equals("") || !diagMs.equals(""))
 			{
 				result = SharedObjs.optionsPane.getTextDiag()
-											   .replace("#log#", diagMs + "\n" + diagAllKernel + "\n")
-											   .replace("\\n", "\n");
-											   
+				                               .replace("#log#", diagMs + "\n" + diagAllKernel + "\n")
+				                               .replace("\\n", "\n");
+				
 				File xmlFile = new File("Data/cfgs/user_cfg.xml"); // Create XML file
 				
 				SAXBuilder builder = new SAXBuilder(); // Instance of XML builder
@@ -222,6 +225,13 @@ public class Diag
 		catch (JDOMException e)
 		{
 			result = "JDOMException\n" + Throwables.getStackTraceAsString(e);
+			e.printStackTrace();
+			
+			return result;
+		}
+		catch (ArrayIndexOutOfBoundsException e)
+		{
+			result = "ArrayIndexOutOfBoundsException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
 			
 			return result;

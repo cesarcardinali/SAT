@@ -712,7 +712,7 @@ public class BugrepParser
 				              + DateTimeOperator.getTimeStringFromMillis(phoneBadSignal) + " ("
 				              + formatNumber(getPercentage(phoneBadSignal, timeOnBat)) + "%)\\n";
 				
-				thresholdInc +=  0.4 * (getPercentage(phoneBadSignal, timeOnBat) - 10);
+				thresholdInc +=  0.5 * (getPercentage(phoneBadSignal, timeOnBat) - 10);
 			}
 			
 			long phoneBadRadio = radio1xrtt + radioEvdo + radioUmts + radioGprs;
@@ -721,7 +721,7 @@ public class BugrepParser
 				eblDecrease = eblDecrease + "Radio network was not good for "
 				              + DateTimeOperator.getTimeStringFromMillis(phoneBadRadio) + " ("
 				              + formatNumber(getPercentage(phoneBadRadio, radioActive)) + "%)\\n";
-				thresholdInc +=  0.7 * (getPercentage(phoneBadSignal, timeOnBat) - 10);
+				thresholdInc +=  0.7 * (getPercentage(phoneBadRadio, timeOnBat) - 10);
 			}
 			
 			long wifiBadSignal = wifiLevel0 + wifiLevel1 + wifiLevel2;
@@ -730,14 +730,14 @@ public class BugrepParser
 				eblDecrease = eblDecrease + "Wifi signal quality was bad (Level0/Level1/Level2) for "
 				              + DateTimeOperator.getTimeStringFromMillis(wifiBadSignal) + " ("
 				              + formatNumber(getPercentage(wifiBadSignal, timeOnBat)) + "%)\\n";
-				thresholdInc +=  0.4 * (getPercentage(phoneBadSignal, timeOnBat) - 10);
+				thresholdInc +=  0.4 * (getPercentage(wifiBadSignal, timeOnBat) - 10);
 			}
 			if (getPercentage(wifiScan, timeOnBat) > 20)
 			{
 				eblDecrease = eblDecrease + "Scanning for better wifi network for "
 				              + DateTimeOperator.getTimeStringFromMillis(wifiScan) + " ("
 				              + formatNumber(getPercentage(wifiScan, timeOnBat)) + "%)\\n";
-				thresholdInc +=  0.4 * (getPercentage(phoneBadSignal, timeOnBat) - 10);
+				thresholdInc +=  0.31 * (getPercentage(wifiScan, timeOnBat) - 10);
 			}
 			
 			return eblDecrease;
