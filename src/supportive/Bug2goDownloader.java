@@ -441,14 +441,22 @@ public class Bug2goDownloader implements Runnable
 						SharedObjs.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
 					}
 					
-					try
-					// BATTRIAGE-175
+					if (!crChecker.getIncompleteFiles().contains("bugreport"))
 					{
-						SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
+						try
+						// BATTRIAGE-175
+						{
+							SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
+						}
+						catch (IOException e)
+						{
+							e.printStackTrace();
+						}
 					}
-					catch (IOException e)
+					else
 					{
-						e.printStackTrace();
+						SharedObjs.crsManagerPane.addLogLine("No bugreport file. Report output not generated.");
+						Logger.log(Logger.TAG_BUG2GODOWNLOADER, "No bugreport file. Report output not generated.");
 					}
 				}
 			}
