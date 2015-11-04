@@ -12,6 +12,10 @@ public class AppsChecker
 	
 	public static void init()
 	{
+		audioAppsList = new ArrayList<String>();
+		gpsAppsList = new ArrayList<String>();
+		gamesList = new ArrayList<String>();
+		
 		audioAppsList.add("mediaserver");
 		audioAppsList.add("tunein");
 		audioAppsList.add("slacker");
@@ -36,9 +40,35 @@ public class AppsChecker
 		gamesList.add("com.blizzard.wtcg.hearthstone");
 	}
 	
-	public boolean isAudioApp(String process)
+	public static boolean isAudioApp(String process)
 	{
 		for (String app : audioAppsList)
+		{
+			if(process.contains(app))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public static boolean isGpsApp(String process)
+	{
+		for (String app : gpsAppsList)
+		{
+			if(process.contains(app))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public static boolean isGameApp(String process)
+	{
+		for (String app : gamesList)
 		{
 			if(process.contains(app))
 			{

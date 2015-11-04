@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import core.Logger;
+
 
 public class BtdAppList extends ArrayList<BtdAppInfo>
 {
@@ -15,8 +17,14 @@ public class BtdAppList extends ArrayList<BtdAppInfo>
 			if (name.equals(this.get(i).getName()))
 			{
 				get(i).update(cpu, rx, tx);
+				Logger.log("BtdAppsList", "Updating item");
+				return true;
 			}
 		}
+		
+		BtdAppInfo app = new BtdAppInfo(name, cpu, rx, tx);
+		add(app);
+		Logger.log("BtdAppsList", "Adding new item");
 		
 		return false;
 	}
@@ -45,6 +53,32 @@ public class BtdAppList extends ArrayList<BtdAppInfo>
 		}
 		
 		return -1;
+	}
+	
+	public BtdAppInfo get(String name)
+	{
+		for (int i = 0; i < this.size(); i++)
+		{
+			if (name.equals(this.get(i).getName()))
+			{
+				return this.get(i);
+			}
+		}
+		
+		return null;
+	}
+	
+	public BtdAppInfo get(BtdAppInfo item)
+	{
+		for (int i = 0; i < this.size(); i++)
+		{
+			if (item.getName().equals(this.get(i).getName()))
+			{
+				return this.get(i);
+			}
+		}
+		
+		return null;
 	}
 	
 	// Comparator and sort

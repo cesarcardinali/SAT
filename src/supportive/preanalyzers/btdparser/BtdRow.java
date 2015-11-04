@@ -12,12 +12,16 @@ public class BtdRow
 	private int    batteryCapacity;
 	private int    batteryLevel;
 	private int    chargerPlugged;        // 2- AC | 0- None
-	private int    screenOn;              // 1- On | 0- Off
+	private int    screenOn;              // 0- On | 1- Off
 	private int    backlightIntensity;
 	private long   timestamp;
 	private long   gpsLocationUpdates;
 	private long   networkLocationUpdates;
 	private long   instantCurrent;        // currentNow column
+	private long   cellTx;
+	private long   cellRx;
+	private long   wifiTx;
+	private long   wifiRx;
 	private Date   date;
 	private String activeKernels;
 	private String realTimeTotal;
@@ -321,8 +325,48 @@ public class BtdRow
 		rowID = value;
 	}
 	
+
+	public long getCellTx()
+	{
+		return cellTx;
+	}
+
+	public void setCellTx(long cellTx)
+	{
+		this.cellTx = cellTx;
+	}
+
+	public long getCellRx()
+	{
+		return cellRx;
+	}
+
+	public void setCellRx(long cellRx)
+	{
+		this.cellRx = cellRx;
+	}
+
+	public long getWifiTx()
+	{
+		return wifiTx;
+	}
+
+	public void setWifiTx(long wifiTx)
+	{
+		this.wifiTx = wifiTx;
+	}
+
+	public long getWifiRx()
+	{
+		return wifiRx;
+	}
+
+	public void setWifiRx(long wifiRx)
+	{
+		this.wifiRx = wifiRx;
+	}
 	// }}
-	
+
 	// Other methods
 	public String toString()
 	{

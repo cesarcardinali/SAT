@@ -252,6 +252,8 @@ public class CrChecker
 				SharedObjs.satDB.insertAnalyzedCR(cr);
 			}
 			
+			btdParser.close();
+			
 			return false;
 		}
 		

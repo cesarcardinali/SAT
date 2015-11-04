@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import supportive.AppsChecker;
 import supportive.DateTimeOperator;
 import core.Logger;
 
@@ -209,7 +210,8 @@ public class BtdParser
 		// High temperature
 		if (deviceTempData[1] > 46)
 		{
-			reasons = reasons + "Device got hot for while: " + deviceTempData[1] + " - _Not an issue -> Game/GPS Apps/Heavy Usage_\\n";
+			reasons = reasons + "Device got hot for while: " + deviceTempData[1]
+			          + " - _Not an issue -> Game/GPS Apps/Heavy Usage_\\n";
 		}
 		
 		// GPS service
@@ -665,7 +667,8 @@ public class BtdParser
 					// System.out.println("1");
 					actualUptime.setStart(btdRow.getTimestamp());
 				}
-				else if (actualUptime.getEnd() == -1 || (btdRow.getTimestamp() - actualUptime.getEnd() < 20000)) // TODO Verificar audio?
+				else if (actualUptime.getEnd() == -1
+				         || (btdRow.getTimestamp() - actualUptime.getEnd() < 20000)) // TODO Verificar audio?
 				{
 					// System.out.println("2");
 					actualUptime.setEnd(btdRow.getTimestamp());
@@ -719,8 +722,8 @@ public class BtdParser
 				        || btdRow.getTopProcesses().contains("android.music")
 				        || btdRow.getTopProcesses().contains("saavn")
 				        || btdRow.getTopProcesses().contains("com.audible.application")
-				        || btdRow.getTopProcesses().contains("spotify")
-				        || btdRow.getTopProcesses().contains("fmradio")))
+				        || btdRow.getTopProcesses().contains("spotify") || btdRow.getTopProcesses()
+				                                                                 .contains("fmradio")))
 				{
 					// System.out.println("> ScOff: " + btdRow.getTimestamp() + " - " + uptimeOff.getEnd());
 					// System.out.print(">Sc Off ");
@@ -828,7 +831,7 @@ public class BtdParser
 			if (actualUptime.getDuration() > 600000)
 				uptimes.add(actualUptime);
 			
-			if (uptimeOff.getDuration() > 600000) //Tempo uptime off
+			if (uptimeOff.getDuration() > 600000) // Tempo uptime off
 				uptimesScOff.add(uptimeOff);
 			
 			kernelWLs.finalize();
@@ -851,6 +854,112 @@ public class BtdParser
 		}
 		
 		return btdRows;
+	}
+	
+	public void parseUptimes()
+	{
+		int audio, gps, games, screenOn, count;
+		long deltaWTx, deltaWRx, deltaCTx, deltaCRx, time;
+		BtdRow lastRow = null;
+		AppsChecker.init();
+		
+		for (BtdUptimePeriod up : getUptimes())
+		{
+			audio = 0;
+			gps = 0;
+			games = 0;
+			screenOn = 0;
+			count = 0;
+			deltaWRx = 0;
+			deltaWTx = 0;
+			deltaCRx = 0;
+			deltaCTx = 0;
+			time = up.getDuration() / 60000;
+			
+			System.out.println("\n" + BtdParser.formatDate(BtdParser.generateDate(up.getStart())));
+			System.out.println(BtdParser.formatDate(BtdParser.generateDate(up.getEnd())));
+			System.out.println(DateTimeOperator.getTimeStringFromMillis(up.getDuration()));
+			
+			for (BtdRow btdRow : getBtdRows())
+			{
+				if (btdRow.getTimestamp() >= up.getStart() && btdRow.getTimestamp() <= up.getEnd())
+				{
+					if (btdRow.getTimestamp() == up.getStart())
+					{
+						// divide by 1024 to convert to KB
+						deltaWRx = btdRow.getWifiRx() / 1024;
+						deltaWTx = btdRow.getWifiTx() / 1024;
+						deltaCRx = btdRow.getCellRx() / 1024;
+						deltaCTx = btdRow.getCellTx() / 1024;
+					}
+					else if (btdRow.getTimestamp() == up.getEnd())
+					{
+						// divide by 1024 to convert to KB
+						deltaWRx = btdRow.getWifiRx() / 1024 - deltaWRx;
+						deltaWTx = btdRow.getWifiTx() / 1024 - deltaWTx;
+						deltaCRx = btdRow.getCellRx() / 1024 - deltaCRx;
+						deltaCTx = btdRow.getCellTx() / 1024 - deltaCTx;
+					}
+					
+					if (btdRow.getTopProcesses().contains("null"))
+					{
+						if (lastRow == null)
+						{
+							continue;
+						}
+						if (AppsChecker.isAudioApp(lastRow.getTopProcesses()))
+						{
+							audio++;
+						}
+						if (AppsChecker.isGpsApp(lastRow.getTopProcesses()))
+						{
+							gps++;
+						}
+						if (AppsChecker.isGameApp(lastRow.getTopProcesses()))
+						{
+							games++;
+						}
+						if (lastRow.getScreenOn() == 0)
+						{
+							screenOn++;
+						}
+					}
+					else
+					{
+						if (AppsChecker.isAudioApp(btdRow.getTopProcesses()))
+						{
+							audio++;
+						}
+						if (AppsChecker.isGpsApp(btdRow.getTopProcesses()))
+						{
+							gps++;
+						}
+						if (AppsChecker.isGameApp(btdRow.getTopProcesses()))
+						{
+							games++;
+						}
+						if (btdRow.getScreenOn() == 0)
+						{
+							screenOn++;
+						}
+						
+						lastRow = btdRow;
+					}
+					
+					count++;
+				}
+			}
+			
+			System.out.println("\nEntries read: " + count);
+			System.out.println("CellTX: " + deltaCTx + " - " + deltaCTx / time + " per minute");
+			System.out.println("CellRX: " + deltaCRx + " - " + deltaCRx / time + " per minute");
+			System.out.println("WifiTX: " + deltaWTx + " - " + deltaWTx / time + " per minute");
+			System.out.println("WifiRX: " + deltaWRx + " - " + deltaWRx / time + " per minute");
+			System.out.println("Audio: " + audio + " - " + (float) audio * 100 / count + "%");
+			System.out.println("GPS: " + gps + " - " + (float) gps * 100 / count + "%");
+			System.out.println("Games: " + games + " - " + (float) games * 100 / count + "%");
+			System.out.println("ScreenOn: " + screenOn + " - " + (float) screenOn * 100 / count + "%\n");
+		}
 	}
 	
 	public void getPeriods()
@@ -1195,37 +1304,6 @@ public class BtdParser
 		}
 	}
 	
-	public void setupBtdRow(BtdRow btd, ResultSet rs) throws SQLException
-	{
-		btd.setActiveKernels(rs.getString("ActiveKernelWL"));
-		btd.setAudioTime(rs.getString("AudioTime"));
-		btd.setAwakeTimeOnBattery(rs.getString("AwakeTimeOnBatt"));
-		btd.setAwakeTimeTotal(rs.getString("AwakeTimeTotal"));
-		btd.setBacklightIntensity(rs.getInt("BacklightIntensity"));
-		btd.setBatteryCapacity(rs.getInt("FCC"));
-		btd.setBatteryLevel(rs.getInt("BATTERY_LEVEL"));
-		btd.setChargerPlugged(rs.getInt("PLUG_TYPE"));
-		btd.setDate(new Date(rs.getLong("timestamp")));
-		btd.setForegroundActivity(rs.getString("FgActivity"));
-		btd.setForegroundPackage(rs.getString("FgPackage"));
-		btd.setGpsLocationUpdates(rs.getLong("GpsLocCount"));
-		btd.setInstantCurrent(rs.getLong("CurrentNow"));
-		btd.setNetworkLocationUpdates(rs.getLong("NetworkLocCount"));
-		btd.setPerUidData(rs.getString("PerUidData"));
-		btd.setPhoneCallTime(rs.getString("ActivePhoneCallTime"));
-		btd.setRealTimeOnBattery(rs.getString("RealTimeOnBatt"));
-		btd.setRealTimeTotal(rs.getString("RealTimeTotal"));
-		btd.setScreenBrightnesses(rs.getString("ScreenBrightnesses"));
-		btd.setScreenOn(rs.getInt("ScreenOn"));
-		btd.setScreenOnTime(rs.getString("ScreenOnTime"));
-		btd.setSignalLevels(rs.getString("SignalLevels"));
-		btd.setTemperature(rs.getInt("TEMP"));
-		btd.setTimestamp(rs.getLong("timestamp"));
-		btd.setTopProcesses(rs.getString("TopData"));
-		btd.setWifiOnTime(rs.getString("WifiOnTime"));
-		btd.setWifirunningTime(rs.getString("WifiRunningTime"));
-	}
-	
 	public void setupBtdRow(BtdRow btd, ResultSet rs, long timezone) throws SQLException
 	{
 		btd.setActiveKernels(rs.getString("ActiveKernelWL"));
@@ -1254,7 +1332,10 @@ public class BtdParser
 		btd.setTimestamp(rs.getLong("timestamp") + timezone);
 		btd.setTopProcesses(rs.getString("TopData"));
 		btd.setWifiOnTime(rs.getString("WifiOnTime"));
-		btd.setWifirunningTime(rs.getString("WifiRunningTime"));
+		btd.setCellTx(rs.getLong("CELL_RX"));
+		btd.setCellRx(rs.getLong("CELL_TX"));
+		btd.setWifiTx(rs.getLong("WIFI_RX"));
+		btd.setWifiRx(rs.getLong("WIFI_TX"));
 	}
 	
 	// }}
@@ -1861,10 +1942,10 @@ public class BtdParser
 	{
 		String cdData = "{panel:title=*BTD Current drain data*|titleBGColor=#E9F2FF}\\n";
 		
-		cdData += "Total time on battery: "
-				          + DateTimeOperator.getTimeStringFromMillis(realTimeOnBatt) + "\\n";
-		cdData += "Screen On  time: " + DateTimeOperator.getTimeStringFromMillis(timeOn)
-		          + " (" + formatNumber(getPercentage(timeOn, realTimeOnBatt)) + "%)\\n";
+		cdData += "Total time on battery: " + DateTimeOperator.getTimeStringFromMillis(realTimeOnBatt)
+		          + "\\n";
+		cdData += "Screen On  time: " + DateTimeOperator.getTimeStringFromMillis(timeOn) + " ("
+		          + formatNumber(getPercentage(timeOn, realTimeOnBatt)) + "%)\\n";
 		if (getAverageconsumeOn() > 740 && getPercentage(timeOn, realTimeOnBatt) > 15)
 		{
 			cdData += "Screen On consume: *" + formatNumber(getAverageconsumeOn()) + " mAh*\\n";
@@ -1873,8 +1954,8 @@ public class BtdParser
 		{
 			cdData += "Screen On consume: " + formatNumber(getAverageconsumeOn()) + " mAh\\n";
 		}
-		cdData += "Screen Off time: " + DateTimeOperator.getTimeStringFromMillis(timeOff)
-		          + " (" + formatNumber(getPercentage(timeOff, realTimeOnBatt)) + "%)\\n";
+		cdData += "Screen Off time: " + DateTimeOperator.getTimeStringFromMillis(timeOff) + " ("
+		          + formatNumber(getPercentage(timeOff, realTimeOnBatt)) + "%)\\n";
 		if (getAverageconsumeOff() < 100)
 		{
 			cdData += "Screen Off consume: *" + formatNumber(getAverageconsumeOff())
@@ -1889,7 +1970,7 @@ public class BtdParser
 		
 		return cdData;
 	}
-
+	
 	public int getThresholdInc()
 	{
 		return thresholdInc;
