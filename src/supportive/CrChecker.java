@@ -526,7 +526,7 @@ public class CrChecker
 				bugrepParser.setBatCap(btdParser.getBatCap());
 			}
 			
-			int cdThreashold = 90;
+			int cdThreashold = 100;
 			String bugrepEblDrecresers = bugrepParser.eblDecreasedReasons();
 			String btdEblDrecresers = bugrepParser.eblDecreasedReasons();
 			Logger.log(Logger.TAG_CR_CHECKER, "BTD Threshold: " + btdParser.getThresholdInc());

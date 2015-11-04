@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SAT>
   <parser_pane>
-    <rootPath>C:\CRs</rootPath>
+    <rootPath>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\CRs\M</path>
+    <path>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs\M</path>
     <assign>false</assign>
     <label>false</label>
   </crs_jira_pane>

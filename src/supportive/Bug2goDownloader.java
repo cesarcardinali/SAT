@@ -432,7 +432,7 @@ public class Bug2goDownloader implements Runnable
 					
 					if (!crChecker.checkCR())
 					{
-						SharedObjs.crsManagerPane.addLogLine("Nothing detected");
+						SharedObjs.crsManagerPane.addLogLine("CR not closed");
 						
 						Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath());
 					}
