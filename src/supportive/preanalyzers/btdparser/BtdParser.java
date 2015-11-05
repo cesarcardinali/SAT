@@ -215,31 +215,40 @@ public class BtdParser
 		}
 		
 		// GPS service
-		if (gpsLocation / (realTimeOnBatt / 3600000) > 400)
+		if (realTimeOnBatt < 3600000)
 		{
-			reasons = reasons + "Heavy GPS activity: " + gpsLocation + "\\n";
-			thresholdInc += 0.007 * (gpsLocation / (realTimeOnBatt / 3600000));
+			thresholdInc += 10;
+			Logger.log(Logger.TAG_BTD_PARSER, "Seems that something is wrong with BTD");
 		}
-		else if (gpsLocation / (realTimeOnBatt / 3600000) > 150)
+		else
 		{
-			reasons = reasons + "Reasonable GPS activity: " + gpsLocation + "\\n";
-		}
-		
-		// Network location service
-		if (networkLocation / (realTimeOnBatt / 3600000) > 35)
-		{
-			reasons = reasons + "Heavy network location activity: " + networkLocation + "\\n";
-			thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
-		}
-		else if (networkLocation / (realTimeOnBatt / 3600000) > 20)
-		{
-			reasons = reasons + "Reasonable network location activity: " + networkLocation + "\\n";
-			thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
-		}
-		else if (networkLocation / (realTimeOnBatt / 3600000) > 12)
-		{
-			reasons = reasons + "Considerable network location activity: " + networkLocation + "\\n";
-			thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
+			if (gpsLocation / (realTimeOnBatt / 3600000) > 400)
+			
+			{
+				reasons = reasons + "Heavy GPS activity: " + gpsLocation + "\\n";
+				thresholdInc += 0.007 * (gpsLocation / (realTimeOnBatt / 3600000));
+			}
+			else if (gpsLocation / (realTimeOnBatt / 3600000) > 150)
+			{
+				reasons = reasons + "Reasonable GPS activity: " + gpsLocation + "\\n";
+			}
+			
+			// Network location service
+			if (networkLocation / (realTimeOnBatt / 3600000) > 35)
+			{
+				reasons = reasons + "Heavy network location activity: " + networkLocation + "\\n";
+				thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
+			}
+			else if (networkLocation / (realTimeOnBatt / 3600000) > 20)
+			{
+				reasons = reasons + "Reasonable network location activity: " + networkLocation + "\\n";
+				thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
+			}
+			else if (networkLocation / (realTimeOnBatt / 3600000) > 12)
+			{
+				reasons = reasons + "Considerable network location activity: " + networkLocation + "\\n";
+				thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
+			}
 		}
 		
 		return reasons;
@@ -393,8 +402,8 @@ public class BtdParser
 		try
 		{
 			// Get all BTD data -------------------------------------
-			rs = stmt.executeQuery("SELECT RM, timestamp, ScreenOn FROM t_fgdata where timestamp BETWEEN "
-			                       + finalState.getStart() + " AND " + finalState.getEnd() + ";");
+			rs = execQuery("SELECT RM, timestamp, ScreenOn FROM t_fgdata where timestamp BETWEEN "
+			               + finalState.getStart() + " AND " + finalState.getEnd() + ";");
 			
 			lastRM = rs.getInt(1);
 			lastTime = rs.getLong(2);
@@ -612,8 +621,8 @@ public class BtdParser
 	{
 		try
 		{
-			rs = stmt.executeQuery("SELECT MAX(TEMP), MIN(TEMP), AVG(TEMP), MAX(TEMP_1), MIN(TEMP_1), AVG(TEMP_1), MAX(TEMP_2), MIN(TEMP_2), AVG(TEMP_2) FROM t_fgdata where timestamp BETWEEN "
-			                       + finalState.getStart() + " AND " + finalState.getEnd() + ";");
+			rs = execQuery("SELECT MAX(TEMP), MIN(TEMP), AVG(TEMP), MAX(TEMP_1), MIN(TEMP_1), AVG(TEMP_1), MAX(TEMP_2), MIN(TEMP_2), AVG(TEMP_2) FROM t_fgdata where timestamp BETWEEN "
+			               + finalState.getStart() + " AND " + finalState.getEnd() + ";");
 			
 			cpuTempData = new float[3];
 			deviceTempData = new float[3];
@@ -649,8 +658,8 @@ public class BtdParser
 		try
 		{
 			// Get all BTD data -------------------------------------
-			rs = stmt.executeQuery("SELECT rowid, * FROM t_fgdata WHERE timestamp BETWEEN "
-			                       + finalState.getStart() + " AND " + finalState.getEnd() + ";");
+			rs = execQuery("SELECT rowid, * FROM t_fgdata WHERE timestamp BETWEEN " + finalState.getStart()
+			               + " AND " + finalState.getEnd() + ";");
 			
 			btdRows = new BtdRowsList();
 			BtdUptimePeriod actualUptime = new BtdUptimePeriod();
@@ -859,7 +868,8 @@ public class BtdParser
 	public void parseUptimes()
 	{
 		int audio, gps, games, screenOn, count;
-		long deltaWTx, deltaWRx, deltaCTx, deltaCRx, time;
+		long deltaWTx, deltaWRx, deltaCTx, deltaCRx, deltaGps, deltaLocation;
+		float time;
 		BtdRow lastRow = null;
 		AppsChecker.init();
 		
@@ -874,11 +884,14 @@ public class BtdParser
 			deltaWTx = 0;
 			deltaCRx = 0;
 			deltaCTx = 0;
-			time = up.getDuration() / 60000;
+			deltaGps = 0;
+			deltaLocation = 0;
+			time = (float) (up.getDuration() / 60000.0);
 			
 			System.out.println("\n" + BtdParser.formatDate(BtdParser.generateDate(up.getStart())));
 			System.out.println(BtdParser.formatDate(BtdParser.generateDate(up.getEnd())));
 			System.out.println(DateTimeOperator.getTimeStringFromMillis(up.getDuration()));
+			System.out.println("Time minutes: " + formatNumber(time));
 			
 			for (BtdRow btdRow : getBtdRows())
 			{
@@ -891,6 +904,8 @@ public class BtdParser
 						deltaWTx = btdRow.getWifiTx() / 1024;
 						deltaCRx = btdRow.getCellRx() / 1024;
 						deltaCTx = btdRow.getCellTx() / 1024;
+						deltaGps = btdRow.getGpsLocationUpdates();
+						deltaLocation = btdRow.getNetworkLocationUpdates();
 					}
 					else if (btdRow.getTimestamp() == up.getEnd())
 					{
@@ -899,6 +914,8 @@ public class BtdParser
 						deltaWTx = btdRow.getWifiTx() / 1024 - deltaWTx;
 						deltaCRx = btdRow.getCellRx() / 1024 - deltaCRx;
 						deltaCTx = btdRow.getCellTx() / 1024 - deltaCTx;
+						deltaGps = btdRow.getGpsLocationUpdates() - deltaGps;
+						deltaLocation = btdRow.getNetworkLocationUpdates() - deltaLocation;
 					}
 					
 					if (btdRow.getTopProcesses().contains("null"))
@@ -951,14 +968,19 @@ public class BtdParser
 			}
 			
 			System.out.println("\nEntries read: " + count);
-			System.out.println("CellTX: " + deltaCTx + " - " + deltaCTx / time + " per minute");
-			System.out.println("CellRX: " + deltaCRx + " - " + deltaCRx / time + " per minute");
-			System.out.println("WifiTX: " + deltaWTx + " - " + deltaWTx / time + " per minute");
-			System.out.println("WifiRX: " + deltaWRx + " - " + deltaWRx / time + " per minute");
+			System.out.println("CellTX: " + deltaCTx + " - " + formatNumber(deltaCTx / time) + " per minute");
+			System.out.println("CellRX: " + deltaCRx + " - " + formatNumber(deltaCRx / time) + " per minute");
+			System.out.println("WifiTX: " + deltaWTx + " - " + formatNumber(deltaWTx / time) + " per minute");
+			System.out.println("WifiRX: " + deltaWRx + " - " + formatNumber(deltaWRx / time) + " per minute");
+			System.out.println("GPS Location: " + deltaGps + " - " + formatNumber(deltaGps / time)
+			                   + " per minute");
+			System.out.println("Network Location: " + deltaLocation + " - "
+			                   + formatNumber(deltaLocation / time) + " per minute");
 			System.out.println("Audio: " + audio + " - " + (float) audio * 100 / count + "%");
 			System.out.println("GPS: " + gps + " - " + (float) gps * 100 / count + "%");
 			System.out.println("Games: " + games + " - " + (float) games * 100 / count + "%");
 			System.out.println("ScreenOn: " + screenOn + " - " + (float) screenOn * 100 / count + "%\n");
+			System.out.println("----------------------------------------------------------------");
 		}
 	}
 	
@@ -1084,12 +1106,11 @@ public class BtdParser
 			for (String field : minsMaxs)
 			{
 				if (fromToTimestamp != null)
-					rs = stmt.executeQuery("SELECT MIN(" + field + "), MAX(" + field + "), (MAX(" + field
-					                       + ") - MIN(" + field
-					                       + ")) as Diff FROM t_fgdata WHERE timestamp BETWEEN "
-					                       + fromToTimestamp[0] + " AND " + fromToTimestamp[1] + ";");
+					rs = execQuery("SELECT MIN(" + field + "), MAX(" + field + "), (MAX(" + field
+					               + ") - MIN(" + field + ")) as Diff FROM t_fgdata WHERE timestamp BETWEEN "
+					               + fromToTimestamp[0] + " AND " + fromToTimestamp[1] + ";");
 				else
-					rs = stmt.executeQuery("SELECT MIN(" + field + "), MAX(" + field + ") FROM t_fgdata;");
+					rs = execQuery("SELECT MIN(" + field + "), MAX(" + field + ") FROM t_fgdata;");
 				
 				while (rs.next())
 				{
@@ -1128,8 +1149,8 @@ public class BtdParser
 			for (String field : topBottoms)
 			{
 				
-				rs = stmt.executeQuery("SELECT " + field + " FROM t_fgdata WHERE timestamp = "
-				                       + fromToTimestamp[0] + " OR timestamp = " + fromToTimestamp[1] + ";");
+				rs = execQuery("SELECT " + field + " FROM t_fgdata WHERE timestamp = " + fromToTimestamp[0]
+				               + " OR timestamp = " + fromToTimestamp[1] + ";");
 				
 				// System.out.println("Campo: " + field);
 				
@@ -1235,7 +1256,7 @@ public class BtdParser
 		{
 			long timezone = -1;
 			
-			rs = stmt.executeQuery("SELECT VALUE FROM t_phoneinfo WHERE NAME LIKE 'TZ_CURRENT_OFFSET';");
+			rs = execQuery("SELECT VALUE FROM t_phoneinfo WHERE NAME LIKE 'TZ_CURRENT_OFFSET';");
 			
 			while (rs.next())
 			{
@@ -1279,6 +1300,10 @@ public class BtdParser
 	{
 		try
 		{
+			if (stmt.isClosed())
+				stmt.close();
+			
+			stmt = c.createStatement();
 			rs = stmt.executeQuery(query);
 			
 			return rs;
