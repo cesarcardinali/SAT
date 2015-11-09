@@ -508,6 +508,8 @@ public class CrChecker
 		
 		System.out.println("btd: " + btdParsed);
 		System.out.println("bugrep: " + bugrepParsed);
+		System.out.println("btd uptime: " + btdParser.uptime());
+		System.out.println("bugrep uptime: " + bugrepParser.checkIfWakelocks(false));
 		if (btdParsed)
 		{
 			System.out.println("cd btd: " + btdParser.getAverageconsumeOff());
@@ -640,6 +642,42 @@ public class CrChecker
 				
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+				
+				return true;
+			}
+			else if ((btdParser.getAverageconsumeOff() <= 70 || bugrepParser.getConsAvgOff() <= 70)
+			         && btdParser.uptime() == false && bugrepParser.checkIfWakelocks(false) == false)
+			{
+				String comment = bugrepParser.currentDrainStatistics();
+				
+				comment = comment
+				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
+				
+//				System.out.println("-- Comments:");
+//				System.out.println(comment.replaceAll("\\n", "\n"));
+				
+				jira.assignIssue(cr.getJiraID());
+				jira.addLabel(cr.getJiraID(), "sat_closed");
+				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
+				
+				cr.setResolution(CANCELLED);
+				cr.setAssignee(SharedObjs.getUser());
+				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+				{
+					SharedObjs.satDB.updateAnalyzedCR(cr);
+				}
+				else
+				{
+					SharedObjs.satDB.insertAnalyzedCR(cr);
+				}
+				
+				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
+				                                     + " as cancelled");
+				
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+				
+				return true;
 			}
 		}
 		else if (bugrepParsed)
