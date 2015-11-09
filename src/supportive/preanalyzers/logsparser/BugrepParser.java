@@ -575,7 +575,7 @@ public class BugrepParser
 		}
 		else
 		{
-			threashold = (float) 0.4;
+			threashold = (float) 0.25;
 		}
 		
 		if (kernelWLs.size() > 0 && kernelWLs.get(0).getDuration() > getTimeOnBat() * threashold) // Update from 20% to 10%

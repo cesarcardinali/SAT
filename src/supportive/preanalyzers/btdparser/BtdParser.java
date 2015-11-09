@@ -264,7 +264,7 @@ public class BtdParser
 		Logger.log(Logger.TAG_BTD_PARSER,
 		           "Total Uptime: " + formatNumber(getPercentage(uptimes.getTotalTime(), realTimeOnBatt))
 		                           + "%");
-		if (uptimes.getLongerPeriod().getDuration() / 60000 > 60 // TODO Update to 60 from 30
+		if (uptimes.getLongerPeriod().getDuration() / 60000 > 60 // Update to 60 from 30
 		    && getPercentage(uptimes.getLongerPeriod().getDuration(), realTimeOnBatt) > 7)
 		{
 			return true;
@@ -284,7 +284,7 @@ public class BtdParser
 		           "ScOff Total Uptime: "
 		                           + formatNumber(getPercentage(uptimesScOff.getTotalTime(), realTimeOnBatt))
 		                           + "%");
-		if (uptimesScOff.getLongerPeriod().getDuration() / 60000 > 30 // TODO Updated to 30 from 15
+		if (uptimesScOff.getLongerPeriod().getDuration() / 60000 > 30 // Updated to 30 from 15
 		    && getPercentage(uptimesScOff.getLongerPeriod().getDuration(), realTimeOnBatt) > 6)
 		{
 			return true;
@@ -301,7 +301,7 @@ public class BtdParser
 		 * if (getPercentage(item.getLongerPeriod(), realTimeOnBatt) > 5 && item.getLongerPeriod() >= 30 * 60000) return true; else return
 		 * false; }
 		 */
-		// TODO Updated to 45 from 30
+		// Updated to 45 from 30
 		if (kernelWLs.getLongerWL() != null
 		    && getPercentage(kernelWLs.getLongerWL().getLongerPeriod(), realTimeOnBatt) > 7
 		    && kernelWLs.getLongerWL().getLongerPeriod() >= 45 * 60000
@@ -444,12 +444,8 @@ public class BtdParser
 	private void getDischargeInternetData(BtdState finalState)
 	{
 		String[][] results = getMinMaxDiffData(new String[] {
-		        "CELL_TX",
-		        "CELL_RX",
-		        "WIFI_TX",
-		        "WIFI_RX",
-		        "GpsLocCount",
-		        "NetworkLocCount"}, new long[] {finalState.getStart(), finalState.getEnd()});
+		        "CELL_TX", "CELL_RX", "WIFI_TX", "WIFI_RX", "GpsLocCount", "NetworkLocCount"}, new long[] {
+		        finalState.getStart(), finalState.getEnd()});
 		
 		// RX/TX data in BTD is swapped, so, we need to swap them here
 		cellRX = Long.parseLong(results[0][2]) / 1024; // divided by 1024 to change from Bytes to KBytes
@@ -463,13 +459,8 @@ public class BtdParser
 	private void getDischargeGeneralData(BtdState finalState)
 	{
 		String[][] results = getTopBottomData(new String[] {
-		        "BATTERY_LEVEL",
-		        "ActivePhoneCallTime",
-		        "RealTimeOnBatt",
-		        "AwakeTimeOnBatt",
-		        "WifiOnTime",
-		        "WifiRunningTime",
-		        "FCC"}, new long[] {finalState.getStart(), finalState.getEnd()});
+		        "BATTERY_LEVEL", "ActivePhoneCallTime", "RealTimeOnBatt", "AwakeTimeOnBatt", "WifiOnTime",
+		        "WifiRunningTime", "FCC"}, new long[] {finalState.getStart(), finalState.getEnd()});
 		
 		bttDischarged[0] = Integer.parseInt(results[0][0]);
 		bttDischarged[1] = Integer.parseInt(results[0][1]);
@@ -677,7 +668,7 @@ public class BtdParser
 					actualUptime.setStart(btdRow.getTimestamp());
 				}
 				else if (actualUptime.getEnd() == -1
-				         || (btdRow.getTimestamp() - actualUptime.getEnd() < 20000)) // TODO Verificar audio?
+				         || (btdRow.getTimestamp() - actualUptime.getEnd() < 20000))
 				{
 					// System.out.println("2");
 					actualUptime.setEnd(btdRow.getTimestamp());
@@ -867,8 +858,8 @@ public class BtdParser
 	
 	public void parseUptimes()
 	{
-		int audio, gps, games, screenOn, count;
-		long deltaWTx, deltaWRx, deltaCTx, deltaCRx, deltaGps, deltaLocation;
+		int audio, gps, games, screenOn, mediaServer, camera, videoFootage, count;
+		long deltaWTx, deltaWRx, deltaCTx, deltaCRx, deltaGps, deltaNetLocation;
 		float time;
 		BtdRow lastRow = null;
 		AppsChecker.init();
@@ -879,14 +870,18 @@ public class BtdParser
 			gps = 0;
 			games = 0;
 			screenOn = 0;
+			mediaServer = 0;
+			camera = 0;
+			videoFootage = 0;
 			count = 0;
 			deltaWRx = 0;
 			deltaWTx = 0;
 			deltaCRx = 0;
 			deltaCTx = 0;
 			deltaGps = 0;
-			deltaLocation = 0;
+			deltaNetLocation = 0;
 			time = (float) (up.getDuration() / 60000.0);
+			BtdAppList appsList = new BtdAppList();
 			
 			System.out.println("\n" + BtdParser.formatDate(BtdParser.generateDate(up.getStart())));
 			System.out.println(BtdParser.formatDate(BtdParser.generateDate(up.getEnd())));
@@ -905,7 +900,17 @@ public class BtdParser
 						deltaCRx = btdRow.getCellRx() / 1024;
 						deltaCTx = btdRow.getCellTx() / 1024;
 						deltaGps = btdRow.getGpsLocationUpdates();
-						deltaLocation = btdRow.getNetworkLocationUpdates();
+						deltaNetLocation = btdRow.getNetworkLocationUpdates();
+						
+						String perUidApps[] = btdRow.getPerUidData().split("\\|");
+						System.out.println(perUidApps.length);
+						for (String a : perUidApps)
+						{
+							String appParts[] = a.split(":");
+							if (!appParts[0].contains("unknown") && appParts.length >= 7)
+								appsList.update(appParts[0], appParts[1], Long.parseLong(appParts[2]),
+								                Long.parseLong(appParts[3]), Long.parseLong(appParts[4]));
+						}
 					}
 					else if (btdRow.getTimestamp() == up.getEnd())
 					{
@@ -915,7 +920,36 @@ public class BtdParser
 						deltaCRx = btdRow.getCellRx() / 1024 - deltaCRx;
 						deltaCTx = btdRow.getCellTx() / 1024 - deltaCTx;
 						deltaGps = btdRow.getGpsLocationUpdates() - deltaGps;
-						deltaLocation = btdRow.getNetworkLocationUpdates() - deltaLocation;
+						deltaNetLocation = btdRow.getNetworkLocationUpdates() - deltaNetLocation;
+						
+						String perUidApps[] = btdRow.getPerUidData().split("\\|");
+						System.out.println(perUidApps.length);
+						for (String a : perUidApps)
+						{
+							String appParts[] = a.split(":");
+							if (!appParts[0].contains("unknown") && appParts.length >= 7)
+								appsList.update(appParts[0], appParts[1], Long.parseLong(appParts[2]),
+								                Long.parseLong(appParts[3]), Long.parseLong(appParts[4]));
+						}
+					}
+					else
+					{
+						// divide by 1024 to convert to KB
+						deltaWRx = btdRow.getWifiRx() / 1024 - deltaWRx;
+						deltaWTx = btdRow.getWifiTx() / 1024 - deltaWTx;
+						deltaCRx = btdRow.getCellRx() / 1024 - deltaCRx;
+						deltaCTx = btdRow.getCellTx() / 1024 - deltaCTx;
+						deltaGps = btdRow.getGpsLocationUpdates() - deltaGps;
+						deltaNetLocation = btdRow.getNetworkLocationUpdates() - deltaNetLocation;
+						
+						String perUidApps[] = btdRow.getPerUidData().split("\\|");
+						for (String a : perUidApps)
+						{
+							String appParts[] = a.split(":");
+							if (!appParts[0].contains("unknown") && appParts.length >= 7)
+								appsList.update(appParts[0], appParts[1], Long.parseLong(appParts[2]),
+								                Long.parseLong(appParts[3]), Long.parseLong(appParts[4]));
+						}
 					}
 					
 					if (btdRow.getTopProcesses().contains("null"))
@@ -923,6 +957,19 @@ public class BtdParser
 						if (lastRow == null)
 						{
 							continue;
+						}
+						if (AppsChecker.isAudioService(lastRow.getTopProcesses()))
+						{
+							mediaServer++;
+						}
+						if (AppsChecker.isCameraService(lastRow.getTopProcesses()))
+						{
+							camera++;
+						}
+						if (AppsChecker.isCameraService(lastRow.getTopProcesses())
+						    && AppsChecker.isAudioService(lastRow.getTopProcesses()))
+						{
+							videoFootage++;
 						}
 						if (AppsChecker.isAudioApp(lastRow.getTopProcesses()))
 						{
@@ -967,20 +1014,51 @@ public class BtdParser
 				}
 			}
 			
+			float ctxPerMin, crxPerMin, wtxPerMin, wrxPerMin, gpsPerMin, netLocationPerMin, audioPerCount, mediaPerCount, gpsAppsPerCount, gamesPerCount, cameraPerCount, videoPerCount, scOnPerCount;
+			ctxPerMin = deltaCTx / time;
+			crxPerMin = deltaCRx / time;
+			wtxPerMin = deltaWTx / time;
+			wrxPerMin = deltaWRx / time;
+			gpsPerMin = deltaGps / time;
+			netLocationPerMin = deltaNetLocation / time;
+			audioPerCount = (float) (audio * 100.0 / count);
+			mediaPerCount = (float) (mediaServer * 100.0 / count);
+			gpsAppsPerCount = (float) (gps * 100.0 / count);
+			gamesPerCount = (float) (games * 100.0 / count);
+			cameraPerCount = (float) (camera * 100.0 / count);
+			videoPerCount = (float) (videoFootage * 100.0 / count);
+			scOnPerCount = (float) (screenOn * 100.0 / count);
+			
 			System.out.println("\nEntries read: " + count);
-			System.out.println("CellTX: " + deltaCTx + " - " + formatNumber(deltaCTx / time) + " per minute");
-			System.out.println("CellRX: " + deltaCRx + " - " + formatNumber(deltaCRx / time) + " per minute");
-			System.out.println("WifiTX: " + deltaWTx + " - " + formatNumber(deltaWTx / time) + " per minute");
-			System.out.println("WifiRX: " + deltaWRx + " - " + formatNumber(deltaWRx / time) + " per minute");
-			System.out.println("GPS Location: " + deltaGps + " - " + formatNumber(deltaGps / time)
-			                   + " per minute");
-			System.out.println("Network Location: " + deltaLocation + " - "
-			                   + formatNumber(deltaLocation / time) + " per minute");
-			System.out.println("Audio: " + audio + " - " + (float) audio * 100 / count + "%");
-			System.out.println("GPS: " + gps + " - " + (float) gps * 100 / count + "%");
-			System.out.println("Games: " + games + " - " + (float) games * 100 / count + "%");
-			System.out.println("ScreenOn: " + screenOn + " - " + (float) screenOn * 100 / count + "%\n");
-			System.out.println("----------------------------------------------------------------");
+			System.out.println("CellTX: " + deltaCTx + " - " + formatNumber(ctxPerMin) + " per minute");
+			System.out.println("CellRX: " + deltaCRx + " - " + formatNumber(crxPerMin) + " per minute");
+			System.out.println("WifiTX: " + deltaWTx + " - " + formatNumber(wtxPerMin) + " per minute");
+			System.out.println("WifiRX: " + deltaWRx + " - " + formatNumber(wrxPerMin) + " per minute");
+			System.out.println("GPS Location: " + deltaGps + " - " + formatNumber(gpsPerMin) + " per minute");
+			System.out.println("Network Location: " + deltaNetLocation + " - "
+			                   + formatNumber(netLocationPerMin) + " per minute");
+			System.out.println("Audio: " + audio + " - " + audioPerCount + "%");
+			System.out.println("MediaServer: " + mediaServer + " - " + mediaPerCount + "%");
+			System.out.println("GPS: " + gps + " - " + gpsAppsPerCount + "%");
+			System.out.println("Games: " + games + " - " + gamesPerCount + "%");
+			System.out.println("Camera: " + camera + " - " + cameraPerCount + "%");
+			System.out.println("Video: " + videoFootage + " - " + videoPerCount + "%");
+			System.out.println("ScreenOn: " + screenOn + " - " + scOnPerCount + "%");
+			
+			if (scOnPerCount > 70 && (crxPerMin + wrxPerMin) > 500 && audioPerCount < 20)
+			{
+				System.out.println("Probably online app usage");
+			}
+			
+			System.out.println("Apps list size: " + appsList.size());
+			appsList.sortByCpu();
+			for (BtdAppInfo app : appsList)
+			{
+				if (app.getDeltaCpuTime() >= 0.1 * up.getDuration() / 1000)
+					System.out.println(app);
+			}
+			
+			System.out.println("\n----------------------------------------------------------------");
 		}
 	}
 	

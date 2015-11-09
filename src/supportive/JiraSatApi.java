@@ -536,7 +536,7 @@ public class JiraSatApi
 			output = response.toString();
 		}
 		
-		Logger.log(TAG, "HTTP Request input: " + input);
+		Logger.log(TAG, "HTTP Request input:\n" + input);
 		Logger.log(TAG, "Close issue: Output from Server:\n" + output);
 		
 		if (output.contains("error") && output.contains("403"))

@@ -552,7 +552,6 @@ public class CrChecker
 				Logger.log(Logger.TAG_CR_CHECKER, "Calculated Threshold: " + cdThreashold);
 			}
 			
-			
 			if ((btdParser.getAverageconsumeOff() <= cdThreashold || bugrepParser.getConsAvgOff() <= cdThreashold)
 			    && (btdEblDrecresers.length() > 10 || bugrepEblDrecresers.length() > 10))
 			{
@@ -692,13 +691,16 @@ public class CrChecker
 			if (btdParser.getAverageconsumeOff() <= 115 && btdParser.eblDecreasers().length() > 10)
 			{
 				String comment = "Bugreport could not be parsed or does not have device statistics\\n\\n";
-				comment += "\\n{panel:title=*IBTD Summary*|titleBGColor=#E9F2FF}\\n";
-				comment = comment + btdParser.parseResult().replaceAll("\n|\r", "\\n");
+				comment += "\\n{panel:title=*BTD Summary*|titleBGColor=#E9F2FF}\\n";
+				comment = comment
+				          + btdParser.parseResult().replace("\n", "\\n").replace("\t\t", "")
+				                     .replace("\t", "- ")
+				                     .replace("Screen brightnesses:", "\\nScreen brightnesses:");
 				comment = comment + "\\n{panel}\\n";
-				comment += btdParser.currentDrainStatistics();
+				comment += btdParser.currentDrainStatistics().replace("\n", "\\n");
 				
 				String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
-				eblDecresed = eblDecresed + btdParser.eblDecreasers();
+				eblDecresed = eblDecresed + btdParser.eblDecreasers().replace("\n", "\\n");
 				eblDecresed = eblDecresed + "{panel}\\n";
 				
 				if (eblDecresed.split("\\\\n|\\n|\n").length > 2)
@@ -714,8 +716,13 @@ public class CrChecker
 				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
 				
 				jira.assignIssue(cr.getJiraID());
+				String output = jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
+				if (output.contains("Illegal"))
+				{
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Error trying to close CR");
+					return false;
+				}
 				jira.addLabel(cr.getJiraID(), "sat_closed");
-				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
@@ -729,7 +736,6 @@ public class CrChecker
 				}
 				
 				System.out.println("-- Comments:");
-				System.out.println(comment.replaceAll("\\n", "\n"));
 				
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
