@@ -73,6 +73,7 @@ public class CrsManagerPane extends JPanel
 	private String		labels[];
 	private JTextField	textLabel;
 	private int errors;
+	private JButton btnDownload;
 	
 	/**
 	 * Create the panel.
@@ -267,7 +268,7 @@ public class CrsManagerPane extends JPanel
 		gbc_btnPaste.gridy = 6;
 		panel_3.add(btnPaste, gbc_btnPaste);
 		
-		JButton btnDownload = new JButton("Get the CRs");
+		btnDownload = new JButton("Get the CRs");
 		btnDownload.setToolTipText("Start to download the CRs on the list above");
 		btnDownload.addActionListener(new ActionListener()
 		{
@@ -509,6 +510,7 @@ public class CrsManagerPane extends JPanel
 	
 	private void btnDownloadAction()
 	{
+		btnDownload.setEnabled(false);
 		new Thread(new Runnable()
 		{
 			
@@ -517,6 +519,7 @@ public class CrsManagerPane extends JPanel
 			{
 				try
 				{
+					
 					downloadCRs();
 				}
 				catch (ParseException e)
@@ -525,6 +528,11 @@ public class CrsManagerPane extends JPanel
 				}
 			}
 		}).start();
+	}
+	
+	public void resetDonwloadBtn()
+	{
+		btnDownload.setEnabled(true);
 	}
 	
 	private void btnOpenAction()

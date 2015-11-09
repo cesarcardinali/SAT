@@ -496,6 +496,8 @@ public class Bug2goDownloader implements Runnable
 			
 			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "All b2g files are unzipped.");
 		}
+		
+		SharedObjs.crsManagerPane.resetDonwloadBtn();
 	}
 	
 	/**

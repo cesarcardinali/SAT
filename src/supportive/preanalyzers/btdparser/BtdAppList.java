@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import core.Logger;
-
 
 public class BtdAppList extends ArrayList<BtdAppInfo>
 {
@@ -25,14 +23,14 @@ public class BtdAppList extends ArrayList<BtdAppInfo>
 			if (name.equals(this.get(i).getName()))
 			{
 				get(i).update(cpu, rx, tx);
-				//Logger.log("BtdAppsList", "Updating item");
+				// Logger.log("BtdAppsList", "Updating item");
 				return true;
 			}
 		}
 		
 		BtdAppInfo app = new BtdAppInfo(name, uid, cpu, rx, tx);
 		add(app);
-		//Logger.log("BtdAppsList", "Adding new item");
+		// Logger.log("BtdAppsList", "Adding new item");
 		
 		return false;
 	}
@@ -96,12 +94,24 @@ public class BtdAppList extends ArrayList<BtdAppInfo>
 		
 		for (BtdAppInfo a : this)
 		{
-			totalRx += a.getDeltaTx();
+			totalRx += a.getDeltaRx();
 		}
 		
 		return totalRx;
 	}
 	
+	public long getTotalTx()
+	{
+		if (totalTx > 0)
+			return totalTx;
+		
+		for (BtdAppInfo a : this)
+		{
+			totalTx += a.getDeltaTx();
+		}
+		
+		return totalTx;
+	}
 	
 	// Comparator and sort
 	public class compareByName implements Comparator<BtdAppInfo>
