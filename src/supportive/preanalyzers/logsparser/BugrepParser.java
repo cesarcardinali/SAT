@@ -438,6 +438,10 @@ public class BugrepParser
 						for (int i = 0; i < 5; i++)
 						{
 							sCurrentLine = br.readLine();
+							if(sCurrentLine.contains("PowerManagerService.Display"))
+							{
+								continue;
+							}
 							matcher = ptKernelWL.matcher(sCurrentLine);
 							if (matcher.find())
 							{

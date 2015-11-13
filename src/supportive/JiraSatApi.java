@@ -616,10 +616,13 @@ public class JiraSatApi
 		{
 			cr.setResolution("");
 		}
-		else
+		else if (cr.getStatus().equals("Closed"))
 		{
 			aux = (JSONObject) fields.get("resolution"); // Get CR resolution
 			cr.setResolution(aux.get("name").toString());
+		} else
+		{
+			cr.setResolution("");
 		}
 		
 		cr.setSummary(fields.get("summary").toString()); // Get CR summary

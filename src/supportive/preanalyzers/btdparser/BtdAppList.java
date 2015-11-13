@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 public class BtdAppList extends ArrayList<BtdAppInfo>
 {
-	long totalRx, totalTx;
+	long totalRx, totalTx, totalCpu;
 	
 	public BtdAppList()
 	{
@@ -113,6 +113,23 @@ public class BtdAppList extends ArrayList<BtdAppInfo>
 		return totalTx;
 	}
 	
+	// Generate final statistics
+	public void generateTotals()
+	{
+		totalRx = 0;
+		totalTx = 0;
+		totalCpu = 0;
+		
+		for (BtdAppInfo app : this)
+		{
+			if(app.getName().equals("root") || app.getName().equals("android.uid.system"))
+				continue;
+			totalRx += app.getDeltaRx();
+			totalTx += app.getDeltaTx();
+			totalCpu += app.getDeltaCpuTime();
+		}
+	}
+	
 	// Comparator and sort
 	public class compareByName implements Comparator<BtdAppInfo>
 	{
@@ -126,6 +143,18 @@ public class BtdAppList extends ArrayList<BtdAppInfo>
 	{
 		public int compare(BtdAppInfo p1, BtdAppInfo p2)
 		{
+			if (p1.getName().equals("root"))
+				return -1;
+			
+			if (p1.getName().equals("android.uid.system"))
+				return -1;
+			
+			if (p2.getName().equals("root"))
+				return 99;
+			
+			if (p2.getName().equals("android.uid.system"))
+				return 99;
+			
 			return (int) (Float.compare(p1.getDeltaCpuTime(), p2.getDeltaCpuTime()));
 		}
 	}

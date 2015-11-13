@@ -9,12 +9,16 @@ public class BtdUptimePeriod
 	private long start;
 	private long end;
 	private long duration;
+	private BtdAppList appsData;
+	private String summary;
+	private boolean suspicious;
 	
 	public BtdUptimePeriod()
 	{
 		start = -1;
 		end = -1;
 		duration = -1;
+		suspicious = true;
 	}
 	
 	public BtdUptimePeriod(long begin)
@@ -22,6 +26,7 @@ public class BtdUptimePeriod
 		start = -1;
 		end = -1;
 		duration = -1;
+		suspicious = true;
 	}
 	
 	// Getters and Setters -----------------------------------------------------
@@ -57,6 +62,36 @@ public class BtdUptimePeriod
 		this.duration = duration;
 	}
 	
+	public boolean isSuspicious()
+	{
+		return suspicious;
+	}
+
+	public void setSuspicious(boolean suspicious)
+	{
+		this.suspicious = suspicious;
+	}
+
+	public String getSummary()
+	{
+		return summary;
+	}
+
+	public void setSummary(String summary)
+	{
+		this.summary = summary;
+	}
+	
+	public BtdAppList getAppsData()
+	{
+		return appsData;
+	}
+
+	public void setAppsData(BtdAppList appsData)
+	{
+		this.appsData = appsData;
+	}
+
 	public String toString()
 	{
 		String tostring = "\tStarted: " + BtdParser.formatDate(BtdParser.generateDate(start)) + "\n\tEnded: "

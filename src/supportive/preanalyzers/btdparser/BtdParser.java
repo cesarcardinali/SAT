@@ -225,28 +225,28 @@ public class BtdParser
 			if (gpsLocation / (realTimeOnBatt / 3600000) > 400)
 			
 			{
-				reasons = reasons + "Heavy GPS activity: " + gpsLocation + "\\n";
+				reasons = reasons + "Heavy GPS activity: " + gpsLocation + "per hour\\n";
 				thresholdInc += 0.007 * (gpsLocation / (realTimeOnBatt / 3600000));
 			}
 			else if (gpsLocation / (realTimeOnBatt / 3600000) > 150)
 			{
-				reasons = reasons + "Reasonable GPS activity: " + gpsLocation + "\\n";
+				reasons = reasons + "Reasonable GPS activity: " + gpsLocation + "per hour\\n";
 			}
 			
 			// Network location service
 			if (networkLocation / (realTimeOnBatt / 3600000) > 35)
 			{
-				reasons = reasons + "Heavy network location activity: " + networkLocation + "\\n";
+				reasons = reasons + "Heavy network location activity: " + networkLocation + "per hour\\n";
 				thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
 			}
 			else if (networkLocation / (realTimeOnBatt / 3600000) > 20)
 			{
-				reasons = reasons + "Reasonable network location activity: " + networkLocation + "\\n";
+				reasons = reasons + "Reasonable network location activity: " + networkLocation + "per hour\\n";
 				thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
 			}
 			else if (networkLocation / (realTimeOnBatt / 3600000) > 12)
 			{
-				reasons = reasons + "Considerable network location activity: " + networkLocation + "\\n";
+				reasons = reasons + "Considerable network location activity: " + networkLocation + "per hour\\n";
 				thresholdInc += 0.2 * (networkLocation / (realTimeOnBatt / 3600000));
 			}
 		}
@@ -284,7 +284,7 @@ public class BtdParser
 		           "ScOff Total Uptime: "
 		                           + formatNumber(getPercentage(uptimesScOff.getTotalTime(), realTimeOnBatt))
 		                           + "%");
-		if (uptimesScOff.getLongerPeriod().getDuration() / 60000 > 30 // Updated to 30 from 15
+		if (uptimesScOff.getLongerPeriod().getDuration() / 60000 > 22 // Updated to 30 from 15
 		    && getPercentage(uptimesScOff.getLongerPeriod().getDuration(), realTimeOnBatt) > 6)
 		{
 			return true;
@@ -842,6 +842,26 @@ public class BtdParser
 			// System.out.println(wl);
 			// }
 			
+			for(int i =0; i < uptimes.size(); i++)
+			{
+				if(uptimes.get(i).getDuration() < 750000)
+				{
+					uptimes.remove(i);
+					i--;
+				}
+			}
+			
+			for(int i =0; i < uptimesScOff.size(); i++)
+			{
+				if(uptimesScOff.get(i).getDuration() < 600000)
+				{
+					uptimesScOff.remove(i);
+					i--;
+				}
+			}
+			
+			parseUptimes();
+			
 			uptimes.sortByStart();
 			uptimesScOff.sortByStart();
 			
@@ -856,14 +876,16 @@ public class BtdParser
 		return btdRows;
 	}
 	
+	
 	public void parseUptimes()
 	{
-		int audio, gps, games, screenOn, mediaServer, camera, videoFootage, count;
+		int audio, gps, games, screenOn, mediaServer, bluetooth, camera, videoFootage, count, nulls;
 		long deltaWTx, deltaWRx, deltaCTx, deltaCRx, deltaGps, deltaNetLocation;
 		float time;
 		BtdRow lastRow = null;
 		AppsChecker.init();
 		
+		System.out.println("Analizing general uptimes");
 		for (BtdUptimePeriod up : getUptimes())
 		{
 			audio = 0;
@@ -871,9 +893,11 @@ public class BtdParser
 			games = 0;
 			screenOn = 0;
 			mediaServer = 0;
+			bluetooth = 0;
 			camera = 0;
 			videoFootage = 0;
 			count = 0;
+			nulls = 0;
 			deltaWRx = 0;
 			deltaWTx = 0;
 			deltaCRx = 0;
@@ -883,10 +907,10 @@ public class BtdParser
 			time = (float) (up.getDuration() / 60000.0);
 			BtdAppList appsList = new BtdAppList();
 			
-			System.out.println("\n" + BtdParser.formatDate(BtdParser.generateDate(up.getStart())));
+			Logger.log(Logger.TAG_BTD_PARSER, "\n" + BtdParser.formatDate(BtdParser.generateDate(up.getStart())));
 			System.out.println(BtdParser.formatDate(BtdParser.generateDate(up.getEnd())));
 			System.out.println(DateTimeOperator.getTimeStringFromMillis(up.getDuration()));
-			System.out.println("Time minutes: " + formatNumber(time));
+			Logger.log(Logger.TAG_BTD_PARSER, "Time minutes: " + formatNumber(time));
 			
 			for (BtdRow btdRow : getBtdRows())
 			{
@@ -903,7 +927,8 @@ public class BtdParser
 						deltaNetLocation = btdRow.getNetworkLocationUpdates();
 						
 						String perUidApps[] = btdRow.getPerUidData().split("\\|");
-						System.out.println(perUidApps.length);
+						Logger.log(Logger.TAG_BTD_PARSER, "Initial perUid len: " + perUidApps.length);
+						Logger.log(Logger.TAG_BTD_PARSER, "Initial deltaCTX: " + deltaCTx);
 						for (String a : perUidApps)
 						{
 							String appParts[] = a.split(":");
@@ -923,7 +948,8 @@ public class BtdParser
 						deltaNetLocation = btdRow.getNetworkLocationUpdates() - deltaNetLocation;
 						
 						String perUidApps[] = btdRow.getPerUidData().split("\\|");
-						System.out.println(perUidApps.length);
+						Logger.log(Logger.TAG_BTD_PARSER, "Final perUid len: " + perUidApps.length);
+						Logger.log(Logger.TAG_BTD_PARSER, "Final deltaCTX: " + deltaCTx);
 						for (String a : perUidApps)
 						{
 							String appParts[] = a.split(":");
@@ -934,14 +960,6 @@ public class BtdParser
 					}
 					else
 					{
-						// divide by 1024 to convert to KB
-						deltaWRx = btdRow.getWifiRx() / 1024 - deltaWRx;
-						deltaWTx = btdRow.getWifiTx() / 1024 - deltaWTx;
-						deltaCRx = btdRow.getCellRx() / 1024 - deltaCRx;
-						deltaCTx = btdRow.getCellTx() / 1024 - deltaCTx;
-						deltaGps = btdRow.getGpsLocationUpdates() - deltaGps;
-						deltaNetLocation = btdRow.getNetworkLocationUpdates() - deltaNetLocation;
-						
 						String perUidApps[] = btdRow.getPerUidData().split("\\|");
 						for (String a : perUidApps)
 						{
@@ -952,8 +970,9 @@ public class BtdParser
 						}
 					}
 					
-					if (btdRow.getTopProcesses().contains("null"))
+					if (btdRow.getTopProcesses().equals("null") || btdRow.getTopProcesses().equals(""))
 					{
+						nulls++;
 						if (lastRow == null)
 						{
 							continue;
@@ -970,6 +989,10 @@ public class BtdParser
 						    && AppsChecker.isAudioService(lastRow.getTopProcesses()))
 						{
 							videoFootage++;
+						}
+						if (AppsChecker.isBTService(lastRow.getTopProcesses()))
+						{
+							bluetooth++;
 						}
 						if (AppsChecker.isAudioApp(lastRow.getTopProcesses()))
 						{
@@ -1006,6 +1029,10 @@ public class BtdParser
 						{
 							screenOn++;
 						}
+						if (AppsChecker.isBTService(btdRow.getTopProcesses()))
+						{
+							bluetooth++;
+						}
 						
 						lastRow = btdRow;
 					}
@@ -1014,7 +1041,9 @@ public class BtdParser
 				}
 			}
 			
-			float ctxPerMin, crxPerMin, wtxPerMin, wrxPerMin, gpsPerMin, netLocationPerMin, audioPerCount, mediaPerCount, gpsAppsPerCount, gamesPerCount, cameraPerCount, videoPerCount, scOnPerCount;
+			appsList.generateTotals();
+			
+			float ctxPerMin, crxPerMin, wtxPerMin, wrxPerMin, gpsPerMin, netLocationPerMin, audioPerCount, mediaPerCount, btPerCount, gpsAppsPerCount, gamesPerCount, cameraPerCount, videoPerCount, scOnPerCount;
 			ctxPerMin = deltaCTx / time;
 			crxPerMin = deltaCRx / time;
 			wtxPerMin = deltaWTx / time;
@@ -1023,42 +1052,413 @@ public class BtdParser
 			netLocationPerMin = deltaNetLocation / time;
 			audioPerCount = (float) (audio * 100.0 / count);
 			mediaPerCount = (float) (mediaServer * 100.0 / count);
+			btPerCount = (float) (bluetooth * 100.0 / count);
 			gpsAppsPerCount = (float) (gps * 100.0 / count);
 			gamesPerCount = (float) (games * 100.0 / count);
 			cameraPerCount = (float) (camera * 100.0 / count);
 			videoPerCount = (float) (videoFootage * 100.0 / count);
 			scOnPerCount = (float) (screenOn * 100.0 / count);
 			
-			System.out.println("\nEntries read: " + count);
-			System.out.println("CellTX: " + deltaCTx + " - " + formatNumber(ctxPerMin) + " per minute");
-			System.out.println("CellRX: " + deltaCRx + " - " + formatNumber(crxPerMin) + " per minute");
-			System.out.println("WifiTX: " + deltaWTx + " - " + formatNumber(wtxPerMin) + " per minute");
-			System.out.println("WifiRX: " + deltaWRx + " - " + formatNumber(wrxPerMin) + " per minute");
-			System.out.println("GPS Location: " + deltaGps + " - " + formatNumber(gpsPerMin) + " per minute");
-			System.out.println("Network Location: " + deltaNetLocation + " - "
+			if((audioPerCount > 80 || mediaPerCount > 65))
+			{
+				up.setSuspicious(false);
+			}
+			if(scOnPerCount > 80)
+			{
+				up.setSuspicious(false);
+			}
+			if (gpsAppsPerCount + audio > 80 || gpsAppsPerCount + mediaPerCount > 80)
+			{
+				up.setSuspicious(false);
+			}
+			if (gpsPerMin > 35)
+			{
+				up.setSuspicious(false);
+			}
+			
+			Logger.log(Logger.TAG_BTD_PARSER, "\nEntries read: " + count);
+			Logger.log(Logger.TAG_BTD_PARSER, "Entries null: " + nulls);
+			Logger.log(Logger.TAG_BTD_PARSER, "Suspicious: " + up.isSuspicious());
+			Logger.log(Logger.TAG_BTD_PARSER, "\nCellTX: " + deltaCTx + " - " + formatNumber(ctxPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "CellRX: " + deltaCRx + " - " + formatNumber(crxPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "WifiTX: " + deltaWTx + " - " + formatNumber(wtxPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "WifiRX: " + deltaWRx + " - " + formatNumber(wrxPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "GPS Location: " + deltaGps + " - " + formatNumber(gpsPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "Network Location: " + deltaNetLocation + " - "
 			                   + formatNumber(netLocationPerMin) + " per minute");
-			System.out.println("Audio: " + audio + " - " + audioPerCount + "%");
-			System.out.println("MediaServer: " + mediaServer + " - " + mediaPerCount + "%");
-			System.out.println("GPS: " + gps + " - " + gpsAppsPerCount + "%");
-			System.out.println("Games: " + games + " - " + gamesPerCount + "%");
-			System.out.println("Camera: " + camera + " - " + cameraPerCount + "%");
-			System.out.println("Video: " + videoFootage + " - " + videoPerCount + "%");
-			System.out.println("ScreenOn: " + screenOn + " - " + scOnPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "Audio: " + audio + " - " + audioPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "MediaServer: " + mediaServer + " - " + mediaPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "Bluetooth: " + bluetooth + " - " + btPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "GPS: " + gps + " - " + gpsAppsPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "Games: " + games + " - " + gamesPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "Camera: " + camera + " - " + cameraPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "Video: " + videoFootage + " - " + videoPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "ScreenOn: " + screenOn + " - " + scOnPerCount + "%");
 			
-			if (scOnPerCount > 70 && (crxPerMin + wrxPerMin) > 500 && audioPerCount < 20)
-			{
-				System.out.println("Probably online app usage");
-			}
+			Logger.log(Logger.TAG_BTD_PARSER, "Apps list size: " + appsList.size());
 			
-			System.out.println("Apps list size: " + appsList.size());
 			appsList.sortByCpu();
-			for (BtdAppInfo app : appsList)
+			Logger.log(Logger.TAG_BTD_PARSER, "Top Apps by CPU Time:");
+			for (int i = 0; i < 5; i++)
 			{
-				if (app.getDeltaCpuTime() >= 0.1 * up.getDuration() / 1000)
-					System.out.println(app);
+				System.out.println(appsList.get(i) + " - CPU%: " + (100*appsList.get(i).getDeltaCpuTime()/appsList.totalCpu));
 			}
 			
-			System.out.println("\n----------------------------------------------------------------");
+			Logger.log(Logger.TAG_BTD_PARSER, "Top Apps by DataTraffic:");
+			appsList.sortByTotalData();
+			for (int i = 0; i < 5; i++)
+			{
+				if (i < 4 && appsList.get(i+1).getDeltaTx() + appsList.get(i+1).getDeltaRx() == 0)
+				{
+					break;
+				}
+				System.out.println(appsList.get(i) + " - TX%: " + (100*appsList.get(i).getDeltaTx()/appsList.totalTx) + " - RX%: " + (100*appsList.get(i).getDeltaRx()/appsList.totalRx));
+			}
+			
+			if ((crxPerMin + wrxPerMin) > 500 && scOnPerCount > 70 && audioPerCount < 20)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Online apps usage");
+			}
+			if ((audioPerCount > 70 || mediaPerCount > 65) && btPerCount > 40)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Streaming audio using bluetooth");
+			}
+			if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 500) && gpsPerMin > 10 && scOnPerCount > 70)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Navigation apps usage");
+			}
+			if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 500) && gpsPerMin > 10 && scOnPerCount < 35)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Fitness/Trackers apps usage");
+			}
+			if ((mediaPerCount > 70 || audioPerCount > 70) && gpsPerMin < 10 && scOnPerCount < 35)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Audio in background usage");
+			}
+			else if (mediaPerCount > scOnPerCount)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Audio in background for while");
+			}
+			if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 450) && mediaPerCount > 49 && gpsPerMin < 10 && scOnPerCount > 65)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Heavy apps plus audio service usage: Chrome, Facebook, Youtube, Whatsapp etc"); 
+			}
+			else if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 450) && gpsPerMin < 10 && scOnPerCount > 65)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Heavy Apps usage, Chrome, Facebook, Youtube etc"); 
+			}
+			if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 700) && gpsPerMin < 10 && scOnPerCount > 70 && videoFootage > 50)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Video streaming (Hangouts etc)");
+			}
+			if (videoPerCount > 60 && scOnPerCount > 70)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Video footage");
+			}
+			if (scOnPerCount > 90)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-90%+ screen on uptime");
+			}
+			
+			Logger.log(Logger.TAG_BTD_PARSER, "\n----------------------------------------------------------------");
+			
+			up.setAppsData(appsList);
+		}
+		
+		Logger.log(Logger.TAG_BTD_PARSER, "Analizing screen off uptimes");
+		for (BtdUptimePeriod up : getUptimesScOff())
+		{
+			audio = 0;
+			gps = 0;
+			games = 0;
+			screenOn = 0;
+			mediaServer = 0;
+			bluetooth = 0;
+			camera = 0;
+			videoFootage = 0;
+			count = 0;
+			nulls = 0;
+			deltaWRx = 0;
+			deltaWTx = 0;
+			deltaCRx = 0;
+			deltaCTx = 0;
+			deltaGps = 0;
+			deltaNetLocation = 0;
+			time = (float) (up.getDuration() / 60000.0);
+			BtdAppList appsList = new BtdAppList();
+			
+			Logger.log(Logger.TAG_BTD_PARSER, "\n" + BtdParser.formatDate(BtdParser.generateDate(up.getStart())));
+			System.out.println(BtdParser.formatDate(BtdParser.generateDate(up.getEnd())));
+			System.out.println(DateTimeOperator.getTimeStringFromMillis(up.getDuration()));
+			Logger.log(Logger.TAG_BTD_PARSER, "Time minutes: " + formatNumber(time));
+			
+			for (BtdRow btdRow : getBtdRows())
+			{
+				if (btdRow.getTimestamp() >= up.getStart() && btdRow.getTimestamp() <= up.getEnd())
+				{
+					if (btdRow.getTimestamp() == up.getStart())
+					{
+						// divide by 1024 to convert to KB
+						deltaWRx = btdRow.getWifiRx() / 1024;
+						deltaWTx = btdRow.getWifiTx() / 1024;
+						deltaCRx = btdRow.getCellRx() / 1024;
+						deltaCTx = btdRow.getCellTx() / 1024;
+						deltaGps = btdRow.getGpsLocationUpdates();
+						deltaNetLocation = btdRow.getNetworkLocationUpdates();
+						
+						String perUidApps[] = btdRow.getPerUidData().split("\\|");
+						Logger.log(Logger.TAG_BTD_PARSER, "Initial perUid len: " + perUidApps.length);
+						Logger.log(Logger.TAG_BTD_PARSER, "Initial deltaCTX: " + deltaCTx);
+						for (String a : perUidApps)
+						{
+							String appParts[] = a.split(":");
+							if (!appParts[0].contains("unknown") && appParts.length >= 7)
+								appsList.update(appParts[0], appParts[1], Long.parseLong(appParts[2]),
+								                Long.parseLong(appParts[3]), Long.parseLong(appParts[4]));
+						}
+					}
+					else if (btdRow.getTimestamp() == up.getEnd())
+					{
+						// divide by 1024 to convert to KB
+						deltaWRx = btdRow.getWifiRx() / 1024 - deltaWRx;
+						deltaWTx = btdRow.getWifiTx() / 1024 - deltaWTx;
+						deltaCRx = btdRow.getCellRx() / 1024 - deltaCRx;
+						deltaCTx = btdRow.getCellTx() / 1024 - deltaCTx;
+						deltaGps = btdRow.getGpsLocationUpdates() - deltaGps;
+						deltaNetLocation = btdRow.getNetworkLocationUpdates() - deltaNetLocation;
+						
+						String perUidApps[] = btdRow.getPerUidData().split("\\|");
+						Logger.log(Logger.TAG_BTD_PARSER, "Final perUid len: " + perUidApps.length);
+						Logger.log(Logger.TAG_BTD_PARSER, "Final deltaCTX: " + deltaCTx);
+						for (String a : perUidApps)
+						{
+							String appParts[] = a.split(":");
+							if (!appParts[0].contains("unknown") && appParts.length >= 7)
+								appsList.update(appParts[0], appParts[1], Long.parseLong(appParts[2]),
+								                Long.parseLong(appParts[3]), Long.parseLong(appParts[4]));
+						}
+					}
+					else
+					{
+						String perUidApps[] = btdRow.getPerUidData().split("\\|");
+						for (String a : perUidApps)
+						{
+							String appParts[] = a.split(":");
+							if (!appParts[0].contains("unknown") && appParts.length >= 7)
+								appsList.update(appParts[0], appParts[1], Long.parseLong(appParts[2]),
+								                Long.parseLong(appParts[3]), Long.parseLong(appParts[4]));
+						}
+					}
+					
+					if (btdRow.getTopProcesses().equals("null") || btdRow.getTopProcesses().equals(""))
+					{
+						nulls++;
+						if (lastRow == null)
+						{
+							continue;
+						}
+						if (AppsChecker.isAudioService(lastRow.getTopProcesses()))
+						{
+							mediaServer++;
+						}
+						if (AppsChecker.isCameraService(lastRow.getTopProcesses()))
+						{
+							camera++;
+						}
+						if (AppsChecker.isCameraService(lastRow.getTopProcesses())
+						    && AppsChecker.isAudioService(lastRow.getTopProcesses()))
+						{
+							videoFootage++;
+						}
+						if (AppsChecker.isBTService(lastRow.getTopProcesses()))
+						{
+							bluetooth++;
+						}
+						if (AppsChecker.isAudioApp(lastRow.getTopProcesses()))
+						{
+							audio++;
+						}
+						if (AppsChecker.isGpsApp(lastRow.getTopProcesses()))
+						{
+							gps++;
+						}
+						if (AppsChecker.isGameApp(lastRow.getTopProcesses()))
+						{
+							games++;
+						}
+						if (lastRow.getScreenOn() == 0)
+						{
+							screenOn++;
+						}
+					}
+					else
+					{
+						if (AppsChecker.isAudioApp(btdRow.getTopProcesses()))
+						{
+							audio++;
+						}
+						if (AppsChecker.isGpsApp(btdRow.getTopProcesses()))
+						{
+							gps++;
+						}
+						if (AppsChecker.isGameApp(btdRow.getTopProcesses()))
+						{
+							games++;
+						}
+						if (btdRow.getScreenOn() == 0)
+						{
+							screenOn++;
+						}
+						if (AppsChecker.isBTService(btdRow.getTopProcesses()))
+						{
+							bluetooth++;
+						}
+						
+						lastRow = btdRow;
+					}
+					
+					count++;
+				}
+			}
+			
+			appsList.generateTotals();
+			
+			float ctxPerMin, crxPerMin, wtxPerMin, wrxPerMin, gpsPerMin, netLocationPerMin, audioPerCount, mediaPerCount, btPerCount, gpsAppsPerCount, gamesPerCount, cameraPerCount, videoPerCount, scOnPerCount;
+			ctxPerMin = deltaCTx / time;
+			crxPerMin = deltaCRx / time;
+			wtxPerMin = deltaWTx / time;
+			wrxPerMin = deltaWRx / time;
+			gpsPerMin = deltaGps / time;
+			netLocationPerMin = deltaNetLocation / time;
+			audioPerCount = (float) (audio * 100.0 / count);
+			mediaPerCount = (float) (mediaServer * 100.0 / count);
+			btPerCount = (float) (bluetooth * 100.0 / count);
+			gpsAppsPerCount = (float) (gps * 100.0 / count);
+			gamesPerCount = (float) (games * 100.0 / count);
+			cameraPerCount = (float) (camera * 100.0 / count);
+			videoPerCount = (float) (videoFootage * 100.0 / count);
+			scOnPerCount = (float) (screenOn * 100.0 / count);
+			
+			if((audioPerCount > 80 || mediaPerCount > 65))
+			{
+				up.setSuspicious(false);
+			}
+			if(scOnPerCount > 80)
+			{
+				up.setSuspicious(false);
+			}
+			if (gpsAppsPerCount + audio > 80 || gpsAppsPerCount + mediaPerCount > 80)
+			{
+				up.setSuspicious(false);
+			}
+			if (gpsPerMin > 35)
+			{
+				up.setSuspicious(false);
+			}
+			
+			Logger.log(Logger.TAG_BTD_PARSER, "\nEntries read: " + count);
+			Logger.log(Logger.TAG_BTD_PARSER, "Entries null: " + nulls);
+			Logger.log(Logger.TAG_BTD_PARSER, "Suspicious: " + up.isSuspicious());
+			Logger.log(Logger.TAG_BTD_PARSER, "\nCellTX: " + deltaCTx + " - " + formatNumber(ctxPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "CellRX: " + deltaCRx + " - " + formatNumber(crxPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "WifiTX: " + deltaWTx + " - " + formatNumber(wtxPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "WifiRX: " + deltaWRx + " - " + formatNumber(wrxPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "GPS Location: " + deltaGps + " - " + formatNumber(gpsPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "Network Location: " + deltaNetLocation + " - "
+			                   + formatNumber(netLocationPerMin) + " per minute");
+			Logger.log(Logger.TAG_BTD_PARSER, "Audio: " + audio + " - " + audioPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "MediaServer: " + mediaServer + " - " + mediaPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "Bluetooth: " + bluetooth + " - " + btPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "GPS: " + gps + " - " + gpsAppsPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "Games: " + games + " - " + gamesPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "Camera: " + camera + " - " + cameraPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "Video: " + videoFootage + " - " + videoPerCount + "%");
+			Logger.log(Logger.TAG_BTD_PARSER, "ScreenOn: " + screenOn + " - " + scOnPerCount + "%");
+			
+			Logger.log(Logger.TAG_BTD_PARSER, "Apps list size: " + appsList.size());
+			
+			appsList.sortByCpu();
+			Logger.log(Logger.TAG_BTD_PARSER, "Top Apps by CPU Time:");
+			for (int i = 0; i < 5; i++)
+			{
+				System.out.println(appsList.get(i) + " - CPU%: " + (100*appsList.get(i).getDeltaCpuTime()/appsList.totalCpu));
+			}
+			
+			Logger.log(Logger.TAG_BTD_PARSER, "Top Apps by DataTraffic:");
+			appsList.sortByTotalData();
+			for (int i = 0; i < 5; i++)
+			{
+				if (i < 4 && appsList.get(i+1).getDeltaTx() + appsList.get(i+1).getDeltaRx() == 0)
+				{
+					break;
+				}
+				System.out.println(appsList.get(i) + " - TX%: " + (100*appsList.get(i).getDeltaTx()/appsList.totalTx) + " - RX%: " + (100*appsList.get(i).getDeltaRx()/appsList.totalRx));
+			}
+			
+			if ((crxPerMin + wrxPerMin) > 500 && scOnPerCount > 70 && audioPerCount < 20)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Online apps usage");
+			}
+			if ((audioPerCount > 70 || mediaPerCount > 65) && btPerCount > 40)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Streaming audio using bluetooth");
+			}
+			if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 500) && gpsPerMin > 10 && scOnPerCount > 70)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Navigation apps usage");
+			}
+			if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 500) && gpsPerMin > 10 && scOnPerCount < 35)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Fitness/Trackers apps usage");
+			}
+			if ((mediaPerCount > 70 || audioPerCount > 70) && gpsPerMin < 10 && scOnPerCount < 35)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Audio in background usage");
+			}
+			else if (mediaPerCount > scOnPerCount)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Audio in background for while");
+			}
+			if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 450) && mediaPerCount > 49 && gpsPerMin < 10 && scOnPerCount > 65)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Heavy apps plus audio service usage: Chrome, Facebook, Youtube, Whatsapp etc"); 
+			}
+			else if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 450) && gpsPerMin < 10 && scOnPerCount > 65)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Heavy Apps usage, Chrome, Facebook, Youtube etc"); 
+			}
+			if (((ctxPerMin + wtxPerMin) > 500 || (crxPerMin + wrxPerMin) > 700) && gpsPerMin < 10 && scOnPerCount > 70 && videoFootage > 50)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Video streaming (Hangouts etc)");
+			}
+			if (videoPerCount > 60 && scOnPerCount > 70)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-Video footage");
+			}
+			if (scOnPerCount > 90)
+			{
+				Logger.log(Logger.TAG_BTD_PARSER, "-90%+ screen on uptime");
+			}
+			
+			Logger.log(Logger.TAG_BTD_PARSER, "\n----------------------------------------------------------------");
+		}
+		
+		for(int i =0; i < uptimes.size(); i++)
+		{
+			if(uptimes.get(i).isSuspicious() == false)
+			{
+				uptimes.remove(i);
+				i--;
+			}
+		}
+		
+		for(int i =0; i < uptimesScOff.size(); i++)
+		{
+			if(uptimesScOff.get(i).isSuspicious() == false)
+			{
+				uptimesScOff.remove(i);
+				i--;
+			}
 		}
 	}
 	

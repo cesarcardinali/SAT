@@ -31,6 +31,7 @@ public class AppsChecker
 		audioAppsList.add("spotify");
 		audioAppsList.add("fmradio");
 		audioAppsList.add("deezer");
+		audioAppsList.add("fm.player");
 		
 		gpsAppsList.add("runtastic");
 		gpsAppsList.add("runkeeper");
@@ -98,6 +99,16 @@ public class AppsChecker
 	public static boolean isCameraService(String process)
 	{
 		if (process.contains(cameraService))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public static boolean isBTService(String process)
+	{
+		if (process.contains("bluetooth"))
 		{
 			return true;
 		}

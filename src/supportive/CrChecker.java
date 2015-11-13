@@ -841,13 +841,13 @@ public class CrChecker
 			}
 			else
 			{
-				if (btdParser.uptime())
+				if (btdParser.uptimeScOff())
 				{
-					uptimesComment = "{panel:title=*All long uptimes detected*|titleBGColor=#E9F2FF}\\n";
+					uptimesComment = "{panel:title=*Long uptimes while screen continuously OFF*|titleBGColor=#E9F2FF}\\n";
 					int i = 1;
 					long total = 0;
 					
-					for (BtdUptimePeriod ut : btdParser.getUptimes())
+					for (BtdUptimePeriod ut : btdParser.getUptimesScOff())
 					{
 						uptimesComment += "- *Uptime " + i + "*\\n";
 						uptimesComment += ut.toJiraComment();
@@ -859,14 +859,13 @@ public class CrChecker
 					
 					uptimesComment += "\\n{panel}\\n\\n";
 				}
-				
-				if (btdParser.uptimeScOff())
+				else if (btdParser.uptime())
 				{
-					uptimesComment = "{panel:title=*Long uptimes while screen continuously OFF*|titleBGColor=#E9F2FF}\\n";
+					uptimesComment = "{panel:title=*All long uptimes detected*|titleBGColor=#E9F2FF}\\n";
 					int i = 1;
 					long total = 0;
 					
-					for (BtdUptimePeriod ut : btdParser.getUptimesScOff())
+					for (BtdUptimePeriod ut : btdParser.getUptimes())
 					{
 						uptimesComment += "- *Uptime " + i + "*\\n";
 						uptimesComment += ut.toJiraComment();

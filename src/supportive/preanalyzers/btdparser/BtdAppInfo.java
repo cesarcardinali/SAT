@@ -56,7 +56,7 @@ public class BtdAppInfo
 	{
 		return uid;
 	}
-	
+
 	public String toString()
 	{
 		return "[ name=\"" + name + "\", uid:\"" + uid + "\", cpuTime=" + deltaCpuTime + ", RX=" + deltaRx + ", TX=" + deltaTx + " ]";
