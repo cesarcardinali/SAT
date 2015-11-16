@@ -386,7 +386,7 @@ public class CrsManagerPane extends JPanel
 	 */
 	private void downloadCRs() throws ParseException
 	{
-		SharedObjs.crsManagerPane.addLogLine("Acquiring CRs data ...");
+		//SharedObjs.crsManagerPane.addLogLine("Generating CRs list ...");
 		errors = 0;
 		
 		// Setup jira connection
@@ -398,6 +398,12 @@ public class CrsManagerPane extends JPanel
 		CRs = textDownload.getText().replaceAll(" ", "").split("\n");
 		
 		Logger.log(Logger.TAG_CRSMANAGER, "CRs List:" + CRs.length);
+		if (CRs.length == 0 || (CRs.length == 1 && !CRs[0].contains("-")))
+		{
+			SharedObjs.crsManagerPane.addLogLine("CRs list empty");
+			btnDownload.setEnabled(true);
+			return;
+		}
 		
 		ArrayList<String> b2gList = new ArrayList<String>();
 		
@@ -408,6 +414,7 @@ public class CrsManagerPane extends JPanel
 			Logger.log(Logger.TAG_CRSMANAGER, "Label entered: " + s);
 		}
 		
+		SharedObjs.crsManagerPane.addLogLine("Acquiring CRs data ...");
 		SharedObjs.getCrsList().clear();
 		
 		// Manage CR
