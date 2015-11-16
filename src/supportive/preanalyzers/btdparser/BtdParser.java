@@ -1992,16 +1992,6 @@ public class BtdParser
 		br.close();
 	}
 	
-	public void showWakeLocks()
-	{
-		System.out.println("------------------------------------\n");
-		for (BtdWL item : kernelWLs)
-		{
-			Logger.log(Logger.TAG_BTD_PARSER, item.toString());
-			System.out.println("------------------------------------\n");
-		}
-	}
-	
 	public String parseResult()
 	{
 		String data = "";
@@ -2065,6 +2055,76 @@ public class BtdParser
 		       + formatNumber(getPercentage(screenData[4], screenData[5])) + "%\n";
 		
 		return data;
+	}
+	
+	public String toJiraComment()
+	{
+		String data = "{panel:title=*BTD Discharge Statistics*|titleBGColor=#E9F2FF}\\n{noformat}\\n";
+		
+		data += "The longer discharge period is from " + formatDate(finalState.getStartDate()) + " to "
+		        + formatDate(finalState.getEndDate()) + "\\nA total time of "
+		        + dateDiff(finalState.getStartDate(), finalState.getEndDate()) + "\\n";
+		
+		data += "Time awake: " + getDateStringFromBtdStringMillis(awakeTimeOnBatt) + "\\n";
+		data += "Total discharged capacity: " + (consumeOn + consumeOff) + "mA\\n";
+		data += "Battery from/to: " + bttDischarged[0] + "% --> " + bttDischarged[1] + "%" + "\\n";
+		
+		// data += "Total On mAh: " + consumeOn + " - Total ms: " + timeOn + "\\n";
+		data += "Average Screen On mAh: " + getAverageconsumeOn() + " for "
+		        + getDateStringFromBtdStringMillis(timeOn) + "\\n";
+		
+		// data += "Total Off mAh: " + consumeOff + " - Total ms: " + timeOff + "\\n";
+		data += "Average Screen Off mAh: " + getAverageconsumeOff() + " for "
+		        + getDateStringFromBtdStringMillis(timeOff) + "\\n";
+		
+		data += "Cell Rx: " + cellRX + " KBytes  ||  Cell TX: " + cellTX + " KBytes" + "\\n";
+		data += "Wifi Rx: " + wifiRX + " KBytes  ||  Wifi TX: " + wifiTX + " KBytes" + "\\n";
+		data += "GPS Location: " + gpsLocation + "\\n";
+		data += "Network Location: " + networkLocation + "\\n";
+		
+		data += "Phonecalls time: " + getDateStringFromBtdStringMillis(phoneCall) + "\\n";
+		
+		data += "Wifi Running time: " + getDateStringFromBtdStringMillis(wifiRunningTime) + "\\n";
+		
+		data += "Tethering time: " + getDateStringFromBtdStringMillis(tetheringTime) + "\\n";
+		
+		data += "Signal data:" + "\\n";
+		data += "      none:             " + getDateStringFromBtdStringMillis(signalData[0]) + " - "
+		        + formatNumber(getPercentage(signalData[0], signalData[5])) + "%\\n";
+		data += "      poor:             " + getDateStringFromBtdStringMillis(signalData[1]) + " - "
+		        + formatNumber(getPercentage(signalData[1], signalData[5])) + "%\\n";
+		data += "      moderate:      " + getDateStringFromBtdStringMillis(signalData[2]) + " - "
+		        + formatNumber(getPercentage(signalData[2], signalData[5])) + "%\\n";
+		data += "      good:             " + getDateStringFromBtdStringMillis(signalData[3]) + " - "
+		        + formatNumber(getPercentage(signalData[3], signalData[5])) + "%\\n";
+		data += "      great:             " + getDateStringFromBtdStringMillis(signalData[4]) + " - "
+		        + formatNumber(getPercentage(signalData[4], signalData[5])) + "%\\n";
+		
+		data += "Screen brightnesses:" + "\\n";
+		data += "      dark:             " + getDateStringFromBtdStringMillis(screenData[0]) + " - "
+		        + formatNumber(getPercentage(screenData[0], screenData[5])) + "%\\n";
+		data += "      dim:             " + getDateStringFromBtdStringMillis(screenData[1]) + " - "
+		        + formatNumber(getPercentage(screenData[1], screenData[5])) + "%\\n";
+		data += "      medium:            " + getDateStringFromBtdStringMillis(screenData[2]) + " - "
+		        + formatNumber(getPercentage(screenData[2], screenData[5])) + "%\\n";
+		data += "      light:             " + getDateStringFromBtdStringMillis(screenData[3]) + " - "
+		        + formatNumber(getPercentage(screenData[3], screenData[5])) + "%\\n";
+		data += "      bright:            " + getDateStringFromBtdStringMillis(screenData[4]) + " - "
+		        + formatNumber(getPercentage(screenData[4], screenData[5])) + "%\\n";
+		
+		data += "{noformat}{panel}";
+		
+		return data;
+	}
+	
+	public void showWakeLocks()
+	{
+		System.out.println("------------------------------------\n");
+		for (BtdWL item : kernelWLs)
+		{
+			Logger.log(Logger.TAG_BTD_PARSER, item.toString());
+			System.out.println("------------------------------------\n");
+		}
 	}
 	
 	public void showPeriods()
