@@ -89,14 +89,22 @@ public class BugrepParser
 			{
 				String files = listOfFiles[i].getName();
 				
-				if (((files.endsWith(".txt")) || (files.endsWith(".TXT"))) && (files.contains("bugreport")))
+				if (files.endsWith(".txt") && files.contains("bugreport"))
 				{
-					if (path.equals("."))
-						file_report = files;
+					if (listOfFiles[i].length() > 5000000)
+					{
+						if (path.equals("."))
+							file_report = files;
+						else
+							file_report = path + "/" + files;
+						
+						break;
+					}
 					else
-						file_report = path + "/" + files;
-					
-					break;
+					{
+						Logger.log(Logger.TAG_BUGREPORT_PARSER, "Bugreport file too short");
+						return false;
+					}
 				}
 			}
 		}
@@ -544,6 +552,12 @@ public class BugrepParser
 				{
 					e.printStackTrace();
 				}
+			}
+			
+			if (rawStats != null && rawStats.length() > 80)
+			{
+				Logger.log(Logger.TAG_BUGREPORT_PARSER, "Could not find \"Statistics\" data in this bugreport");
+				return false;
 			}
 			
 			return true;
