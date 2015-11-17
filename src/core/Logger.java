@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /*
@@ -101,7 +103,13 @@ public class Logger
 			try
 			{
 				openFile();
-				logWriter.write(tag + "\t : " + text + "\n");
+				String fTag = tag;
+				for (int i = tag.length(); i < 20; i++)
+				{
+					fTag += " ";
+				}
+				logWriter.write(new SimpleDateFormat("hh:mm:ss.SSS").format(new Date()) + "   " + fTag + "\t : "
+				                + text + "\n");
 				close();
 			}
 			catch (IOException e)
