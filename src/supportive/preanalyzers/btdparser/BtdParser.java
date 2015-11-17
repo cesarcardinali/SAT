@@ -2070,12 +2070,19 @@ public class BtdParser
 		data += "Battery from/to: " + bttDischarged[0] + "% --> " + bttDischarged[1] + "%" + "\\n";
 		
 		// data += "Total On mAh: " + consumeOn + " - Total ms: " + timeOn + "\\n";
-		data += "Average Screen On mAh: " + getAverageconsumeOn() + " for "
+		data += "Average Screen On mAh: " + getAverageconsumeOn() + "mAh for "
 		        + getDateStringFromBtdStringMillis(timeOn) + "\\n";
 		
-		// data += "Total Off mAh: " + consumeOff + " - Total ms: " + timeOff + "\\n";
-		data += "Average Screen Off mAh: " + getAverageconsumeOff() + " for "
-		        + getDateStringFromBtdStringMillis(timeOff) + "\\n";
+		if(getAverageconsumeOff() < 100)
+		{
+			data += "Average Screen Off mAh: *" + getAverageconsumeOff() + "mAh* for "
+		    		        + getDateStringFromBtdStringMillis(timeOff) + " --> _Low CD._\\n";
+		}
+		else
+		{
+    		data += "Average Screen Off mAh: " + getAverageconsumeOff() + "mAh for "
+    		        + getDateStringFromBtdStringMillis(timeOff) + "\\n";
+		}
 		
 		data += "Cell Rx: " + cellRX + " KBytes  ||  Cell TX: " + cellTX + " KBytes" + "\\n";
 		data += "Wifi Rx: " + wifiRX + " KBytes  ||  Wifi TX: " + wifiTX + " KBytes" + "\\n";
@@ -2112,7 +2119,7 @@ public class BtdParser
 		data += "      bright:            " + getDateStringFromBtdStringMillis(screenData[4]) + " - "
 		        + formatNumber(getPercentage(screenData[4], screenData[5])) + "%\\n";
 		
-		data += "{noformat}{panel}";
+		data += "{noformat}\\n{panel}";
 		
 		return data;
 	}

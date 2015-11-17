@@ -762,8 +762,8 @@ public class CrChecker
 				comment += btdParser.currentDrainStatistics().replace("\n", "\\n");
 				
 				String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
-				eblDecresed = eblDecresed + btdParser.eblDecreasers().replace("\n", "\\n");
-				eblDecresed = eblDecresed + "{panel}\\n";
+				eblDecresed += btdParser.eblDecreasers().replace("\n", "\\n");
+				eblDecresed += "{panel}\\n";
 				
 				if (eblDecresed.split("\\\\n|\\n|\n").length > 2)
 				{
@@ -800,7 +800,7 @@ public class CrChecker
 				                                     + " as cancelled");
 				
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+				           "1 This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
 				
 				return true;
 			}
@@ -808,9 +808,8 @@ public class CrChecker
 			{
 				String comment = btdParser.toJiraComment();
 				String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
-				eblDecresed = eblDecresed + bugrepParser.eblDecreasedReasons();
-				eblDecresed = eblDecresed + btdParser.eblDecreasers();
-				eblDecresed = eblDecresed + "{panel}\\n";
+				eblDecresed += btdParser.eblDecreasers();
+				eblDecresed += "{panel}\\n";
 				
 				if (eblDecresed.split("\\\\n|\\n|\n").length > 2)
 				{
@@ -842,15 +841,16 @@ public class CrChecker
 				                                     + " as cancelled");
 				
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+				           "2 This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+				
+				return true;
 			}
-			
 			else if (btdParser.getAverageconsumeOff() <= 70 && btdParser.uptime() == false)
 			{
 				String comment = btdParser.toJiraComment();
 				String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
-				eblDecresed += eblDecresed + btdParser.eblDecreasers();
-				eblDecresed += eblDecresed + "{panel}\\n";
+				eblDecresed += btdParser.eblDecreasers();
+				eblDecresed += "{panel}\\n";
 				
 				if (eblDecresed.split("\\\\n|\\n|\n").length > 2)
 				{
@@ -881,7 +881,7 @@ public class CrChecker
 				                                     + " as cancelled");
 				
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
+				           "3 This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
 				
 				return true;
 			}
