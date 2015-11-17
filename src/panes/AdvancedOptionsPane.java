@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
@@ -30,6 +31,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.jdom2.JDOMException;
 
+import core.Icons;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
@@ -56,6 +58,8 @@ public class AdvancedOptionsPane extends JFrame
 	private HashMap<String, String> dupMap;
 	private HashMap<String, String> bat_capMap;
 	private JButton                 btnCancel;
+	private JButton                 button;
+	private JButton                 button_1;
 	
 	/**
 	 * Create the frame.
@@ -63,10 +67,9 @@ public class AdvancedOptionsPane extends JFrame
 	public AdvancedOptionsPane()
 	{
 		setTitle("Advanced options");
-		setResizable(false);
 		setMinimumSize(new Dimension(400, 350));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 429, 356);
+		setBounds(100, 100, 444, 356);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -98,9 +101,9 @@ public class AdvancedOptionsPane extends JFrame
 		contentPane.add(panel, gbc_panel);
 		
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] {0, 0, 0, 0};
+		gbl_panel.columnWidths = new int[] {0, 150, 0, 0, 0};
 		gbl_panel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[] {0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.columnWeights = new double[] {0.0, 4.0, 3.0, 0.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		lblConfigureDiagwsDup = new JLabel("Configure DIAG_WS Dup CR");
@@ -109,7 +112,7 @@ public class AdvancedOptionsPane extends JFrame
 		GridBagConstraints gbc_lblConfigureDiagwsDup = new GridBagConstraints();
 		gbc_lblConfigureDiagwsDup.anchor = GridBagConstraints.WEST;
 		gbc_lblConfigureDiagwsDup.gridwidth = 3;
-		gbc_lblConfigureDiagwsDup.insets = new Insets(0, 0, 5, 0);
+		gbc_lblConfigureDiagwsDup.insets = new Insets(0, 0, 5, 5);
 		gbc_lblConfigureDiagwsDup.gridx = 0;
 		gbc_lblConfigureDiagwsDup.gridy = 0;
 		panel.add(lblConfigureDiagwsDup, gbc_lblConfigureDiagwsDup);
@@ -125,29 +128,51 @@ public class AdvancedOptionsPane extends JFrame
 		cbxDiagProd.setMinimumSize(new Dimension(150, 20));
 		cbxDiagProd.setPreferredSize(new Dimension(150, 20));
 		GridBagConstraints gbc_cbxDiagProd = new GridBagConstraints();
+		gbc_cbxDiagProd.fill = GridBagConstraints.HORIZONTAL;
 		gbc_cbxDiagProd.insets = new Insets(0, 0, 5, 5);
-		gbc_cbxDiagProd.anchor = GridBagConstraints.WEST;
 		gbc_cbxDiagProd.gridx = 1;
 		gbc_cbxDiagProd.gridy = 1;
 		panel.add(cbxDiagProd, gbc_cbxDiagProd);
 		
 		textDiag = new JTextField();
-		textDiag.setPreferredSize(new Dimension(150, 20));
-		textDiag.setMinimumSize(new Dimension(150, 20));
+		textDiag.setPreferredSize(new Dimension(110, 20));
+		textDiag.setMinimumSize(new Dimension(110, 20));
 		GridBagConstraints gbc_textDiag = new GridBagConstraints();
-		gbc_textDiag.insets = new Insets(0, 0, 5, 0);
 		gbc_textDiag.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textDiag.insets = new Insets(0, 0, 5, 5);
 		gbc_textDiag.gridx = 2;
 		gbc_textDiag.gridy = 1;
 		panel.add(textDiag, gbc_textDiag);
 		textDiag.setColumns(10);
+		
+		button = new JButton("");
+		button.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				String pName = JOptionPane.showInputDialog("Type the product name");
+				String dDup = JOptionPane.showInputDialog("Type the CR to dup for");
+				dupMap.put(pName, dDup);
+				setData();
+				getData();
+			}
+		});
+		button.setIcon(Icons.add);
+		button.setPreferredSize(new Dimension(30, 25));
+		button.setMinimumSize(new Dimension(30, 30));
+		button.setMaximumSize(new Dimension(30, 30));
+		GridBagConstraints gbc_button = new GridBagConstraints();
+		gbc_button.insets = new Insets(0, 0, 5, 0);
+		gbc_button.gridx = 3;
+		gbc_button.gridy = 1;
+		panel.add(button, gbc_button);
 		
 		separator = new JSeparator();
 		separator.setBackground(Color.LIGHT_GRAY);
 		separator.setForeground(Color.GRAY);
 		separator.setPreferredSize(new Dimension(2, 2));
 		GridBagConstraints gbc_separator = new GridBagConstraints();
-		gbc_separator.insets = new Insets(10, 0, 10, 0);
+		gbc_separator.insets = new Insets(10, 0, 10, 5);
 		gbc_separator.fill = GridBagConstraints.BOTH;
 		gbc_separator.gridwidth = 3;
 		gbc_separator.gridx = 0;
@@ -157,7 +182,7 @@ public class AdvancedOptionsPane extends JFrame
 		lblBatCap = new JLabel("Configure battery capacities");
 		lblBatCap.setFont(new Font("Tahoma", Font.BOLD, 14));
 		GridBagConstraints gbc_lblBatCap = new GridBagConstraints();
-		gbc_lblBatCap.insets = new Insets(0, 0, 5, 0);
+		gbc_lblBatCap.insets = new Insets(0, 0, 5, 5);
 		gbc_lblBatCap.anchor = GridBagConstraints.WEST;
 		gbc_lblBatCap.gridwidth = 3;
 		gbc_lblBatCap.gridx = 0;
@@ -176,22 +201,41 @@ public class AdvancedOptionsPane extends JFrame
 		cbxBatCap.setMinimumSize(new Dimension(150, 20));
 		cbxBatCap.setPreferredSize(new Dimension(150, 20));
 		GridBagConstraints gbc_cbxBatCap = new GridBagConstraints();
-		gbc_cbxBatCap.anchor = GridBagConstraints.WEST;
+		gbc_cbxBatCap.fill = GridBagConstraints.HORIZONTAL;
 		gbc_cbxBatCap.insets = new Insets(0, 0, 5, 5);
 		gbc_cbxBatCap.gridx = 1;
 		gbc_cbxBatCap.gridy = 4;
 		panel.add(cbxBatCap, gbc_cbxBatCap);
 		
 		textBatCap = new JTextField();
-		textBatCap.setPreferredSize(new Dimension(150, 20));
-		textBatCap.setMinimumSize(new Dimension(150, 20));
-		textBatCap.setColumns(10);
+		textBatCap.setPreferredSize(new Dimension(110, 20));
+		textBatCap.setMinimumSize(new Dimension(110, 20));
 		GridBagConstraints gbc_textBatCap = new GridBagConstraints();
-		gbc_textBatCap.insets = new Insets(0, 0, 5, 0);
 		gbc_textBatCap.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textBatCap.insets = new Insets(0, 0, 5, 5);
 		gbc_textBatCap.gridx = 2;
 		gbc_textBatCap.gridy = 4;
 		panel.add(textBatCap, gbc_textBatCap);
+		
+		button_1 = new JButton("");
+		button_1.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				String pName = JOptionPane.showInputDialog("Type the product name");
+				String bCap = JOptionPane.showInputDialog("Type the battery capacity");
+				bat_capMap.put(pName, bCap);
+				setData();
+				getData();
+			}
+		});
+		button_1.setIcon(Icons.add);
+		button_1.setPreferredSize(new Dimension(30, 25));
+		GridBagConstraints gbc_button_1 = new GridBagConstraints();
+		gbc_button_1.insets = new Insets(0, 0, 5, 0);
+		gbc_button_1.gridx = 3;
+		gbc_button_1.gridy = 4;
+		panel.add(button_1, gbc_button_1);
 		
 		separator_1 = new JSeparator();
 		separator_1.setPreferredSize(new Dimension(2, 2));
@@ -200,7 +244,7 @@ public class AdvancedOptionsPane extends JFrame
 		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
 		gbc_separator_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_separator_1.gridwidth = 3;
-		gbc_separator_1.insets = new Insets(10, 0, 10, 0);
+		gbc_separator_1.insets = new Insets(10, 0, 10, 5);
 		gbc_separator_1.gridx = 0;
 		gbc_separator_1.gridy = 5;
 		panel.add(separator_1, gbc_separator_1);
@@ -255,11 +299,11 @@ public class AdvancedOptionsPane extends JFrame
 		});
 		
 		textDiag.addFocusListener(new FocusListener()
-		{	
+		{
 			@Override
 			public void focusLost(FocusEvent arg0)
 			{
-				dupMap.put((String)cbxDiagProd.getSelectedItem(), textDiag.getText());
+				dupMap.put((String) cbxDiagProd.getSelectedItem(), textDiag.getText());
 			}
 			
 			@Override
@@ -269,11 +313,11 @@ public class AdvancedOptionsPane extends JFrame
 		});
 		
 		textBatCap.addFocusListener(new FocusListener()
-		{	
+		{
 			@Override
 			public void focusLost(FocusEvent arg0)
 			{
-				bat_capMap.put((String)cbxBatCap.getSelectedItem(), textBatCap.getText());
+				bat_capMap.put((String) cbxBatCap.getSelectedItem(), textBatCap.getText());
 			}
 			
 			@Override
@@ -307,6 +351,8 @@ public class AdvancedOptionsPane extends JFrame
 	{
 		dupMap.clear();
 		bat_capMap.clear();
+		cbxDiagProd.removeAllItems();
+		cbxBatCap.removeAllItems();
 		
 		dupMap.putAll(XmlMngr.getDiagDupItems());
 		System.out.println(dupMap);

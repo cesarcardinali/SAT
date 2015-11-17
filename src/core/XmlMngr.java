@@ -665,8 +665,16 @@ public class XmlMngr
 		
 		for (String value : items.keySet())
 		{
-			element.getChild(value).setText(items.get(value));
-			System.out.println(element.getChild(value).getName() + " - " + element.getChild(value).getText());
+			Element e = element.getChild(value);
+			if(e == null)
+			{
+				element.addContent(new Element(value));
+				e = element.getChild(value).setText(items.get(value));
+			}
+			else
+			{
+				e.setText(items.get(value));
+			}
 		}
 	}
 	
@@ -676,7 +684,16 @@ public class XmlMngr
 		
 		for (String value : items.keySet())
 		{
-			element.getChild(value).setText(items.get(value));
+			Element e = element.getChild(value);
+			if(e == null)
+			{
+				element.addContent(new Element(value));
+				e = element.getChild(value).setText(items.get(value));
+			}
+			else
+			{
+				e.setText(items.get(value));
+			}
 		}
 	}
 	
