@@ -346,6 +346,9 @@ public class BtdParser
 			               + finalState.getStart() + " AND " + finalState.getEnd()
 			               + " AND WIFI_LABEL = ''  AND CELL_LABEL != '';");
 			
+			if (rs == null || rs.isClosed() || rs.wasNull())
+				return 0;
+			
 			lastCTX = rs.getLong(1); // Received (BTD error)
 			lastWRX = rs.getLong(2); // Transferred (BTD error)
 			lastTime = rs.getLong(3);
@@ -874,7 +877,7 @@ public class BtdParser
 			}
 			if(uptimesScOff.size() == 0)
 			{
-				uptimesScOff.setLongerPeriod(null);
+				uptimesScOff.setLongerPeriod(new BtdUptimePeriod());
 			}
 			
 			parseUptimes();
@@ -1780,14 +1783,18 @@ public class BtdParser
 			Statement localStmt;
 			localStmt = c.createStatement();
 			ResultSet rs = localStmt.executeQuery("SELECT VALUE FROM t_phoneinfo WHERE NAME LIKE 'TZ_ID';");
-			timezone = rs.getString(1);
+			if (!rs.isClosed() && rs.getString(1) != null)
+			{
+				timezone = rs.getString(1);
+				return timezone;
+			}
 			
-			return timezone;
+			return "0";
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return null;
+			return "0";
 		}
 	}
 	
@@ -1795,7 +1802,7 @@ public class BtdParser
 	{
 		try
 		{
-			if (stmt.isClosed())
+			if (!stmt.isClosed())
 				stmt.close();
 			
 			stmt = c.createStatement();
