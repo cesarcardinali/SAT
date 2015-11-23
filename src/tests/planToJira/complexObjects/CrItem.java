@@ -1,4 +1,4 @@
-package objects;
+package tests.planToJira.complexObjects;
 
 
 import java.util.ArrayList;
@@ -9,20 +9,16 @@ import java.util.ArrayList;
  */
 public class CrItem
 {
-	private String            b2gID;          // Represents the b2g ID
-	private String            jiraID;         // Represents the Jira ID
-	private String            summary;        // Represents CR summary
-	private String            status;         // Represents CR status
-	private String            resolution;     // Represents CR resolution
-	private String            assignee;       // Represents CR assignee
-	private String            product;        // Represents CR assignee
-	private String            created;        //
-	private String            updated;        //
-	private String            affectedVersion; //
-	private String            component;      //
-	private ArrayList<String> labels;         // Represents CR labels
-	private String            dup;            // Represents CR dups
-	private String            comment;        // Represents a comment to be inserted at this CR
+	private String            b2gID;       // Represents the b2g ID
+	private String            jiraID;      // Represents the Jira ID
+	private String            status;      // Represents CR status
+	private String            resolution;  // Represents CR resolution
+	private String            summary;     // Represents CR summary
+	private String            assignee;    // Represents CR assignee
+	private String            product;    // Represents CR assignee
+	private ArrayList<String> labels;      // Represents CR labels
+	private String            dup;         // Represents CR dups
+	private String            comment;     // Represents a comment to be inserted at this CR
 	private String            closure_date;
 	
 	/**
@@ -61,8 +57,7 @@ public class CrItem
 	public String toString()
 	{
 		return "Jira: " + jiraID + " || B2gID: " + b2gID + " || Status: " + status + " || Resolution: "
-		       + resolution + " || Summary: " + summary + " || Assignee: " + assignee + " || Labels: "
-		       + labels + " || Dup: " + dup;
+		       + resolution + " || Summary: " + summary + " || Assignee: " + assignee + " || Labels: " + labels + " || Dup: " + dup;
 	}
 	
 	// Getters and Setters
@@ -171,64 +166,14 @@ public class CrItem
 	{
 		this.closure_date = closure_date;
 	}
-	
+
 	public String getProduct()
 	{
 		return product;
 	}
-	
+
 	public void setProduct(String product)
 	{
 		this.product = product;
-	}
-
-	public String getCreated()
-	{
-		return created;
-	}
-
-	public void setCreated(String created)
-	{
-		this.created = created;
-	}
-
-	public String getUpdated()
-	{
-		return updated;
-	}
-
-	public void setUpdated(String updated)
-	{
-		this.updated = updated;
-	}
-
-	public String getAffectedVersion()
-	{
-		return affectedVersion;
-	}
-
-	public void setAffectedVersion(String affectedVersion)
-	{
-		this.affectedVersion = affectedVersion;
-	}
-
-	public String getComponent()
-	{
-		return component;
-	}
-
-	public void setComponent(String component)
-	{
-		this.component = component;
-	}
-
-	public String getClosure_date()
-	{
-		return closure_date;
-	}
-
-	public void setClosure_date(String closure_date)
-	{
-		this.closure_date = closure_date;
 	}
 }

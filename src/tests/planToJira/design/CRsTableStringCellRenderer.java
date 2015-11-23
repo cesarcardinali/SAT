@@ -1,4 +1,4 @@
-package style;
+package tests.planToJira.design;
 
 
 import java.awt.Component;
@@ -8,12 +8,15 @@ import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import style.Colors;
+import style.SharedFiltersTableModel;
+
 
 @SuppressWarnings("serial")
-public class FiltersTableStringCellRenderer extends DefaultTableCellRenderer
+public class CRsTableStringCellRenderer extends DefaultTableCellRenderer
 {
 	
-	public FiltersTableStringCellRenderer()
+	public CRsTableStringCellRenderer()
 	{
 		super();
 	}
@@ -45,14 +48,14 @@ public class FiltersTableStringCellRenderer extends DefaultTableCellRenderer
 		}
 		
 		// Exclusive mods for tables using CRsTableModel
-		if (table.getModel().getClass().equals(MyFiltersTableModel.class))
+		if (table.getModel().getClass().equals(CRsTableModel.class))
 		{
-			if (isSelected && hasFocus && column == MyFiltersTableModel.HIDDEN_INDEX)
+			if (isSelected && hasFocus && column == CRsTableModel.HIDDEN_INDEX)
 			{
 				if ((table.getModel().getRowCount() - 1) == row
-					&& !((MyFiltersTableModel) table.getModel()).hasEmptyRow())
+					&& !((CRsTableModel) table.getModel()).hasEmptyRow())
 				{
-					((MyFiltersTableModel) table.getModel()).addEmptyRow();
+					((CRsTableModel) table.getModel()).addEmptyRow();
 					table.setRowSelectionInterval(table.getRowCount() - 1, table.getRowCount() - 1);
 					table.setColumnSelectionInterval(table.getColumnCount() - 1, 0);
 				}
