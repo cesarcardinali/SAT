@@ -35,6 +35,7 @@ public class JiraSatApi
 	private final String       COMMENT_TAG                     = "/comment";
 	private final String       ASSIGN_TAG                      = "/assignee";
 	private final String       TRANSITION_TAG                  = "/transitions";
+	private final String       SEARCH_TAG                      = "search";
 	public static final String DEFAULT_JIRA_URL                = "http://idart.mot.com/";
 	public static final String CANCELLED                       = "7";
 	public static final String INVALID                         = "13";
@@ -582,6 +583,41 @@ public class JiraSatApi
 		return output;
 	}
 	
+	/**
+	 * Query issues
+	 * 
+	 * @param Jira query
+	 * @return Server response
+	 */
+	public String query(String query)
+	{
+		WebResource webResource = client.resource(baseURL.replace("/issue", "") + SEARCH_TAG);
+		String output;
+		String input = prepareInputFromFile("query").replace("#jira_query#", query);
+		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, input);
+		
+		if (response.getStatus() != 204)
+		{
+			output = response.getEntity(String.class);
+		}
+		else
+		{
+			output = response.toString();
+		}
+		
+		Logger.log(TAG, "HTTP Request input: " + input + "\n" + baseURL + SEARCH_TAG);
+		Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+		
+		if (output.contains("error") && output.contains("403"))
+		{
+			JOptionPane.showMessageDialog(null,
+			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+		}
+		
+		return output;
+	}
+	
+	// Supportive methods
 	@SuppressWarnings("unchecked")
 	public CrItem getCrData(String key) throws ParseException
 	{
@@ -620,7 +656,8 @@ public class JiraSatApi
 		{
 			aux = (JSONObject) fields.get("resolution"); // Get CR resolution
 			cr.setResolution(aux.get("name").toString());
-		} else
+		}
+		else
 		{
 			cr.setResolution("");
 		}

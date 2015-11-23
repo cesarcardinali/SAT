@@ -257,16 +257,17 @@ public class BtdParser
 	// Uptime detected
 	public boolean uptime()
 	{
-		Logger.log(Logger.TAG_BTD_PARSER,
-		           "Longer Uptime: "
-		                           + formatNumber(getPercentage(uptimes.getLongerPeriod().getDuration(),
-		                                                        realTimeOnBatt)) + "%");
-		Logger.log(Logger.TAG_BTD_PARSER,
-		           "Total Uptime: " + formatNumber(getPercentage(uptimes.getTotalTime(), realTimeOnBatt))
-		                           + "%");
-		if (uptimes.getLongerPeriod().getDuration() / 60000 > 60 // Update to 60 from 30
+		if (uptimes.size() > 0 && uptimes.getLongerPeriod().getDuration() / 60000 > 60 // Update to 60 from 30
 		    && getPercentage(uptimes.getLongerPeriod().getDuration(), realTimeOnBatt) > 7)
 		{
+			Logger.log(Logger.TAG_BTD_PARSER,
+			           "Longer Uptime: "
+			                           + formatNumber(getPercentage(uptimes.getLongerPeriod().getDuration(),
+			                                                        realTimeOnBatt)) + "%");
+			Logger.log(Logger.TAG_BTD_PARSER,
+			           "Total Uptime: " + formatNumber(getPercentage(uptimes.getTotalTime(), realTimeOnBatt))
+			                           + "%");
+			
 			return true;
 		}
 		
@@ -276,17 +277,18 @@ public class BtdParser
 	// Uptime while screen off detected
 	public boolean uptimeScOff()
 	{
-		Logger.log(Logger.TAG_BTD_PARSER,
-		           "ScOff Longer Uptime: "
-		                           + formatNumber(getPercentage(uptimesScOff.getLongerPeriod().getDuration(),
-		                                                        realTimeOnBatt)) + "%");
-		Logger.log(Logger.TAG_BTD_PARSER,
-		           "ScOff Total Uptime: "
-		                           + formatNumber(getPercentage(uptimesScOff.getTotalTime(), realTimeOnBatt))
-		                           + "%");
-		if (uptimesScOff.getLongerPeriod().getDuration() / 60000 > 22 // Updated to 30 from 15
+		if (uptimesScOff.size() > 0 && uptimesScOff.getLongerPeriod().getDuration() / 60000 > 22 // Updated to 30 from 15
 		    && getPercentage(uptimesScOff.getLongerPeriod().getDuration(), realTimeOnBatt) > 6)
 		{
+			Logger.log(Logger.TAG_BTD_PARSER,
+			           "ScOff Longer Uptime: "
+			                           + formatNumber(getPercentage(uptimesScOff.getLongerPeriod().getDuration(),
+			                                                        realTimeOnBatt)) + "%");
+			Logger.log(Logger.TAG_BTD_PARSER,
+			           "ScOff Total Uptime: "
+			                           + formatNumber(getPercentage(uptimesScOff.getTotalTime(), realTimeOnBatt))
+			                           + "%");
+			
 			return true;
 		}
 		
@@ -413,6 +415,13 @@ public class BtdParser
 			{
 				actualRM = rs.getInt(1);
 				actualTime = rs.getLong(2);
+				if(actualTime - lastTime > 2*24*60*60000)
+				{
+					lastRM = actualRM;
+					lastTime = actualTime;
+					lastScreenStatus = rs.getInt(3);
+					continue;
+				}
 				
 				if (lastScreenStatus == 0) // If screen is Off
 				{
@@ -842,22 +851,30 @@ public class BtdParser
 			// System.out.println(wl);
 			// }
 			
-			for(int i =0; i < uptimes.size(); i++)
+			for(int i = 0; i < uptimes.size(); i++)
 			{
-				if(uptimes.get(i).getDuration() < 750000)
+				if(uptimes.get(i).getDuration() < 750000 || uptimes.get(i).getDuration() > 3*24*60*60000)
 				{
 					uptimes.remove(i);
-					i--;
+					i = 0;
 				}
+			}
+			if(uptimes.size() == 0)
+			{
+				uptimes.setLongerPeriod(null);
 			}
 			
 			for(int i =0; i < uptimesScOff.size(); i++)
 			{
-				if(uptimesScOff.get(i).getDuration() < 600000)
+				if(uptimesScOff.get(i).getDuration() < 600000 || uptimesScOff.get(i).getDuration() > 3*24*60*60000)
 				{
 					uptimesScOff.remove(i);
 					i--;
 				}
+			}
+			if(uptimesScOff.size() == 0)
+			{
+				uptimesScOff.setLongerPeriod(null);
 			}
 			
 			parseUptimes();
@@ -2149,6 +2166,13 @@ public class BtdParser
 	{
 		int i = 1;
 		System.out.println("----------------------------------------------");
+		
+		if(uptimes.size() == 0)
+		{
+			System.out.println("No uptimes detected");
+			return;
+		}
+		
 		long total = 0;
 		for (BtdUptimePeriod ut : uptimes)
 		{
@@ -2179,6 +2203,13 @@ public class BtdParser
 	{
 		int i = 1;
 		System.out.println("----------------------------------------------");
+		
+		if(uptimesScOff.size() == 0)
+		{
+			System.out.println("No uptimes detected");
+			return;
+		}
+		
 		long total = 0;
 		for (BtdUptimePeriod ut : uptimesScOff)
 		{

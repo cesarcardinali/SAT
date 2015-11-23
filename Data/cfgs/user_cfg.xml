@@ -4,7 +4,7 @@
     <rootPath>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs\Errors</path>
+    <path>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs\Uptimes\Not Isuees</path>
     <assign>false</assign>
     <label>false</label>
   </crs_jira_pane>

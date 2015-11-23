@@ -51,6 +51,7 @@ import objects.CrItem;
 import org.json.simple.parser.ParseException;
 
 import supportive.Bug2goDownloader;
+import supportive.CrsCloser;
 import supportive.JiraSatApi;
 import core.Logger;
 import core.SharedObjs;
@@ -169,9 +170,9 @@ public class CrsManagerPane extends JPanel
 		
 		GridBagLayout gbl_panel_3 = new GridBagLayout();
 		gbl_panel_3.columnWidths = new int[] {0, 0};
-		gbl_panel_3.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel_3.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_panel_3.columnWeights = new double[] {0.0, Double.MIN_VALUE};
-		gbl_panel_3.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_3.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_3.setLayout(gbl_panel_3);
 		JLabel lblDownloader = new JLabel("Downloader:");
 		lblDownloader.setHorizontalAlignment(SwingConstants.CENTER);
@@ -295,9 +296,25 @@ public class CrsManagerPane extends JPanel
 				btnOpenAction();
 			}
 		});
+		
+		JButton btnCloseAsOld = new JButton("Close as Old");
+		btnCloseAsOld.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				CrsCloser closer = new CrsCloser(textDownload.getText().split("\n"));
+				new Thread(closer).start();
+			}
+		});
+		btnCloseAsOld.setPreferredSize(new Dimension(113, 23));
+		btnCloseAsOld.setMinimumSize(new Dimension(113, 23));
+		btnCloseAsOld.setMaximumSize(new Dimension(113, 23));
+		GridBagConstraints gbc_btnCloseAsOld = new GridBagConstraints();
+		gbc_btnCloseAsOld.insets = new Insets(0, 0, 5, 0);
+		gbc_btnCloseAsOld.gridx = 0;
+		gbc_btnCloseAsOld.gridy = 8;
+		panel_3.add(btnCloseAsOld, gbc_btnCloseAsOld);
 		GridBagConstraints gbc_btnOpenOnChrome = new GridBagConstraints();
 		gbc_btnOpenOnChrome.gridx = 0;
-		gbc_btnOpenOnChrome.gridy = 8;
+		gbc_btnOpenOnChrome.gridy = 9;
 		panel_3.add(btnOpenOnChrome, gbc_btnOpenOnChrome);
 		
 		JSeparator separator_4 = new JSeparator();
@@ -784,6 +801,11 @@ public class CrsManagerPane extends JPanel
 	public String[] getCrsToDownload()
 	{
 		return textDownload.getText().replace(" ", "").replace("\r", "").split("\n");
+	}
+	
+	public String[] getLabels()
+	{
+		return textLabel.getText().split(" ");
 	}
 	
 	public JTextArea getTextDownload()

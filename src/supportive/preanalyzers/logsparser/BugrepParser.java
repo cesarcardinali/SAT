@@ -554,7 +554,7 @@ public class BugrepParser
 				}
 			}
 			
-			if (rawStats != null && rawStats.length() > 80)
+			if (rawStats != null && rawStats.length() < 80)
 			{
 				Logger.log(Logger.TAG_BUGREPORT_PARSER, "Could not find \"Statistics\" data in this bugreport");
 				return false;
