@@ -21,17 +21,16 @@ import tests.planToJira.design.CRsTableStringCellRenderer;
 import tests.planToJira.design.CRsTableModel;
 
 
-;
-
 @SuppressWarnings("serial")
 public class JiraPane extends JPanel
 {
-	private int                 lastTab;
-	private JScrollPane         scrollPaneTable1;
-	private JPanel              myFiltersPane;
-	private JTable              myFiltersTable;
+    @SuppressWarnings("unused")
+    private int           lastTab;
+	private JScrollPane   scrollPaneTable1;
+	private JPanel        myFiltersPane;
+	private JTable        myFiltersTable;
 	private CRsTableModel cRsTableModel;
-	private JButton             btnDone;
+	private JButton       btnDone;
 	
 	public JiraPane()
 	{
@@ -90,10 +89,10 @@ public class JiraPane extends JPanel
 		myFiltersTable.setDefaultRenderer(Boolean.class, new CRsTableCheckboxCellRenderer());
 		myFiltersTable.setDefaultRenderer(Integer.class, new CRsTableIntCellRenderer());
 		myFiltersTable.getColumnModel().setColumnMargin(1);
-		myFiltersTable.getColumnModel().getColumn(0).setMinWidth(20);
-		myFiltersTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-		myFiltersTable.getColumnModel().getColumn(1).setMinWidth(100);
-		myFiltersTable.getColumnModel().getColumn(1).setPreferredWidth(120);
+		myFiltersTable.getColumnModel().getColumn(0).setMinWidth(25);
+		myFiltersTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+		myFiltersTable.getColumnModel().getColumn(1).setMinWidth(50);
+		myFiltersTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 		myFiltersTable.getColumnModel().getColumn(2).setMinWidth(120);
 		myFiltersTable.getColumnModel().getColumn(2).setMinWidth(120);
 		myFiltersTable.getColumnModel().getColumn(2).setPreferredWidth(250);
@@ -115,13 +114,9 @@ public class JiraPane extends JPanel
 		myFiltersTable.getColumnModel().getColumn(10).setPreferredWidth(40);
 		myFiltersTable.getColumnModel().getColumn(11).setMinWidth(25);
 		myFiltersTable.getColumnModel().getColumn(11).setPreferredWidth(40);
-		myFiltersTable.getColumnModel().getColumn(12).setMinWidth(25);
-		myFiltersTable.getColumnModel().getColumn(12).setPreferredWidth(40);
-		myFiltersTable.getColumnModel().getColumn(13).setMinWidth(60);
-		myFiltersTable.getColumnModel().getColumn(13).setPreferredWidth(70);
-		myFiltersTable.getColumnModel().getColumn(14).setMinWidth(2);
-		myFiltersTable.getColumnModel().getColumn(14).setMaxWidth(2);
-		myFiltersTable.getColumnModel().getColumn(14).setPreferredWidth(2);
+		myFiltersTable.getColumnModel().getColumn(12).setMinWidth(2);
+		myFiltersTable.getColumnModel().getColumn(12).setMaxWidth(2);
+		myFiltersTable.getColumnModel().getColumn(12).setPreferredWidth(2);
 		myFiltersTable.setFillsViewportHeight(false);
 		myFiltersTable.setSurrendersFocusOnKeystroke(true);
 		myFiltersTable.setColumnSelectionAllowed(true);

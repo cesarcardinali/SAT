@@ -514,19 +514,21 @@ public class CrChecker
 			return false;
 		}
 		
-		System.out.println("btd: " + btdParsed);
-		System.out.println("bugrep: " + bugrepParsed);
-		boolean btdUptime = btdParser.uptime();
-		System.out.println("btd uptime: " + btdUptime);
-		System.out.println("bugrep uptime: " + bugrepParser.checkIfWakelocks(btdUptime));
+		System.out.println("btd parsed?: " + btdParsed);
+		System.out.println("bugrep parsed?: " + bugrepParsed);
+		boolean btdUptime = false;
+		
 		if (btdParsed)
 		{
+			btdUptime= btdParser.uptime();
+			System.out.println("btd uptime: " + btdUptime);
 			System.out.println("cd btd: " + btdParser.getAverageconsumeOff());
 			System.out.println("len btd: " + btdParser.eblDecreasers().length());
 			System.out.println("phone btd: " + btdParser.phoneCallPercentage());
 		}
 		if (bugrepParsed)
 		{
+			System.out.println("bugrep uptime: " + bugrepParser.checkIfWakelocks(btdUptime));
 			System.out.println("cd btd: " + bugrepParser.getConsAvgOff());
 			System.out.println("len btd: " + bugrepParser.eblDecreasedReasons().length());
 		}
