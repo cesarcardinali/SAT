@@ -46,16 +46,15 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import objects.CrItem;
-
 import org.json.simple.parser.ParseException;
 
-import supportive.Bug2goDownloader;
-import supportive.CrsCloser;
-import supportive.JiraSatApi;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
+import objects.CrItem;
+import supportive.Bug2goDownloader;
+import supportive.CrsCloser;
+import supportive.JiraSatApi;
 
 
 @SuppressWarnings("serial")
@@ -114,9 +113,9 @@ public class CrsManagerPane extends JPanel
 		
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] {30, 0};
-		gbl_panel.rowHeights = new int[] {22, 0, 0};
+		gbl_panel.rowHeights = new int[] {22, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_panel.columnWeights = new double[] {0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		JLabel lblRootPath = new JLabel("Download path:");
 		GridBagConstraints gbc_lblRootPath = new GridBagConstraints();
@@ -153,10 +152,128 @@ public class CrsManagerPane extends JPanel
 			}
 		});
 		GridBagConstraints gbc_textPath = new GridBagConstraints();
-		gbc_textPath.insets = new Insets(0, 5, 0, 5);
+		gbc_textPath.insets = new Insets(0, 5, 5, 0);
 		gbc_textPath.gridx = 0;
 		gbc_textPath.gridy = 1;
 		panel.add(textPath, gbc_textPath);
+		
+		btnDownload = new JButton("Get the CRs");
+		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
+		gbc_btnDownload.insets = new Insets(40, 0, 5, 0);
+		gbc_btnDownload.gridx = 0;
+		gbc_btnDownload.gridy = 2;
+		panel.add(btnDownload, gbc_btnDownload);
+		btnDownload.setToolTipText("Start to download the CRs on the list above");
+		btnDownload.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				btnDownloadAction();
+			}
+		});
+		btnDownload.setPreferredSize(new Dimension(113, 23));
+		btnDownload.setMaximumSize(new Dimension(113, 23));
+		btnDownload.setMinimumSize(new Dimension(113, 23));
+		
+		JButton btnCloseAsOld = new JButton("Close as Old");
+		GridBagConstraints gbc_btnCloseAsOld = new GridBagConstraints();
+		gbc_btnCloseAsOld.insets = new Insets(0, 0, 5, 0);
+		gbc_btnCloseAsOld.gridx = 0;
+		gbc_btnCloseAsOld.gridy = 3;
+		panel.add(btnCloseAsOld, gbc_btnCloseAsOld);
+		btnCloseAsOld.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				CrsCloser closer = new CrsCloser(textDownload.getText().split("\n"));
+				new Thread(closer).start();
+			}
+		});
+		btnCloseAsOld.setPreferredSize(new Dimension(113, 23));
+		btnCloseAsOld.setMinimumSize(new Dimension(113, 23));
+		btnCloseAsOld.setMaximumSize(new Dimension(113, 23));
+		
+		JButton btnUnassign = new JButton("Unassign CRs");
+		GridBagConstraints gbc_btnUnassign = new GridBagConstraints();
+		gbc_btnUnassign.insets = new Insets(0, 0, 5, 0);
+		gbc_btnUnassign.gridx = 0;
+		gbc_btnUnassign.gridy = 4;
+		panel.add(btnUnassign, gbc_btnUnassign);
+		btnUnassign.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						String crs[] = textDownload.getText().split("\n");
+						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
+						for(String cr : crs)
+						{
+							jira.unassignIssue(cr);
+						}					}
+				}).start();
+			}
+		});
+		btnUnassign.setToolTipText("Start to download the CRs on the list above");
+		btnUnassign.setPreferredSize(new Dimension(113, 23));
+		btnUnassign.setMinimumSize(new Dimension(113, 23));
+		btnUnassign.setMaximumSize(new Dimension(113, 23));
+		
+		JButton btnRemoveLabel = new JButton("Remove Labels");
+		btnRemoveLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						String crs[] = textDownload.getText().split("\n");
+						String labels[] = getLabels();
+						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
+						for(String cr : crs)
+						{
+							jira.removeLabel(cr, labels);
+						}
+					}
+				}).start();
+			}
+		});
+		btnRemoveLabel.setToolTipText("Start to download the CRs on the list above");
+		btnRemoveLabel.setPreferredSize(new Dimension(113, 23));
+		btnRemoveLabel.setMinimumSize(new Dimension(113, 23));
+		btnRemoveLabel.setMaximumSize(new Dimension(113, 23));
+		GridBagConstraints gbc_btnRemoveLabel = new GridBagConstraints();
+		gbc_btnRemoveLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_btnRemoveLabel.gridx = 0;
+		gbc_btnRemoveLabel.gridy = 5;
+		panel.add(btnRemoveLabel, gbc_btnRemoveLabel);
+		
+		JButton btnOpenOnChrome = new JButton("Open on Chrome");
+		GridBagConstraints gbc_btnOpenOnChrome = new GridBagConstraints();
+		gbc_btnOpenOnChrome.insets = new Insets(0, 0, 5, 0);
+		gbc_btnOpenOnChrome.gridx = 0;
+		gbc_btnOpenOnChrome.gridy = 6;
+		panel.add(btnOpenOnChrome, gbc_btnOpenOnChrome);
+		btnOpenOnChrome.setToolTipText("Open the CRs on the list above on Chrome");
+		
+		JButton btnLists = new JButton("Reopen Result Lists");
+		btnLists.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SharedObjs.getClosedList().setVisible(true);
+				SharedObjs.getOpenedList().setVisible(true);
+			}
+		});
+		btnLists.setToolTipText("Open the CRs on the list above on Chrome");
+		GridBagConstraints gbc_btnLists = new GridBagConstraints();
+		gbc_btnLists.gridx = 0;
+		gbc_btnLists.gridy = 8;
+		panel.add(btnLists, gbc_btnLists);
+		btnOpenOnChrome.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				btnOpenAction();
+			}
+		});
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setMinimumSize(new Dimension(150, 10));
@@ -170,9 +287,9 @@ public class CrsManagerPane extends JPanel
 		
 		GridBagLayout gbl_panel_3 = new GridBagLayout();
 		gbl_panel_3.columnWidths = new int[] {0, 0};
-		gbl_panel_3.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel_3.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_panel_3.columnWeights = new double[] {0.0, Double.MIN_VALUE};
-		gbl_panel_3.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_3.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_3.setLayout(gbl_panel_3);
 		JLabel lblDownloader = new JLabel("Downloader:");
 		lblDownloader.setHorizontalAlignment(SwingConstants.CENTER);
@@ -264,87 +381,9 @@ public class CrsManagerPane extends JPanel
 		btnPaste.setPreferredSize(new Dimension(113, 23));
 		btnPaste.setMinimumSize(new Dimension(113, 23));
 		GridBagConstraints gbc_btnPaste = new GridBagConstraints();
-		gbc_btnPaste.insets = new Insets(0, 0, 5, 0);
 		gbc_btnPaste.gridx = 0;
 		gbc_btnPaste.gridy = 6;
 		panel_3.add(btnPaste, gbc_btnPaste);
-		
-		btnDownload = new JButton("Get the CRs");
-		btnDownload.setToolTipText("Start to download the CRs on the list above");
-		btnDownload.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				btnDownloadAction();
-			}
-		});
-		btnDownload.setPreferredSize(new Dimension(113, 23));
-		btnDownload.setMaximumSize(new Dimension(113, 23));
-		btnDownload.setMinimumSize(new Dimension(113, 23));
-		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
-		gbc_btnDownload.insets = new Insets(0, 0, 5, 0);
-		gbc_btnDownload.gridx = 0;
-		gbc_btnDownload.gridy = 7;
-		panel_3.add(btnDownload, gbc_btnDownload);
-		
-		JButton btnOpenOnChrome = new JButton("Open on Chrome");
-		btnOpenOnChrome.setToolTipText("Open the CRs on the list above on Chrome");
-		btnOpenOnChrome.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				btnOpenAction();
-			}
-		});
-		
-		JButton btnCloseAsOld = new JButton("Close as Old");
-		btnCloseAsOld.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				CrsCloser closer = new CrsCloser(textDownload.getText().split("\n"));
-				new Thread(closer).start();
-			}
-		});
-		
-		JButton button = new JButton("Unassign CRs");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				new Thread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						String crs[] = textDownload.getText().split("\n");
-						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
-						for(String cr : crs)
-						{
-							jira.unassignIssue(cr);
-						}
-						
-					}
-				}).start();
-			}
-		});
-		button.setToolTipText("Start to download the CRs on the list above");
-		button.setPreferredSize(new Dimension(113, 23));
-		button.setMinimumSize(new Dimension(113, 23));
-		button.setMaximumSize(new Dimension(113, 23));
-		GridBagConstraints gbc_button = new GridBagConstraints();
-		gbc_button.insets = new Insets(0, 0, 5, 0);
-		gbc_button.gridx = 0;
-		gbc_button.gridy = 8;
-		panel_3.add(button, gbc_button);
-		btnCloseAsOld.setPreferredSize(new Dimension(113, 23));
-		btnCloseAsOld.setMinimumSize(new Dimension(113, 23));
-		btnCloseAsOld.setMaximumSize(new Dimension(113, 23));
-		GridBagConstraints gbc_btnCloseAsOld = new GridBagConstraints();
-		gbc_btnCloseAsOld.insets = new Insets(0, 0, 5, 0);
-		gbc_btnCloseAsOld.gridx = 0;
-		gbc_btnCloseAsOld.gridy = 9;
-		panel_3.add(btnCloseAsOld, gbc_btnCloseAsOld);
-		GridBagConstraints gbc_btnOpenOnChrome = new GridBagConstraints();
-		gbc_btnOpenOnChrome.gridx = 0;
-		gbc_btnOpenOnChrome.gridy = 10;
-		panel_3.add(btnOpenOnChrome, gbc_btnOpenOnChrome);
 		
 		JSeparator separator_4 = new JSeparator();
 		separator_4.setForeground(new Color(0, 0, 0));

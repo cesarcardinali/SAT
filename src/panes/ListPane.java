@@ -1,8 +1,15 @@
 package panes;
 
 
-import java.awt.EventQueue;
+import java.awt.Desktop;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URI;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -10,18 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
-import java.awt.Desktop;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-
-import javax.swing.JButton;
-
 import core.SharedObjs;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.net.URI;
 
 
 public class ListPane extends JFrame

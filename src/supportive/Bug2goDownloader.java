@@ -15,11 +15,10 @@ import java.util.concurrent.Semaphore;
 
 import javax.swing.JOptionPane;
 
-import objects.Bug2goItem;
-import objects.CrItem;
-import panes.ListPane;
 import core.Logger;
 import core.SharedObjs;
+import objects.Bug2goItem;
+import objects.CrItem;
 
 
 /**
@@ -461,18 +460,25 @@ public class Bug2goDownloader implements Runnable
 				}
 			}
 			
-			ListPane list = new ListPane();
-			list.clear();
+			
+			SharedObjs.getClosedList().clear();
+			SharedObjs.getOpenedList().clear();
+			
 			for (CrItem cr : SharedObjs.getCrsList())
 			{
 				if (cr.getStatus().equals("Closed") && !cr.getResolution().equals(""))
 				{
-					list.addItemList1(cr.getJiraID());
-					list.addItemList2(cr.getResolution());
+					SharedObjs.getClosedList().addItemList1(cr.getJiraID());
+					SharedObjs.getClosedList().addItemList2(cr.getResolution());
+				}
+				else
+				{
+					SharedObjs.getOpenedList().addItemList1(cr.getJiraID());
 				}
 			}
 			
-			list.setVisible(true);
+			SharedObjs.getClosedList().setVisible(true);
+			SharedObjs.getOpenedList().setVisible(true);
 		}
 		else if (ans == 1)
 		{
