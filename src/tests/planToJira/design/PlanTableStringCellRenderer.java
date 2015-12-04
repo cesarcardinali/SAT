@@ -9,13 +9,14 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import style.Colors;
+import style.SharedFiltersTableModel;
 
 
 @SuppressWarnings("serial")
-public class CRsTableStringCellRenderer extends DefaultTableCellRenderer
+public class PlanTableStringCellRenderer extends DefaultTableCellRenderer
 {
 	
-	public CRsTableStringCellRenderer()
+	public PlanTableStringCellRenderer()
 	{
 		super();
 	}
@@ -47,19 +48,29 @@ public class CRsTableStringCellRenderer extends DefaultTableCellRenderer
 		}
 		
 		// Exclusive mods for tables using CRsTableModel
-//		if (table.getModel().getClass().equals(PlanTableModel.class))
-//		{
-//			if (isSelected && hasFocus && column == PlanTableModel.HIDDEN_INDEX)
-//			{
-//				if ((table.getModel().getRowCount() - 1) == row
-//					&& !((PlanTableModel) table.getModel()).hasEmptyRow())
-//				{
-//					((PlanTableModel) table.getModel()).addEmptyRow();
-//					table.setRowSelectionInterval(table.getRowCount() - 1, table.getRowCount() - 1);
-//					table.setColumnSelectionInterval(table.getColumnCount() - 1, 0);
-//				}
-//			}
-//		}
+		if (table.getModel().getClass().equals(CRsTableModel.class))
+		{
+			if (isSelected && hasFocus && column == CRsTableModel.HIDDEN_INDEX)
+			{
+				if ((table.getModel().getRowCount() - 1) == row
+					&& !((CRsTableModel) table.getModel()).hasEmptyRow())
+				{
+					((CRsTableModel) table.getModel()).addEmptyRow();
+					table.setRowSelectionInterval(table.getRowCount() - 1, table.getRowCount() - 1);
+					table.setColumnSelectionInterval(table.getColumnCount() - 1, 0);
+				}
+			}
+		}
+		
+		// Exclusive mods for tables using SharedFiltersTableModel
+		if (table.getModel().getClass().equals(SharedFiltersTableModel.class))
+		{
+			if (table.getModel().getValueAt(row, 1).equals("Public")
+				|| table.getModel().getValueAt(row, 1).equals(""))
+			{
+				val.setForeground(Colors.verdeEscuro);
+			}
+		}
 		
 		return c;
 	}

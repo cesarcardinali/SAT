@@ -138,7 +138,7 @@
       <regex>(^  Kernel.*realtime&#xD;
 ){3}</regex>
       <header>All kernel wake locks:</header>
-      <owner>wmarques</owner>
+      <owner>bbrusafa</owner>
       <main>false</main>
       <system>false</system>
       <kernel>false</kernel>
@@ -148,7 +148,7 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-10-26 14:10:23</last_update>
+      <last_update>2015-12-03 15:12:19</last_update>
     </item_5>
   </sharedFilters>
   <!-- Active filters: !-->

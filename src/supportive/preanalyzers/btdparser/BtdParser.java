@@ -64,6 +64,7 @@ public class BtdParser
 	// Configure parser
 	public BtdParser(String path)
 	{
+		Logger.log(Logger.TAG_BTD_PARSER, "Initializing BTD parser");
 		this.path = path;
 		System.out.println("CR path: " + path);
 		thresholdInc = 0;
@@ -112,6 +113,8 @@ public class BtdParser
 				System.out.println("Failed to open DB\nPath: " + file_report);
 				System.out.println("BTD file is too short or does not exists");
 			}
+			
+			Logger.log(Logger.TAG_BTD_PARSER, "Initializing BTD parser - DONE");
 		}
 		catch (ClassNotFoundException e)
 		{
@@ -126,6 +129,7 @@ public class BtdParser
 	// Parse all data
 	public boolean parse()
 	{
+		Logger.log(Logger.TAG_BTD_PARSER, "Starting parser");
 		thresholdInc = 0;
 		
 		if (status == 1)
@@ -133,30 +137,42 @@ public class BtdParser
 			bttDischarged = new int[2];
 			kernelWLs = new BtdWLList();
 			
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods");
 			// Get charge and discharge periods
 			getPeriods();
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - DONE");
 			
 			// Get the longer discharge period
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting longer period");
 			finalState = getLongerDischargingPeriod();
 			if (finalState == null)
 			{
 				return false;
 			}
 			
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting internet data");
 			getDischargeInternetData(finalState);
 			
+			
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting general data");
 			getDischargeGeneralData(finalState);
 			
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting discharge battery data");
 			getDischargeBatteryData(finalState);
 			
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting phone signal data");
 			getDischargePhoneSignalData(finalState);
 			
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting screen bright data");
 			getDischargeScreenBrightData(finalState);
 			
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting temp data");
 			getDischargeTemperatureData(finalState);
 			
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting tether data");
 			getTetheringTime();
 			
+			Logger.log(Logger.TAG_BTD_PARSER, "Getting discharge data");
 			getDischargeBtdData(finalState, 0);
 			System.out.println("Rows read: " + btdRows.size());
 			
@@ -1492,6 +1508,7 @@ public class BtdParser
 			do
 			{
 				// Pega valor inicial
+				Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - Exec'ing query");
 				rs = execQuery("select timestamp, PLUG_TYPE from t_fgdata where timestamp > "
 				               + btdState.getEnd() + " LIMIT 1;");
 				btdState = new BtdState();
@@ -1503,11 +1520,13 @@ public class BtdParser
 				{
 					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
 					               + btdState.getStart() + " AND PLUG_TYPE != 0 LIMIT 1);");
+					Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - " + 11111111);
 				}
 				else
 				{
 					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
 					               + btdState.getStart() + " AND PLUG_TYPE = 0 LIMIT 1);");
+					Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - " + 2222222);
 				}
 				
 				// Se existe mudança, pega o valor final do estado atual, adiciona o estado na lista e busca pelo novo estado.
@@ -1515,6 +1534,7 @@ public class BtdParser
 				{
 					btdState.setEnd(rs.getLong(1));
 					statesData.add(btdState);
+					Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - " + rs.getLong(1));
 				}
 				// Se nao existir mais mudanças de estado, finaliza o atual com o ponto final do log e para a busca.
 				else

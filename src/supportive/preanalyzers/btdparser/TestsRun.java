@@ -13,7 +13,7 @@ public class TestsRun
 		// BtdParser btdParser = new BtdParser("btdTestData/BT10_311480147990712_20150908_192510.btd");
 		// BtdParser btdParser = new BtdParser("C:/CRs/Debuging/80760131_B2G_2015-09-15_20-45-14/BT10_724101809975920_20150915_012914.btd");
 		// semi tether
-		 BtdParser btdParser0 = new BtdParser("C:/Users/cesar.cardinali/Desktop/semi_tethering/");
+		 BtdParser btdParser0 = new BtdParser("C:/Users/cesar.cardinali/Documents/Eld/Bateria/Logs/Errors/94612381/");
 		// tether
 		//BtdParser btdParser0 = new BtdParser("C:/Users/cesar.cardinali/Desktop/tethering/");
 		boolean ok = btdParser0.parse();

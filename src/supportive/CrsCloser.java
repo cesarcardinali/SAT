@@ -37,6 +37,7 @@ public class CrsCloser implements Runnable
 		                                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 		                                     null, options, options[1]);
 		Logger.log(Logger.TAG_CRSCLOSER, "Resposta: " + n);
+		
 		if (n == 0)
 		{
 			SharedObjs.crsManagerPane.addLogLine("Connecting to Jira");
@@ -54,6 +55,7 @@ public class CrsCloser implements Runnable
                 {
 	                e.printStackTrace();
                 }
+				
 				if (SharedObjs.crsManagerPane.getLabels().length > 0)
 				{
 					SharedObjs.crsManagerPane.addLogLine("Adding labels");

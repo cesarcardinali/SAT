@@ -94,7 +94,6 @@ public class JiraPane extends JPanel
 		myFiltersTable.getColumnModel().getColumn(1).setMinWidth(50);
 		myFiltersTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 		myFiltersTable.getColumnModel().getColumn(2).setMinWidth(120);
-		myFiltersTable.getColumnModel().getColumn(2).setMinWidth(120);
 		myFiltersTable.getColumnModel().getColumn(2).setPreferredWidth(250);
 		myFiltersTable.getColumnModel().getColumn(3).setMinWidth(120);
 		myFiltersTable.getColumnModel().getColumn(3).setPreferredWidth(290);
