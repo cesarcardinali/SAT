@@ -27,24 +27,24 @@ import objects.CrItem;
  */
 public class JiraSatApi
 {
-	private String             username;
-	private String             password;
-	private String             baseURL;
-	private Client             client;
-	private final String       TAG                             = "JIRA REST";
-	private final String       COMMENT_TAG                     = "/comment";
-	private final String       ASSIGN_TAG                      = "/assignee";
-	private final String       TRANSITION_TAG                  = "/transitions";
-	private final String       SEARCH_TAG                      = "search";
-	public static final String DEFAULT_JIRA_URL                = "http://idart.mot.com/";
-	public static final String CANCELLED                       = "7";
-	public static final String INVALID                         = "13";
-	public static final String INCOMPLETE                      = "4";
-	public static final String UNREPRODUCIBLE                  = "5";
-	public static final String FIXED_ON_3RD_PARTY_LOAD         = "16";
-	public static final String BUSINESS_DECISION_NOT_TO_FIX    = "17";
+	private String			   username;
+	private String			   password;
+	private String			   baseURL;
+	private Client			   client;
+	private final String	   TAG							   = "JIRA REST";
+	private final String	   COMMENT_TAG					   = "/comment";
+	private final String	   ASSIGN_TAG					   = "/assignee";
+	private final String	   TRANSITION_TAG				   = "/transitions";
+	private final String	   SEARCH_TAG					   = "search";
+	public static final String DEFAULT_JIRA_URL				   = "http://idart.mot.com/";
+	public static final String CANCELLED					   = "7";
+	public static final String INVALID						   = "13";
+	public static final String INCOMPLETE					   = "4";
+	public static final String UNREPRODUCIBLE				   = "5";
+	public static final String FIXED_ON_3RD_PARTY_LOAD		   = "16";
+	public static final String BUSINESS_DECISION_NOT_TO_FIX	   = "17";
 	public static final String FIXED_IN_GOOGLE_ANDROID_RELEASE = "14";
-	
+															   
 	/**
 	 * Create a new instance of jira rest interface
 	 * 
@@ -83,7 +83,7 @@ public class JiraSatApi
 		
 		ClientResponse response = webResource.type("application/json")
 		                                     .post(ClientResponse.class, "{\"body\": \"" + comment + "\"}");
-		
+											 
 		String output = response.getEntity(String.class);
 		
 		Logger.log(TAG, "Add comment: Output from Server:\n" + output);
@@ -129,10 +129,10 @@ public class JiraSatApi
 		if (!id.equals(""))
 		{
 			WebResource webResource = client.resource(baseURL + key + COMMENT_TAG + id);
-			ClientResponse response = webResource.type("application/json").put(ClientResponse.class,
-			                                                                   "{\"body\": \"" + newComment
-			                                                                                   + "\"}");
-			
+			ClientResponse response = webResource.type("application/json")
+			                                     .put(ClientResponse.class,
+			                                          "{\"body\": \"" + newComment + "\"}");
+													  
 			if (response.getStatus() != 204)
 			{
 				output = response.getEntity(String.class);
@@ -222,33 +222,37 @@ public class JiraSatApi
 	public String addLabel(String key, String[] labels)
 	{
 		WebResource webResource = client.resource(baseURL + key);
+		ClientResponse response;
 		String input = prepareInputFromFile("addLabel");
-		String output;
+		String output = "";
 		
-		for (int i = 1; i < labels.length; i++)
+		for (int i = 0; i < labels.length - 1; i++)
 		{
-			input = input.replace("#given_label#\"}", labels[i] + "\"}, {\"add\": \"#given_label#\"}");
+			input = input.replace("#given_label#\"}", labels[i] + "\"} , {\"add\": \"#given_label#\"}");
 		}
 		
-		input = input.replace("#given_label#", labels[0]);
-		ClientResponse response = webResource.type("application/json").put(ClientResponse.class, input);
+		input = input.replace("#given_label#", labels[labels.length - 1]);
+		
+		Logger.log(TAG, "Add many labels: Input from Server:\n" + input);
+		
+		response = webResource.type("application/json").put(ClientResponse.class, input);
 		
 		if (response.getStatus() != 204)
 		{
-			output = response.getEntity(String.class);
+			output += response.getEntity(String.class);
 		}
 		else
 		{
-			output = response.toString();
+			output += response.toString();
 		}
-		
-		Logger.log(TAG, "Add many labels: Output from Server:\n" + output);
 		
 		if (output.contains("error") && output.contains("403"))
 		{
 			JOptionPane.showMessageDialog(null,
 			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
+		
+		Logger.log(TAG, "Add many labels: Output from Server:\n" + output);
 		
 		return output;
 	}
@@ -298,35 +302,37 @@ public class JiraSatApi
 	public String removeLabel(String key, String labels[])
 	{
 		WebResource webResource = client.resource(baseURL + key);
+		ClientResponse response;
 		String input = prepareInputFromFile("deleteLabel");
-		String output;
+		String output = "";
 		
-		for (int i = 1; i < labels.length; i++)
+		for (int i = 0; i < labels.length - 1; i++)
 		{
-			input = input.replace("#given_label#\"}", labels[i] + "\"}, {\"remove\": \"#given_label#\"}");
+			input = input.replace("#given_label#\"}", labels[i] + "\"} , {\"remove\": \"#given_label#\"}");
 		}
 		
-		input = input.replace("#given_label#", labels[0]);
+		input = input.replace("#given_label#", labels[labels.length - 1]);
+		
 		System.out.println("Input:\n" + input);
 		
-		ClientResponse response = webResource.type("application/json").put(ClientResponse.class, input);
+		response = webResource.type("application/json").put(ClientResponse.class, input);
 		
 		if (response.getStatus() != 204)
 		{
-			output = response.getEntity(String.class);
+			output += response.getEntity(String.class);
 		}
 		else
 		{
-			output = response.toString();
+			output += response.toString();
 		}
-		
-		Logger.log(TAG, "Remove many labels: Output from Server:\n" + output);
 		
 		if (output.contains("error") && output.contains("403"))
 		{
 			JOptionPane.showMessageDialog(null,
 			                              "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
 		}
+		
+		Logger.log(TAG, "Remove many labels: Output from Server:\n" + output);
 		
 		return output;
 	}

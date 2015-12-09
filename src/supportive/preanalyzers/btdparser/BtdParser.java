@@ -19,6 +19,7 @@ import java.util.TimeZone;
 import supportive.AppsChecker;
 import supportive.DateTimeOperator;
 import core.Logger;
+import core.SharedObjs;
 
 
 @SuppressWarnings("resource")
@@ -362,9 +363,10 @@ public class BtdParser
 			               + finalState.getStart() + " AND " + finalState.getEnd()
 			               + " AND WIFI_LABEL = ''  AND CELL_LABEL != '';");
 			
-			if (rs == null || rs.isClosed() || rs.wasNull())
+			if (rs == null || rs.isClosed())
 				return 0;
 			
+			System.out.println("-tether osiafdodsif\n" + finalState.getStart() + " AND " + finalState.getEnd());
 			lastCTX = rs.getLong(1); // Received (BTD error)
 			lastWRX = rs.getLong(2); // Transferred (BTD error)
 			lastTime = rs.getLong(3);
@@ -1503,48 +1505,128 @@ public class BtdParser
 		try
 		{
 			BtdState btdState = new BtdState();
+			int rowid = 0;
 			rs = null;
+			
+//			do
+//			{
+//				// Pega valor inicial
+//				Logger.log(Logger.TAG_BTD_PARSER, "-\nGetting BTD periods - Exec'ing query");
+//				rs = execQuery("select timestamp, PLUG_TYPE from t_fgdata where timestamp > "
+//				               + btdState.getEnd() + " ORDER BY timestamp ASC LIMIT 1;");
+//				btdState = new BtdState();
+//				btdState.setStart(rs.getLong(1));
+//				btdState.setStatus(rs.getInt(2));
+//				
+//				// Busca uma mudança de estado
+//				if (btdState.getStatus() == 0)
+//				{
+//					Logger.log(Logger.TAG_BTD_PARSER, "Execing 1:\n select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
+//						               + btdState.getStart() + " AND PLUG_TYPE != 0 ORDER BY timestamp ASC LIMIT 1);\n");
+//					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) as oldRow from t_fgdata where timestamp > "
+//					               + btdState.getStart() + " AND PLUG_TYPE != 0 ORDER BY timestamp ASC LIMIT 1);");
+//				}
+//				else
+//				{
+//					Logger.log(Logger.TAG_BTD_PARSER, "Execing 2:\n select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
+//					               + btdState.getStart() + " AND PLUG_TYPE = 0 ORDER BY timestamp ASC LIMIT 1);\n");
+//					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) as oldRow from t_fgdata where timestamp > "
+//					               + btdState.getStart() + " AND PLUG_TYPE = 0 ORDER BY timestamp ASC LIMIT 1);");
+//				}
+//				
+//				// Se existe mudança, pega o valor final do estado atual, adiciona o estado na lista e busca pelo novo estado.
+//				if (!rs.isAfterLast() || !rs.isClosed())
+//				{
+//					btdState.setEnd(rs.getLong(1));
+//					statesData.add(btdState);
+//					Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - " + rs.getLong(1));
+//				}
+//				// Se nao existir mais mudanças de estado, finaliza o atual com o ponto final do log e para a busca.
+//				else
+//				{
+//					rs = execQuery("select timestamp from t_fgdata where rowid = (select MAX(rowid) as oldRow from t_fgdata);");
+//					btdState.setEnd(rs.getLong(1));
+//					if(btdState.getEnd() < btdState.getStart())
+//					{
+//						SharedObjs.crsManagerPane.addLogLine("This BTD contains data errors. Some inconsistent periods will be ignored.");
+//						SharedObjs.crsManagerPane.addLogLine("Is recommended to check it for date errors and periods without data.");
+//						rs = null;
+//					}
+//					else
+//					{
+//						statesData.add(btdState);
+//						// rs.close();
+//						rs = null;
+//					}
+//				}
+//				
+//				Logger.log(Logger.TAG_BTD_PARSER, "START:\t" + btdState.getStart());
+//				Logger.log(Logger.TAG_BTD_PARSER, "END: \t" + btdState.getEnd());
+//				Logger.log(Logger.TAG_BTD_PARSER, "STATUS:\t" + btdState.getStatus() + "\n-\n");
+//				
+//			}
+//			while (rs != null);
 			
 			do
 			{
 				// Pega valor inicial
-				Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - Exec'ing query");
-				rs = execQuery("select timestamp, PLUG_TYPE from t_fgdata where timestamp > "
-				               + btdState.getEnd() + " LIMIT 1;");
+				Logger.log(Logger.TAG_BTD_PARSER, "-\nGetting BTD periods - Exec'ing query");
+				rs = execQuery("select timestamp, PLUG_TYPE, rowid from t_fgdata where rowid > "
+				               + rowid + " ORDER BY timestamp ASC LIMIT 1;");
+				
 				btdState = new BtdState();
 				btdState.setStart(rs.getLong(1));
 				btdState.setStatus(rs.getInt(2));
+				rowid = rs.getInt(3);
 				
 				// Busca uma mudança de estado
 				if (btdState.getStatus() == 0)
 				{
-					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
-					               + btdState.getStart() + " AND PLUG_TYPE != 0 LIMIT 1);");
-					Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - " + 11111111);
+					Logger.log(Logger.TAG_BTD_PARSER, "Exec'ing 1");
+					rs = execQuery("select timestamp, rowid from t_fgdata where rowid = (select (rowid-1) from t_fgdata where rowid > "
+					               + rowid + " AND PLUG_TYPE != 0 ORDER BY timestamp ASC LIMIT 1);");
 				}
 				else
 				{
-					rs = execQuery("select timestamp from t_fgdata where rowid = (select (rowid-1) from t_fgdata where timestamp > "
-					               + btdState.getStart() + " AND PLUG_TYPE = 0 LIMIT 1);");
-					Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - " + 2222222);
+					Logger.log(Logger.TAG_BTD_PARSER, "Exec'ing 2:");
+					rs = execQuery("select timestamp, rowid from t_fgdata where rowid = (select (rowid-1) from t_fgdata where rowid > "
+					               + rowid + " AND PLUG_TYPE = 0 ORDER BY timestamp ASC LIMIT 1);");
 				}
 				
 				// Se existe mudança, pega o valor final do estado atual, adiciona o estado na lista e busca pelo novo estado.
 				if (!rs.isAfterLast() || !rs.isClosed())
 				{
 					btdState.setEnd(rs.getLong(1));
+					rowid = rs.getInt(2);
 					statesData.add(btdState);
 					Logger.log(Logger.TAG_BTD_PARSER, "Getting BTD periods - " + rs.getLong(1));
 				}
 				// Se nao existir mais mudanças de estado, finaliza o atual com o ponto final do log e para a busca.
 				else
 				{
-					rs = execQuery("select timestamp from t_fgdata where rowid = (select MAX(rowid) from t_fgdata);");
+					rs = execQuery("select timestamp, rowid from t_fgdata where rowid = (select MAX(rowid) as oldRow from t_fgdata);");
 					btdState.setEnd(rs.getLong(1));
-					statesData.add(btdState);
-					// rs.close();
-					rs = null;
+					rowid = rs.getInt(2);
+					
+					if(btdState.getEnd() < btdState.getStart() || btdState.getDuration() < 0)
+					{
+						SharedObjs.crsManagerPane.addLogLine("This BTD contains data errors. Some inconsistent periods will be ignored.");
+						SharedObjs.crsManagerPane.addLogLine("Is recommended to check it for date errors and periods without data.");
+						rs = null;
+					}
+					else
+					{
+						statesData.add(btdState);
+						// rs.close();
+						rs = null;
+					}
 				}
+				
+				Logger.log(Logger.TAG_BTD_PARSER, "ROW: \t" + rowid);
+				Logger.log(Logger.TAG_BTD_PARSER, "START:\t" + btdState.getStart());
+				Logger.log(Logger.TAG_BTD_PARSER, "END: \t" + btdState.getEnd());
+				Logger.log(Logger.TAG_BTD_PARSER, "DURAT:\t" + DateTimeOperator.getTimeStringFromMillis(btdState.getDuration()));
+				Logger.log(Logger.TAG_BTD_PARSER, "STATUS:\t" + btdState.getStatus() + "\n-\n");
 				
 			}
 			while (rs != null);

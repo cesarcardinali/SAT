@@ -21,32 +21,32 @@ import core.SharedObjs;
 @SuppressWarnings("unused")
 public class CrChecker
 {
-	private static final String INCOMPLETE = "Incomplete";
-	private static final String DUPLICATE  = "Duplicate";
-	private static final String CANCELLED  = "Cancelled";
-	private static final String INVALID    = "Invalid";
-	private String              crPath;
-	private String              falsePositiveComment;
-	private String              tetherComment;
-	private String              uptimesComment;
-	private String              wakelocksComment;
-	private boolean             btdParsed;
-	private boolean             mainParsed;
-	private boolean             bugrepParsed;
-	private boolean             btdTether;
-	private boolean             mainTether;
-	
-	private ArrayList<String>   incompleteFiles;
-	private ArrayList<String>   filesNames;
-	private ArrayList<File>     files;
-	
-	private BtdParser           btdParser;
-	private BugrepParser        bugrepParser;
-	private MainParser          mainParser;
-	
-	private CrItem              cr;
-	private JiraSatApi          jira;
-	
+	private static final String	INCOMPLETE = "Incomplete";
+	private static final String	DUPLICATE  = "Duplicate";
+	private static final String	CANCELLED  = "Cancelled";
+	private static final String	INVALID	   = "Invalid";
+	private String				crPath;
+	private String				falsePositiveComment;
+	private String				tetherComment;
+	private String				uptimesComment;
+	private String				wakelocksComment;
+	private boolean				btdParsed;
+	private boolean				mainParsed;
+	private boolean				bugrepParsed;
+	private boolean				btdTether;
+	private boolean				mainTether;
+								
+	private ArrayList<String>	incompleteFiles;
+	private ArrayList<String>	filesNames;
+	private ArrayList<File>		files;
+								
+	private BtdParser			btdParser;
+	private BugrepParser		bugrepParser;
+	private MainParser			mainParser;
+								
+	private CrItem				cr;
+	private JiraSatApi			jira;
+								
 	public CrChecker(String crPath)
 	{
 		this.crPath = crPath;
@@ -85,21 +85,22 @@ public class CrChecker
 				
 				cr.setResolution(INCOMPLETE);
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("Logs are missing. Closing CR " + cr.getJiraID()
 				                                     + " as incomplete");
-				
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
-				                                        + ". Closed as incomplete");
-				
+													 
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+				           "Done for " + file.getAbsolutePath() + ". Closed as incomplete");
+						   
 				return true;
 			}
 			
@@ -154,20 +155,21 @@ public class CrChecker
 				jira.addComment(cr.getJiraID(), wakelocksComment);
 				
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("Wakelocks detected. Needs manual analysis.");
 				
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
 				                                        + ". Wakelocks detected. Needs manual analysis.");
-				
+														
 				return false;
 			}
 			
@@ -181,21 +183,22 @@ public class CrChecker
 				
 				cr.setResolution(INVALID);
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("Tethering detected. Closing CR " + cr.getJiraID()
 				                                     + " as invalid");
-				
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
-				                                        + ". Closed as invalid");
-				
+													 
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
+				           "Done for " + file.getAbsolutePath() + ". Closed as invalid");
+						   
 				return true;
 			}
 			
@@ -206,22 +209,23 @@ public class CrChecker
 				jira.addComment(cr.getJiraID(),
 				                "Some long uptimes were detected. This CR shall be manually analized in order to ensure if there are issues or not in this CR.\\n\\n"
 				                                + uptimesComment);
-				
+												
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("Uptimes detected. Needs manual analysis.");
 				
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath()
 				                                        + ". Uptimes detected. Needs manual analysis.");
-				
+														
 				return false;
 			}
 			
@@ -234,8 +238,9 @@ public class CrChecker
 			
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Nothing detected");
 			SharedObjs.crsManagerPane.addLogLine("Nothing detected. "
-			                                     + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
-			
+			                                     + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis()
+			                                                                                 - start)));
+																							 
 			String comment = "";
 			String eblDecresed = "{panel:title=*Items that increases current drain and decreases EBL*|titleBGColor=#E9F2FF}\\n";
 			if (bugrepParsed)
@@ -245,9 +250,9 @@ public class CrChecker
 			}
 			if (btdParsed)
 			{
-				if(comment.equals(""))
+				if (comment.equals(""))
 					comment += btdParser.toJiraComment();
-				
+					
 				eblDecresed = eblDecresed + btdParser.eblDecreasers();
 			}
 			eblDecresed = eblDecresed + "{panel}\\n";
@@ -260,24 +265,24 @@ public class CrChecker
 			
 			Logger.log(Logger.TAG_FALSE_POSITIVE,
 			           DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
-			
-			if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-			{
-				SharedObjs.satDB.updateAnalyzedCR(cr);
-			}
-			else
-			{
-				SharedObjs.satDB.insertAnalyzedCR(cr);
-			}
-			
+					   
+			if (SharedObjs.satDB != null)
+				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+				{
+					SharedObjs.satDB.updateAnalyzedCR(cr);
+				}
+				else
+				{
+					SharedObjs.satDB.insertAnalyzedCR(cr);
+				}
+				
 			btdParser.close();
 			
 			return false;
 		}
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-		           file.getAbsolutePath()
-		                           + " was not pre analyzed because this CR is not on the downloaded CRs list");
+		           file.getAbsolutePath() + " was not pre analyzed because this CR is not on the downloaded CRs list");
 		return false;
 	}
 	
@@ -434,9 +439,10 @@ public class CrChecker
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 		           "\nBTD parse and tethering detection process took "
-		                           + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start))
-		                           + "\n");
-		
+		                                        + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis()
+		                                                                                    - start))
+		                                        + "\n");
+												
 		// Check for tethering
 		long now = System.currentTimeMillis();
 		
@@ -463,9 +469,10 @@ public class CrChecker
 		
 		Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 		           "\nMain parse and tethering detection process took "
-		                           + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - now))
-		                           + "\n");
-		
+		                                        + DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis()
+		                                                                                    - now))
+		                                        + "\n");
+												
 		tetherComment = "The user is *tethering a Wifi* network. Thus, this CR can be considered invalid for current drain analysis.\\n\\n";
 		
 		// Wi-Fi tethering is enabled for 10% or more from the discharge time
@@ -490,8 +497,7 @@ public class CrChecker
 					tetherComment = tetherComment + "|" + mainParser.getWifiPeriods().get(i).startLine
 					                + "|\\n";
 					tetherComment = tetherComment + "|" + mainParser.getWifiPeriods().get(i).endLine + "|\\n";
-					tetherComment = tetherComment
-					                + "|Duration: "
+					tetherComment = tetherComment + "|Duration: "
 					                + DateTimeOperator.getTimeStringFromMillis(mainParser.getWifiPeriods()
 					                                                                     .get(i)
 					                                                                     .getDuration())
@@ -530,7 +536,7 @@ public class CrChecker
 		
 		if (btdParsed)
 		{
-			btdUptime= btdParser.uptime();
+			btdUptime = btdParser.uptime();
 			System.out.println("btd uptime: " + btdUptime);
 			System.out.println("cd btd: " + btdParser.getAverageconsumeOff());
 			System.out.println("len btd: " + btdParser.eblDecreasers().length());
@@ -575,7 +581,8 @@ public class CrChecker
 				Logger.log(Logger.TAG_CR_CHECKER, "Calculated Threshold: " + cdThreashold);
 			}
 			
-			if ((btdParser.getAverageconsumeOff() <= cdThreashold || bugrepParser.getConsAvgOff() <= cdThreashold)
+			if ((btdParser.getAverageconsumeOff() <= cdThreashold
+			     || bugrepParser.getConsAvgOff() <= cdThreashold)
 			    && (btdEblDrecresers.length() > 10 || bugrepEblDrecresers.length() > 10))
 			{
 				String comment = bugrepParser.currentDrainStatistics();
@@ -603,21 +610,22 @@ public class CrChecker
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
-				
+													 
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
-				
+						   
 				return true;
 			}
 			else if ((btdParser.getAverageconsumeOff() <= 125 && bugrepParser.getConsAvgOff() <= 125)
@@ -636,7 +644,7 @@ public class CrChecker
 				
 				comment = comment
 				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
-				
+						  
 				System.out.println("-- Comments:");
 				System.out.println(comment.replaceAll("\\n", "\n"));
 				System.out.println(btdParser.eblDecreasers());
@@ -648,21 +656,22 @@ public class CrChecker
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
-				
+													 
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
-				
+						   
 				return true;
 			}
 			else if ((btdParser.getAverageconsumeOff() <= 70 || bugrepParser.getConsAvgOff() <= 70)
@@ -672,9 +681,9 @@ public class CrChecker
 				
 				comment = comment
 				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
-				
-//				System.out.println("-- Comments:");
-//				System.out.println(comment.replaceAll("\\n", "\n"));
+						  
+				// System.out.println("-- Comments:");
+				// System.out.println(comment.replaceAll("\\n", "\n"));
 				
 				jira.assignIssue(cr.getJiraID());
 				jira.addLabel(cr.getJiraID(), "sat_closed");
@@ -682,21 +691,22 @@ public class CrChecker
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
-				
+													 
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
-				
+						   
 				return true;
 			}
 		}
@@ -716,31 +726,32 @@ public class CrChecker
 				
 				comment = comment
 				          + "\\n- No current drain issues found in this CR.\\n\\nClosing as cancelled.";
-				
+						  
 				jira.assignIssue(cr.getJiraID());
 				jira.addLabel(cr.getJiraID(), "sat_closed");
 				jira.closeIssue(cr.getJiraID(), JiraSatApi.CANCELLED, comment);
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				System.out.println("-- Comments:");
 				System.out.println(comment.replaceAll("\\n", "\n"));
 				
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
-				
+													 
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 				           "This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
-				
+						   
 				return true;
 			}
 		}
@@ -799,21 +810,22 @@ public class CrChecker
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
-				
+													 
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 				           "1 This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
-				
+						   
 				return true;
 			}
 			else if (btdParser.getAverageconsumeOff() <= 125 && btdParser.phoneCallPercentage() > 9)
@@ -840,21 +852,22 @@ public class CrChecker
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
-				
+													 
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 				           "2 This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
-				
+						   
 				return true;
 			}
 			else if (btdParser.getAverageconsumeOff() <= 70 && btdParser.uptime() == false)
@@ -880,21 +893,22 @@ public class CrChecker
 				
 				cr.setResolution(CANCELLED);
 				cr.setAssignee(SharedObjs.getUser());
-				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
-				{
-					SharedObjs.satDB.updateAnalyzedCR(cr);
-				}
-				else
-				{
-					SharedObjs.satDB.insertAnalyzedCR(cr);
-				}
-				
+				if (SharedObjs.satDB != null)
+					if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
+					{
+						SharedObjs.satDB.updateAnalyzedCR(cr);
+					}
+					else
+					{
+						SharedObjs.satDB.insertAnalyzedCR(cr);
+					}
+					
 				SharedObjs.crsManagerPane.addLogLine("This CR is a false positive. Closing " + cr.getJiraID()
 				                                     + " as cancelled");
-				
+													 
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER,
 				           "3 This CR is a false positive. Closing " + cr.getJiraID() + " as cancelled");
-				
+						   
 				return true;
 			}
 		}
@@ -928,7 +942,7 @@ public class CrChecker
 					}
 					uptimesComment += "\\n\\n||TOTAL TIME|| "
 					                  + DateTimeOperator.getTimeStringFromMillis(total) + "|";
-					
+									  
 					uptimesComment += "\\n{panel}\\n\\n";
 				}
 				else if (btdParser.uptime())
@@ -946,7 +960,7 @@ public class CrChecker
 					}
 					uptimesComment += "\\n\\n||TOTAL TIME|| "
 					                  + DateTimeOperator.getTimeStringFromMillis(total) + "|";
-					
+									  
 					uptimesComment += "\\n{panel}\\n\\n";
 				}
 			}
@@ -980,7 +994,7 @@ public class CrChecker
 			}
 			wakelocksComment += "\\n\\n*TOTAL HELD TIME:* " + DateTimeOperator.getTimeStringFromMillis(total)
 			                    + "\\n";
-			
+								
 			wakelocksComment += "\\n{panel}\\n\\n";
 			
 			btdWake = true;

@@ -199,6 +199,7 @@ public class CrsManagerPane extends JPanel
 		panel.add(btnUnassign, gbc_btnUnassign);
 		btnUnassign.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				SharedObjs.crsManagerPane.addLogLine("Unassigning CRs ...");
 				new Thread(new Runnable()
 				{
 					@Override
@@ -209,7 +210,9 @@ public class CrsManagerPane extends JPanel
 						for(String cr : crs)
 						{
 							jira.unassignIssue(cr);
-						}					}
+						}
+						SharedObjs.crsManagerPane.addLogLine("Unassigning CRs - DONE");
+					}
 				}).start();
 			}
 		});
@@ -221,6 +224,7 @@ public class CrsManagerPane extends JPanel
 		JButton btnRemoveLabel = new JButton("Remove Labels");
 		btnRemoveLabel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				SharedObjs.crsManagerPane.addLogLine("Removing labels ...");
 				new Thread(new Runnable()
 				{
 					@Override
@@ -231,8 +235,32 @@ public class CrsManagerPane extends JPanel
 						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
 						for(String cr : crs)
 						{
-							jira.removeLabel(cr, labels);
+							CrItem crData;
+							try
+							{
+								crData = jira.getCrData(cr);
+								System.out.println("Assign: " + crData.getAssignee());
+								if(crData.getAssignee().equals("null"))
+								{
+									System.out.println("Assign: null");
+									jira.assignIssue(cr);
+									jira.removeLabel(cr, labels);
+									jira.unassignIssue(cr);
+								}
+								else
+								{
+									jira.assignIssue(cr);
+									jira.removeLabel(cr, labels);
+								}
+							}
+							catch (ParseException e)
+							{
+								System.out.println("Unable to get CR data");
+								e.printStackTrace();
+							}
 						}
+						
+						SharedObjs.crsManagerPane.addLogLine("Removing labels - DONE");
 					}
 				}).start();
 			}
@@ -702,6 +730,8 @@ public class CrsManagerPane extends JPanel
 		XmlMngr.setUserValueOf(xmlPath, chckbxAssign.isSelected() + "");
 		xmlPath[1] = "label";
 		XmlMngr.setUserValueOf(xmlPath, chckbxLabels.isSelected() + "");
+		xmlPath[1] = "labels";
+		XmlMngr.setUserValueOf(xmlPath, textLabel.getText());
 		
 		Logger.log(Logger.TAG_CRSMANAGER, "CrsManagerPane data saved");
 	}
@@ -719,6 +749,9 @@ public class CrsManagerPane extends JPanel
 		
 		xmlPath[1] = "label";
 		chckbxLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		
+		xmlPath[1] = "labels";
+		textLabel.setText(XmlMngr.getUserValueOf(xmlPath));
 		
 		Logger.log(Logger.TAG_CRSMANAGER, "CrsManagerPane variables Loaded");
 	}

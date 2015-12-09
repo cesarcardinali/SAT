@@ -33,7 +33,6 @@ public class SAT extends JFrame
 	 */
 	boolean updating = false; // Checking for update
 	
-	                          
 	/**
 	 * Runnable
 	 */
@@ -133,31 +132,31 @@ public class SAT extends JFrame
 		
 		Logger.log(Logger.TAG_SAT,
 		           "Remote file: " + f1.getAbsolutePath() + " - Modified: " + new Date(f1.lastModified()));
-		
+				   
 		f2 = new File(Strings.getToolFileName());
 		
 		Logger.log(Logger.TAG_SAT,
 		           "Local file: " + f2.getAbsolutePath() + " - Modified: " + new Date(f2.lastModified()));
-		
+				   
 		dateRemote = f1.lastModified();
 		dateLocal = f2.lastModified();
 		
 		if (dateLocal < dateRemote && dateLocal != 0)
 		{
 			Object[] options = new Object[] {"Yes", "No"};
-			int n = JOptionPane.showOptionDialog(null,					
-												XmlMngr.getMessageValueOf(new String[] {"messages", "new_version"}),
-												XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), 
-												JOptionPane.YES_NO_CANCEL_OPTION,
-			                                    JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-			
+			int n = JOptionPane.showOptionDialog(null, XmlMngr.getMessageValueOf(new String[] {
+			                                                                                   "messages",
+			                                                                                   "new_version"}),
+			                                     XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+												 
 			if (n == 0)
 			{
 				try
 				{
-					Logger.log(Logger.TAG_SAT, 
-							  "Updating the Updater first, from: " + SharedObjs.updateFolder1);
-					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/" + Strings.getUpdaterFileName()),
+					Logger.log(Logger.TAG_SAT,
+					           "Updating the Updater first, from: " + SharedObjs.updateFolder1);
+					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/"
+					                            + Strings.getUpdaterFileName()),
 					                   new File(Strings.getUpdaterFileName()));
 				}
 				catch (IOException e)
@@ -173,10 +172,9 @@ public class SAT extends JFrame
 					Logger.log(Logger.TAG_SAT, "path: " + new File("").getAbsolutePath());
 					ProcessBuilder builder = new ProcessBuilder("cmd.exe",
 					                                            "/c",
-					                                            "cd "
-					                                                            + new File("").getAbsolutePath()
-					                                                            + " && java -jar "
-					                                                            + Strings.getUpdaterFileName());
+					                                            "cd " + new File("").getAbsolutePath()
+					                                                  + " && java -jar "
+					                                                  + Strings.getUpdaterFileName());
 					builder.start();
 				}
 				catch (IOException e2)
@@ -202,13 +200,13 @@ public class SAT extends JFrame
 	/**
 	 * Thread to run when shutting down SAT application
 	 */
-	Thread              onShutdown = new Thread(new Runnable()
+	Thread				onShutdown = new Thread(new Runnable()
 	                               {
 		                               @Override
 		                               public void run()
 		                               {
 			                               int run = 0;
-			                               
+										   
 			                               while (run == 0)
 			                               {
 				                               Logger.log(Logger.TAG_SAT, "Saving all user data ...");
@@ -223,11 +221,11 @@ public class SAT extends JFrame
 			                               Logger.close();
 		                               }
 	                               });
-	
+								   
 	/**
 	 * Window Focus Listener used on SAT main Frame
 	 */
-	WindowFocusListener satWFL     = new WindowFocusListener()
+	WindowFocusListener	satWFL	   = new WindowFocusListener()
 	                               {
 		                               @Override
 		                               public void windowLostFocus(WindowEvent e)
@@ -239,7 +237,7 @@ public class SAT extends JFrame
 		                               {
 		                               }
 	                               };
-	
+								   
 	// Getters and Setters:
 	public boolean isUpdating()
 	{

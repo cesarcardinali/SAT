@@ -7,6 +7,7 @@
     <path>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs\Errors</path>
     <assign>true</assign>
     <label>true</label>
+    <labels>cd_auto</labels>
   </crs_jira_pane>
   <option_pane>
     <full_log>- The process *#pname#* was consuming *~#avgconsume#* of CPU processing power.\n{noformat}\n#logfull#\n{noformat}</full_log>
