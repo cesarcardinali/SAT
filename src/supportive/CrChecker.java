@@ -63,15 +63,17 @@ public class CrChecker
 			
 			SharedObjs.crsManagerPane.addLogLine("Adding pre analyzed label ...");
 			jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
-			
+			SharedObjs.crsManagerPane.addLogLine("CR Assignee: " + cr.getAssignee());
 			if (cr.getAssignee().equals(""))
 			{
 				jira.assignIssue(cr.getJiraID());
 				jira.addLabel(cr.getJiraID(), "sat_pre_analyzed");
 				jira.unassignIssue(cr.getJiraID());
+				SharedObjs.crsManagerPane.addLogLine("Unassigning");
 			}
 			else
 			{
+				SharedObjs.crsManagerPane.addLogLine("Letting assigned");
 				jira.addLabel(cr.getJiraID(), "sat_pre_analyzed");
 			}
 			

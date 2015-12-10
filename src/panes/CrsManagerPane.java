@@ -547,13 +547,15 @@ public class CrsManagerPane extends JPanel
 				{
 					jira.assignIssue(crKey);
 					jira.addLabel(crKey, labels);
-					if (!chckbxAssign.isSelected())
+					
+					if (chckbxAssign.isSelected())
 					{
-						jira.unassignIssue(crKey);
 						crItem.setAssignee(SharedObjs.getUser());
 					}
-					else {
+					else
+					{
 						crItem.setAssignee("");
+						jira.unassignIssue(crKey);
 					}
 				}
 				else if (chckbxAssign.isSelected())

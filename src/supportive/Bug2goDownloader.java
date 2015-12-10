@@ -460,7 +460,6 @@ public class Bug2goDownloader implements Runnable
 				}
 			}
 			
-			
 			SharedObjs.getClosedList().clear();
 			SharedObjs.getOpenedList().clear();
 			

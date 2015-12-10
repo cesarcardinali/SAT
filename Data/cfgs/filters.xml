@@ -121,24 +121,24 @@
       <name>All Errors</name>
       <regex>.*error.*</regex>
       <header />
-      <owner>wmarques</owner>
+      <owner>andremar</owner>
       <main>true</main>
-      <system>true</system>
-      <kernel>true</kernel>
+      <system>false</system>
+      <kernel>false</kernel>
       <radio>false</radio>
       <bugreport>false</bugreport>
       <routput>false</routput>
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-09-11 14:09:46</last_update>
+      <last_update>2015-12-09 13:10:11</last_update>
     </item_4>
     <item_5>
       <name>Kernel</name>
       <regex>(^  Kernel.*realtime&#xD;
 ){3}</regex>
       <header>All kernel wake locks:</header>
-      <owner>bbrusafa</owner>
+      <owner>brusafa</owner>
       <main>false</main>
       <system>false</system>
       <kernel>false</kernel>
@@ -148,7 +148,7 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2015-12-03 15:12:19</last_update>
+      <last_update>2015-12-07 17:28:24</last_update>
     </item_5>
   </sharedFilters>
   <!-- Active filters: !-->

@@ -177,9 +177,6 @@ public class BtdParser
 			getDischargeBtdData(finalState, 0);
 			System.out.println("Rows read: " + btdRows.size());
 			
-			// Show acquired data
-			// showParseResults();
-			
 			// Print acquired data
 			try
 			{
