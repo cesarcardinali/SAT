@@ -403,9 +403,9 @@ public class Bug2goDownloader implements Runnable
 		                                                       + "and close them on Jira!",
 		                                       "Downloads completed", JOptionPane.YES_NO_OPTION,
 		                                       JOptionPane.QUESTION_MESSAGE, null, new Object[] {
-		                                               "Unzip/Build report",
-		                                               "Just unzip them all",
-		                                               "Nothing, I am ok"}, null);
+		                                               "Unzip/PreAnalyse",
+		                                               "Just unzip",
+		                                               "Nothing"}, null);
 		
 		if (ans == 0)
 		{
