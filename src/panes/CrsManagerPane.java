@@ -63,17 +63,17 @@ public class CrsManagerPane extends JPanel
 	/**
 	 * Global Variables
 	 */
-	private JTextArea	textDownload;
-	private JTextField	textPath;
-	private JTextPane	textLog;
-	private JTextPane	textPane;
-	private JCheckBox	chckbxAssign;
-	private JCheckBox	chckbxLabels;
-	private String		CRs[];
-	private String		labels[];
-	private JTextField	textLabel;
-	private int errors;
-	private JButton btnDownload;
+	private JTextArea  textDownload;
+	private JTextField textPath;
+	private JTextPane  textLog;
+	private JTextPane  textPane;
+	private JCheckBox  chckbxAssign;
+	private JCheckBox  chckbxLabels;
+	private String     CRs[];
+	private String     labels[];
+	private JTextField textLabel;
+	private int        errors;
+	private JButton    btnDownload;
 	
 	/**
 	 * Create the panel.
@@ -91,16 +91,7 @@ public class CrsManagerPane extends JPanel
 		gridBagLayout.columnWidths = new int[] {0, 0, 0};
 		gridBagLayout.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[] {1.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[] {0.0,
-												 0.0,
-												 0.0,
-												 0.0,
-												 0.0,
-												 0.0,
-												 0.0,
-												 1.0,
-												 0.0,
-												 Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		contentPane.setLayout(gridBagLayout);
 		
 		JPanel panel = new JPanel();
@@ -181,8 +172,10 @@ public class CrsManagerPane extends JPanel
 		gbc_btnCloseAsOld.gridx = 0;
 		gbc_btnCloseAsOld.gridy = 3;
 		panel.add(btnCloseAsOld, gbc_btnCloseAsOld);
-		btnCloseAsOld.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		btnCloseAsOld.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
 				CrsCloser closer = new CrsCloser(textDownload.getText().split("\n"));
 				new Thread(closer).start();
 			}
@@ -197,8 +190,10 @@ public class CrsManagerPane extends JPanel
 		gbc_btnUnassign.gridx = 0;
 		gbc_btnUnassign.gridy = 4;
 		panel.add(btnUnassign, gbc_btnUnassign);
-		btnUnassign.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		btnUnassign.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
 				SharedObjs.crsManagerPane.addLogLine("Unassigning CRs ...");
 				new Thread(new Runnable()
 				{
@@ -207,7 +202,7 @@ public class CrsManagerPane extends JPanel
 					{
 						String crs[] = textDownload.getText().split("\n");
 						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
-						for(String cr : crs)
+						for (String cr : crs)
 						{
 							jira.unassignIssue(cr);
 						}
@@ -222,8 +217,10 @@ public class CrsManagerPane extends JPanel
 		btnUnassign.setMaximumSize(new Dimension(113, 23));
 		
 		JButton btnRemoveLabel = new JButton("Remove Labels");
-		btnRemoveLabel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		btnRemoveLabel.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
 				SharedObjs.crsManagerPane.addLogLine("Removing labels ...");
 				new Thread(new Runnable()
 				{
@@ -233,14 +230,14 @@ public class CrsManagerPane extends JPanel
 						String crs[] = textDownload.getText().split("\n");
 						String labels[] = getLabels();
 						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
-						for(String cr : crs)
+						for (String cr : crs)
 						{
 							CrItem crData;
 							try
 							{
 								crData = jira.getCrData(cr);
 								System.out.println("Assign: " + crData.getAssignee());
-								if(crData.getAssignee().equals("null"))
+								if (crData.getAssignee().equals("null"))
 								{
 									System.out.println("Assign: null");
 									jira.assignIssue(cr);
@@ -284,8 +281,10 @@ public class CrsManagerPane extends JPanel
 		btnOpenOnChrome.setToolTipText("Open the CRs on the list above on Chrome");
 		
 		JButton btnLists = new JButton("Reopen Result Lists");
-		btnLists.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnLists.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				SharedObjs.getClosedList().setVisible(true);
 				SharedObjs.getOpenedList().setVisible(true);
 			}
@@ -499,14 +498,12 @@ public class CrsManagerPane extends JPanel
 	 */
 	private void downloadCRs() throws ParseException
 	{
-		//SharedObjs.crsManagerPane.addLogLine("Generating CRs list ...");
+		// SharedObjs.crsManagerPane.addLogLine("Generating CRs list ...");
 		errors = 0;
 		
 		// Setup jira connection
-		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL,
-										 SharedObjs.getUser(),
-										 SharedObjs.getPass());
-										 
+		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
+		
 		// Get the CRs list
 		CRs = textDownload.getText().replaceAll(" ", "").split("\n");
 		
@@ -569,19 +566,26 @@ public class CrsManagerPane extends JPanel
 			}
 			else
 			{
-				Logger.log(Logger.TAG_CRSMANAGER,
-						   "CR KEY: " + crKey + " seems not to exist. Or your user/password is wrong");
+				Logger.log(Logger.TAG_CRSMANAGER, "CR KEY: " + crKey + " seems not to exist. Or your user/password is wrong");
 				SharedObjs.crsManagerPane.addLogLine("CR KEY: " + crKey + " seems not to exist. Or your user/password is wrong");
 				errors++;
 			}
 		}
 		
-		SharedObjs.crsManagerPane.addLogLine("Generating b2g list to download ...");
-		
 		if (b2gList.size() > 0)
 		{
 			// Configure the B2gDownloader
 			Bug2goDownloader b2gDownloader = Bug2goDownloader.getInstance();
+			
+			if (b2gDownloader.getExecutor() == null || b2gDownloader.getExecutor().isTerminated())
+			{
+				SharedObjs.crsManagerPane.addLogLine("Generating download list ...");
+			}
+			else
+			{
+				SharedObjs.crsManagerPane.addLogLine("New b2g files added to download list ...");
+			}
+			
 			try
 			{
 				b2gDownloader.addBugIdList(b2gList);
@@ -597,12 +601,11 @@ public class CrsManagerPane extends JPanel
 		}
 		else
 		{
-			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane,
-										  "There were errors during the b2g collection."
-																	 + "\nWe could not get CRs data from Jira."
-																	 + "\nYour pass or username may be wrong or "
-																	 + "the CRs sent does not exist.");
+			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "There were errors during the b2g collection." + "\nWe could not get CRs data from Jira."
+			                                                         + "\nYour pass or username may be wrong or " + "the CRs sent does not exist.");
 		}
+		
+		btnDownload.setEnabled(true);
 	}
 	
 	/**
@@ -640,6 +643,7 @@ public class CrsManagerPane extends JPanel
 	private void btnDownloadAction()
 	{
 		btnDownload.setEnabled(false);
+		
 		new Thread(new Runnable()
 		{
 			
@@ -696,9 +700,7 @@ public class CrsManagerPane extends JPanel
 		{
 			try
 			{
-				File f = new File("Data\\logs\\log_"
-								  + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_")
-								  + ".txt");
+				File f = new File("Data\\logs\\log_" + new Timestamp(System.currentTimeMillis()).toString().replace(":", "_") + ".txt");
 				BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 				bw.write(textLog.getText());
 				bw.close();
@@ -809,17 +811,15 @@ public class CrsManagerPane extends JPanel
 				sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
 				Logger.log(Logger.TAG_CRSMANAGER, sCurrentLine);
 				
-				SharedObjs.copyScript(new File("Data\\scripts\\_Base.pl"),
-									  new File(folder + "\\build_report.pl"));
-									  
+				SharedObjs.copyScript(new File("Data\\scripts\\_Base.pl"), new File(folder + "\\build_report.pl"));
+				
 				// Configure build report battery capacity
 				try
 				{
 					@SuppressWarnings("resource")
 					Scanner scanner = new Scanner(new File(folder + "\\build_report.pl"));
 					String content = scanner.useDelimiter("\\Z").next();
-					content = content.replace("#bat_cap#",
-											  SharedObjs.advOptions.getBatCapValue(sCurrentLine));
+					content = content.replace("#bat_cap#", SharedObjs.advOptions.getBatCapValue(sCurrentLine));
 					PrintWriter out = new PrintWriter(folder + "\\build_report.pl");
 					out.println(content);
 					out.close();
@@ -833,7 +833,7 @@ public class CrsManagerPane extends JPanel
 			}
 		}
 		
-		if(!parsed)
+		if (!parsed)
 		{
 			try
 			{
@@ -842,7 +842,7 @@ public class CrsManagerPane extends JPanel
 				@SuppressWarnings("resource")
 				Scanner scanner = new Scanner(new File(folder + "\\build_report.pl"));
 				String content = scanner.useDelimiter("\\Z").next();
-				content = content.replace("#bat_cap#","3000");
+				content = content.replace("#bat_cap#", "3000");
 				PrintWriter out = new PrintWriter(folder + "\\build_report.pl");
 				out.println(content);
 				out.close();
@@ -864,10 +864,7 @@ public class CrsManagerPane extends JPanel
 			}
 		}
 		
-		ProcessBuilder builder = new ProcessBuilder("cmd.exe",
-													"/c",
-													"cd \"" + folder + "\" && build_report.pl " + bugreport
-														  + " > report-output.txt");
+		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd \"" + folder + "\" && build_report.pl " + bugreport + " > report-output.txt");
 		Logger.log(Logger.TAG_CRSMANAGER, "Bugreport file: " + bugreport);
 		for (String c : builder.command())
 		{

@@ -2,7 +2,7 @@
 <SAT>
   <configs>
     <tool_name>Search Analysis Tool</tool_name>
-    <tool_version>v2.0 pre-release</tool_version>
+    <tool_version>v1.0</tool_version>
     <tool_file>SAT.jar</tool_file>
     <updater>SAT_Updater.jar</updater>
     <content_folder>Data/</content_folder>

@@ -46,6 +46,7 @@ public class MainParser
 	private LogState              longerDischarge;
 	private LogStatesData         statesData;
 	private ArrayList<wifiPeriod> wifiPeriods;
+	private String                latestMonthDay;
 	private long                  startTime;
 	private long                  endTime;
 	private long                  totalLogTime;
@@ -58,11 +59,12 @@ public class MainParser
 		statesData = new LogStatesData();
 		wifiPeriods = new ArrayList<wifiPeriod>();
 		year = getYearFromBugReport();
+		latestMonthDay = "";
 	}
 	
 	public boolean parse()
 	{
-		if(year.equals(""))
+		if (year.equals(""))
 		{
 			Logger.log(Logger.TAG_CONSUME, "Could not parse year from logs. So, SAT can not parse Main log.");
 			SharedObjs.crsManagerPane.addLogLine("Could not find 'year' from bugreport. SAT will not parse main log.");
@@ -83,9 +85,7 @@ public class MainParser
 		// Search for the file to be parsed
 		for (int i = 0; i < listOfFiles.length; i++)
 		{
-			if (listOfFiles[i].isFile()
-			    && (listOfFiles[i].getName().toLowerCase().endsWith(".txt") && listOfFiles[i].getName()
-			                                                                                 .contains("main")))
+			if (listOfFiles[i].isFile() && (listOfFiles[i].getName().toLowerCase().endsWith(".txt") && listOfFiles[i].getName().contains("main")))
 			{
 				mainFile = listOfFiles[i].getName();
 				break;
@@ -122,8 +122,6 @@ public class MainParser
 				mDate = ptDateLine.matcher(sCurrentLine);
 				if (mDate.find())
 				{
-					
-					// System.out.println(sCurrentLine);
 					nextTime = DateTimeOperator.getMillis(parseLineDate(sCurrentLine)[0]);
 					
 					if ((nextTime - actualTime) < -60000 && (nextTime - actualTime) > -3600000)
@@ -133,6 +131,7 @@ public class MainParser
 						sLastLine = sCurrentLine;
 						continue;
 					}
+					
 					if ((nextTime - actualTime) > 3600000L || (nextTime - actualTime) < -3600000L)
 					{
 						System.out.println("+/-1h dif -- " + sLastLine);
@@ -271,18 +270,14 @@ public class MainParser
 	{
 		for (LogState s : statesData)
 		{
-			System.out.println("Periodo:\n" + "Start: " + s.getStartDate() + " > End: " + s.getEndDate()
-			                   + " > Status: " + s.getStatus());
+			System.out.println("Periodo:\n" + "Start: " + s.getStartDate() + " > End: " + s.getEndDate() + " > Status: " + s.getStatus());
 		}
 		
 		System.out.println("Periodo total do log:");
 		System.out.println("Begins " + new Date(startTime) + "(" + startTime + ")");
 		System.out.println("Ends " + new Date(endTime) + "(" + endTime + ")");
-		System.out.println("Total running time " + DateTimeOperator.getTimeStringFromMillis(totalLogTime)
-		                   + " or " + (totalLogTime) + "ms");
-		System.out.println("Longer discharge time "
-		                   + DateTimeOperator.getTimeStringFromMillis(longerDischarge.getDuration()) + " or "
-		                   + (totalLogTime) + "ms");
+		System.out.println("Total running time " + DateTimeOperator.getTimeStringFromMillis(totalLogTime) + " or " + (totalLogTime) + "ms");
+		System.out.println("Longer discharge time " + DateTimeOperator.getTimeStringFromMillis(longerDischarge.getDuration()) + " or " + (totalLogTime) + "ms");
 		System.out.println("From " + longerDischarge.getStartDate() + " to " + longerDischarge.getEndDate());
 	}
 	
@@ -291,14 +286,12 @@ public class MainParser
 		for (wifiPeriod w : wifiPeriods)
 		{
 			System.out.println("Tethering data:");
-			System.out.println("Total time: " + (w.getDuration()) + "ms  >  "
-			                   + DateTimeOperator.getTimeStringFromMillis(w.getDuration()));
+			System.out.println("Total time: " + (w.getDuration()) + "ms  >  " + DateTimeOperator.getTimeStringFromMillis(w.getDuration()));
 			System.out.println("Started at: " + w.startLine);
 			System.out.println("Stopped at: " + w.endLine);
 		}
 		
-		System.out.println("Total Tethering time " + totalTetherTime + "ms  >  "
-		                   + DateTimeOperator.getTimeStringFromMillis(totalTetherTime));
+		System.out.println("Total Tethering time " + totalTetherTime + "ms  >  " + DateTimeOperator.getTimeStringFromMillis(totalTetherTime));
 		DecimalFormat df = new DecimalFormat("##.##");
 		df.setRoundingMode(RoundingMode.DOWN);
 		System.out.println("Tethering running for " + getTetherPercentage() + "% of total log time");
@@ -357,10 +350,22 @@ public class MainParser
 				parsed[0] = parsed[0].substring(2, 19);
 			}
 			parsed[1] = parts[parts.length - 1];
+			
+			if(!latestMonthDay.equals("") && latestMonthDay.equals("12-31") && parts[0].equals("01-01"))
+			{
+				year = "" + (Integer.parseInt(year) + 1);
+			}
 			parsed[0] = year + "-" + parts[0] + " " + parts[1];
+			
+			latestMonthDay = parts[0];
+			
+			return parsed;
+		}
+		else
+		{
+			return null;
 		}
 		
-		return parsed;
 	}
 	
 	private String getYearFromBugReport()
@@ -409,6 +414,18 @@ public class MainParser
 	{
 		if (totalTetherTime == 0)
 		{
+			if (longerDischarge == null)
+			{
+				if (statesData.getLongerDischargingPeriod() == null)
+				{
+					return -1;
+				}
+				else
+				{
+					longerDischarge = statesData.getLongerDischargingPeriod();
+				}
+			}
+			
 			for (wifiPeriod w : wifiPeriods)
 			{
 				if (w.startTime < longerDischarge.getStart())
@@ -432,6 +449,7 @@ public class MainParser
 				totalTetherTime = totalTetherTime + w.getDuration();
 			}
 		}
+		
 		return totalTetherTime;
 	}
 	

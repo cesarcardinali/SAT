@@ -537,4 +537,9 @@ public class Bug2goDownloader implements Runnable
 	{
 		errors = value;
 	}
+	
+	public ExecutorService getExecutor()
+	{
+		return executor;
+	}
 }

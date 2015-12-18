@@ -1,6 +1,8 @@
 package supportive.preanalyzers.logsparser;
 
+
 import java.util.ArrayList;
+
 
 public class LogStatesData extends ArrayList<LogState>
 {
@@ -9,7 +11,7 @@ public class LogStatesData extends ArrayList<LogState>
 		super();
 	}
 	
-	//Modificar o metodo "add" para verificar o maior periodo e guardar o index
+	// Modificar o metodo "add" para verificar o maior periodo e guardar o index
 	
 	public LogStatesData getChargingPeriods()
 	{
@@ -26,9 +28,10 @@ public class LogStatesData extends ArrayList<LogState>
 		long longer = -1;
 		int index = -1;
 		
-		for (int i=0; i<this.size(); i++)
+		for (int i = 0; i < this.size(); i++)
 		{
-			//System.out.println("------- Periodo " + i + ":\n" + this.get(i).getStatus() + " - " + this.get(i).getDuration() + " - " + this.get(i).getStart() + " - " + this.get(i).getEnd());
+			System.out.println("------- Periodo " + i + ":\n" + this.get(i).getStatus() + " - " + this.get(i).getDuration() + " - " + this.get(i).getStart()
+			                   + " - " + this.get(i).getEnd());
 			if (this.get(i).getStatus() == 0 && this.get(i).getDuration() > longer)
 			{
 				longer = this.get(i).getDuration();
