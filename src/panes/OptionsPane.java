@@ -72,6 +72,7 @@ public class OptionsPane extends JPanel
 	private JPanel         panel_2;
 	private JLabel         lblServerStatus;
 	private JLabel         label_6;
+	private TextDialog warning;
 	
 	// }}
 	
@@ -89,6 +90,8 @@ public class OptionsPane extends JPanel
 		setLayout(gridBagLayout);
 		ButtonGroup editorSelector = new ButtonGroup();
 		ButtonGroup breakdownSelector = new ButtonGroup();
+		
+		warning = new TextDialog();
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -456,7 +459,20 @@ public class OptionsPane extends JPanel
 		textConsumeFull.setColumns(10);
 		
 		JButton button_12 = new JButton("?");
+		button_12.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				warning.setText("#pname#: Process name\n#avgconsume#: Average process CPU consumption\n"
+								+ "#scoffconsume#: Average consumption while screen off\n"
+								+ "#sconconsume#: Average consumption while screen on\n"
+								+ "#logfull#: Show complete log results\n#logoff#: Log lines while screen off\n"
+								+ "#logon#: Log lines while screen on\n");
+				warning.setVisible(true);
+			}
+		});
+		button_12.setToolTipText("Click for help creating comment");
 		GridBagConstraints gbc_button_12 = new GridBagConstraints();
+		gbc_button_12.fill = GridBagConstraints.VERTICAL;
+		gbc_button_12.gridheight = 3;
 		gbc_button_12.insets = new Insets(0, 0, 5, 5);
 		gbc_button_12.gridx = 2;
 		gbc_button_12.gridy = 1;
@@ -481,14 +497,6 @@ public class OptionsPane extends JPanel
 		panel_2.add(textConsumeOff, gbc_textConsumeOff);
 		textConsumeOff.setColumns(10);
 		
-		JButton button_13 = new JButton("?");
-		GridBagConstraints gbc_button_13 = new GridBagConstraints();
-		gbc_button_13.insets = new Insets(0, 0, 5, 5);
-		gbc_button_13.gridx = 2;
-		gbc_button_13.gridy = 2;
-		panel_2.add(button_13, gbc_button_13);
-		button_13.setMargin(new Insets(2, 8, 2, 8));
-		
 		JLabel label_21 = new JLabel("Screen On:");
 		GridBagConstraints gbc_label_21 = new GridBagConstraints();
 		gbc_label_21.insets = new Insets(0, 0, 5, 5);
@@ -507,14 +515,6 @@ public class OptionsPane extends JPanel
 		panel_2.add(textConsumeOn, gbc_textConsumeOn);
 		textConsumeOn.setColumns(10);
 		
-		JButton button_14 = new JButton("?");
-		GridBagConstraints gbc_button_14 = new GridBagConstraints();
-		gbc_button_14.insets = new Insets(0, 0, 5, 5);
-		gbc_button_14.gridx = 2;
-		gbc_button_14.gridy = 3;
-		panel_2.add(button_14, gbc_button_14);
-		button_14.setMargin(new Insets(2, 8, 2, 8));
-		
 		JSeparator separator = new JSeparator();
 		separator.setPreferredSize(new Dimension(500, 1));
 		separator.setMinimumSize(new Dimension(3, 2));
@@ -527,7 +527,7 @@ public class OptionsPane extends JPanel
 		gbc_separator.gridy = 4;
 		panel_2.add(separator, gbc_separator);
 		
-		JLabel label_22 = new JLabel("General Issues:");
+		JLabel label_22 = new JLabel("Wakelocks:");
 		label_22.setVerticalAlignment(SwingConstants.BOTTOM);
 		label_22.setForeground(Color.DARK_GRAY);
 		GridBagConstraints gbc_label_22 = new GridBagConstraints();
@@ -558,7 +558,16 @@ public class OptionsPane extends JPanel
 		textHighCurrent.setColumns(10);
 		
 		JButton button_15 = new JButton("?");
+		button_15.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				warning.setText("Edit headers from \"Wakelocks\" filter result");
+				warning.setVisible(true);
+			}
+		});
+		button_15.setToolTipText("Click for help creating comment");
 		GridBagConstraints gbc_button_15 = new GridBagConstraints();
+		gbc_button_15.fill = GridBagConstraints.VERTICAL;
+		gbc_button_15.gridheight = 3;
 		gbc_button_15.insets = new Insets(0, 0, 5, 5);
 		gbc_button_15.gridx = 2;
 		gbc_button_15.gridy = 6;
@@ -583,14 +592,6 @@ public class OptionsPane extends JPanel
 		panel_2.add(textKernelWake, gbc_textKernelWake);
 		textKernelWake.setColumns(10);
 		
-		JButton button_16 = new JButton("?");
-		GridBagConstraints gbc_button_16 = new GridBagConstraints();
-		gbc_button_16.insets = new Insets(0, 0, 5, 5);
-		gbc_button_16.gridx = 2;
-		gbc_button_16.gridy = 7;
-		panel_2.add(button_16, gbc_button_16);
-		button_16.setMargin(new Insets(2, 8, 2, 8));
-		
 		JLabel label_25 = new JLabel("Java Wakelocks:");
 		GridBagConstraints gbc_label_25 = new GridBagConstraints();
 		gbc_label_25.anchor = GridBagConstraints.EAST;
@@ -608,14 +609,6 @@ public class OptionsPane extends JPanel
 		gbc_textJavaWake.gridy = 8;
 		panel_2.add(textJavaWake, gbc_textJavaWake);
 		textJavaWake.setColumns(10);
-		
-		JButton button_17 = new JButton("?");
-		GridBagConstraints gbc_button_17 = new GridBagConstraints();
-		gbc_button_17.insets = new Insets(0, 0, 5, 5);
-		gbc_button_17.gridx = 2;
-		gbc_button_17.gridy = 8;
-		panel_2.add(button_17, gbc_button_17);
-		button_17.setMargin(new Insets(2, 8, 2, 8));
 		
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setPreferredSize(new Dimension(500, 1));
@@ -659,7 +652,16 @@ public class OptionsPane extends JPanel
 		textSuspiciousHeader.setColumns(10);
 		
 		JButton button_18 = new JButton("?");
+		button_18.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				warning.setText("#pname#*: Process name\n#tag#: Process tag held\n#duration#: Wakelock duration\n#log#: Android logs");
+				warning.setVisible(true);
+			}
+		});
+		button_18.setToolTipText("Click for help creating comment");
 		GridBagConstraints gbc_button_18 = new GridBagConstraints();
+		gbc_button_18.fill = GridBagConstraints.VERTICAL;
+		gbc_button_18.gridheight = 2;
 		gbc_button_18.insets = new Insets(0, 0, 5, 5);
 		gbc_button_18.gridx = 2;
 		gbc_button_18.gridy = 11;
@@ -683,14 +685,6 @@ public class OptionsPane extends JPanel
 		gbc_textSuspicious.gridy = 12;
 		panel_2.add(textSuspicious, gbc_textSuspicious);
 		textSuspicious.setColumns(10);
-		
-		JButton button_19 = new JButton("?");
-		GridBagConstraints gbc_button_19 = new GridBagConstraints();
-		gbc_button_19.insets = new Insets(0, 0, 5, 5);
-		gbc_button_19.gridx = 2;
-		gbc_button_19.gridy = 12;
-		panel_2.add(button_19, gbc_button_19);
-		button_19.setMargin(new Insets(2, 8, 2, 8));
 		
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setPreferredSize(new Dimension(500, 1));
@@ -734,6 +728,13 @@ public class OptionsPane extends JPanel
 		textAlarms.setColumns(10);
 		
 		JButton button_20 = new JButton("?");
+		button_20.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				warning.setText("#pname#*: Process name\n#log#: Android logs");
+				warning.setVisible(true);
+			}
+		});
+		button_20.setToolTipText("Click for help creating comment");
 		GridBagConstraints gbc_button_20 = new GridBagConstraints();
 		gbc_button_20.insets = new Insets(0, 0, 5, 5);
 		gbc_button_20.gridx = 2;
@@ -783,6 +784,13 @@ public class OptionsPane extends JPanel
 		textB2g.setColumns(10);
 		
 		JButton button_21 = new JButton("?");
+		button_21.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				warning.setText("#log#: Android logs");
+				warning.setVisible(true);
+			}
+		});
+		button_21.setToolTipText("Click for help creating comment");
 		GridBagConstraints gbc_button_21 = new GridBagConstraints();
 		gbc_button_21.insets = new Insets(0, 0, 5, 5);
 		gbc_button_21.gridx = 2;
@@ -832,6 +840,13 @@ public class OptionsPane extends JPanel
 		textTether.setColumns(10);
 		
 		JButton button_22 = new JButton("?");
+		button_22.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				warning.setText("#log#: Android logs");
+				warning.setVisible(true);
+			}
+		});
+		button_22.setToolTipText("Click for help creating comment");
 		GridBagConstraints gbc_button_22 = new GridBagConstraints();
 		gbc_button_22.insets = new Insets(0, 0, 5, 5);
 		gbc_button_22.gridx = 2;
@@ -881,6 +896,13 @@ public class OptionsPane extends JPanel
 		textDiag.setColumns(10);
 		
 		JButton button_23 = new JButton("?");
+		button_23.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				warning.setText("#log#: Android logs\n#dupcr#: Duplicate CR ID");
+				warning.setVisible(true);
+			}
+		});
+		button_23.setToolTipText("Click for help creating comment");
 		GridBagConstraints gbc_button_23 = new GridBagConstraints();
 		gbc_button_23.insets = new Insets(0, 0, 0, 5);
 		gbc_button_23.gridx = 2;

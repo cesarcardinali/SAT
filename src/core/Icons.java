@@ -36,12 +36,17 @@ public class Icons
 	public static ImageIcon remove              = new ImageIcon("Data\\pics\\remove.png");
 	public static ImageIcon delete              = new ImageIcon("Data\\pics\\delete.png");
 	public static ImageIcon icon                = new ImageIcon("Data\\pics\\icon.png");
-	public static Image     iconSat             = Toolkit.getDefaultToolkit()
-	                                                     .getImage("Data\\pics\\icon.png");
+	public static Image     iconSat             = Toolkit.getDefaultToolkit().getImage("Data\\pics\\icon.png");
 	public static ImageIcon off                 = new ImageIcon("Data\\pics\\off.png");
 	public static ImageIcon ok                  = new ImageIcon("Data\\pics\\Ok.png");
 	public static ImageIcon on                  = new ImageIcon("Data\\pics\\on.png");
 	public static ImageIcon onOff               = new ImageIcon("Data\\pics\\onoff.png");
 	public static ImageIcon refresh             = new ImageIcon("Data\\pics\\refresh.png");
 	public static ImageIcon analyze             = new ImageIcon("Data\\pics\\analyze.png");
+	
+	// MainMenu Icons
+	public static ImageIcon exit                = new ImageIcon("Data\\pics\\remove.png");
+	public static ImageIcon help                = new ImageIcon("Data\\pics\\help.png");
+	public static ImageIcon aboutus             = new ImageIcon("Data\\pics\\aboutus.png");
+	public static ImageIcon changelog             = new ImageIcon("Data\\pics\\changelog.png");
 }

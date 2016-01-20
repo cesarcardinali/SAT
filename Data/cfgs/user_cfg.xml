@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SAT>
   <parser_pane>
-    <rootPath>C:\Users\cesar.cardinali\Documents\Eld\Bateria\Logs</rootPath>
+    <rootPath>C:\SAT</rootPath>
   </parser_pane>
   <crs_jira_pane>
     <path>C:\SAT\CRs</path>
@@ -14,7 +14,7 @@
     <screen_off>- The process *#pname#* was consuming *~#scoffconsume#* of CPU processing power while screen was off.\n{noformat}\n#logoff#\n{noformat}</screen_off>
     <screen_on>- The process *#pname#* was consuming *~#sconconsume#* of CPU processing power while screen was on.\n{noformat}\n#logon#\n{noformat}</screen_on>
     <high_current>- High current while screen is off:</high_current>
-    <krnl_wkl>- Continuous wakelock by:</krnl_wkl>
+    <krnl_wkl>- Continuous Kernel wakelock by:</krnl_wkl>
     <java_wkl>- Continuous JAVA wakelock by:</java_wkl>
     <suspicious_header>- Wake locks detected:</suspicious_header>
     <suspicious>- *#pname#* causes tag *#tag#* to acquire and hold PowerManagerService.Wakelock for #duration# draining battery life.\n{noformat}\n#log#\n{noformat}</suspicious>

@@ -14,8 +14,6 @@ import javax.swing.border.EmptyBorder;
 
 import core.SharedObjs;
 
-import supportive.DiagCrsCloser;
-
 
 @SuppressWarnings("serial")
 public class ClosingDiagDialog extends JDialog
@@ -48,8 +46,6 @@ public class ClosingDiagDialog extends JDialog
 		
 		contentPanel.add(txtpnCheckingAllThe);
 		setLocationRelativeTo(SharedObjs.satFrame);
-		
-		new Thread(new DiagCrsCloser(this)).start();
 		
 		setModal(true);
 		setVisible(true);

@@ -4,17 +4,23 @@ package main;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
 
 import org.apache.commons.io.FileUtils;
 
+import panes.ChangelogPane;
+import panes.HelpPane;
 import core.Icons;
 import core.Logger;
 import core.SharedObjs;
@@ -32,6 +38,7 @@ public class SAT extends JFrame
 	 * Variables
 	 */
 	boolean updating = false; // Checking for update
+	SAT     satPane;
 	
 	/**
 	 * Runnable
@@ -72,10 +79,90 @@ public class SAT extends JFrame
 		// Inserting the TabPane
 		getContentPane().add(SharedObjs.tabbedPane);
 		
-		// Window Focus Listener
-		addWindowFocusListener(satWFL);
+		satPane = this;
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		mnSAT = new JMenu("SAT");
+		mnSAT.setMnemonic('s');
+		menuBar.add(mnSAT);
+		
+		separator = new JSeparator();
+		mnSAT.add(separator);
+		
+		mntmExit = new JMenuItem("Exit");
+		mntmExit.setMnemonic('e');
+		mntmExit.setIcon(Icons.remove);
+		mntmExit.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				System.exit(1);
+			}
+		});
+		mnSAT.add(mntmExit);
+		
+		mnHelp = new JMenu("Help");
+		mnHelp.setMnemonic('h');
+		menuBar.add(mnHelp);
+		
+		mntmHelpContent = new JMenuItem("Help Content");
+		mntmHelpContent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				HelpPane hp = new HelpPane();
+				hp.setLocationRelativeTo(satPane);
+				hp.setVisible(true);
+			}
+		});
+		mntmHelpContent.setMnemonic('h');
+		mntmHelpContent.setIcon(Icons.help);
+		mnHelp.add(mntmHelpContent);
+		
+		mntmChangelog = new JMenuItem("Changelog");
+		mntmChangelog.setMnemonic('c');
+		mntmChangelog.setIcon(Icons.changelog);
+		mntmChangelog.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				ChangelogPane clPane = new ChangelogPane();
+				clPane.setLocationRelativeTo(satPane);
+				clPane.setVisible(true);
+			}
+		});
+		mnHelp.add(mntmChangelog);
+		
+		separator_1 = new JSeparator();
+		mnHelp.add(separator_1);
+		
+		mntmAbout = new JMenuItem("About SAT");
+		mntmAbout.setMnemonic('a');
+		mntmAbout.setIcon(Icons.aboutus);
+		mnHelp.add(mntmAbout);
 		
 		// Save configurations on close
+		onShutdown = new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				int run = 0;
+				
+				while (run == 0)
+				{
+					Logger.log(Logger.TAG_SAT, "Saving all user data ...");
+					SharedObjs.crsManagerPane.saveUserData();
+					SharedObjs.parserPane.savePaneData();
+					SharedObjs.optionsPane.savePaneData();
+					run = 1;
+					Logger.log(Logger.TAG_SAT, "Done");
+				}
+				
+				XmlMngr.closeXmls();
+				Logger.close();
+			}
+		});
 		Runtime.getRuntime().addShutdownHook(onShutdown);
 		
 		// Start updater thread
@@ -130,34 +217,28 @@ public class SAT extends JFrame
 		File f2;
 		f1 = new File(SharedObjs.updateFolder1 + "/" + Strings.getToolFileName());
 		
-		Logger.log(Logger.TAG_SAT,
-		           "Remote file: " + f1.getAbsolutePath() + " - Modified: " + new Date(f1.lastModified()));
-				   
+		Logger.log(Logger.TAG_SAT, "Remote file: " + f1.getAbsolutePath() + " - Modified: " + new Date(f1.lastModified()));
+		
 		f2 = new File(Strings.getToolFileName());
 		
-		Logger.log(Logger.TAG_SAT,
-		           "Local file: " + f2.getAbsolutePath() + " - Modified: " + new Date(f2.lastModified()));
-				   
+		Logger.log(Logger.TAG_SAT, "Local file: " + f2.getAbsolutePath() + " - Modified: " + new Date(f2.lastModified()));
+		
 		dateRemote = f1.lastModified();
 		dateLocal = f2.lastModified();
 		
 		if (dateLocal < dateRemote && dateLocal != 0)
 		{
 			Object[] options = new Object[] {"Yes", "No"};
-			int n = JOptionPane.showOptionDialog(null, XmlMngr.getMessageValueOf(new String[] {
-			                                                                                   "messages",
-			                                                                                   "new_version"}),
-			                                     XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-												 
+			int n = JOptionPane.showOptionDialog(null, XmlMngr.getMessageValueOf(new String[] {"messages", "new_version"}),
+			                                     XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), JOptionPane.YES_NO_CANCEL_OPTION,
+			                                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+			
 			if (n == 0)
 			{
 				try
 				{
-					Logger.log(Logger.TAG_SAT,
-					           "Updating the Updater first, from: " + SharedObjs.updateFolder1);
-					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/"
-					                            + Strings.getUpdaterFileName()),
-					                   new File(Strings.getUpdaterFileName()));
+					Logger.log(Logger.TAG_SAT, "Updating the Updater first, from: " + SharedObjs.updateFolder1);
+					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/" + Strings.getUpdaterFileName()), new File(Strings.getUpdaterFileName()));
 				}
 				catch (IOException e)
 				{
@@ -170,11 +251,8 @@ public class SAT extends JFrame
 				try
 				{
 					Logger.log(Logger.TAG_SAT, "path: " + new File("").getAbsolutePath());
-					ProcessBuilder builder = new ProcessBuilder("cmd.exe",
-					                                            "/c",
-					                                            "cd " + new File("").getAbsolutePath()
-					                                                  + " && java -jar "
-					                                                  + Strings.getUpdaterFileName());
+					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar "
+					                                                             + Strings.getUpdaterFileName());
 					builder.start();
 				}
 				catch (IOException e2)
@@ -197,47 +275,17 @@ public class SAT extends JFrame
 		return 0;
 	}
 	
-	/**
-	 * Thread to run when shutting down SAT application
-	 */
-	Thread				onShutdown = new Thread(new Runnable()
-	                               {
-		                               @Override
-		                               public void run()
-		                               {
-			                               int run = 0;
-										   
-			                               while (run == 0)
-			                               {
-				                               Logger.log(Logger.TAG_SAT, "Saving all user data ...");
-				                               SharedObjs.crsManagerPane.saveUserData();
-				                               SharedObjs.parserPane.savePaneData();
-				                               SharedObjs.optionsPane.savePaneData();
-				                               run = 1;
-				                               Logger.log(Logger.TAG_SAT, "Done");
-			                               }
-			                               
-			                               XmlMngr.closeXmls();
-			                               Logger.close();
-		                               }
-	                               });
-								   
-	/**
-	 * Window Focus Listener used on SAT main Frame
-	 */
-	WindowFocusListener	satWFL	   = new WindowFocusListener()
-	                               {
-		                               @Override
-		                               public void windowLostFocus(WindowEvent e)
-		                               {
-		                               }
-		                               
-		                               @Override
-		                               public void windowGainedFocus(WindowEvent e)
-		                               {
-		                               }
-	                               };
-								   
+	private Thread     onShutdown;
+	private JMenuBar   menuBar;
+	private JMenu      mnSAT;
+	private JMenuItem  mntmExit;
+	private JSeparator separator;
+	private JMenu      mnHelp;
+	private JMenuItem  mntmHelpContent;
+	private JMenuItem  mntmAbout;
+	private JMenuItem  mntmChangelog;
+	private JSeparator separator_1;
+	
 	// Getters and Setters:
 	public boolean isUpdating()
 	{
