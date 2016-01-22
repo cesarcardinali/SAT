@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
@@ -37,7 +38,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -46,15 +46,16 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import objects.CrItem;
+
 import org.json.simple.parser.ParseException;
 
-import core.Logger;
-import core.SharedObjs;
-import core.XmlMngr;
-import objects.CrItem;
 import supportive.Bug2goDownloader;
 import supportive.CrsCloser;
 import supportive.JiraSatApi;
+import core.Logger;
+import core.SharedObjs;
+import core.XmlMngr;
 
 
 @SuppressWarnings("serial")
@@ -80,46 +81,178 @@ public class CrsManagerPane extends JPanel
 	 */
 	public CrsManagerPane()
 	{
-		setPreferredSize(new Dimension(632, 765));
+		setPreferredSize(new Dimension(632, 695));
 		setMinimumSize(new Dimension(600, 950));
+		setLayout(new GridLayout(0, 1, 0, 0));
 		
 		// Panel construction
 		JPanel contentPane = new JPanel();
+		contentPane.setMinimumSize(new Dimension(10, 700));
 		add(contentPane);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] {0, 0, 0};
-		gridBagLayout.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[] {1.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWidths = new int[] {0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[] {140, 210, 0, 0};
+		gridBagLayout.columnWeights = new double[] {1.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[] {0.0, 10.0, 1.0, Double.MIN_VALUE};
 		contentPane.setLayout(gridBagLayout);
 		
-		JPanel panel = new JPanel();
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.insets = new Insets(10, 5, 5, 5);
-		gbc_panel.fill = GridBagConstraints.VERTICAL;
-		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 0;
-		contentPane.add(panel, gbc_panel);
+		JPanel panel_3 = new JPanel();
+		panel_3.setMinimumSize(new Dimension(160, 10));
+		GridBagConstraints gbc_panel_3 = new GridBagConstraints();
+		gbc_panel_3.gridheight = 2;
+		gbc_panel_3.insets = new Insets(10, 5, 5, 5);
+		gbc_panel_3.fill = GridBagConstraints.BOTH;
+		gbc_panel_3.gridx = 1;
+		gbc_panel_3.gridy = 0;
+		contentPane.add(panel_3, gbc_panel_3);
 		
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] {30, 0};
-		gbl_panel.rowHeights = new int[] {22, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[] {0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel.setLayout(gbl_panel);
+		GridBagLayout gbl_panel_3 = new GridBagLayout();
+		gbl_panel_3.columnWidths = new int[] {0, 0};
+		gbl_panel_3.rowHeights = new int[] {0, 0, 0, 0, 0, 0};
+		gbl_panel_3.columnWeights = new double[] {1.0, Double.MIN_VALUE};
+		gbl_panel_3.rowWeights = new double[] {0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel_3.setLayout(gbl_panel_3);
+		JLabel lblDownloader = new JLabel("CRs List:");
+		lblDownloader.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDownloader.setFont(new Font("Tahoma", Font.BOLD, 18));
+		GridBagConstraints gbc_lblDownloader = new GridBagConstraints();
+		gbc_lblDownloader.fill = GridBagConstraints.BOTH;
+		gbc_lblDownloader.insets = new Insets(0, 0, 5, 0);
+		gbc_lblDownloader.gridx = 0;
+		gbc_lblDownloader.gridy = 0;
+		panel_3.add(lblDownloader, gbc_lblDownloader);
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		scrollPane_2.setPreferredSize(new Dimension(150, 350));
+		scrollPane_2.setBorder(new LineBorder(SystemColor.activeCaption));
+		scrollPane_2.setMinimumSize(new Dimension(140, 300));
+		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
+		gbc_scrollPane_2.gridheight = 2;
+		gbc_scrollPane_2.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_2.insets = new Insets(0, 0, 5, 0);
+		gbc_scrollPane_2.gridx = 0;
+		gbc_scrollPane_2.gridy = 1;
+		panel_3.add(scrollPane_2, gbc_scrollPane_2);
+		
+		textDownload = new JTextArea();
+		textDownload.setToolTipText("List of CRs to be downloaded. Used to create the link between downloded CRs and its Jira ID too.");
+		textDownload.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		scrollPane_2.setViewportView(textDownload);
+		textDownload.setTabSize(4);
+		textDownload.setBorder(null);
+		
+		JButton btnClear = new JButton("Clear");
+		btnClear.setToolTipText("Clear the text area above");
+		btnClear.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				btnClearAction();
+			}
+		});
+		btnClear.setPreferredSize(new Dimension(113, 23));
+		btnClear.setMaximumSize(new Dimension(113, 23));
+		btnClear.setMinimumSize(new Dimension(113, 23));
+		GridBagConstraints gbc_btnClear = new GridBagConstraints();
+		gbc_btnClear.insets = new Insets(0, 0, 5, 0);
+		gbc_btnClear.gridx = 0;
+		gbc_btnClear.gridy = 3;
+		panel_3.add(btnClear, gbc_btnClear);
+		
+		JButton btnPaste = new JButton("Paste");
+		btnPaste.setToolTipText("Paste from clipboard");
+		btnPaste.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				btnPasteAction();
+			}
+		});
+		btnPaste.setMaximumSize(new Dimension(113, 23));
+		btnPaste.setPreferredSize(new Dimension(113, 23));
+		btnPaste.setMinimumSize(new Dimension(113, 23));
+		GridBagConstraints gbc_btnPaste = new GridBagConstraints();
+		gbc_btnPaste.gridx = 0;
+		gbc_btnPaste.gridy = 4;
+		panel_3.add(btnPaste, gbc_btnPaste);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setMinimumSize(new Dimension(150, 135));
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.insets = new Insets(10, 5, 5, 5);
+		gbc_panel_1.fill = GridBagConstraints.VERTICAL;
+		gbc_panel_1.gridx = 2;
+		gbc_panel_1.gridy = 0;
+		contentPane.add(panel_1, gbc_panel_1);
+		GridBagLayout gbl_panel_1 = new GridBagLayout();
+		gbl_panel_1.columnWidths = new int[]{0, 0};
+		gbl_panel_1.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
+		gbl_panel_1.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panel_1.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel_1.setLayout(gbl_panel_1);
+		
+		JLabel label = new JLabel("Settings:");
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setFont(new Font("Tahoma", Font.BOLD, 18));
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.insets = new Insets(0, 0, 5, 0);
+		gbc_label.gridx = 0;
+		gbc_label.gridy = 0;
+		panel_1.add(label, gbc_label);
+		
+		chckbxAssign = new JCheckBox("Assign?");
+		chckbxAssign.setHorizontalAlignment(SwingConstants.CENTER);
+		GridBagConstraints gbc_chckbxAssign = new GridBagConstraints();
+		gbc_chckbxAssign.fill = GridBagConstraints.HORIZONTAL;
+		gbc_chckbxAssign.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxAssign.gridx = 0;
+		gbc_chckbxAssign.gridy = 1;
+		panel_1.add(chckbxAssign, gbc_chckbxAssign);
+		chckbxAssign.setMargin(new Insets(0, 2, 0, 2));
+		chckbxAssign.setPreferredSize(new Dimension(61, 15));
+		chckbxAssign.setMinimumSize(new Dimension(15, 20));
+		chckbxAssign.setSelected(true);
+		
+		chckbxLabels = new JCheckBox("Labels:");
+		GridBagConstraints gbc_chckbxLabels = new GridBagConstraints();
+		gbc_chckbxLabels.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxLabels.gridx = 0;
+		gbc_chckbxLabels.gridy = 2;
+		panel_1.add(chckbxLabels, gbc_chckbxLabels);
+		chckbxLabels.setMargin(new Insets(0, 2, 0, 2));
+		chckbxLabels.setMinimumSize(new Dimension(61, 15));
+		chckbxLabels.setPreferredSize(new Dimension(61, 15));
+		chckbxLabels.setSelected(true);
+		
+		textLabel = new JTextField();
+		GridBagConstraints gbc_textLabel = new GridBagConstraints();
+		gbc_textLabel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textLabel.insets = new Insets(0, 5, 5, 5);
+		gbc_textLabel.gridx = 0;
+		gbc_textLabel.gridy = 3;
+		panel_1.add(textLabel, gbc_textLabel);
+		textLabel.setText("ll_prodteam_analyzed");
+		textLabel.setColumns(10);
+		textLabel.setBorder(new LineBorder(SystemColor.activeCaption));
 		JLabel lblRootPath = new JLabel("Download path:");
 		GridBagConstraints gbc_lblRootPath = new GridBagConstraints();
 		gbc_lblRootPath.insets = new Insets(0, 0, 5, 0);
 		gbc_lblRootPath.gridx = 0;
-		gbc_lblRootPath.gridy = 0;
-		panel.add(lblRootPath, gbc_lblRootPath);
+		gbc_lblRootPath.gridy = 4;
+		panel_1.add(lblRootPath, gbc_lblRootPath);
 		
 		lblRootPath.setHorizontalAlignment(SwingConstants.CENTER);
-		lblRootPath.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblRootPath.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		textPath = new JTextField();
+		GridBagConstraints gbc_textPath = new GridBagConstraints();
+		gbc_textPath.insets = new Insets(0, 5, 0, 5);
+		gbc_textPath.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textPath.gridx = 0;
+		gbc_textPath.gridy = 5;
+		panel_1.add(textPath, gbc_textPath);
 		textPath.setToolTipText("Path to stock and read your CRs");
-		textPath.setHorizontalAlignment(SwingConstants.CENTER);
+		textPath.setHorizontalAlignment(SwingConstants.LEFT);
 		textPath.setBorder(new LineBorder(SystemColor.activeCaption));
 		textPath.setMinimumSize(new Dimension(130, 20));
 		textPath.setPreferredSize(new Dimension(150, 20));
@@ -142,17 +275,37 @@ public class CrsManagerPane extends JPanel
 			{
 			}
 		});
-		GridBagConstraints gbc_textPath = new GridBagConstraints();
-		gbc_textPath.insets = new Insets(0, 5, 5, 0);
-		gbc_textPath.gridx = 0;
-		gbc_textPath.gridy = 1;
-		panel.add(textPath, gbc_textPath);
+		
+		JPanel panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(10, 10, 5, 10);
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 2;
+		gbc_panel.gridy = 1;
+		contentPane.add(panel, gbc_panel);
+		
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[] {30, 0};
+		gbl_panel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel.columnWeights = new double[] {1.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel.setLayout(gbl_panel);
+		
+		JLabel label_1 = new JLabel("Actions:");
+		label_1.setHorizontalAlignment(SwingConstants.CENTER);
+		label_1.setFont(new Font("Tahoma", Font.BOLD, 18));
+		GridBagConstraints gbc_label_1 = new GridBagConstraints();
+		gbc_label_1.insets = new Insets(0, 0, 5, 0);
+		gbc_label_1.gridx = 0;
+		gbc_label_1.gridy = 0;
+		panel.add(label_1, gbc_label_1);
 		
 		btnDownload = new JButton("Get the CRs");
 		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
-		gbc_btnDownload.insets = new Insets(40, 0, 5, 0);
+		gbc_btnDownload.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnDownload.insets = new Insets(5, 0, 5, 0);
 		gbc_btnDownload.gridx = 0;
-		gbc_btnDownload.gridy = 2;
+		gbc_btnDownload.gridy = 1;
 		panel.add(btnDownload, gbc_btnDownload);
 		btnDownload.setToolTipText("Start to download the CRs on the list above");
 		btnDownload.addActionListener(new ActionListener()
@@ -168,9 +321,10 @@ public class CrsManagerPane extends JPanel
 		
 		JButton btnCloseAsOld = new JButton("Close as Old");
 		GridBagConstraints gbc_btnCloseAsOld = new GridBagConstraints();
+		gbc_btnCloseAsOld.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnCloseAsOld.insets = new Insets(0, 0, 5, 0);
 		gbc_btnCloseAsOld.gridx = 0;
-		gbc_btnCloseAsOld.gridy = 3;
+		gbc_btnCloseAsOld.gridy = 2;
 		panel.add(btnCloseAsOld, gbc_btnCloseAsOld);
 		btnCloseAsOld.addActionListener(new ActionListener()
 		{
@@ -186,9 +340,10 @@ public class CrsManagerPane extends JPanel
 		
 		JButton btnUnassign = new JButton("Unassign CRs");
 		GridBagConstraints gbc_btnUnassign = new GridBagConstraints();
+		gbc_btnUnassign.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnUnassign.insets = new Insets(0, 0, 5, 0);
 		gbc_btnUnassign.gridx = 0;
-		gbc_btnUnassign.gridy = 4;
+		gbc_btnUnassign.gridy = 3;
 		panel.add(btnUnassign, gbc_btnUnassign);
 		btnUnassign.addActionListener(new ActionListener()
 		{
@@ -267,18 +422,11 @@ public class CrsManagerPane extends JPanel
 		btnRemoveLabel.setMinimumSize(new Dimension(113, 23));
 		btnRemoveLabel.setMaximumSize(new Dimension(113, 23));
 		GridBagConstraints gbc_btnRemoveLabel = new GridBagConstraints();
+		gbc_btnRemoveLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnRemoveLabel.insets = new Insets(0, 0, 5, 0);
 		gbc_btnRemoveLabel.gridx = 0;
-		gbc_btnRemoveLabel.gridy = 5;
+		gbc_btnRemoveLabel.gridy = 4;
 		panel.add(btnRemoveLabel, gbc_btnRemoveLabel);
-		
-		JButton btnOpenOnChrome = new JButton("Open on Chrome");
-		GridBagConstraints gbc_btnOpenOnChrome = new GridBagConstraints();
-		gbc_btnOpenOnChrome.insets = new Insets(0, 0, 5, 0);
-		gbc_btnOpenOnChrome.gridx = 0;
-		gbc_btnOpenOnChrome.gridy = 6;
-		panel.add(btnOpenOnChrome, gbc_btnOpenOnChrome);
-		btnOpenOnChrome.setToolTipText("Open the CRs on the list above on Chrome");
 		
 		JButton btnLists = new JButton("Reopen Result Lists");
 		btnLists.addActionListener(new ActionListener()
@@ -289,11 +437,15 @@ public class CrsManagerPane extends JPanel
 				SharedObjs.getOpenedList().setVisible(true);
 			}
 		});
-		btnLists.setToolTipText("Open the CRs on the list above on Chrome");
-		GridBagConstraints gbc_btnLists = new GridBagConstraints();
-		gbc_btnLists.gridx = 0;
-		gbc_btnLists.gridy = 8;
-		panel.add(btnLists, gbc_btnLists);
+		
+		JButton btnOpenOnChrome = new JButton("Open on Chrome");
+		GridBagConstraints gbc_btnOpenOnChrome = new GridBagConstraints();
+		gbc_btnOpenOnChrome.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnOpenOnChrome.insets = new Insets(15, 0, 5, 0);
+		gbc_btnOpenOnChrome.gridx = 0;
+		gbc_btnOpenOnChrome.gridy = 5;
+		panel.add(btnOpenOnChrome, gbc_btnOpenOnChrome);
+		btnOpenOnChrome.setToolTipText("Open the CRs on the list above on Chrome");
 		btnOpenOnChrome.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -301,132 +453,21 @@ public class CrsManagerPane extends JPanel
 				btnOpenAction();
 			}
 		});
-		
-		JPanel panel_3 = new JPanel();
-		panel_3.setMinimumSize(new Dimension(150, 10));
-		GridBagConstraints gbc_panel_3 = new GridBagConstraints();
-		gbc_panel_3.gridheight = 6;
-		gbc_panel_3.insets = new Insets(10, 5, 5, 0);
-		gbc_panel_3.fill = GridBagConstraints.VERTICAL;
-		gbc_panel_3.gridx = 1;
-		gbc_panel_3.gridy = 0;
-		contentPane.add(panel_3, gbc_panel_3);
-		
-		GridBagLayout gbl_panel_3 = new GridBagLayout();
-		gbl_panel_3.columnWidths = new int[] {0, 0};
-		gbl_panel_3.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel_3.columnWeights = new double[] {0.0, Double.MIN_VALUE};
-		gbl_panel_3.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel_3.setLayout(gbl_panel_3);
-		JLabel lblDownloader = new JLabel("Downloader:");
-		lblDownloader.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDownloader.setFont(new Font("Tahoma", Font.BOLD, 18));
-		GridBagConstraints gbc_lblDownloader = new GridBagConstraints();
-		gbc_lblDownloader.insets = new Insets(0, 0, 5, 0);
-		gbc_lblDownloader.gridx = 0;
-		gbc_lblDownloader.gridy = 0;
-		panel_3.add(lblDownloader, gbc_lblDownloader);
-		
-		chckbxAssign = new JCheckBox("Assign?");
-		chckbxAssign.setMargin(new Insets(0, 2, 0, 2));
-		chckbxAssign.setPreferredSize(new Dimension(61, 15));
-		chckbxAssign.setMinimumSize(new Dimension(15, 20));
-		chckbxAssign.setSelected(true);
-		GridBagConstraints gbc_chckbxAssign = new GridBagConstraints();
-		gbc_chckbxAssign.insets = new Insets(0, 0, 5, 0);
-		gbc_chckbxAssign.gridx = 0;
-		gbc_chckbxAssign.gridy = 1;
-		panel_3.add(chckbxAssign, gbc_chckbxAssign);
-		
-		chckbxLabels = new JCheckBox("Labels?");
-		chckbxLabels.setMargin(new Insets(0, 2, 0, 2));
-		chckbxLabels.setMinimumSize(new Dimension(61, 15));
-		chckbxLabels.setPreferredSize(new Dimension(61, 15));
-		chckbxLabels.setSelected(true);
-		GridBagConstraints gbc_chckbxLabels = new GridBagConstraints();
-		gbc_chckbxLabels.insets = new Insets(0, 0, 5, 0);
-		gbc_chckbxLabels.gridx = 0;
-		gbc_chckbxLabels.gridy = 2;
-		panel_3.add(chckbxLabels, gbc_chckbxLabels);
-		
-		textLabel = new JTextField();
-		textLabel.setText("ll_prodteam_analyzed");
-		GridBagConstraints gbc_textLabel = new GridBagConstraints();
-		gbc_textLabel.insets = new Insets(0, 10, 5, 10);
-		gbc_textLabel.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textLabel.gridx = 0;
-		gbc_textLabel.gridy = 3;
-		panel_3.add(textLabel, gbc_textLabel);
-		textLabel.setColumns(10);
-		
-		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setPreferredSize(new Dimension(140, 350));
-		scrollPane_2.setBorder(new LineBorder(SystemColor.activeCaption));
-		scrollPane_2.setMinimumSize(new Dimension(140, 300));
-		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
-		gbc_scrollPane_2.fill = GridBagConstraints.VERTICAL;
-		gbc_scrollPane_2.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane_2.gridx = 0;
-		gbc_scrollPane_2.gridy = 4;
-		panel_3.add(scrollPane_2, gbc_scrollPane_2);
-		
-		textDownload = new JTextArea();
-		textDownload.setToolTipText("List of CRs to be downloaded. Used to create the link between downloded CRs and its Jira ID too.");
-		textDownload.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		scrollPane_2.setViewportView(textDownload);
-		textDownload.setTabSize(4);
-		textDownload.setBorder(null);
-		
-		JButton btnClear = new JButton("Clear");
-		btnClear.setToolTipText("Clear the text area above");
-		btnClear.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				btnClearAction();
-			}
-		});
-		btnClear.setPreferredSize(new Dimension(113, 23));
-		btnClear.setMaximumSize(new Dimension(113, 23));
-		btnClear.setMinimumSize(new Dimension(113, 23));
-		GridBagConstraints gbc_btnClear = new GridBagConstraints();
-		gbc_btnClear.insets = new Insets(0, 0, 5, 0);
-		gbc_btnClear.gridx = 0;
-		gbc_btnClear.gridy = 5;
-		panel_3.add(btnClear, gbc_btnClear);
-		
-		JButton btnPaste = new JButton("Paste");
-		btnPaste.setToolTipText("Paste from clipboard");
-		btnPaste.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				btnPasteAction();
-			}
-		});
-		btnPaste.setMaximumSize(new Dimension(113, 23));
-		btnPaste.setPreferredSize(new Dimension(113, 23));
-		btnPaste.setMinimumSize(new Dimension(113, 23));
-		GridBagConstraints gbc_btnPaste = new GridBagConstraints();
-		gbc_btnPaste.gridx = 0;
-		gbc_btnPaste.gridy = 6;
-		panel_3.add(btnPaste, gbc_btnPaste);
-		
-		JSeparator separator_4 = new JSeparator();
-		separator_4.setForeground(new Color(0, 0, 0));
-		GridBagConstraints gbc_separator_4 = new GridBagConstraints();
-		gbc_separator_4.gridwidth = 2;
-		gbc_separator_4.insets = new Insets(10, 5, 5, 0);
-		gbc_separator_4.gridx = 0;
-		gbc_separator_4.gridy = 6;
-		contentPane.add(separator_4, gbc_separator_4);
+		btnLists.setToolTipText("Open the CRs on the list above on Chrome");
+		GridBagConstraints gbc_btnLists = new GridBagConstraints();
+		gbc_btnLists.insets = new Insets(15, 0, 0, 0);
+		gbc_btnLists.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnLists.gridx = 0;
+		gbc_btnLists.gridy = 6;
+		panel.add(btnLists, gbc_btnLists);
 		
 		JPanel panel_5 = new JPanel();
-		panel_5.setBorder(new LineBorder(new Color(240, 128, 128), 1, true));
+		panel_5.setBorder(new LineBorder(new Color(153, 204, 255), 1, true));
 		GridBagConstraints gbc_panel_5 = new GridBagConstraints();
-		gbc_panel_5.gridwidth = 2;
+		gbc_panel_5.insets = new Insets(50, 0, 10, 0);
+		gbc_panel_5.gridwidth = 4;
 		gbc_panel_5.gridx = 0;
-		gbc_panel_5.gridy = 8;
+		gbc_panel_5.gridy = 2;
 		contentPane.add(panel_5, gbc_panel_5);
 		
 		GridBagLayout gbl_panel_5 = new GridBagLayout();
@@ -642,8 +683,6 @@ public class CrsManagerPane extends JPanel
 	
 	private void btnDownloadAction()
 	{
-		btnDownload.setEnabled(false);
-		
 		new Thread(new Runnable()
 		{
 			

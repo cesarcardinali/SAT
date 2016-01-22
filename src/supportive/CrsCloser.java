@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import objects.CrItem;
-import panes.ListPane;
+import panes.secondarypanes.ListPane;
 import core.Logger;
 import core.SharedObjs;
 

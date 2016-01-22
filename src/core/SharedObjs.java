@@ -21,11 +21,11 @@ import objects.CrItemsList;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
 import panes.AdvancedOptionsPane;
-import panes.CrsManagerPane;
+import tests.CrsManagerPane;
 import panes.CustomFiltersPane;
-import panes.ListPane;
 import panes.OptionsPane;
 import panes.ParserPane;
+import panes.secondarypanes.ListPane;
 import supportive.DBAdapter;
 
 

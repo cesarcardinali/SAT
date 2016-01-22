@@ -61,6 +61,7 @@ public class CrChecker
 		{
 			long start = System.currentTimeMillis();
 			
+			System.out.println("\n\n");
 			SharedObjs.crsManagerPane.addLogLine("Adding pre analyzed label ...");
 			jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
 			SharedObjs.crsManagerPane.addLogLine("CR Assignee: " + cr.getAssignee());
@@ -77,6 +78,7 @@ public class CrChecker
 				jira.addLabel(cr.getJiraID(), "sat_pre_analyzed");
 			}
 			
+			System.out.println("\n\n");
 			SharedObjs.crsManagerPane.addLogLine("Checking if incomplete ...");
 			if (checkIfIncomplete())
 			{
@@ -109,6 +111,7 @@ public class CrChecker
 			// Try to parse log files ---------------------------------------------------
 			// Parse BTD
 			btdParser = new BtdParser(crPath);
+			System.out.println("\n\n");
 			SharedObjs.crsManagerPane.addLogLine("Parsing BTD data ...");
 			btdParsed = btdParser.parse();
 			if (btdParsed)
@@ -146,6 +149,7 @@ public class CrChecker
 				SharedObjs.crsManagerPane.addLogLine("Not possible to parse Bugreport");
 			}
 			
+			System.out.println("\n\n");
 			SharedObjs.crsManagerPane.addLogLine("Checking for wakelocks ...");
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for wakelocks");
 			if (checkIfWakelocks())
@@ -175,6 +179,7 @@ public class CrChecker
 				return false;
 			}
 			
+			System.out.println("\n\n");
 			SharedObjs.crsManagerPane.addLogLine("Checking for tethering ...");
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for tethering");
 			if (checkIfTethering())
@@ -204,6 +209,7 @@ public class CrChecker
 				return true;
 			}
 			
+			System.out.println("\n\n");
 			SharedObjs.crsManagerPane.addLogLine("Checking for uptime ...");
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for uptime");
 			if (checkIfUptime())
@@ -231,6 +237,7 @@ public class CrChecker
 				return false;
 			}
 			
+			System.out.println("\n\n");
 			SharedObjs.crsManagerPane.addLogLine("Checking if false positive ...");
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for false positive");
 			if (checkIfFalsePositive())

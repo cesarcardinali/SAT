@@ -37,10 +37,12 @@ import javax.swing.border.LineBorder;
 
 import org.jdom2.JDOMException;
 
+import panes.secondarypanes.TextDialog;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
 import supportive.Encryptation;
+
 import javax.swing.ImageIcon;
 
 
@@ -91,7 +93,7 @@ public class OptionsPane extends JPanel
 		ButtonGroup editorSelector = new ButtonGroup();
 		ButtonGroup breakdownSelector = new ButtonGroup();
 		
-		warning = new TextDialog();
+		warning = new TextDialog("Help", "");
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -131,7 +133,7 @@ public class OptionsPane extends JPanel
 		panel.add(lblServerStatus, gbc_lblServerStatus);
 		
 		JPanel panel_7 = new JPanel();
-		panel_7.setBorder(new LineBorder(Color.LIGHT_GRAY, 1, true));
+		panel_7.setBorder(new LineBorder(new Color(102, 153, 204), 1, true));
 		GridBagConstraints gbc_panel_7 = new GridBagConstraints();
 		gbc_panel_7.gridwidth = 2;
 		gbc_panel_7.insets = new Insets(0, 15, 5, 15);
@@ -359,7 +361,7 @@ public class OptionsPane extends JPanel
 		label_6.setAlignmentX(0.5f);
 		
 		panel_2 = new JPanel();
-		panel_2.setBorder(new LineBorder(new Color(192, 192, 192), 1, true));
+		panel_2.setBorder(new LineBorder(new Color(102, 153, 204), 1, true));
 		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
 		gbc_panel_2.fill = GridBagConstraints.BOTH;
 		gbc_panel_2.insets = new Insets(0, 15, 5, 15);
@@ -922,7 +924,7 @@ public class OptionsPane extends JPanel
 		panel.add(label_37, gbc_label_37);
 		
 		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new LineBorder(new Color(192, 192, 192), 1, true));
+		panel_1.setBorder(new LineBorder(new Color(102, 153, 204), 1, true));
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.insets = new Insets(0, 15, 5, 15);
 		gbc_panel_1.gridwidth = 2;
@@ -1055,7 +1057,7 @@ public class OptionsPane extends JPanel
 		panel.add(label_2, gbc_label_2);
 		
 		JPanel panel_6 = new JPanel();
-		panel_6.setBorder(new LineBorder(Color.LIGHT_GRAY, 1, true));
+		panel_6.setBorder(new LineBorder(new Color(102, 153, 204), 1, true));
 		GridBagConstraints gbc_panel_6 = new GridBagConstraints();
 		gbc_panel_6.gridwidth = 2;
 		gbc_panel_6.insets = new Insets(0, 15, 0, 15);

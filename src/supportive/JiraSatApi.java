@@ -632,6 +632,8 @@ public class JiraSatApi
 		WebResource webResource = client.resource(baseURL + key);
 		ClientResponse response = webResource.type("application/json").get(ClientResponse.class);
 		
+		System.out.println(baseURL + key);
+		
 		String output = response.getEntity(String.class);
 		
 		if (output.contains("Unauthorized (401)"))
@@ -643,12 +645,18 @@ public class JiraSatApi
 			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "The CR " + key + " does not exists");
 			return null;
 		}
+		else if (output.contains("Forbidden (403)"))
+		{
+			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "Error processing CR " + key + "\nCould not load the Jira page.\nProbably you are facing login error.\nCheck if captcha is not needed.");
+			return null;
+		}
 		
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObj = (JSONObject) jsonParser.parse(output);
 		JSONObject fields = (JSONObject) jsonObj.get("fields");
 		JSONObject aux;
 		JSONArray labels;
+		
 		
 		cr.setJiraID(jsonObj.get("key").toString()); // Get CR key
 		

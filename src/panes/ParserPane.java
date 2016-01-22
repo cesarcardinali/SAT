@@ -27,6 +27,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.UndoManager;
 
+import panes.secondarypanes.FileTree;
+import panes.secondarypanes.FiltersTree;
 import style.NonWrappingTextPane;
 import core.Logger;
 import core.SharedObjs;
@@ -47,7 +49,7 @@ public class ParserPane extends JPanel
 	private UndoManager         undoManager;
 	private JSplitPane          splitPane;
 	private FileTree            fileTree;
-	private FiltersResultsTree  filtersResultsTree;
+	private FiltersTree  filtersTree;
 	private NonWrappingTextPane resultTxtPane;
 	
 	/**
@@ -66,7 +68,7 @@ public class ParserPane extends JPanel
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setToolTipText("Result of the selected parser item on the left");
 		scrollPane.setFont(new Font("Consolas", Font.PLAIN, 12));
-		scrollPane.setBorder(new LineBorder(new Color(220, 220, 220)));
+		scrollPane.setBorder(new LineBorder(new Color(102, 153, 204)));
 		
 		scrollPane.setAutoscrolls(true);
 		scrollPane.setRequestFocusEnabled(false);
@@ -77,21 +79,21 @@ public class ParserPane extends JPanel
 		
 		splitPane = new JSplitPane();
 		splitPane.setDividerSize(8);
-		splitPane.setBorder(new LineBorder(Color.LIGHT_GRAY));
+		splitPane.setBorder(null);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		
 		fileTree = new FileTree();
-		fileTree.setBorder(new LineBorder(new Color(192, 192, 192)));
+		fileTree.setBorder(new LineBorder(new Color(102, 153, 204), 1, true));
 		splitPane.setRightComponent(fileTree);
 		JScrollPane scrollFiltersResults = new JScrollPane();
-		scrollFiltersResults.setBorder(null);
-		filtersResultsTree = new FiltersResultsTree();
-		filtersResultsTree.setBorder(new LineBorder(Color.LIGHT_GRAY));
-		scrollFiltersResults.setViewportView(filtersResultsTree);
+		scrollFiltersResults.setBorder(new LineBorder(new Color(102, 153, 204), 1, true));
+		filtersTree = new FiltersTree();
+		filtersTree.setBorder(new LineBorder(Color.LIGHT_GRAY));
+		scrollFiltersResults.setViewportView(filtersTree);
 		scrollFiltersResults.setMinimumSize(new Dimension(150, 150));
 		splitPane.setLeftComponent(scrollFiltersResults);
 		GridBagConstraints gbc_splitPane = new GridBagConstraints();
-		gbc_splitPane.insets = new Insets(0, 0, 0, 5);
+		gbc_splitPane.insets = new Insets(0, 5, 10, 5);
 		gbc_splitPane.fill = GridBagConstraints.BOTH;
 		gbc_splitPane.gridx = 0;
 		gbc_splitPane.gridy = 1;
@@ -108,7 +110,7 @@ public class ParserPane extends JPanel
 		add(scrollPane, gbc_scrollPane);
 		
 		resultTxtPane = new NonWrappingTextPane();
-		resultTxtPane.setBorder(new LineBorder(Color.LIGHT_GRAY));
+		resultTxtPane.setBorder(null);
 		resultTxtPane.setToolTipText("Result of the selected parser item on the left");
 		resultTxtPane.setContentType("text/plain");
 		resultTxtPane.setMargin(new Insets(7, 2, 7, 2));
@@ -131,7 +133,7 @@ public class ParserPane extends JPanel
 			@Override
 			public void keyReleased(KeyEvent arg0)
 			{
-				saveTextChanges(filtersResultsTree.getLastSelectedPathComponent(), resultTxtPane.getText());
+				saveTextChanges(filtersTree.getLastSelectedPathComponent(), resultTxtPane.getText());
 			}
 			
 			@Override
@@ -236,7 +238,7 @@ public class ParserPane extends JPanel
 	 */
 	public void clearPane()
 	{
-		filtersResultsTree.clearTree();
+		filtersTree.clearTree();
 		resultTxtPane.setText(""); // reset the text pane
 		SharedObjs.setResult(""); // reset the result for the filters
 	}
@@ -262,9 +264,9 @@ public class ParserPane extends JPanel
 	}
 	
 	// Getters and Setters
-	public FiltersResultsTree getFiltersResultsTree()
+	public FiltersTree getFiltersResultsTree()
 	{
-		return filtersResultsTree;
+		return filtersTree;
 	}
 	
 	public void setResultsPaneTxt(String text)

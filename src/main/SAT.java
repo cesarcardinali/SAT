@@ -74,7 +74,7 @@ public class SAT extends JFrame
 		double height = screenSize.getHeight();
 		setBounds((int) (width / 3), 0, (int) (width / 1.5), (int) height - 40);
 		setVisible(true);
-		setMinimumSize(new Dimension(800, 600));
+		setMinimumSize(new Dimension(800, 700));
 		
 		// Inserting the TabPane
 		getContentPane().add(SharedObjs.tabbedPane);
