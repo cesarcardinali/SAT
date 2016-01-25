@@ -21,7 +21,7 @@ import objects.CrItemsList;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
 import panes.AdvancedOptionsPane;
-import tests.CrsManagerPane;
+import panes.CrsManagerPane;
 import panes.CustomFiltersPane;
 import panes.OptionsPane;
 import panes.ParserPane;

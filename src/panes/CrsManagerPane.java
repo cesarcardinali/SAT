@@ -38,11 +38,14 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -75,6 +78,12 @@ public class CrsManagerPane extends JPanel
 	private JTextField textLabel;
 	private int        errors;
 	private JButton    btnDownload;
+	private JCheckBox  chckbxUnassign;
+	private JCheckBox  chckbxRemLabels;
+	private JCheckBox  chckbxDownload;
+	private JCheckBox  chckbxUnzip;
+	private JCheckBox  chckbxAnalyze;
+	private JCheckBox  chckbxCloseAsOld;
 	
 	/**
 	 * Create the panel.
@@ -91,7 +100,7 @@ public class CrsManagerPane extends JPanel
 		add(contentPane);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] {0, 0, 0, 0, 0};
+		gridBagLayout.columnWidths = new int[] {0, 0, 270, 0, 0};
 		gridBagLayout.rowHeights = new int[] {140, 210, 0, 0};
 		gridBagLayout.columnWeights = new double[] {1.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[] {0.0, 10.0, 1.0, Double.MIN_VALUE};
@@ -113,7 +122,7 @@ public class CrsManagerPane extends JPanel
 		gbl_panel_3.columnWeights = new double[] {1.0, Double.MIN_VALUE};
 		gbl_panel_3.rowWeights = new double[] {0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_3.setLayout(gbl_panel_3);
-		JLabel lblDownloader = new JLabel("CRs List:");
+		JLabel lblDownloader = new JLabel("CRs List");
 		lblDownloader.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDownloader.setFont(new Font("Tahoma", Font.BOLD, 18));
 		GridBagConstraints gbc_lblDownloader = new GridBagConstraints();
@@ -126,7 +135,7 @@ public class CrsManagerPane extends JPanel
 		JScrollPane scrollPane_2 = new JScrollPane();
 		scrollPane_2.setPreferredSize(new Dimension(150, 350));
 		scrollPane_2.setBorder(new LineBorder(SystemColor.activeCaption));
-		scrollPane_2.setMinimumSize(new Dimension(140, 300));
+		scrollPane_2.setMinimumSize(new Dimension(150, 300));
 		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
 		gbc_scrollPane_2.gridheight = 2;
 		gbc_scrollPane_2.fill = GridBagConstraints.BOTH;
@@ -178,84 +187,334 @@ public class CrsManagerPane extends JPanel
 		panel_3.add(btnPaste, gbc_btnPaste);
 		
 		JPanel panel_1 = new JPanel();
-		panel_1.setMinimumSize(new Dimension(150, 135));
+		panel_1.setMinimumSize(new Dimension(250, 350));
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.anchor = GridBagConstraints.NORTH;
+		gbc_panel_1.gridheight = 2;
 		gbc_panel_1.insets = new Insets(10, 5, 5, 5);
-		gbc_panel_1.fill = GridBagConstraints.VERTICAL;
+		gbc_panel_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_panel_1.gridx = 2;
 		gbc_panel_1.gridy = 0;
 		contentPane.add(panel_1, gbc_panel_1);
 		GridBagLayout gbl_panel_1 = new GridBagLayout();
-		gbl_panel_1.columnWidths = new int[]{0, 0};
-		gbl_panel_1.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
-		gbl_panel_1.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panel_1.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_1.columnWidths = new int[] {0};
+		gbl_panel_1.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel_1.columnWeights = new double[] {0.0, 0.0, 1.0};
+		gbl_panel_1.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		panel_1.setLayout(gbl_panel_1);
 		
-		JLabel label = new JLabel("Settings:");
+		JLabel label = new JLabel("Action");
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setFont(new Font("Tahoma", Font.BOLD, 18));
 		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.fill = GridBagConstraints.BOTH;
+		gbc_label.gridwidth = 3;
 		gbc_label.insets = new Insets(0, 0, 5, 0);
 		gbc_label.gridx = 0;
 		gbc_label.gridy = 0;
 		panel_1.add(label, gbc_label);
 		
-		chckbxAssign = new JCheckBox("Assign?");
+		chckbxAssign = new JCheckBox("");
 		chckbxAssign.setHorizontalAlignment(SwingConstants.CENTER);
 		GridBagConstraints gbc_chckbxAssign = new GridBagConstraints();
-		gbc_chckbxAssign.fill = GridBagConstraints.HORIZONTAL;
-		gbc_chckbxAssign.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxAssign.fill = GridBagConstraints.BOTH;
+		gbc_chckbxAssign.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxAssign.gridx = 0;
 		gbc_chckbxAssign.gridy = 1;
 		panel_1.add(chckbxAssign, gbc_chckbxAssign);
 		chckbxAssign.setMargin(new Insets(0, 2, 0, 2));
-		chckbxAssign.setPreferredSize(new Dimension(61, 15));
 		chckbxAssign.setMinimumSize(new Dimension(15, 20));
-		chckbxAssign.setSelected(true);
 		
-		chckbxLabels = new JCheckBox("Labels:");
+		JLabel lblAssignCrs = new JLabel("Assign CRs");
+		lblAssignCrs.setHorizontalAlignment(SwingConstants.LEFT);
+		GridBagConstraints gbc_lblAssignCrs = new GridBagConstraints();
+		gbc_lblAssignCrs.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblAssignCrs.insets = new Insets(0, 0, 5, 0);
+		gbc_lblAssignCrs.anchor = GridBagConstraints.WEST;
+		gbc_lblAssignCrs.gridwidth = 2;
+		gbc_lblAssignCrs.gridx = 1;
+		gbc_lblAssignCrs.gridy = 1;
+		panel_1.add(lblAssignCrs, gbc_lblAssignCrs);
+		
+		chckbxUnassign = new JCheckBox("");
+		GridBagConstraints gbc_chckbxUnassign = new GridBagConstraints();
+		gbc_chckbxUnassign.fill = GridBagConstraints.BOTH;
+		gbc_chckbxUnassign.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxUnassign.gridx = 0;
+		gbc_chckbxUnassign.gridy = 2;
+		panel_1.add(chckbxUnassign, gbc_chckbxUnassign);
+		
+		chckbxAssign.addChangeListener(new ChangeListener()
+		{
+			@Override
+			public void stateChanged(ChangeEvent e)
+			{
+				if (chckbxAssign.isSelected())
+				{
+					chckbxUnassign.setSelected(false);
+				}
+			}
+		});
+		
+		chckbxUnassign.addChangeListener(new ChangeListener()
+		{
+			@Override
+			public void stateChanged(ChangeEvent e)
+			{
+				if (chckbxUnassign.isSelected())
+				{
+					chckbxAssign.setSelected(false);
+				}
+			}
+		});
+		
+		JLabel lblUnassign = new JLabel("Unassign CRs");
+		GridBagConstraints gbc_lblUnassign = new GridBagConstraints();
+		gbc_lblUnassign.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblUnassign.insets = new Insets(0, 0, 5, 5);
+		gbc_lblUnassign.gridx = 1;
+		gbc_lblUnassign.gridy = 2;
+		panel_1.add(lblUnassign, gbc_lblUnassign);
+		
+		JSeparator separator = new JSeparator();
+		GridBagConstraints gbc_separator = new GridBagConstraints();
+		gbc_separator.insets = new Insets(0, 5, 5, 0);
+		gbc_separator.fill = GridBagConstraints.HORIZONTAL;
+		gbc_separator.gridwidth = 3;
+		gbc_separator.gridx = 0;
+		gbc_separator.gridy = 3;
+		panel_1.add(separator, gbc_separator);
+		
+		chckbxLabels = new JCheckBox("");
 		GridBagConstraints gbc_chckbxLabels = new GridBagConstraints();
-		gbc_chckbxLabels.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxLabels.fill = GridBagConstraints.BOTH;
+		gbc_chckbxLabels.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxLabels.gridx = 0;
-		gbc_chckbxLabels.gridy = 2;
+		gbc_chckbxLabels.gridy = 4;
 		panel_1.add(chckbxLabels, gbc_chckbxLabels);
 		chckbxLabels.setMargin(new Insets(0, 2, 0, 2));
 		chckbxLabels.setMinimumSize(new Dimension(61, 15));
-		chckbxLabels.setPreferredSize(new Dimension(61, 15));
-		chckbxLabels.setSelected(true);
+		
+		JLabel lblAddLabels = new JLabel("Add labels");
+		lblAddLabels.setHorizontalAlignment(SwingConstants.LEFT);
+		GridBagConstraints gbc_lblAddLabels = new GridBagConstraints();
+		gbc_lblAddLabels.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblAddLabels.insets = new Insets(0, 0, 5, 5);
+		gbc_lblAddLabels.anchor = GridBagConstraints.WEST;
+		gbc_lblAddLabels.gridx = 1;
+		gbc_lblAddLabels.gridy = 4;
+		panel_1.add(lblAddLabels, gbc_lblAddLabels);
 		
 		textLabel = new JTextField();
+		textLabel.setPreferredSize(new Dimension(150, 20));
 		GridBagConstraints gbc_textLabel = new GridBagConstraints();
+		gbc_textLabel.gridheight = 2;
 		gbc_textLabel.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textLabel.insets = new Insets(0, 5, 5, 5);
-		gbc_textLabel.gridx = 0;
-		gbc_textLabel.gridy = 3;
+		gbc_textLabel.insets = new Insets(0, 5, 5, 0);
+		gbc_textLabel.gridx = 2;
+		gbc_textLabel.gridy = 4;
 		panel_1.add(textLabel, gbc_textLabel);
 		textLabel.setText("ll_prodteam_analyzed");
 		textLabel.setColumns(10);
 		textLabel.setBorder(new LineBorder(SystemColor.activeCaption));
-		JLabel lblRootPath = new JLabel("Download path:");
-		GridBagConstraints gbc_lblRootPath = new GridBagConstraints();
-		gbc_lblRootPath.insets = new Insets(0, 0, 5, 0);
-		gbc_lblRootPath.gridx = 0;
-		gbc_lblRootPath.gridy = 4;
-		panel_1.add(lblRootPath, gbc_lblRootPath);
 		
-		lblRootPath.setHorizontalAlignment(SwingConstants.CENTER);
-		lblRootPath.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		chckbxRemLabels = new JCheckBox("");
+		GridBagConstraints gbc_chckbxRemLabels = new GridBagConstraints();
+		gbc_chckbxRemLabels.fill = GridBagConstraints.BOTH;
+		gbc_chckbxRemLabels.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxRemLabels.gridx = 0;
+		gbc_chckbxRemLabels.gridy = 5;
+		panel_1.add(chckbxRemLabels, gbc_chckbxRemLabels);
+		
+		chckbxLabels.addChangeListener(new ChangeListener()
+		{
+			@Override
+			public void stateChanged(ChangeEvent e)
+			{
+				if (chckbxLabels.isSelected())
+				{
+					chckbxRemLabels.setSelected(false);
+				}
+			}
+		});
+		
+		chckbxRemLabels.addChangeListener(new ChangeListener()
+		{
+			@Override
+			public void stateChanged(ChangeEvent e)
+			{
+				if (chckbxRemLabels.isSelected())
+				{
+					chckbxLabels.setSelected(false);
+				}
+			}
+		});
+		
+		JLabel lblRemLabels = new JLabel("Remove labels");
+		GridBagConstraints gbc_lblRemLabels = new GridBagConstraints();
+		gbc_lblRemLabels.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblRemLabels.anchor = GridBagConstraints.WEST;
+		gbc_lblRemLabels.insets = new Insets(0, 0, 5, 5);
+		gbc_lblRemLabels.gridx = 1;
+		gbc_lblRemLabels.gridy = 5;
+		panel_1.add(lblRemLabels, gbc_lblRemLabels);
+		
+		JSeparator separator_1 = new JSeparator();
+		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
+		gbc_separator_1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_separator_1.gridwidth = 3;
+		gbc_separator_1.insets = new Insets(0, 5, 5, 0);
+		gbc_separator_1.gridx = 0;
+		gbc_separator_1.gridy = 6;
+		panel_1.add(separator_1, gbc_separator_1);
+		
+		chckbxDownload = new JCheckBox("");
+		chckbxDownload.setSelected(true);
+		GridBagConstraints gbc_chckbxDownload = new GridBagConstraints();
+		gbc_chckbxDownload.fill = GridBagConstraints.BOTH;
+		gbc_chckbxDownload.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxDownload.gridx = 0;
+		gbc_chckbxDownload.gridy = 7;
+		panel_1.add(chckbxDownload, gbc_chckbxDownload);
+		
+		JLabel lblDownload = new JLabel("Download");
+		GridBagConstraints gbc_lblDownload = new GridBagConstraints();
+		gbc_lblDownload.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblDownload.insets = new Insets(0, 0, 5, 5);
+		gbc_lblDownload.anchor = GridBagConstraints.WEST;
+		gbc_lblDownload.gridx = 1;
+		gbc_lblDownload.gridy = 7;
+		panel_1.add(lblDownload, gbc_lblDownload);
 		textPath = new JTextField();
 		GridBagConstraints gbc_textPath = new GridBagConstraints();
-		gbc_textPath.insets = new Insets(0, 5, 0, 5);
+		gbc_textPath.insets = new Insets(0, 5, 5, 0);
 		gbc_textPath.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textPath.gridx = 0;
-		gbc_textPath.gridy = 5;
+		gbc_textPath.gridx = 2;
+		gbc_textPath.gridy = 7;
 		panel_1.add(textPath, gbc_textPath);
 		textPath.setToolTipText("Path to stock and read your CRs");
 		textPath.setHorizontalAlignment(SwingConstants.LEFT);
 		textPath.setBorder(new LineBorder(SystemColor.activeCaption));
 		textPath.setMinimumSize(new Dimension(130, 20));
 		textPath.setPreferredSize(new Dimension(150, 20));
+		
+		chckbxUnzip = new JCheckBox("");
+		chckbxUnzip.setSelected(true);
+		GridBagConstraints gbc_chckbxUnzip = new GridBagConstraints();
+		gbc_chckbxUnzip.fill = GridBagConstraints.BOTH;
+		gbc_chckbxUnzip.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxUnzip.gridx = 0;
+		gbc_chckbxUnzip.gridy = 8;
+		panel_1.add(chckbxUnzip, gbc_chckbxUnzip);
+		
+		JLabel lblUnzipDownloadedCrs = new JLabel("Unzip downloaded CRs");
+		GridBagConstraints gbc_lblUnzipDownloadedCrs = new GridBagConstraints();
+		gbc_lblUnzipDownloadedCrs.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblUnzipDownloadedCrs.anchor = GridBagConstraints.WEST;
+		gbc_lblUnzipDownloadedCrs.gridwidth = 2;
+		gbc_lblUnzipDownloadedCrs.insets = new Insets(0, 0, 5, 0);
+		gbc_lblUnzipDownloadedCrs.gridx = 1;
+		gbc_lblUnzipDownloadedCrs.gridy = 8;
+		panel_1.add(lblUnzipDownloadedCrs, gbc_lblUnzipDownloadedCrs);
+		
+		chckbxAnalyze = new JCheckBox("");
+		chckbxAnalyze.setSelected(true);
+		GridBagConstraints gbc_chckbxAnalyze = new GridBagConstraints();
+		gbc_chckbxAnalyze.fill = GridBagConstraints.BOTH;
+		gbc_chckbxAnalyze.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxAnalyze.gridx = 0;
+		gbc_chckbxAnalyze.gridy = 9;
+		panel_1.add(chckbxAnalyze, gbc_chckbxAnalyze);
+		
+		JLabel lblAnalyzeDownloadedCrs = new JLabel("Analyze downloaded CRs");
+		GridBagConstraints gbc_lblAnalyzeDownloadedCrs = new GridBagConstraints();
+		gbc_lblAnalyzeDownloadedCrs.fill = GridBagConstraints.BOTH;
+		gbc_lblAnalyzeDownloadedCrs.insets = new Insets(0, 0, 5, 0);
+		gbc_lblAnalyzeDownloadedCrs.anchor = GridBagConstraints.WEST;
+		gbc_lblAnalyzeDownloadedCrs.gridwidth = 2;
+		gbc_lblAnalyzeDownloadedCrs.gridx = 1;
+		gbc_lblAnalyzeDownloadedCrs.gridy = 9;
+		panel_1.add(lblAnalyzeDownloadedCrs, gbc_lblAnalyzeDownloadedCrs);
+		
+		chckbxCloseAsOld = new JCheckBox("");
+		chckbxCloseAsOld.addChangeListener(new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent e)
+			{
+				if (chckbxCloseAsOld.isSelected())
+				{
+					chckbxDownload.setSelected(false);
+				}
+			}
+		});
+		GridBagConstraints gbc_chckbxCloseAsOld = new GridBagConstraints();
+		gbc_chckbxCloseAsOld.fill = GridBagConstraints.BOTH;
+		gbc_chckbxCloseAsOld.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxCloseAsOld.gridx = 0;
+		gbc_chckbxCloseAsOld.gridy = 10;
+		panel_1.add(chckbxCloseAsOld, gbc_chckbxCloseAsOld);
+		
+		JLabel lblCloseCrsAs = new JLabel("Close CRs as Old");
+		GridBagConstraints gbc_lblCloseCrsAs = new GridBagConstraints();
+		gbc_lblCloseCrsAs.fill = GridBagConstraints.BOTH;
+		gbc_lblCloseCrsAs.anchor = GridBagConstraints.WEST;
+		gbc_lblCloseCrsAs.gridwidth = 2;
+		gbc_lblCloseCrsAs.insets = new Insets(0, 0, 5, 0);
+		gbc_lblCloseCrsAs.gridx = 1;
+		gbc_lblCloseCrsAs.gridy = 10;
+		panel_1.add(lblCloseCrsAs, gbc_lblCloseCrsAs);
+		
+		btnDownload = new JButton("Exec!");
+		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
+		gbc_btnDownload.insets = new Insets(25, 0, 5, 0);
+		gbc_btnDownload.gridwidth = 3;
+		gbc_btnDownload.gridx = 0;
+		gbc_btnDownload.gridy = 11;
+		panel_1.add(btnDownload, gbc_btnDownload);
+		btnDownload.setToolTipText("Start to download the CRs on the list above");
+		btnDownload.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				btnDownloadAction();
+			}
+		});
+		btnDownload.setPreferredSize(new Dimension(113, 23));
+		btnDownload.setMaximumSize(new Dimension(113, 23));
+		btnDownload.setMinimumSize(new Dimension(113, 23));
+		
+		JButton btnLists = new JButton("Show Result");
+		btnLists.setPreferredSize(new Dimension(113, 23));
+		GridBagConstraints gbc_btnLists = new GridBagConstraints();
+		gbc_btnLists.insets = new Insets(0, 0, 5, 0);
+		gbc_btnLists.gridwidth = 3;
+		gbc_btnLists.gridx = 0;
+		gbc_btnLists.gridy = 12;
+		panel_1.add(btnLists, gbc_btnLists);
+		btnLists.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				SharedObjs.getClosedList().setVisible(true);
+				SharedObjs.getOpenedList().setVisible(true);
+			}
+		});
+		btnLists.setToolTipText("Open the CRs on the list above on Chrome");
+		
+		JButton btnOpenOnBrowser = new JButton("Open on Browser");
+		GridBagConstraints gbc_btnOpenOnBrowser = new GridBagConstraints();
+		gbc_btnOpenOnBrowser.gridwidth = 5;
+		gbc_btnOpenOnBrowser.gridx = 0;
+		gbc_btnOpenOnBrowser.gridy = 13;
+		panel_1.add(btnOpenOnBrowser, gbc_btnOpenOnBrowser);
+		btnOpenOnBrowser.setToolTipText("Open the CRs on the list above on Chrome");
+		btnOpenOnBrowser.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				btnOpenAction();
+			}
+		});
 		textPath.getDocument().addDocumentListener(new DocumentListener()
 		{
 			@Override
@@ -276,190 +535,37 @@ public class CrsManagerPane extends JPanel
 			}
 		});
 		
-		JPanel panel = new JPanel();
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.insets = new Insets(10, 10, 5, 10);
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridx = 2;
-		gbc_panel.gridy = 1;
-		contentPane.add(panel, gbc_panel);
-		
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] {30, 0};
-		gbl_panel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[] {1.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel.setLayout(gbl_panel);
-		
-		JLabel label_1 = new JLabel("Actions:");
-		label_1.setHorizontalAlignment(SwingConstants.CENTER);
-		label_1.setFont(new Font("Tahoma", Font.BOLD, 18));
-		GridBagConstraints gbc_label_1 = new GridBagConstraints();
-		gbc_label_1.insets = new Insets(0, 0, 5, 0);
-		gbc_label_1.gridx = 0;
-		gbc_label_1.gridy = 0;
-		panel.add(label_1, gbc_label_1);
-		
-		btnDownload = new JButton("Get the CRs");
-		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
-		gbc_btnDownload.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnDownload.insets = new Insets(5, 0, 5, 0);
-		gbc_btnDownload.gridx = 0;
-		gbc_btnDownload.gridy = 1;
-		panel.add(btnDownload, gbc_btnDownload);
-		btnDownload.setToolTipText("Start to download the CRs on the list above");
-		btnDownload.addActionListener(new ActionListener()
+		chckbxDownload.addChangeListener(new ChangeListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void stateChanged(ChangeEvent arg0)
 			{
-				btnDownloadAction();
-			}
-		});
-		btnDownload.setPreferredSize(new Dimension(113, 23));
-		btnDownload.setMaximumSize(new Dimension(113, 23));
-		btnDownload.setMinimumSize(new Dimension(113, 23));
-		
-		JButton btnCloseAsOld = new JButton("Close as Old");
-		GridBagConstraints gbc_btnCloseAsOld = new GridBagConstraints();
-		gbc_btnCloseAsOld.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnCloseAsOld.insets = new Insets(0, 0, 5, 0);
-		gbc_btnCloseAsOld.gridx = 0;
-		gbc_btnCloseAsOld.gridy = 2;
-		panel.add(btnCloseAsOld, gbc_btnCloseAsOld);
-		btnCloseAsOld.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				CrsCloser closer = new CrsCloser(textDownload.getText().split("\n"));
-				new Thread(closer).start();
-			}
-		});
-		btnCloseAsOld.setPreferredSize(new Dimension(113, 23));
-		btnCloseAsOld.setMinimumSize(new Dimension(113, 23));
-		btnCloseAsOld.setMaximumSize(new Dimension(113, 23));
-		
-		JButton btnUnassign = new JButton("Unassign CRs");
-		GridBagConstraints gbc_btnUnassign = new GridBagConstraints();
-		gbc_btnUnassign.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnUnassign.insets = new Insets(0, 0, 5, 0);
-		gbc_btnUnassign.gridx = 0;
-		gbc_btnUnassign.gridy = 3;
-		panel.add(btnUnassign, gbc_btnUnassign);
-		btnUnassign.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				SharedObjs.crsManagerPane.addLogLine("Unassigning CRs ...");
-				new Thread(new Runnable()
+				
+				if (chckbxDownload.isSelected())
 				{
-					@Override
-					public void run()
-					{
-						String crs[] = textDownload.getText().split("\n");
-						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
-						for (String cr : crs)
-						{
-							jira.unassignIssue(cr);
-						}
-						SharedObjs.crsManagerPane.addLogLine("Unassigning CRs - DONE");
-					}
-				}).start();
-			}
-		});
-		btnUnassign.setToolTipText("Start to download the CRs on the list above");
-		btnUnassign.setPreferredSize(new Dimension(113, 23));
-		btnUnassign.setMinimumSize(new Dimension(113, 23));
-		btnUnassign.setMaximumSize(new Dimension(113, 23));
-		
-		JButton btnRemoveLabel = new JButton("Remove Labels");
-		btnRemoveLabel.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				SharedObjs.crsManagerPane.addLogLine("Removing labels ...");
-				new Thread(new Runnable()
+					chckbxUnzip.setEnabled(true);
+					chckbxCloseAsOld.setSelected(false);
+				}
+				else
 				{
-					@Override
-					public void run()
-					{
-						String crs[] = textDownload.getText().split("\n");
-						String labels[] = getLabels();
-						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
-						for (String cr : crs)
-						{
-							CrItem crData;
-							try
-							{
-								crData = jira.getCrData(cr);
-								System.out.println("Assign: " + crData.getAssignee());
-								if (crData.getAssignee().equals("null"))
-								{
-									System.out.println("Assign: null");
-									jira.assignIssue(cr);
-									jira.removeLabel(cr, labels);
-									jira.unassignIssue(cr);
-								}
-								else
-								{
-									jira.assignIssue(cr);
-									jira.removeLabel(cr, labels);
-								}
-							}
-							catch (ParseException e)
-							{
-								System.out.println("Unable to get CR data");
-								e.printStackTrace();
-							}
-						}
-						
-						SharedObjs.crsManagerPane.addLogLine("Removing labels - DONE");
-					}
-				}).start();
-			}
-		});
-		btnRemoveLabel.setToolTipText("Start to download the CRs on the list above");
-		btnRemoveLabel.setPreferredSize(new Dimension(113, 23));
-		btnRemoveLabel.setMinimumSize(new Dimension(113, 23));
-		btnRemoveLabel.setMaximumSize(new Dimension(113, 23));
-		GridBagConstraints gbc_btnRemoveLabel = new GridBagConstraints();
-		gbc_btnRemoveLabel.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnRemoveLabel.insets = new Insets(0, 0, 5, 0);
-		gbc_btnRemoveLabel.gridx = 0;
-		gbc_btnRemoveLabel.gridy = 4;
-		panel.add(btnRemoveLabel, gbc_btnRemoveLabel);
-		
-		JButton btnLists = new JButton("Reopen Result Lists");
-		btnLists.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				SharedObjs.getClosedList().setVisible(true);
-				SharedObjs.getOpenedList().setVisible(true);
+					chckbxUnzip.setEnabled(false);
+				}
 			}
 		});
 		
-		JButton btnOpenOnChrome = new JButton("Open on Chrome");
-		GridBagConstraints gbc_btnOpenOnChrome = new GridBagConstraints();
-		gbc_btnOpenOnChrome.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnOpenOnChrome.insets = new Insets(15, 0, 5, 0);
-		gbc_btnOpenOnChrome.gridx = 0;
-		gbc_btnOpenOnChrome.gridy = 5;
-		panel.add(btnOpenOnChrome, gbc_btnOpenOnChrome);
-		btnOpenOnChrome.setToolTipText("Open the CRs on the list above on Chrome");
-		btnOpenOnChrome.addActionListener(new ActionListener()
+		chckbxUnzip.addChangeListener(new ChangeListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void stateChanged(ChangeEvent arg0)
 			{
-				btnOpenAction();
+				if (chckbxUnzip.isSelected() && chckbxUnzip.isEnabled())
+				{
+					chckbxAnalyze.setEnabled(true);
+				}
+				else
+				{
+					chckbxAnalyze.setEnabled(false);
+				}
 			}
 		});
-		btnLists.setToolTipText("Open the CRs on the list above on Chrome");
-		GridBagConstraints gbc_btnLists = new GridBagConstraints();
-		gbc_btnLists.insets = new Insets(15, 0, 0, 0);
-		gbc_btnLists.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnLists.gridx = 0;
-		gbc_btnLists.gridy = 6;
-		panel.add(btnLists, gbc_btnLists);
 		
 		JPanel panel_5 = new JPanel();
 		panel_5.setBorder(new LineBorder(new Color(153, 204, 255), 1, true));
@@ -539,10 +645,10 @@ public class CrsManagerPane extends JPanel
 	 */
 	private void downloadCRs() throws ParseException
 	{
-		// SharedObjs.crsManagerPane.addLogLine("Generating CRs list ...");
 		errors = 0;
 		
 		// Setup jira connection
+		SharedObjs.crsManagerPane.addLogLine("Connecting to Jira ...");
 		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
 		
 		// Get the CRs list
@@ -552,7 +658,7 @@ public class CrsManagerPane extends JPanel
 		if (CRs.length == 0 || (CRs.length == 1 && !CRs[0].contains("-")))
 		{
 			SharedObjs.crsManagerPane.addLogLine("CRs list empty");
-			btnDownload.setEnabled(true);
+			enableOptionsAndBtns();
 			return;
 		}
 		
@@ -571,6 +677,7 @@ public class CrsManagerPane extends JPanel
 		// Manage CR
 		for (String crKey : CRs)
 		{
+			crKey = trimCR(crKey);
 			if (crKey.equals(""))
 			{
 				SharedObjs.crsManagerPane.addLogLine("CR list is empty");
@@ -613,40 +720,42 @@ public class CrsManagerPane extends JPanel
 			}
 		}
 		
-		if (b2gList.size() > 0)
-		{
-			// Configure the B2gDownloader
-			Bug2goDownloader b2gDownloader = Bug2goDownloader.getInstance();
-			
-			if (b2gDownloader.getExecutor() == null || b2gDownloader.getExecutor().isTerminated())
+		if (chckbxDownload.isSelected())
+			if (b2gList.size() > 0)
 			{
-				SharedObjs.crsManagerPane.addLogLine("Generating download list ...");
+				// Configure the B2gDownloader
+				Bug2goDownloader b2gDownloader = Bug2goDownloader.getInstance();
+				
+				if (b2gDownloader.getExecutor() == null || b2gDownloader.getExecutor().isTerminated())
+				{
+					SharedObjs.crsManagerPane.addLogLine("Generating download list ...");
+				}
+				else
+				{
+					SharedObjs.crsManagerPane.addLogLine("New b2g files added to download list ...");
+				}
+				
+				try
+				{
+					b2gDownloader.addBugIdList(b2gList);
+					b2gDownloader.setError(errors);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+				
+				// Start download thread
+				b2gDownloader.execute();
 			}
 			else
 			{
-				SharedObjs.crsManagerPane.addLogLine("New b2g files added to download list ...");
+				JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "There were errors during the b2g collection."
+				                                                         + "\nWe could not get CRs data from Jira."
+				                                                         + "\nYour pass or username may be wrong or " + "the CRs sent does not exist.");
 			}
-			
-			try
-			{
-				b2gDownloader.addBugIdList(b2gList);
-				b2gDownloader.setError(errors);
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-			
-			// Start download thread
-			b2gDownloader.execute();
-		}
-		else
-		{
-			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "There were errors during the b2g collection." + "\nWe could not get CRs data from Jira."
-			                                                         + "\nYour pass or username may be wrong or " + "the CRs sent does not exist.");
-		}
 		
-		btnDownload.setEnabled(true);
+		enableOptionsAndBtns();
 	}
 	
 	/**
@@ -683,6 +792,8 @@ public class CrsManagerPane extends JPanel
 	
 	private void btnDownloadAction()
 	{
+		disableOptionsAndBtns();
+		
 		new Thread(new Runnable()
 		{
 			
@@ -691,20 +802,201 @@ public class CrsManagerPane extends JPanel
 			{
 				try
 				{
+					// Download proccess
+					if (chckbxDownload.isSelected())
+					{
+						downloadCRs();
+					}
 					
-					downloadCRs();
+					// Close as old proccess
+					else if (chckbxCloseAsOld.isSelected())
+					{
+						CrsCloser closer = new CrsCloser(textDownload.getText().split("\n"));
+						new Thread(closer).start();
+					}
+					
+					// Singular options solo definition
+					else
+					{
+						// Get the CRs list
+						SharedObjs.crsManagerPane.addLogLine("Ganerating CRs list...");
+						CRs = textDownload.getText().replaceAll(" ", "").split("\n");
+						
+						// Check if not empty list
+						Logger.log(Logger.TAG_CRSMANAGER, "CRs List:" + CRs.length);
+						if (CRs.length == 0 || (CRs.length == 1 && !CRs[0].contains("-")))
+						{
+							SharedObjs.crsManagerPane.addLogLine("CRs list empty");
+							enableOptionsAndBtns();
+							return;
+						}
+						
+						// Setup jira connection
+						SharedObjs.crsManagerPane.addLogLine("Connecting to Jira ...");
+						JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, SharedObjs.getUser(), SharedObjs.getPass());
+						
+						// Assign CRs
+						if (chckbxAssign.isSelected())
+						{
+							// If need to add labels too, do it at same time
+							if (chckbxLabels.isSelected())
+							{
+								SharedObjs.crsManagerPane.addLogLine("Assigning and adding labels ...");
+								
+								// Get label list
+								labels = textLabel.getText().split(" ");
+								for (String s : labels)
+								{
+									Logger.log(Logger.TAG_CRSMANAGER, "Label entered: " + s);
+								}
+								
+								for (String crKey : CRs)
+								{
+									crKey = trimCR(crKey);
+									jira.assignIssue(crKey);
+									jira.addLabel(crKey, labels);
+								}
+							}
+							
+							// Otherwise ...
+							else
+							{
+								SharedObjs.crsManagerPane.addLogLine("Assigning CRs...");
+								for (String crKey : CRs)
+								{
+									crKey = trimCR(crKey);
+									jira.assignIssue(crKey);
+								}
+							}
+							
+							SharedObjs.crsManagerPane.addLogLine("Done");
+						}
+						
+						// Add Labels
+						else if (chckbxLabels.isSelected())
+						{
+							SharedObjs.crsManagerPane.addLogLine("Adding labels ...");
+							
+							// Get label list
+							labels = textLabel.getText().split(" ");
+							for (String s : labels)
+							{
+								Logger.log(Logger.TAG_CRSMANAGER, "Label entered: " + s);
+							}
+							
+							// Manage CR
+							for (String crKey : CRs)
+							{
+								crKey = trimCR(crKey);
+								if (jira.addLabel(crKey, labels).contains("\"labels\":\"Field 'labels' cannot be set. It is not on the appropriate screen, or unknown"))
+								{
+									jira.assignIssue(crKey);
+									jira.addLabel(crKey, labels);
+									jira.unassignIssue(crKey);
+								}
+							}
+							
+							SharedObjs.crsManagerPane.addLogLine("Done");
+						}
+						
+						// Unassign CRs
+						if (chckbxUnassign.isSelected())
+						{
+							// If need to unassign issues too, do it at same time
+							if (chckbxRemLabels.isSelected())
+							{
+								SharedObjs.crsManagerPane.addLogLine("Unassignin and removing labels ...");
+								for (String crKey : CRs)
+								{
+									crKey = trimCR(crKey);
+									jira.removeLabel(crKey, labels);
+									jira.unassignIssue(crKey);
+								}
+							}
+							
+							// Otherwise ...
+							else
+							{
+								SharedObjs.crsManagerPane.addLogLine("Unassigning CRs ...");
+								for (String crKey : CRs)
+								{
+									crKey = trimCR(crKey);
+									jira.unassignIssue(crKey);
+								}
+							}
+							
+							SharedObjs.crsManagerPane.addLogLine("Done");
+						}
+						
+						// Remove labels
+						if (chckbxRemLabels.isSelected())
+						{
+							SharedObjs.crsManagerPane.addLogLine("Removing labels ...");
+
+							// Get label list
+							labels = textLabel.getText().split(" ");
+							for (String s : labels)
+							{
+								Logger.log(Logger.TAG_CRSMANAGER, "Label entered: " + s);
+							}
+							
+							for (String crKey : CRs)
+							{
+								crKey = trimCR(crKey);
+								if (jira.removeLabel(crKey, labels).contains("\"labels\":\"Field 'labels' cannot be set. It is not on the appropriate screen, or unknown"))
+								{
+									jira.assignIssue(crKey);
+									jira.removeLabel(crKey, labels);
+									jira.unassignIssue(crKey);
+								}
+							}
+							
+							SharedObjs.crsManagerPane.addLogLine("Done");
+						}
+					}
 				}
 				catch (ParseException e)
 				{
 					e.printStackTrace();
 				}
+				finally
+				{
+					enableOptionsAndBtns();
+				}
 			}
 		}).start();
 	}
 	
-	public void resetDonwloadBtn()
+	public void enableOptionsAndBtns()
 	{
 		btnDownload.setEnabled(true);
+		
+		if(btnDownload.isSelected())
+			chckbxAnalyze.setEnabled(true);
+		
+		if(chckbxAnalyze.isEnabled())
+			chckbxUnzip.setEnabled(true);
+		
+		chckbxAssign.setEnabled(true);
+		chckbxCloseAsOld.setEnabled(true);
+		chckbxDownload.setEnabled(true);
+		chckbxLabels.setEnabled(true);
+		chckbxRemLabels.setEnabled(true);
+		chckbxUnassign.setEnabled(true);
+	}
+	
+	public void disableOptionsAndBtns()
+	{
+		btnDownload.setEnabled(false);
+		chckbxAnalyze.setEnabled(false);
+		chckbxAssign.setEnabled(false);
+		chckbxAssign.setEnabled(false);
+		chckbxCloseAsOld.setEnabled(false);
+		chckbxDownload.setEnabled(false);
+		chckbxLabels.setEnabled(false);
+		chckbxRemLabels.setEnabled(false);
+		chckbxUnassign.setEnabled(false);
+		chckbxUnzip.setEnabled(false);
 	}
 	
 	private void btnOpenAction()
@@ -713,9 +1005,7 @@ public class CrsManagerPane extends JPanel
 		{
 			try
 			{
-				s = s.replaceAll("\n", "");
-				s = s.replaceAll("\r", "");
-				s = s.replaceAll(" ", "");
+				s = trimCR(s);
 				Desktop.getDesktop().browse(new URI("http://idart.mot.com/browse/" + s));
 				Thread.sleep(500);
 			}
@@ -724,6 +1014,15 @@ public class CrsManagerPane extends JPanel
 				JOptionPane.showMessageDialog(this, "Exception: " + ex.getMessage());
 			}
 		}
+	}
+	
+	public String trimCR(String s)
+	{
+		s = s.replaceAll("\n", "");
+		s = s.replaceAll("\r", "");
+		s = s.replaceAll("\t", "");
+		s = s.trim();
+		return s;
 	}
 	
 	public void updateDiagList()
@@ -788,10 +1087,10 @@ public class CrsManagerPane extends JPanel
 		SharedObjs.setDownloadPath(textPath.getText());
 		
 		xmlPath[1] = "assign";
-		chckbxAssign.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		chckbxAssign.setSelected(true);
 		
 		xmlPath[1] = "label";
-		chckbxLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		chckbxLabels.setSelected(true);
 		
 		xmlPath[1] = "labels";
 		textLabel.setText(XmlMngr.getUserValueOf(xmlPath));
@@ -847,7 +1146,15 @@ public class CrsManagerPane extends JPanel
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "--- Initial line: " + sCurrentLine);
 				sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
-				sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
+				//BATTRIAGE-212
+				if(sCurrentLine.indexOf("_") >= 0)
+				{
+					sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
+				}
+				else if (sCurrentLine.indexOf("\"") >= 0)
+				{
+					sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("\""));
+				}
 				Logger.log(Logger.TAG_CRSMANAGER, sCurrentLine);
 				
 				SharedObjs.copyScript(new File("Data\\scripts\\_Base.pl"), new File(folder + "\\build_report.pl"));
@@ -972,5 +1279,40 @@ public class CrsManagerPane extends JPanel
 	public JCheckBox getChckbxLabels()
 	{
 		return chckbxLabels;
+	}
+	
+	public JCheckBox getChckbxAnalyze()
+	{
+		return chckbxAnalyze;
+	}
+	
+	public void setChckbxAnalyze(JCheckBox chckbxAnalyze)
+	{
+		this.chckbxAnalyze = chckbxAnalyze;
+	}
+	
+	public JCheckBox getChckbxUnassign()
+	{
+		return chckbxUnassign;
+	}
+	
+	public JCheckBox getChckbxRemLabels()
+	{
+		return chckbxRemLabels;
+	}
+	
+	public JCheckBox getChckbxDownload()
+	{
+		return chckbxDownload;
+	}
+	
+	public JCheckBox getChckbxUnzip()
+	{
+		return chckbxUnzip;
+	}
+	
+	public JCheckBox getChckbxCloseAsOld()
+	{
+		return chckbxCloseAsOld;
 	}
 }

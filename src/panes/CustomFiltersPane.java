@@ -42,7 +42,6 @@ import core.SharedObjs;
 import core.XmlMngr;
 
 
-;
 
 @SuppressWarnings("serial")
 public class CustomFiltersPane extends JDialog

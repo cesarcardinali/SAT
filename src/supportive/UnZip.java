@@ -105,7 +105,15 @@ public class UnZip implements Runnable
 						{
 							Logger.log(Logger.TAG_UNZIP, "--- Initial line: " + sCurrentLine);
 							sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
-							sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
+							//BATTRIAGE-212
+							if(sCurrentLine.indexOf("_") >= 0)
+							{
+								sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
+							}
+							else if (sCurrentLine.indexOf("\"") >= 0)
+							{
+								sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("\""));
+							}
 							Logger.log(Logger.TAG_UNZIP, sCurrentLine);
 							copyScript(new File("Data\\scripts\\_Base.pl"), new File(outputFolder
 							                                                         + "\\build_report.pl"));
