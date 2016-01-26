@@ -392,37 +392,40 @@ public class HelpPane extends JFrame
                                     {
     									doc.insertString(doc.getLength(),"Items Description\n\n", h1);
 
-    									doc.insertString(doc.getLength(), "Download Path:\n", h2);
-    									doc.insertString(doc.getLength(), tab + "Set your download folder here. Make sure the folder already exists.\n", normal);
-    									doc.insertString(doc.getLength(), tab + "Clicking with right button on a folder inside the File tree (at Parser tab) you can set that folder as your download path.\n\n", normal);
-    									
-    									doc.insertString(doc.getLength(), "Task Buttons:\n", h2);
-    									doc.insertString(doc.getLength(), tab + "Get CRs: ", normalBold);
-    									doc.insertString(doc.getLength(), "Download the list of CRs and according to the options configured on this tab (assignee, labels, etc).\n", normal);
-    									doc.insertString(doc.getLength(), tab + "Close as old: ", normalBold);
-    									doc.insertString(doc.getLength(), "Close all CR on the list as old. Use it to close CRs out of date.\n", normal);
-    									doc.insertString(doc.getLength(), tab + "Unassign CRs: ", normalBold);
-    									doc.insertString(doc.getLength(), "Let te CRs on the list unassigned on Jira.\n", normal);
-    									doc.insertString(doc.getLength(), tab + "Remove labels: ", normalBold);
-    									doc.insertString(doc.getLength(), "Remove specified labels from the CRs on the list.\n", normal);
-    									doc.insertString(doc.getLength(), tab + "Open on Browser: ", normalBold);
-    									doc.insertString(doc.getLength(), "Opens the list of CRs on your default browser.\n", normal);
-    									doc.insertString(doc.getLength(), tab + "Reopen Results List: ", normalBold);
-    									doc.insertString(doc.getLength(), "Open the lists containing closed and unclosed CRs after SAT run analysis proccess.\n\n", normal);
-    									
-    									doc.insertString(doc.getLength(), "Others:\n", h2);
-    									doc.insertString(doc.getLength(), tab + "Assign checkbox: ", normalBold);
-    									doc.insertString(doc.getLength(), "If marked, SAT will let the CRs on the list assigned for the user during download proccess.\n", normal);
-    									doc.insertString(doc.getLength(), tab + "Labels checkbox: ", normalBold);
-    									doc.insertString(doc.getLength(), "If marked, SAT will add the specified labels on the CRs on the list during download proccess.\n", normal);
-    									doc.insertString(doc.getLength(), tab + "Labels textfield: ", normalBold);
-    									doc.insertString(doc.getLength(), "Put here the labels you want to add on the CRs. Separete them using blankspace.\n", normal);
-    									doc.insertString(doc.getLength(), tab + "CRs textbox: ", normalBold);
-    									doc.insertString(doc.getLength(), "Put here the CR IDs to be downloaded. Put one CR ID per line (use 'Enter').\n", normal);
+    									doc.insertString(doc.getLength(), "CRs List:\n", h2);
+    									doc.insertString(doc.getLength(), tab + "CRs List: ", normalBold);
+    									doc.insertString(doc.getLength(), "Put there the CR IDs to be downloaded. Put one CR ID per line (use 'Enter').\n", normal);
     									doc.insertString(doc.getLength(), tab + "Clear Button: ", normalBold);
     									doc.insertString(doc.getLength(), "Clear the CRs list textbox.\n", normal);
     									doc.insertString(doc.getLength(), tab + "Paste Button: ", normalBold);
     									doc.insertString(doc.getLength(), "Paste your clipboard on the CRs list textbox\n\n", normal);
+    									
+    									doc.insertString(doc.getLength(), "Action Options:\n", h2);
+    									doc.insertString(doc.getLength(), tab + "Assign checkbox: ", normalBold);
+    									doc.insertString(doc.getLength(), "If marked, SAT will assign to you the listed CRs.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Unassign checkbox: ", normalBold);
+    									doc.insertString(doc.getLength(), "If marked, SAT will unassign the CRs on the list.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Add Labels checkbox: ", normalBold);
+    									doc.insertString(doc.getLength(), "If marked, SAT will add the specified labels on the CRs on the list.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Remove Labels checkbox: ", normalBold);
+    									doc.insertString(doc.getLength(), "If marked, SAT will remove the specified labels from the CRs on the list. ", normal);
+    									doc.insertString(doc.getLength(), "Labels must be separated by a blankspace!\n", normalBold);
+    									doc.insertString(doc.getLength(), tab + "Download: ", normalBold);
+    									doc.insertString(doc.getLength(), "Mark this option to SAT download bug2go packages from the CRs on the list.\n"
+    													+ tab + tab + "Set your download folder using the textfield and make sure the folder already exists.\n", normal);
+    									doc.insertString(doc.getLength(), tab + tab + "Clicking with right button on a folder inside the File tree (at Parser tab) you can set that folder as your download path.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Unzip checkbox: ", normalBold);
+    									doc.insertString(doc.getLength(), "If marked, SAT will unzip downloaded CRs.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Analyze checkbox: ", normalBold);
+    									doc.insertString(doc.getLength(), "If marked, SAT will analyze downloaded CRs.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Close as old checkbox: ", normalBold);
+    									doc.insertString(doc.getLength(), "Close all CR on the list as old. Use it to close CRs out of date.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Exec button: ", normalBold);
+    									doc.insertString(doc.getLength(), "Build and start a proccess based on options selected.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Open on Browser button: ", normalBold);
+    									doc.insertString(doc.getLength(), "Opens the list of CRs on your default browser.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Show Results button: ", normalBold);
+    									doc.insertString(doc.getLength(), "Open the lists containing closed and unclosed CRs. The data is generated after an analysis proccess.\n\n", normal);
     									
     									doc.insertString(doc.getLength(), "Logging area:\n", h2);
     									doc.insertString(doc.getLength(), tab + "The area red bounded is the logging area. There you can see what is happening during the download proccess.\n", normal);
