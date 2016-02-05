@@ -235,6 +235,11 @@ public class HighConsumeItem
 		LogOff = logOff;
 	}
 	
+	public long getEstimatedRunTime()
+	{
+		return 60000*occurencesTotal;
+	}
+
 	/**
 	 * Class to string
 	 */

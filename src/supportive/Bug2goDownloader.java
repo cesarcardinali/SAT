@@ -434,6 +434,7 @@ public class Bug2goDownloader implements Runnable
 						else
 						{
 							SharedObjs.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
+							SharedObjs.crsManagerPane.addLogLine("CR closed as " + SharedObjs.getCrsList().getCrByB2gId(file.getName()).getResolution());
 						}
 						
 						if (!crChecker.getIncompleteFiles().contains("bugreport"))

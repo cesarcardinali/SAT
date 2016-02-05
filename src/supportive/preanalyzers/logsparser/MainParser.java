@@ -68,6 +68,7 @@ public class MainParser
 		{
 			Logger.log(Logger.TAG_CONSUME, "Could not parse year from logs. So, SAT can not parse Main log.");
 			SharedObjs.crsManagerPane.addLogLine("Could not find 'year' from bugreport. SAT will not parse main log.");
+			
 			return false;
 		}
 		System.out.println("Running at " + path);
@@ -351,7 +352,7 @@ public class MainParser
 			}
 			parsed[1] = parts[parts.length - 1];
 			
-			if(!latestMonthDay.equals("") && latestMonthDay.equals("12-31") && parts[0].equals("01-01"))
+			if (!latestMonthDay.equals("") && latestMonthDay.equals("12-31") && parts[0].equals("01-01"))
 			{
 				year = "" + (Integer.parseInt(year) + 1);
 			}

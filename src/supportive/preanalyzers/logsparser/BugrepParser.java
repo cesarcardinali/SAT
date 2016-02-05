@@ -589,7 +589,7 @@ public class BugrepParser
 		
 		if (btdDetected) // Changed to 0.4 from 0.3
 		{
-			threashold = (float) 0.1;
+			threashold = (float) 0.15;
 		}
 		else
 		{
@@ -600,27 +600,37 @@ public class BugrepParser
 		{
 			wakelocksComment += "{panel:title=*Bugreport Kernel wake locks:*|titleBGColor=#E9F2FF}\\n";
 			wakelocksComment += kernelWLs.get(0).toJiraComment();
-			wakelocksComment += "\\n";
-			wakelocksComment += kernelWLs.get(1).toJiraComment();
+			if(kernelWLs.get(1).getDuration() > getTimeOnBat() * threashold)
+			{
+				wakelocksComment += "\\n";
+				wakelocksComment += kernelWLs.get(1).toJiraComment();
+			}
 			wakelocksComment += "{panel}";
 		}
 		
-		if (javaWLs.size() > 0 && wakelocksComment.contains("WakeLocks") /* && javaWLs.get(0).getDuration() > getTimeOnBat() * 0.15 */)
+		if (javaWLs.size() > 0 && wakelocksComment.contains("WakeLocks")  && javaWLs.get(0).getDuration() > getTimeOnBat() * threashold)
 		{
 			wakelocksComment += "{panel:title=*Bugreport Java wake locks:*|titleBGColor=#E9F2FF}\\n";
 			if (kernelWLs.get(0).getName().contains("Service.WakeLocks"))
 			{
 				// TODO Probably the main issue is item 0
 				wakelocksComment += javaWLs.get(0).toJiraComment();
-				wakelocksComment += "\\n";
-				wakelocksComment += javaWLs.get(1).toJiraComment();
+				if(javaWLs.get(1).getDuration() > getTimeOnBat() * threashold)
+				{
+					wakelocksComment += "\\n";
+					wakelocksComment += javaWLs.get(1).toJiraComment();
+				}
 			}
 			else
 			{
 				wakelocksComment += javaWLs.get(0).toJiraComment();
-				wakelocksComment += "\\n";
-				wakelocksComment += javaWLs.get(1).toJiraComment();
+				if(javaWLs.get(1).getDuration() > getTimeOnBat() * threashold)
+				{
+					wakelocksComment += "\\n";
+					wakelocksComment += javaWLs.get(1).toJiraComment();
+				}
 			}
+			
 			if (wakelocksComment.toLowerCase().contains("spotify")
 			    || javaWLs.get(0).getProcessName().toLowerCase().contains("tunein")
 			    || javaWLs.get(0).getProcessName().toLowerCase().contains("slacker")
@@ -632,6 +642,7 @@ public class BugrepParser
 			{
 				wakelocksComment += "\\n\\n- _Probably audio is running in background and the held wake lock does not represent an issue_\\n";
 			}
+			
 			wakelocksComment += "{panel}";
 		}
 		

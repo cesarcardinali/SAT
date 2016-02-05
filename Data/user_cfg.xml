@@ -48,7 +48,7 @@
     <titan>2070</titan>
     <victara>2300</victara>
     <merlin>2470</merlin>
-    <t2>35443</t2>
+    <athene>3000</athene>
   </bat_cap>
   <diag_dup>
     <surnia>IKSWL-1063</surnia>
@@ -67,6 +67,5 @@
     <quark>IKUT-4329</quark>
     <clark>IKUT-4329</clark>
     <merlin>IKUT-00000</merlin>
-    <t1>fdsfds</t1>
   </diag_dup>
 </SAT>

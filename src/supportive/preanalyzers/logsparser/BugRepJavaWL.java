@@ -32,7 +32,7 @@ public class BugRepJavaWL
 	
 	public String toJiraComment()
 	{
-		return "|*Name*|" + name + "|\\n|UID|" + uid + "|\\n|Process|" + processName + "|\\n|Duration|"
+		return "|*Tag*|" + name + "|\\n|UID|" + uid + "|\\n|Process|" + processName + "|\\n|Duration|"
 		       + DateTimeOperator.getTimeStringFromMillis(duration) + " (" + duration
 		       + " ms)|\\n|Times Acquired|" + timesAcquired + "|\\n";
 	}
