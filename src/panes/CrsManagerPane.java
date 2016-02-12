@@ -671,10 +671,11 @@ public class CrsManagerPane extends JPanel
 			Logger.log(Logger.TAG_CRSMANAGER, "Label entered: " + s);
 		}
 		
-		SharedObjs.crsManagerPane.addLogLine("Acquiring CRs data ...");
+		SharedObjs.crsManagerPane.addLogLine("Acquiring " + CRs.length +  "CRs data ...");
 		SharedObjs.getCrsList().clear();
 		
 		// Manage CR
+		int crsCount = 0;
 		for (String crKey : CRs)
 		{
 			crKey = trimCR(crKey);
@@ -685,6 +686,8 @@ public class CrsManagerPane extends JPanel
 			}
 			
 			CrItem crItem = jira.getCrData(crKey);
+			++crsCount;
+			addLogLine(crsCount + " - " + crKey + " - got it");
 			
 			if (crItem != null)
 			{

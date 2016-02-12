@@ -325,7 +325,7 @@ public class MainParser
 			totalTetherTime = totalTetherTime + w.getDuration();
 		}
 		
-		if (100.0 * totalTetherTime / longerDischarge.getDuration() > 10.0)
+		if (100.0 * totalTetherTime / longerDischarge.getDuration() > 11.0)
 		{
 			System.out.println("Tethering case: TRUE");
 			return true;
@@ -388,7 +388,7 @@ public class MainParser
 	{
 		DecimalFormat df = new DecimalFormat("##.##");
 		df.setRoundingMode(RoundingMode.DOWN);
-		return df.format(100.0 * totalTetherTime / (totalLogTime));
+		return df.format(100.0 * totalTetherTime / (longerDischarge.getDuration()));
 	}
 	
 	public LogState getLongerDischarge()

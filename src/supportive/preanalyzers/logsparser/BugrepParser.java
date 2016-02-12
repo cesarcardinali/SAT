@@ -611,6 +611,7 @@ public class BugrepParser
 		if (javaWLs.size() > 0 && wakelocksComment.contains("WakeLocks")  && javaWLs.get(0).getDuration() > getTimeOnBat() * threashold)
 		{
 			wakelocksComment += "{panel:title=*Bugreport Java wake locks:*|titleBGColor=#E9F2FF}\\n";
+			
 			if (kernelWLs.get(0).getName().contains("Service.WakeLocks"))
 			{
 				// TODO Probably the main issue is item 0

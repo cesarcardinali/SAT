@@ -322,7 +322,7 @@ public class BtdParser
 		System.out.println("Checking for tethering resolution:\nTotal on battery time: " + DateTimeOperator.getTimeStringFromMillis(realTimeOnBatt)
 		                   + "\nTotal tethering time: " + DateTimeOperator.getTimeStringFromMillis(tetheringTime) + "\nProportion: "
 		                   + formatNumber((float) (100.0 * tetheringTime / realTimeOnBatt)) + "%");
-		if (tetheringTime >= realTimeOnBatt * 0.10)
+		if (tetheringTime >= realTimeOnBatt * 0.11)
 			return true;
 		else
 			return false;

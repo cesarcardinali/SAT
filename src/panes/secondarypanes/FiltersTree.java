@@ -9,8 +9,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import objects.CustomFilterItem;
+import style.ColorPrinter;
 import style.LabelTreeNodeRenderer;
-import supportive.ColorPrinter;
 import core.Logger;
 import core.SharedObjs;
 import filters.Alarm;

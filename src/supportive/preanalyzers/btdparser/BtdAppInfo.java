@@ -1,5 +1,7 @@
 package supportive.preanalyzers.btdparser;
 
+import core.Logger;
+
 
 public class BtdAppInfo
 {
