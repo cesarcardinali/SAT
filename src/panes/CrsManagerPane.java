@@ -439,6 +439,10 @@ public class CrsManagerPane extends JPanel
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				if (SharedObjs.getClosedList() == null || SharedObjs.getOpenedList() == null)
+				{
+					JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "Error: The lists does not exist");
+				}
 				SharedObjs.getClosedList().setVisible(true);
 				SharedObjs.getOpenedList().setVisible(true);
 			}

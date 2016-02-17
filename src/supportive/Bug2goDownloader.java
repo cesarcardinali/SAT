@@ -478,9 +478,15 @@ public class Bug2goDownloader implements Runnable
 					}
 				}
 				
+				if (SharedObjs.getClosedList() == null || SharedObjs.getOpenedList() == null)
+				{
+					JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "Error: The lists does not exist");
+				}
 				SharedObjs.getClosedList().setVisible(true);
 				SharedObjs.getOpenedList().setVisible(true);
 			}
+			
+			SharedObjs.crsManagerPane.addLogLine("All done!");
 		}
 		
 		SharedObjs.crsManagerPane.enableOptionsAndBtns();
