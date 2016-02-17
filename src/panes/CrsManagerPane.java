@@ -67,23 +67,25 @@ public class CrsManagerPane extends JPanel
 	/**
 	 * Global Variables
 	 */
-	private JTextArea  textDownload;
-	private JTextField textPath;
-	private JTextPane  textLog;
-	private JTextPane  textPane;
-	private JCheckBox  chckbxAssign;
-	private JCheckBox  chckbxLabels;
-	private String     CRs[];
-	private String     labels[];
-	private JTextField textLabel;
-	private int        errors;
-	private JButton    btnDownload;
-	private JCheckBox  chckbxUnassign;
-	private JCheckBox  chckbxRemLabels;
-	private JCheckBox  chckbxDownload;
-	private JCheckBox  chckbxUnzip;
-	private JCheckBox  chckbxAnalyze;
-	private JCheckBox  chckbxCloseAsOld;
+	private JTextArea         textDownload;
+	private JTextField        textPath;
+	private JTextPane         textLog;
+	private JTextPane         textPane;
+	private JCheckBox         chckbxAssign;
+	private JCheckBox         chckbxLabels;
+	private String            CRs[];
+	private String            labels[];
+	private JTextField        textLabel;
+	private int               errors;
+	private JButton           btnDownload;
+	private JCheckBox         chckbxUnassign;
+	private JCheckBox         chckbxRemLabels;
+	private JCheckBox         chckbxDownload;
+	private JCheckBox         chckbxUnzip;
+	private JCheckBox         chckbxAnalyze;
+	private JCheckBox         chckbxCloseAsOld;
+	private JCheckBox         chckbxIgnoreAnalyzed;
+	private ArrayList<CrItem> ignoredList;
 	
 	/**
 	 * Create the panel.
@@ -198,9 +200,9 @@ public class CrsManagerPane extends JPanel
 		contentPane.add(panel_1, gbc_panel_1);
 		GridBagLayout gbl_panel_1 = new GridBagLayout();
 		gbl_panel_1.columnWidths = new int[] {0};
-		gbl_panel_1.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel_1.columnWeights = new double[] {0.0, 0.0, 1.0};
-		gbl_panel_1.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+		gbl_panel_1.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel_1.columnWeights = new double[] {0.0, 1.0};
+		gbl_panel_1.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		panel_1.setLayout(gbl_panel_1);
 		
 		JLabel label = new JLabel("Action");
@@ -208,15 +210,16 @@ public class CrsManagerPane extends JPanel
 		label.setFont(new Font("Tahoma", Font.BOLD, 18));
 		GridBagConstraints gbc_label = new GridBagConstraints();
 		gbc_label.fill = GridBagConstraints.BOTH;
-		gbc_label.gridwidth = 3;
+		gbc_label.gridwidth = 2;
 		gbc_label.insets = new Insets(0, 0, 5, 0);
 		gbc_label.gridx = 0;
 		gbc_label.gridy = 0;
 		panel_1.add(label, gbc_label);
 		
-		chckbxAssign = new JCheckBox("");
-		chckbxAssign.setHorizontalAlignment(SwingConstants.CENTER);
+		chckbxAssign = new JCheckBox("Assign CRs");
+		chckbxAssign.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_chckbxAssign = new GridBagConstraints();
+		gbc_chckbxAssign.anchor = GridBagConstraints.WEST;
 		gbc_chckbxAssign.fill = GridBagConstraints.BOTH;
 		gbc_chckbxAssign.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxAssign.gridx = 0;
@@ -225,18 +228,7 @@ public class CrsManagerPane extends JPanel
 		chckbxAssign.setMargin(new Insets(0, 2, 0, 2));
 		chckbxAssign.setMinimumSize(new Dimension(15, 20));
 		
-		JLabel lblAssignCrs = new JLabel("Assign CRs");
-		lblAssignCrs.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_lblAssignCrs = new GridBagConstraints();
-		gbc_lblAssignCrs.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblAssignCrs.insets = new Insets(0, 0, 5, 0);
-		gbc_lblAssignCrs.anchor = GridBagConstraints.WEST;
-		gbc_lblAssignCrs.gridwidth = 2;
-		gbc_lblAssignCrs.gridx = 1;
-		gbc_lblAssignCrs.gridy = 1;
-		panel_1.add(lblAssignCrs, gbc_lblAssignCrs);
-		
-		chckbxUnassign = new JCheckBox("");
+		chckbxUnassign = new JCheckBox("Unassign CRs");
 		GridBagConstraints gbc_chckbxUnassign = new GridBagConstraints();
 		gbc_chckbxUnassign.fill = GridBagConstraints.BOTH;
 		gbc_chckbxUnassign.insets = new Insets(0, 0, 5, 5);
@@ -268,24 +260,16 @@ public class CrsManagerPane extends JPanel
 			}
 		});
 		
-		JLabel lblUnassign = new JLabel("Unassign CRs");
-		GridBagConstraints gbc_lblUnassign = new GridBagConstraints();
-		gbc_lblUnassign.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblUnassign.insets = new Insets(0, 0, 5, 5);
-		gbc_lblUnassign.gridx = 1;
-		gbc_lblUnassign.gridy = 2;
-		panel_1.add(lblUnassign, gbc_lblUnassign);
-		
 		JSeparator separator = new JSeparator();
 		GridBagConstraints gbc_separator = new GridBagConstraints();
 		gbc_separator.insets = new Insets(0, 5, 5, 0);
 		gbc_separator.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator.gridwidth = 3;
+		gbc_separator.gridwidth = 2;
 		gbc_separator.gridx = 0;
 		gbc_separator.gridy = 3;
 		panel_1.add(separator, gbc_separator);
 		
-		chckbxLabels = new JCheckBox("");
+		chckbxLabels = new JCheckBox("Add labels");
 		GridBagConstraints gbc_chckbxLabels = new GridBagConstraints();
 		gbc_chckbxLabels.fill = GridBagConstraints.BOTH;
 		gbc_chckbxLabels.insets = new Insets(0, 0, 5, 5);
@@ -295,30 +279,20 @@ public class CrsManagerPane extends JPanel
 		chckbxLabels.setMargin(new Insets(0, 2, 0, 2));
 		chckbxLabels.setMinimumSize(new Dimension(61, 15));
 		
-		JLabel lblAddLabels = new JLabel("Add labels");
-		lblAddLabels.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_lblAddLabels = new GridBagConstraints();
-		gbc_lblAddLabels.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblAddLabels.insets = new Insets(0, 0, 5, 5);
-		gbc_lblAddLabels.anchor = GridBagConstraints.WEST;
-		gbc_lblAddLabels.gridx = 1;
-		gbc_lblAddLabels.gridy = 4;
-		panel_1.add(lblAddLabels, gbc_lblAddLabels);
-		
 		textLabel = new JTextField();
 		textLabel.setPreferredSize(new Dimension(150, 20));
 		GridBagConstraints gbc_textLabel = new GridBagConstraints();
 		gbc_textLabel.gridheight = 2;
 		gbc_textLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textLabel.insets = new Insets(0, 5, 5, 0);
-		gbc_textLabel.gridx = 2;
+		gbc_textLabel.gridx = 1;
 		gbc_textLabel.gridy = 4;
 		panel_1.add(textLabel, gbc_textLabel);
 		textLabel.setText("ll_prodteam_analyzed");
 		textLabel.setColumns(10);
 		textLabel.setBorder(new LineBorder(SystemColor.activeCaption));
 		
-		chckbxRemLabels = new JCheckBox("");
+		chckbxRemLabels = new JCheckBox("Remove labels");
 		GridBagConstraints gbc_chckbxRemLabels = new GridBagConstraints();
 		gbc_chckbxRemLabels.fill = GridBagConstraints.BOTH;
 		gbc_chckbxRemLabels.insets = new Insets(0, 0, 5, 5);
@@ -350,25 +324,16 @@ public class CrsManagerPane extends JPanel
 			}
 		});
 		
-		JLabel lblRemLabels = new JLabel("Remove labels");
-		GridBagConstraints gbc_lblRemLabels = new GridBagConstraints();
-		gbc_lblRemLabels.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblRemLabels.anchor = GridBagConstraints.WEST;
-		gbc_lblRemLabels.insets = new Insets(0, 0, 5, 5);
-		gbc_lblRemLabels.gridx = 1;
-		gbc_lblRemLabels.gridy = 5;
-		panel_1.add(lblRemLabels, gbc_lblRemLabels);
-		
 		JSeparator separator_1 = new JSeparator();
 		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
 		gbc_separator_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_separator_1.gridwidth = 3;
+		gbc_separator_1.gridwidth = 2;
 		gbc_separator_1.insets = new Insets(0, 5, 5, 0);
 		gbc_separator_1.gridx = 0;
 		gbc_separator_1.gridy = 6;
 		panel_1.add(separator_1, gbc_separator_1);
 		
-		chckbxDownload = new JCheckBox("");
+		chckbxDownload = new JCheckBox("Download");
 		chckbxDownload.setSelected(true);
 		GridBagConstraints gbc_chckbxDownload = new GridBagConstraints();
 		gbc_chckbxDownload.fill = GridBagConstraints.BOTH;
@@ -376,20 +341,11 @@ public class CrsManagerPane extends JPanel
 		gbc_chckbxDownload.gridx = 0;
 		gbc_chckbxDownload.gridy = 7;
 		panel_1.add(chckbxDownload, gbc_chckbxDownload);
-		
-		JLabel lblDownload = new JLabel("Download");
-		GridBagConstraints gbc_lblDownload = new GridBagConstraints();
-		gbc_lblDownload.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblDownload.insets = new Insets(0, 0, 5, 5);
-		gbc_lblDownload.anchor = GridBagConstraints.WEST;
-		gbc_lblDownload.gridx = 1;
-		gbc_lblDownload.gridy = 7;
-		panel_1.add(lblDownload, gbc_lblDownload);
 		textPath = new JTextField();
 		GridBagConstraints gbc_textPath = new GridBagConstraints();
 		gbc_textPath.insets = new Insets(0, 5, 5, 0);
 		gbc_textPath.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textPath.gridx = 2;
+		gbc_textPath.gridx = 1;
 		gbc_textPath.gridy = 7;
 		panel_1.add(textPath, gbc_textPath);
 		textPath.setToolTipText("Path to stock and read your CRs");
@@ -398,7 +354,7 @@ public class CrsManagerPane extends JPanel
 		textPath.setMinimumSize(new Dimension(130, 20));
 		textPath.setPreferredSize(new Dimension(150, 20));
 		
-		chckbxUnzip = new JCheckBox("");
+		chckbxUnzip = new JCheckBox("Unzip downloaded CRs");
 		chckbxUnzip.setSelected(true);
 		GridBagConstraints gbc_chckbxUnzip = new GridBagConstraints();
 		gbc_chckbxUnzip.fill = GridBagConstraints.BOTH;
@@ -407,17 +363,7 @@ public class CrsManagerPane extends JPanel
 		gbc_chckbxUnzip.gridy = 8;
 		panel_1.add(chckbxUnzip, gbc_chckbxUnzip);
 		
-		JLabel lblUnzipDownloadedCrs = new JLabel("Unzip downloaded CRs");
-		GridBagConstraints gbc_lblUnzipDownloadedCrs = new GridBagConstraints();
-		gbc_lblUnzipDownloadedCrs.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblUnzipDownloadedCrs.anchor = GridBagConstraints.WEST;
-		gbc_lblUnzipDownloadedCrs.gridwidth = 2;
-		gbc_lblUnzipDownloadedCrs.insets = new Insets(0, 0, 5, 0);
-		gbc_lblUnzipDownloadedCrs.gridx = 1;
-		gbc_lblUnzipDownloadedCrs.gridy = 8;
-		panel_1.add(lblUnzipDownloadedCrs, gbc_lblUnzipDownloadedCrs);
-		
-		chckbxAnalyze = new JCheckBox("");
+		chckbxAnalyze = new JCheckBox("Analyze downloaded CRs");
 		chckbxAnalyze.setSelected(true);
 		GridBagConstraints gbc_chckbxAnalyze = new GridBagConstraints();
 		gbc_chckbxAnalyze.fill = GridBagConstraints.BOTH;
@@ -426,17 +372,7 @@ public class CrsManagerPane extends JPanel
 		gbc_chckbxAnalyze.gridy = 9;
 		panel_1.add(chckbxAnalyze, gbc_chckbxAnalyze);
 		
-		JLabel lblAnalyzeDownloadedCrs = new JLabel("Analyze downloaded CRs");
-		GridBagConstraints gbc_lblAnalyzeDownloadedCrs = new GridBagConstraints();
-		gbc_lblAnalyzeDownloadedCrs.fill = GridBagConstraints.BOTH;
-		gbc_lblAnalyzeDownloadedCrs.insets = new Insets(0, 0, 5, 0);
-		gbc_lblAnalyzeDownloadedCrs.anchor = GridBagConstraints.WEST;
-		gbc_lblAnalyzeDownloadedCrs.gridwidth = 2;
-		gbc_lblAnalyzeDownloadedCrs.gridx = 1;
-		gbc_lblAnalyzeDownloadedCrs.gridy = 9;
-		panel_1.add(lblAnalyzeDownloadedCrs, gbc_lblAnalyzeDownloadedCrs);
-		
-		chckbxCloseAsOld = new JCheckBox("");
+		chckbxCloseAsOld = new JCheckBox("Close CRs as Old");
 		chckbxCloseAsOld.addChangeListener(new ChangeListener()
 		{
 			public void stateChanged(ChangeEvent e)
@@ -454,22 +390,30 @@ public class CrsManagerPane extends JPanel
 		gbc_chckbxCloseAsOld.gridy = 10;
 		panel_1.add(chckbxCloseAsOld, gbc_chckbxCloseAsOld);
 		
-		JLabel lblCloseCrsAs = new JLabel("Close CRs as Old");
-		GridBagConstraints gbc_lblCloseCrsAs = new GridBagConstraints();
-		gbc_lblCloseCrsAs.fill = GridBagConstraints.BOTH;
-		gbc_lblCloseCrsAs.anchor = GridBagConstraints.WEST;
-		gbc_lblCloseCrsAs.gridwidth = 2;
-		gbc_lblCloseCrsAs.insets = new Insets(0, 0, 5, 0);
-		gbc_lblCloseCrsAs.gridx = 1;
-		gbc_lblCloseCrsAs.gridy = 10;
-		panel_1.add(lblCloseCrsAs, gbc_lblCloseCrsAs);
+		JSeparator separator_2 = new JSeparator();
+		GridBagConstraints gbc_separator_2 = new GridBagConstraints();
+		gbc_separator_2.fill = GridBagConstraints.HORIZONTAL;
+		gbc_separator_2.gridwidth = 2;
+		gbc_separator_2.insets = new Insets(0, 0, 5, 0);
+		gbc_separator_2.gridx = 0;
+		gbc_separator_2.gridy = 11;
+		panel_1.add(separator_2, gbc_separator_2);
+		
+		chckbxIgnoreAnalyzed = new JCheckBox("Ignore Analyzed CRs");
+		chckbxIgnoreAnalyzed.setHorizontalAlignment(SwingConstants.LEFT);
+		GridBagConstraints gbc_chckbxIgnoreAnalyzed = new GridBagConstraints();
+		gbc_chckbxIgnoreAnalyzed.anchor = GridBagConstraints.WEST;
+		gbc_chckbxIgnoreAnalyzed.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxIgnoreAnalyzed.gridx = 0;
+		gbc_chckbxIgnoreAnalyzed.gridy = 12;
+		panel_1.add(chckbxIgnoreAnalyzed, gbc_chckbxIgnoreAnalyzed);
 		
 		btnDownload = new JButton("Exec!");
 		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
 		gbc_btnDownload.insets = new Insets(25, 0, 5, 0);
-		gbc_btnDownload.gridwidth = 3;
+		gbc_btnDownload.gridwidth = 2;
 		gbc_btnDownload.gridx = 0;
-		gbc_btnDownload.gridy = 11;
+		gbc_btnDownload.gridy = 13;
 		panel_1.add(btnDownload, gbc_btnDownload);
 		btnDownload.setToolTipText("Start to download the CRs on the list above");
 		btnDownload.addActionListener(new ActionListener()
@@ -487,9 +431,9 @@ public class CrsManagerPane extends JPanel
 		btnLists.setPreferredSize(new Dimension(113, 23));
 		GridBagConstraints gbc_btnLists = new GridBagConstraints();
 		gbc_btnLists.insets = new Insets(0, 0, 5, 0);
-		gbc_btnLists.gridwidth = 3;
+		gbc_btnLists.gridwidth = 2;
 		gbc_btnLists.gridx = 0;
-		gbc_btnLists.gridy = 12;
+		gbc_btnLists.gridy = 14;
 		panel_1.add(btnLists, gbc_btnLists);
 		btnLists.addActionListener(new ActionListener()
 		{
@@ -503,9 +447,9 @@ public class CrsManagerPane extends JPanel
 		
 		JButton btnOpenOnBrowser = new JButton("Open on Browser");
 		GridBagConstraints gbc_btnOpenOnBrowser = new GridBagConstraints();
-		gbc_btnOpenOnBrowser.gridwidth = 5;
+		gbc_btnOpenOnBrowser.gridwidth = 2;
 		gbc_btnOpenOnBrowser.gridx = 0;
-		gbc_btnOpenOnBrowser.gridy = 13;
+		gbc_btnOpenOnBrowser.gridy = 15;
 		panel_1.add(btnOpenOnBrowser, gbc_btnOpenOnBrowser);
 		btnOpenOnBrowser.setToolTipText("Open the CRs on the list above on Chrome");
 		btnOpenOnBrowser.addActionListener(new ActionListener()
@@ -671,11 +615,12 @@ public class CrsManagerPane extends JPanel
 			Logger.log(Logger.TAG_CRSMANAGER, "Label entered: " + s);
 		}
 		
-		SharedObjs.crsManagerPane.addLogLine("Acquiring " + CRs.length +  " CRs data ...");
+		SharedObjs.crsManagerPane.addLogLine("Acquiring " + CRs.length + " CRs data ...");
 		SharedObjs.getCrsList().clear();
 		
 		// Manage CR
 		int crsCount = 0;
+		ignoredList = new ArrayList<CrItem>();
 		for (String crKey : CRs)
 		{
 			crKey = trimCR(crKey);
@@ -687,10 +632,21 @@ public class CrsManagerPane extends JPanel
 			
 			CrItem crItem = jira.getCrData(crKey);
 			++crsCount;
-			addLogLine(crsCount + " - " + crKey + " - got it");
 			
 			if (crItem != null)
 			{
+				if (chckbxIgnoreAnalyzed.isSelected())
+				{
+					if (crItem.getLabels().contains("sat_pre_analyzed"))
+					{
+						addLogLine(crsCount + " - " + crKey + " - Ignored");
+						ignoredList.add(crItem);
+						continue;
+					}
+				}
+				
+				addLogLine(crsCount + " - " + crKey + " - got it");
+				
 				if (chckbxLabels.isSelected())
 				{
 					jira.assignIssue(crKey);
@@ -753,9 +709,16 @@ public class CrsManagerPane extends JPanel
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "There were errors during the b2g collection."
-				                                                         + "\nWe could not get CRs data from Jira."
-				                                                         + "\nYour pass or username may be wrong or " + "the CRs sent does not exist.");
+				if (ignoredList.size() == CRs.length)
+				{
+					JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "All the CRs in the list were ignored.");
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "There were errors during the b2g collection."
+					                                                         + "\nWe could not get CRs data from Jira."
+					                                                         + "\nYour pass or username may be wrong or " + "the CRs sent does not exist.");
+				}
 			}
 		
 		enableOptionsAndBtns();
@@ -891,7 +854,8 @@ public class CrsManagerPane extends JPanel
 							for (String crKey : CRs)
 							{
 								crKey = trimCR(crKey);
-								if (jira.addLabel(crKey, labels).contains("\"labels\":\"Field 'labels' cannot be set. It is not on the appropriate screen, or unknown"))
+								if (jira.addLabel(crKey, labels)
+								        .contains("\"labels\":\"Field 'labels' cannot be set. It is not on the appropriate screen, or unknown"))
 								{
 									jira.assignIssue(crKey);
 									jira.addLabel(crKey, labels);
@@ -935,7 +899,7 @@ public class CrsManagerPane extends JPanel
 						if (chckbxRemLabels.isSelected())
 						{
 							SharedObjs.crsManagerPane.addLogLine("Removing labels ...");
-
+							
 							// Get label list
 							labels = textLabel.getText().split(" ");
 							for (String s : labels)
@@ -946,7 +910,8 @@ public class CrsManagerPane extends JPanel
 							for (String crKey : CRs)
 							{
 								crKey = trimCR(crKey);
-								if (jira.removeLabel(crKey, labels).contains("\"labels\":\"Field 'labels' cannot be set. It is not on the appropriate screen, or unknown"))
+								if (jira.removeLabel(crKey, labels)
+								        .contains("\"labels\":\"Field 'labels' cannot be set. It is not on the appropriate screen, or unknown"))
 								{
 									jira.assignIssue(crKey);
 									jira.removeLabel(crKey, labels);
@@ -974,10 +939,10 @@ public class CrsManagerPane extends JPanel
 	{
 		btnDownload.setEnabled(true);
 		
-		if(btnDownload.isSelected())
+		if (btnDownload.isSelected())
 			chckbxAnalyze.setEnabled(true);
 		
-		if(chckbxAnalyze.isEnabled())
+		if (chckbxAnalyze.isEnabled())
 			chckbxUnzip.setEnabled(true);
 		
 		chckbxAssign.setEnabled(true);
@@ -1149,8 +1114,8 @@ public class CrsManagerPane extends JPanel
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "--- Initial line: " + sCurrentLine);
 				sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
-				//BATTRIAGE-212
-				if(sCurrentLine.indexOf("_") >= 0)
+				// BATTRIAGE-212
+				if (sCurrentLine.indexOf("_") >= 0)
 				{
 					sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("_"));
 				}
