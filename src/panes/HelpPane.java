@@ -304,7 +304,7 @@ public class HelpPane extends JFrame
 
     									doc.insertString(doc.getLength(), tab + "This tree contains all active filters. Filters can be activated/deactived on Manage Filters, located on Options Tab.\n", normal);
     									doc.insertString(doc.getLength(), tab + "Standard filters have specific icons and the custom filters is always a loupe icon.\n", normal);
-    									doc.insertString(doc.getLength(), tab + "Clicking on a filter will trigger its parser action. While running, filters name receive the tag 'Running'.\n", normal);
+    									doc.insertString(doc.getLength(), tab + "Clicking on a filter will trigger its parser action. While running, filters tagName receive the tag 'Running'.\n", normal);
     									doc.insertString(doc.getLength(), tab + "After parser proccess is finished the filter is tagged as 'Done' or 'Error'\n\n", normal);
     									doc.insertString(doc.getLength(), tab + "So, what all those tags means?\n", normal);
     									doc.insertString(doc.getLength(), tab + tab + "- Running:\tFilter is being applied, parsing logs and trying to get the info.\n", normal);

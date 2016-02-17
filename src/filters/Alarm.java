@@ -39,7 +39,7 @@ public class Alarm
 		
 		long now = System.currentTimeMillis();
 		String sCurrentLine; // Read line to be parsed
-		String file = ""; // File name to be parsed
+		String file = ""; // File tagName to be parsed
 		String panel = "{panel}\n"; // Panel tag
 		String regexAlarmLine = "([0-9]{2}-[0-9]{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]).*send.*\\*(.+)\\*:([a-z\\W_/$]*)([A-Z]+.+)\\}.*";
 		
@@ -102,7 +102,7 @@ public class Alarm
 					{
 						try
 						{
-							dateFormat = new SimpleDateFormat("MM-dd hh:mm:ss"); // Format date
+							dateFormat = new SimpleDateFormat("MM-dd HH:mm:ss"); // Format date
 							parsedDate = dateFormat.parse(matcherAlarmLine.group(1));
 						}
 						catch (Exception e)

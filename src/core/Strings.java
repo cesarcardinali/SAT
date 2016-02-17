@@ -25,7 +25,7 @@ public class Strings
 	/**
 	 * Get Strings located in messages_cfg.xml
 	 * 
-	 * @param name
+	 * @param tagName
 	 * @return
 	 */
 	public static String getMessageString(String name)
@@ -37,7 +37,7 @@ public class Strings
 	/**
 	 * Get Strings located in system_cfg.xml file
 	 * 
-	 * @param name
+	 * @param tagName
 	 * @return
 	 */
 	public static String getSystemString(String name)

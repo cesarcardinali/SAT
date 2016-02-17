@@ -210,7 +210,7 @@ public class ColorPrinter
 	static private long getTime(String line)
 	{
 		long time = 0L;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd hh:mm:ss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd HH:mm:ss");
 		
 		try
 		{

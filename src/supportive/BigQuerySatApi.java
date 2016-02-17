@@ -30,6 +30,13 @@ public class BigQuerySatApi
 	public static final String DEFAULT_JIRA_URL = "http://idart.mot.com/";
 	public static final String DEFAULT_BQ_URL   = "https://www.googleapis.com/bigquery/v2/projects/motorola.com:dogfood-analytics/queries";
 	
+	
+	public static void main(String args[])
+	{
+		BigQuerySatApi bq = new BigQuerySatApi(JiraUser.getUser(), JiraUser.getPass());
+	}
+	
+	
 	/**
 	 * Create a new instance of jira rest interface
 	 * 
@@ -49,9 +56,9 @@ public class BigQuerySatApi
 	public String authBQ()
 	{
 		
-		WebResource webResource = client.resource("https://accounts.google.com/o/oauth2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fbigquery&redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&response_type=code&client_id=407408718192.apps.googleusercontent.com&access_type=offline");
-//		webResource.header("Email", "cesarc@motorola.com");
-//		webResource.header("Passwd", JiraUser.getPass());
+		WebResource webResource = client.resource("https://accounts.google.com/o/oauth2/auth?redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&response_type=code&client_id=407408718192.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fbigquery&approval_prompt=force&access_type=offline");
+		// webResource.header("Email", "cesarc@motorola.com");
+		// webResource.header("Passwd", JiraUser.getPass());
 		String output;
 		String input = "Email=cesarc@motorola.com&Passwd=" + JiraUser.getPass();
 		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, input);

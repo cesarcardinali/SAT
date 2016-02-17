@@ -61,7 +61,7 @@ public class BtdAppInfo
 
 	public String toString()
 	{
-		return "[ name=\"" + name + "\", uid:\"" + uid + "\", cpuTime=" + deltaCpuTime + ", RX=" + deltaRx + ", TX=" + deltaTx + " ]";
+		return "[ tagName=\"" + name + "\", uid:\"" + uid + "\", cpuTime=" + deltaCpuTime + ", RX=" + deltaRx + ", TX=" + deltaTx + " ]";
 	}
 	
 	public String toJiraComment()

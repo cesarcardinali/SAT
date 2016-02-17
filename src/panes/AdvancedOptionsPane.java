@@ -150,7 +150,7 @@ public class AdvancedOptionsPane extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				String pName = JOptionPane.showInputDialog("Type the product name");
+				String pName = JOptionPane.showInputDialog("Type the product tagName");
 				String dDup = JOptionPane.showInputDialog("Type the CR to dup for");
 				dupMap.put(pName, dDup);
 				setData();
@@ -222,7 +222,7 @@ public class AdvancedOptionsPane extends JFrame
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				String pName = JOptionPane.showInputDialog("Type the product name");
+				String pName = JOptionPane.showInputDialog("Type the product tagName");
 				String bCap = JOptionPane.showInputDialog("Type the battery capacity");
 				bat_capMap.put(pName, bCap);
 				setData();

@@ -183,9 +183,9 @@ public class CrChecker
 						SharedObjs.satDB.insertAnalyzedCR(cr);
 					}
 				
-				SharedObjs.crsManagerPane.addLogLine("Wakelocks detected. Needs manual analysis.");
+				SharedObjs.crsManagerPane.addLogLine("SystemPM detected. Needs manual analysis.");
 				
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath() + ". Wakelocks detected. Needs manual analysis.");
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath() + ". SystemPM detected. Needs manual analysis.");
 				
 				return false;
 			}
@@ -979,7 +979,7 @@ public class CrChecker
 			btdWake = true;
 		}
 		
-		if(bugrepParsed)
+		if (bugrepParsed)
 		{
 			boolean bugrepWakelocksDetected = bugrepParser.checkIfWakelocks(btdWake);
 			
@@ -997,54 +997,41 @@ public class CrChecker
 					
 					if (wakelocksComment.contains("Bugreport Java wake locks"))
 					{
-						for (int i = 0; i < 2; i++)
+						boolean dupped = false;
+						
+						for (int i = 0; i < 4; i++)
 						{
-							BugRepJavaWL wl = javaWkls.get(i);
-							String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getProcessName() + "\\\" AND summary ~ \\\""
-							                               + wl.getName().replace("*", "") + "\\\" AND labels = cd_auto");
-							JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
-							
-							if (jqr.getResultCount() == 1)
+							if (javaWkls.get(i).getDuration() > 60 * 60 * 1000)
 							{
-								if (dupCRs.length() > 5)
+								BugRepJavaWL wl = javaWkls.get(i);
+								String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getProcessName() + "\\\" AND summary ~ \\\""
+								                               + wl.getTagName().replace("*", "") + "\\\" AND labels = cd_auto");
+								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
+								
+								if (jqr.getResultCount() == 1)
 								{
-									dupCRs += ", " + jqr.getItems().get(0).getKey();
-									dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
+									if (dupCRs.length() > 5)
+									{
+										dupCRs += ", " + jqr.getItems().get(0).getKey();
+										dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
+									}
+									else
+									{
+										dupCRs = jqr.getItems().get(0).getKey();
+										dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
+									}
+
+									dupped = true;
 								}
-								else
+								
+								if(i == 0 && dupped == false)
 								{
-									dupCRs = jqr.getItems().get(0).getKey();
-									dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
+									
+									break;
 								}
 							}
 						}
 					}
-					
-					// TODO Implement a better kernel tracker before dup
-					/*
-					if (wakelocksComment.contains("Bugreport Kernel wake locks"))
-					{
-						for (int i = 0; i < 2; i++)
-						{
-							BugRepKernelWL wl = kernelWkls.get(i);
-							String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getName() + "\\\"");
-							JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
-							
-							if (jqr.getResultCount() == 1)
-							{
-								if (dupCRs.length() > 5)
-								{
-									dupCRs += ", " + jqr.getItems().get(0).getKey();
-									dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
-								}
-								else
-								{
-									dupCRs = jqr.getItems().get(0).getKey();
-									dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
-								}
-							}
-						}
-					}*/
 					
 					if (dupCRs.length() > 5)
 					{

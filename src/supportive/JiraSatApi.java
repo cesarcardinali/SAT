@@ -181,7 +181,7 @@ public class JiraSatApi
 	 * Add a label
 	 * 
 	 * @param key Jira issue key
-	 * @param label Label name
+	 * @param label Label tagName
 	 * @return Server response
 	 */
 	public String addLabel(String key, String label)
@@ -261,7 +261,7 @@ public class JiraSatApi
 	 * Remove a label
 	 * 
 	 * @param key Jira issue key
-	 * @param label Label name
+	 * @param label Label tagName
 	 * @return Server response
 	 */
 	public String removeLabel(String key, String label)
@@ -661,6 +661,7 @@ public class JiraSatApi
 		cr.setJiraID(jsonObj.get("key").toString()); // Get CR key
 		
 		aux = (JSONObject) fields.get("status"); // Get CR status
+		System.out.println(fields);
 		cr.setStatus(aux.get("name").toString());
 		if (cr.getStatus().equals("New"))
 		{

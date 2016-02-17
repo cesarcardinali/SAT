@@ -463,7 +463,7 @@ public class OptionsPane extends JPanel
 		JButton button_12 = new JButton("?");
 		button_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				warning.setText("#pname#: Process name\n#avgconsume#: Average process CPU consumption\n"
+				warning.setText("#pname#: Process tagName\n#avgconsume#: Average process CPU consumption\n"
 								+ "#scoffconsume#: Average consumption while screen off\n"
 								+ "#sconconsume#: Average consumption while screen on\n"
 								+ "#logfull#: Show complete log results\n#logoff#: Log lines while screen off\n"
@@ -529,7 +529,7 @@ public class OptionsPane extends JPanel
 		gbc_separator.gridy = 4;
 		panel_2.add(separator, gbc_separator);
 		
-		JLabel label_22 = new JLabel("Wakelocks:");
+		JLabel label_22 = new JLabel("SystemPM:");
 		label_22.setVerticalAlignment(SwingConstants.BOTTOM);
 		label_22.setForeground(Color.DARK_GRAY);
 		GridBagConstraints gbc_label_22 = new GridBagConstraints();
@@ -562,7 +562,7 @@ public class OptionsPane extends JPanel
 		JButton button_15 = new JButton("?");
 		button_15.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				warning.setText("Edit headers from \"Wakelocks\" filter result");
+				warning.setText("Edit headers from \"SystemPM\" filter result");
 				warning.setVisible(true);
 			}
 		});
@@ -576,7 +576,7 @@ public class OptionsPane extends JPanel
 		panel_2.add(button_15, gbc_button_15);
 		button_15.setMargin(new Insets(2, 8, 2, 8));
 		
-		JLabel label_24 = new JLabel("Kernel Wakelocks:");
+		JLabel label_24 = new JLabel("Kernel SystemPM:");
 		GridBagConstraints gbc_label_24 = new GridBagConstraints();
 		gbc_label_24.anchor = GridBagConstraints.EAST;
 		gbc_label_24.insets = new Insets(0, 0, 5, 5);
@@ -594,7 +594,7 @@ public class OptionsPane extends JPanel
 		panel_2.add(textKernelWake, gbc_textKernelWake);
 		textKernelWake.setColumns(10);
 		
-		JLabel label_25 = new JLabel("Java Wakelocks:");
+		JLabel label_25 = new JLabel("Java SystemPM:");
 		GridBagConstraints gbc_label_25 = new GridBagConstraints();
 		gbc_label_25.anchor = GridBagConstraints.EAST;
 		gbc_label_25.insets = new Insets(0, 0, 5, 5);
@@ -656,7 +656,7 @@ public class OptionsPane extends JPanel
 		JButton button_18 = new JButton("?");
 		button_18.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				warning.setText("#pname#*: Process name\n#tag#: Process tag held\n#duration#: Wakelock duration\n#log#: Android logs");
+				warning.setText("#pname#*: Process tagName\n#tag#: Process tag held\n#duration#: Wakelock duration\n#log#: Android logs");
 				warning.setVisible(true);
 			}
 		});
@@ -732,7 +732,7 @@ public class OptionsPane extends JPanel
 		JButton button_20 = new JButton("?");
 		button_20.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				warning.setText("#pname#*: Process name\n#log#: Android logs");
+				warning.setText("#pname#*: Process tagName\n#log#: Android logs");
 				warning.setVisible(true);
 			}
 		});

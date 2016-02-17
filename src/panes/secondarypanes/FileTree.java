@@ -296,9 +296,9 @@ public class FileTree extends JPanel
 					if (oldName.getName().contains("."))
 						extension = oldName.getName().split("\\.")[1]; // aaaa.zip --> zip else Selected item doesn't have an extension
 						
-					// Asking user for a new name
-					String newNameString = JOptionPane.showInputDialog(null, "Insert a new name for "
-					                                                         + "the file:", "New name",
+					// Asking user for a new tagName
+					String newNameString = JOptionPane.showInputDialog(null, "Insert a new tagName for "
+					                                                         + "the file:", "New tagName",
 					                                                   JOptionPane.PLAIN_MESSAGE);
 					if (newNameString != null)
 					{ // newNameString == null --> user cancelled dialog

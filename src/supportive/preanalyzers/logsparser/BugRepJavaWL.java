@@ -8,7 +8,7 @@ import supportive.DateTimeOperator;
 
 public class BugRepJavaWL
 {
-	String name;
+	String tagName;
 	String processName;
 	String uid;
 	long   duration;
@@ -16,7 +16,7 @@ public class BugRepJavaWL
 	
 	public BugRepJavaWL(String uid, String name, String duration, String timesAcquired) throws ParseException
 	{
-		this.name = name.replaceAll(" +$", "");
+		this.tagName = name.replaceAll(" +$", "");
 		this.uid = uid;
 		this.duration = DateTimeOperator.getMillisFromBtdStringDate(duration);
 		this.timesAcquired = Integer.parseInt(timesAcquired);
@@ -25,26 +25,26 @@ public class BugRepJavaWL
 	
 	public String toString()
 	{
-		return "[" + "name=" + name + ", uid=" + uid + ", process=" + processName + ", duration=" + duration
+		return "[" + "tagName=" + tagName + ", uid=" + uid + ", process=" + processName + ", duration=" + duration
 		       + "ms > " + DateTimeOperator.getTimeStringFromMillis(duration) + ", timesAcquired="
 		       + timesAcquired + "]";
 	}
 	
 	public String toJiraComment()
 	{
-		return "|*Tag*|" + name + "|\\n|UID|" + uid + "|\\n|Process|" + processName + "|\\n|Duration|"
+		return "|*Tag*|" + tagName + "|\\n|UID|" + uid + "|\\n|Process|" + processName + "|\\n|Duration|"
 		       + DateTimeOperator.getTimeStringFromMillis(duration) + " (" + duration
 		       + " ms)|\\n|Times Acquired|" + timesAcquired + "|\\n";
 	}
 	
-	public String getName()
+	public String getTagName()
 	{
-		return name;
+		return tagName;
 	}
 	
 	public void setName(String name)
 	{
-		this.name = name;
+		this.tagName = name;
 	}
 	
 	public String getUid()

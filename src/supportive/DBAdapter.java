@@ -122,7 +122,7 @@ public class DBAdapter
 		SimpleDateFormat formater = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
 		
 		fitem.setId(rs.getInt("f_id"));
-		fitem.setName(rs.getString("name"));
+		fitem.setName(rs.getString("Name"));
 		fitem.setHeader(rs.getString("header"));
 		fitem.setRegex(rs.getString("regex"));
 		fitem.setOwner(rs.getString("user_key"));
@@ -200,7 +200,7 @@ public class DBAdapter
 			while (rs.next())
 			{
 				
-				String userid = rs.getString("name");
+				String userid = rs.getString("Name");
 				
 				System.out.println("userid : " + userid);
 				
@@ -256,7 +256,7 @@ public class DBAdapter
 	 * Search and returns an extended ArrayList customized for Filters containing all Filter Items that user is the owner. <b>Uses
 	 * SharedObjs.getUser() to determine username</b>.
 	 * 
-	 * @return An ArrayList containing all Filter Items under the user name.
+	 * @return An ArrayList containing all Filter Items under the user tagName.
 	 */
 	public CustomFiltersList myFilters()
 	{
@@ -387,15 +387,15 @@ public class DBAdapter
 	}
 	
 	/**
-	 * Check if the Filter exists under the owner name
+	 * Check if the Filter exists under the owner tagName
 	 * 
-	 * @param filterName The name of desired filter
-	 * @param userName The name of owner of the filter
+	 * @param filterName The tagName of desired filter
+	 * @param userName The tagName of owner of the filter
 	 * @return [True] if found a result [False] if not
 	 */
 	public int existsFilterWithOwner(String filterName, String userName)
 	{
-		String selectSQL = "SELECT f_id FROM Filters WHERE name = '" + filterName + "' AND user_key = '"
+		String selectSQL = "SELECT f_id FROM Filters WHERE tagName = '" + filterName + "' AND user_key = '"
 		                   + userName + "';";
 		int id = -1;
 		
@@ -505,22 +505,22 @@ public class DBAdapter
 	}
 	
 	/**
-	 * This method will update filters only under the name of the user. If the user is not the owner he won't be able to edit it. <b>Uses
+	 * This method will update filters only under the tagName of the user. If the user is not the owner he won't be able to edit it. <b>Uses
 	 * SharedObjs.getUser() to determine username.</b> Also, this method attempts to update every field on Filters table whether it has
 	 * changed or not.
 	 * 
-	 * @param oldFilterName The name of the filter that should be updated
+	 * @param oldFilterName The tagName of the filter that should be updated
 	 * @param editedFilter New Filter item containing all fields with updated values
-	 * @return [0] if update failed (User is not the owner or filter name does not exist or a field has an invalid value) [1] if update
+	 * @return [0] if update failed (User is not the owner or filter tagName does not exist or a field has an invalid value) [1] if update
 	 *         succeeded.
 	 */
 	public int updateFilter(CustomFilterItem editedFilter)
 	{
 		// Visual query example for reference:
-		// UPDATE Filters SET name = 'Test_Filter', header = '- TestHeader', regex = '[A-z]', w_main = 1, w_syst = 1, w_krnl = 0, w_radio =
-		// 1, w_bugr = 0, w_rout = 1, shared = 1, active = 0, user_key = 'testuser' WHERE name = 'Test_Adapter' AND user_key = 'testuser';
+		// UPDATE Filters SET tagName = 'Test_Filter', header = '- TestHeader', regex = '[A-z]', w_main = 1, w_syst = 1, w_krnl = 0, w_radio =
+		// 1, w_bugr = 0, w_rout = 1, shared = 1, active = 0, user_key = 'testuser' WHERE tagName = 'Test_Adapter' AND user_key = 'testuser';
 		
-		String updateSQL = "UPDATE Filters SET name = '" + editedFilter.getName() + "', header = '"
+		String updateSQL = "UPDATE Filters SET tagName = '" + editedFilter.getName() + "', header = '"
 		                   + editedFilter.getHeader() + "', regex = '" + editedFilter.getRegex()
 		                   + "', w_main = " + boolToByte(editedFilter.isMain()) + ", w_syst = "
 		                   + boolToByte(editedFilter.isSystem()) + ", w_krnl = "
@@ -633,13 +633,13 @@ public class DBAdapter
 	 * Delete filter query adapter. Only will work if the owner of the filter is the same user trying to delete it. <b>Uses
 	 * SharedObjs.getUser() to determine username.</b>
 	 * 
-	 * @param filterName The filter name that will be deleted
-	 * @return [0] if delete failed (User is not the owner or filter name does not exist) [1] if delete succeeded.
+	 * @param filterName The filter tagName that will be deleted
+	 * @return [0] if delete failed (User is not the owner or filter tagName does not exist) [1] if delete succeeded.
 	 */
 	public int deleteFilter(CustomFilterItem filter)
 	{
 		// Visual query example for reference:
-		// DELETE from Filters where name = 'Test_Filter';
+		// DELETE from Filters where tagName = 'Test_Filter';
 		String deleteSQL = "DELETE from Filters where f_id = " + filter.getId() + ";";
 		
 		int deleteDone = 0;

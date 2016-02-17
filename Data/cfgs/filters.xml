@@ -3,71 +3,7 @@
   <!-- User defined filters: !-->
   <myFilters>
     <item_1>
-      <name>DIAG_WS Wakeups</name>
-      <regex>.*active wakeup source: DIAG_WS.*</regex>
-      <header>- DIAG_WS wakeups found in kernel log:</header>
-      <owner>cesarc</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>true</kernel>
-      <radio>false</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2015-09-24 17:21:11</last_update>
-    </item_1>
-    <item_2>
-      <name>All Errors</name>
-      <regex>.*error.*</regex>
-      <header />
-      <owner>cesarc</owner>
-      <main>true</main>
-      <system>true</system>
-      <kernel>true</kernel>
-      <radio>false</radio>
-      <bugreport>true</bugreport>
-      <routput>false</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2016-01-14 02:07:08</last_update>
-    </item_2>
-    <item_3>
-      <name>BR-Alarm</name>
-      <regex>.*AlarmManager: send.*</regex>
-      <header>Alarms info</header>
-      <owner>cesarc</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>true</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2016-01-14 02:07:38</last_update>
-    </item_3>
-    <item_4>
-      <name>BR-Temp</name>
-      <regex>.*POWER_SUPPLY_TEMP.*</regex>
-      <header>Temperature data</header>
-      <owner>cesarc</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>true</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2016-01-14 01:51:55</last_update>
-    </item_4>
-    <item_5>
-      <name>BR-Network</name>
+      <tagName>null</tagName>
       <regex>.*DATA_REGISTRATION_.*</regex>
       <header>Data registration info:</header>
       <owner>cesarc</owner>
@@ -80,13 +16,13 @@
       <shared>false</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2016-01-14 01:49:25</last_update>
-    </item_5>
+      <last_update>2016-02-16 10:14:02</last_update>
+    </item_1>
   </myFilters>
   <!-- Users shared filters: !-->
   <sharedFilters>
     <item_1>
-      <name>Teste</name>
+      <tagName>Teste</tagName>
       <regex>Teste</regex>
       <header>Teste</header>
       <owner>Public</owner>
@@ -102,7 +38,7 @@
       <last_update>2015-09-04 11:47:06</last_update>
     </item_1>
     <item_2>
-      <name>Active Wakeup</name>
+      <tagName>Active Wakeup</tagName>
       <regex>active wakeup</regex>
       <header>- Active Wakeup Sources:</header>
       <owner>Public</owner>
@@ -118,7 +54,7 @@
       <last_update>2015-09-08 10:40:50</last_update>
     </item_2>
     <item_3>
-      <name>DIAG_WS Wakeups</name>
+      <tagName>DIAG_WS Wakeups</tagName>
       <regex>.*active wakeup source: DIAG_WS.*</regex>
       <header>- DIAG_WS wakeups found in kernel log:</header>
       <owner>wmarques</owner>
@@ -134,7 +70,7 @@
       <last_update>2015-09-11 14:09:46</last_update>
     </item_3>
     <item_4>
-      <name>All Errors</name>
+      <tagName>All Errors</tagName>
       <regex>.*error.*</regex>
       <header />
       <owner>brusafa</owner>
@@ -150,7 +86,7 @@
       <last_update>2015-12-16 16:13:54</last_update>
     </item_4>
     <item_5>
-      <name>Kernel</name>
+      <tagName>Kernel</tagName>
       <regex>(^  Kernel.*realtime&#xD;
 ){3}</regex>
       <header>All kernel wake locks:</header>
@@ -168,70 +104,5 @@
     </item_5>
   </sharedFilters>
   <!-- Active filters: !-->
-  <activeFilters>
-    <item_1>
-      <name>All Errors</name>
-      <regex>.*error.*</regex>
-      <header />
-      <owner>cesarc</owner>
-      <main>true</main>
-      <system>true</system>
-      <kernel>true</kernel>
-      <radio>false</radio>
-      <bugreport>true</bugreport>
-      <routput>false</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2016-01-14 02:07:08</last_update>
-    </item_1>
-    <item_2>
-      <name>BR-Network</name>
-      <regex>.*DATA_REGISTRATION_.*</regex>
-      <header>Data registration info:</header>
-      <owner>cesarc</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>true</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2016-01-14 01:49:25</last_update>
-    </item_2>
-    <item_3>
-      <name>BR-Temp</name>
-      <regex>.*POWER_SUPPLY_TEMP.*</regex>
-      <header>Temperature data</header>
-      <owner>cesarc</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>true</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2016-01-14 01:51:55</last_update>
-    </item_3>
-    <item_4>
-      <name>BR-Alarm</name>
-      <regex>.*AlarmManager: send.*</regex>
-      <header>Alarms info</header>
-      <owner>cesarc</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>false</kernel>
-      <radio>false</radio>
-      <bugreport>true</bugreport>
-      <routput>false</routput>
-      <shared>false</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2016-01-14 02:07:38</last_update>
-    </item_4>
-  </activeFilters>
+  <activeFilters />
 </SAT>

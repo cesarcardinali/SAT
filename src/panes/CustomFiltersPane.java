@@ -371,7 +371,7 @@ public class CustomFiltersPane extends JDialog
 					                                       myFiltersTable.convertRowIndexToView(nRows));
 					
 					JOptionPane.showMessageDialog(SharedObjs.getCustomFiltersPane(),
-					                              "The filter name can not be empty");
+					                              "The filter tagName can not be empty");
 					
 					myFiltersTable.editCellAt(myFiltersTable.convertRowIndexToView(nRows), 1);
 					myFiltersTable.transferFocus();

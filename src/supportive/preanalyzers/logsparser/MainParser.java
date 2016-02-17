@@ -380,6 +380,15 @@ public class MainParser
 			}
 		}
 		
+		// Try to get year from BTD file - BATTRIAGE-213
+		for (File file : folder.listFiles())
+		{
+			if (file.getName().contains(".btd"))
+			{
+				return file.getName().substring(file.getName().indexOf("_", 10) + 1, file.getName().indexOf("_", 10) + 5);
+			}
+		}
+		
 		return "";
 	}
 	

@@ -21,7 +21,7 @@ public class BugRepKernelWL
 	
 	public String toString()
 	{
-		return "[" + "name=" + name + ", duration=" + duration + "ms > "
+		return "[" + "tagName=" + name + ", duration=" + duration + "ms > "
 		       + DateTimeOperator.getTimeStringFromMillis(duration) + ", timesAcquired=" + timesAcquired
 		       + "]";
 	}

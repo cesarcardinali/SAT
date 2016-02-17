@@ -108,7 +108,7 @@ public class Logger
 				{
 					fTag += " ";
 				}
-				logWriter.write(new SimpleDateFormat("hh:mm:ss.SSS").format(new Date()) + "   " + fTag + "\t : "
+				logWriter.write(new SimpleDateFormat("HH:mm:ss.SSS").format(new Date()) + "   " + fTag + "\t : "
 				                + text + "\n");
 				close();
 			}

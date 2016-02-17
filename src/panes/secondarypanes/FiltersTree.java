@@ -388,7 +388,7 @@ public class FiltersTree extends JTree
 	
 	public void wakelocksThread(DefaultMutableTreeNode selectedNode)
 	{
-		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread running");
+		Logger.log(Logger.TAG_FILTERSRESULTSTREE, "SystemPM thread running");
 		String wakelocksResult;
 		String x = (String) selectedNode.getUserObject();
 		x = ("WakeLocks - Running");
@@ -402,7 +402,7 @@ public class FiltersTree extends JTree
 			selectedNode.setUserObject(x);
 			addIssues("Logs not found");
 			updateResultTreeUI();
-			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "SystemPM thread error");
 		}
 		else if (wakelocksResult.contains("IOException"))
 		{
@@ -410,7 +410,7 @@ public class FiltersTree extends JTree
 			selectedNode.setUserObject(x);
 			addIssues("IOException");
 			updateResultTreeUI();
-			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "SystemPM thread error");
 		}
 		else if (wakelocksResult.contains("Not a directory"))
 		{
@@ -418,18 +418,18 @@ public class FiltersTree extends JTree
 			selectedNode.setUserObject(x);
 			addIssues("No directory selected");
 			updateResultTreeUI();
-			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread error");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "SystemPM thread error");
 		}
 		else
 		{
 			addIssues("Result");
 			SharedObjs.setResult(SharedObjs.getResult()
-								 + "\n\n\n========================= Wakelocks =========================\n"
+								 + "\n\n\n========================= SystemPM =========================\n"
 								 + wakelocksResult);
 			x = ("WakeLocks - Done");
 			selectedNode.setUserObject(x);
 			updateResultTreeUI();
-			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "Wakelocks thread finished");
+			Logger.log(Logger.TAG_FILTERSRESULTSTREE, "SystemPM thread finished");
 		}
 		// expandPath(new TreePath(selectedNode.getPath()));
 		
@@ -550,6 +550,10 @@ public class FiltersTree extends JTree
 		selectedNode.setUserObject(x);
 		updateResultTreeUI();
 		suspiciousResult = Suspicious.makelog(SharedObjs.getCrPath());
+		
+		// TODO Test to be removed
+//		SystemPM test = new SystemPM(SharedObjs.getCrPath());
+//		suspiciousResult = test.makelog();
 		
 		if (suspiciousResult.contains("FileNotFoundException"))
 		{
