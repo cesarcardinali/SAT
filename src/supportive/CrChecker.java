@@ -995,6 +995,7 @@ public class CrChecker
 					SharedObjs.crsManagerPane.addLogLine("Wakelock detected. Searching for similar issue ...");
 					String dupCRs = "";
 					
+					// Check for Java wake locks
 					if (wakelocksComment.contains("Bugreport Java wake locks"))
 					{
 						boolean dupped = false;
@@ -1005,7 +1006,7 @@ public class CrChecker
 							{
 								BugRepJavaWL wl = javaWkls.get(i);
 								String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getProcessName() + "\\\" AND summary ~ \\\""
-								                               + wl.getTagName().replace("*", "") + "\\\" AND labels = cd_auto");
+								                               + wl.getTagName().replace("*", "") + "\\\" AND (labels = cd_auto OR labels = cd_manual)");
 								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 								
 								if (jqr.getResultCount() == 1)
@@ -1026,12 +1027,56 @@ public class CrChecker
 								
 								if(i == 0 && dupped == false)
 								{
-									
 									break;
 								}
 							}
 						}
 					}
+					
+					
+					// Check for Kernel wake locks
+					if (wakelocksComment.contains("Bugreport Kernel wake locks"))
+					{
+						boolean dupped = false;
+						BugRepKernelWL wl = kernelWkls.get(0);
+						
+						if (!(wl.getName().contains("PowerManagerService.WakeLocks") && wl.getDuration() > kernelWkls.get(1).getDuration() + 60 * 60 * 1000))
+						{
+							for (int i = 0; i < 4; i++)
+							{
+								if (kernelWkls.get(i).getDuration() > 1.5 * 60 * 60 * 1000)
+								{
+									wl = kernelWkls.get(i);
+									String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getName()
+									                               + "\\\" AND summary ~ \\\"Kernel wkl\\\" AND (labels = cd_auto OR labels = cd_manual)");
+									JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
+									
+									if (jqr.getResultCount() == 1)
+									{
+										if (dupCRs.length() > 5)
+										{
+											dupCRs += ", " + jqr.getItems().get(0).getKey();
+											dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
+										}
+										else
+										{
+											dupCRs = jqr.getItems().get(0).getKey();
+											dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
+										}
+										
+										dupped = true;
+									}
+									
+									if (i == 0 && dupped == false)
+									{
+										
+										break;
+									}
+								}
+							}
+						}
+					}
+					
 					
 					if (dupCRs.length() > 5)
 					{
