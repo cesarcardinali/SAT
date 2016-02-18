@@ -278,8 +278,7 @@ public class Bug2goDownloader implements Runnable
 		SharedObjs.crsManagerPane.addLogLine("Downloading b2g files ...");
 		
 		// While any of the lists still have an item
-		while (!bug2goListSubmitted.isEmpty() || !bug2goListInProgress.isEmpty()
-		       || !bug2goListRetry.isEmpty())
+		while (!bug2goListSubmitted.isEmpty() || !bug2goListInProgress.isEmpty() || !bug2goListRetry.isEmpty())
 		{
 			// If there are items to be submitted or retried, start all of them
 			if (!bug2goListSubmitted.isEmpty() || !bug2goListRetry.isEmpty())
@@ -297,8 +296,7 @@ public class Bug2goDownloader implements Runnable
 					
 					for (Bug2goItem b : bug2goListRetry)
 					{
-						Logger.log(Logger.TAG_BUG2GODOWNLOADER,
-						           b.getBugId() + ": retry value: " + b.getRetry());
+						Logger.log(Logger.TAG_BUG2GODOWNLOADER, b.getBugId() + ": retry value: " + b.getRetry());
 						bug2goListSubmitted.add(b);
 					}
 					
@@ -319,10 +317,8 @@ public class Bug2goDownloader implements Runnable
 				
 				for (Bug2goItem b : bug2goListInProgress)
 				{
-					Logger.log(Logger.TAG_BUG2GODOWNLOADER, b.getBugId() + ": status > " + b.getStatus()
-					                                        + " | size > " + b.getSizeOfFile()
-					                                        + " | downloaded > " + b.getDownloadProgress()
-					                                        + " | running > " + b.isRunning());
+					Logger.log(Logger.TAG_BUG2GODOWNLOADER, b.getBugId() + ": status > " + b.getStatus() + " | size > " + b.getSizeOfFile()
+					                                        + " | downloaded > " + b.getDownloadProgress() + " | running > " + b.isRunning());
 				}
 				semaphore.release();
 				Thread.sleep(3000);
@@ -395,8 +391,7 @@ public class Bug2goDownloader implements Runnable
 		
 		// If there was any error
 		if (errors == 1)
-			JOptionPane.showMessageDialog(SharedObjs.satFrame,
-			                              "There were errors during the download. \nFiles may be missing or corrupted.");
+			JOptionPane.showMessageDialog(SharedObjs.satFrame, "There were errors during the download. \nFiles may be missing or corrupted.");
 		
 		// Ask if user wants to unzip them all
 		if (SharedObjs.crsManagerPane.getChckbxUnzip().isSelected())
@@ -405,14 +400,13 @@ public class Bug2goDownloader implements Runnable
 			
 			for (File file : filesName)
 			{
-				if (SharedObjs.crsManagerPane.getChckbxUnzip().isSelected() && file.isFile() && file.getName().contains(".zip") && file.getName().contains("_B2G_")
-				    && b2gdoneListContains(file.getName().substring(0, file.getName().indexOf("_"))))
+				if (SharedObjs.crsManagerPane.getChckbxUnzip().isSelected() && file.isFile() && file.getName().contains(".zip")
+				    && file.getName().contains("_B2G_") && b2gdoneListContains(file.getName().substring(0, file.getName().indexOf("_"))))
 				{
 					// Unzip
 					SharedObjs.crsManagerPane.addLogLine("Unzipping " + file.getName().substring(0, file.getName().indexOf("_")) + " ...");
 					
-					UnZip.unZipIt(file.getAbsolutePath(),
-					              file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
+					UnZip.unZipIt(file.getAbsolutePath(), file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
 					
 					file = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
 					
@@ -456,12 +450,12 @@ public class Bug2goDownloader implements Runnable
 							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "No bugreport file. Report output not generated.");
 						}
 					}
-					
 				}
 			}
 			
 			if (SharedObjs.crsManagerPane.getChckbxAnalyze().isSelected())
 			{
+				SharedObjs.clearCRsListPanes();
 				SharedObjs.getClosedList().clear();
 				SharedObjs.getOpenedList().clear();
 				
@@ -482,6 +476,7 @@ public class Bug2goDownloader implements Runnable
 				{
 					JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "Error: The lists does not exist");
 				}
+				
 				SharedObjs.getClosedList().setVisible(true);
 				SharedObjs.getOpenedList().setVisible(true);
 			}

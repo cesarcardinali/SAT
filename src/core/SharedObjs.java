@@ -12,6 +12,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.ws.rs.core.NewCookie;
 
 import org.apache.commons.io.FileUtils;
 
@@ -545,5 +546,15 @@ public class SharedObjs
 	public static ListPane getOpenedList()
 	{
 		return openedList;
+	}
+	
+	public static void clearCRsListPanes()
+	{
+		closedList = new ListPane();
+		closedList.setLocation(600, 250);
+		
+		openedList = new ListPane();
+		openedList.setTitle("Not closed CRs");
+		openedList.setLocation(900, 250);
 	}
 }

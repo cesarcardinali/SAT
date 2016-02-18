@@ -4,7 +4,7 @@
     <rootPath>C:\SAT</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\SAT\CRs\CR Error</path>
+    <path>C:\SAT\CRs\CR 3850</path>
     <assign>false</assign>
     <label>false</label>
     <labels>cd_auto</labels>
@@ -48,8 +48,8 @@
     <titan>2070</titan>
     <victara>2300</victara>
     <merlin>2470</merlin>
-    <t2>35443</t2>
     <athene>3000</athene>
+    <griffin>3490</griffin>
   </bat_cap>
   <diag_dup>
     <surnia>IKSWL-1063</surnia>
@@ -68,6 +68,5 @@
     <quark>IKUT-4329</quark>
     <clark>IKUT-4329</clark>
     <merlin>IKUT-00000</merlin>
-    <t1>fdsfds</t1>
   </diag_dup>
 </SAT>

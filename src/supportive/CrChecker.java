@@ -1039,6 +1039,7 @@ public class CrChecker
 						jira.assignIssue(cr.getJiraID());
 						jira.addLabel(cr.getJiraID(), "cd_auto");
 						jira.addLabel(cr.getJiraID(), "sat_dupped");
+						jira.addLabel(cr.getJiraID(), "sat_closed");
 						jira.dupIssue(cr.getJiraID(), dupCRs, dupComment);
 						SharedObjs.crsManagerPane.addLogLine("CR duplicated to " + dupCRs);
 						
