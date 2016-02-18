@@ -5,8 +5,8 @@
   </parser_pane>
   <crs_jira_pane>
     <path>C:\SAT\CRs\CR 3850</path>
-    <assign>false</assign>
-    <label>false</label>
+    <assign>true</assign>
+    <label>true</label>
     <labels>cd_auto</labels>
   </crs_jira_pane>
   <option_pane>

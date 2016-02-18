@@ -1099,6 +1099,7 @@ public class CrsManagerPane extends JPanel
 		
 		// Try to open file
 		BufferedReader br = null;
+		
 		if (reportFile == null)
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Log not found: " + reportFile);
@@ -1113,12 +1114,14 @@ public class CrsManagerPane extends JPanel
 		
 		// Parse file
 		boolean parsed = false;
+		
 		while ((sCurrentLine = br.readLine()) != null)
 		{
 			if (sCurrentLine.toLowerCase().contains("product"))
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "--- Initial line: " + sCurrentLine);
 				sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
+				
 				// BATTRIAGE-212
 				if (sCurrentLine.indexOf("_") >= 0)
 				{
@@ -1133,27 +1136,34 @@ public class CrsManagerPane extends JPanel
 				SharedObjs.copyScript(new File("Data\\scripts\\_Base.pl"), new File(folder + "\\build_report.pl"));
 				
 				// Configure build report battery capacity
+				PrintWriter out = null;
 				try
 				{
 					@SuppressWarnings("resource")
 					Scanner scanner = new Scanner(new File(folder + "\\build_report.pl"));
 					String content = scanner.useDelimiter("\\Z").next();
+					scanner.close();
 					content = content.replace("#bat_cap#", SharedObjs.advOptions.getBatCapValue(sCurrentLine));
-					PrintWriter out = new PrintWriter(folder + "\\build_report.pl");
+					out = new PrintWriter(folder + "\\build_report.pl");
 					out.println(content);
-					out.close();
 					parsed = true;
 				}
 				catch (FileNotFoundException e)
 				{
 					e.printStackTrace();
 				}
+				finally
+				{
+					out.close();
+				}
+				
 				break;
 			}
 		}
 		
 		if (!parsed)
 		{
+			PrintWriter out = null;
 			try
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "Could not find product tagName or product battery capacity. Using 3000 as bat cap");
@@ -1162,7 +1172,7 @@ public class CrsManagerPane extends JPanel
 				Scanner scanner = new Scanner(new File(folder + "\\build_report.pl"));
 				String content = scanner.useDelimiter("\\Z").next();
 				content = content.replace("#bat_cap#", "3000");
-				PrintWriter out = new PrintWriter(folder + "\\build_report.pl");
+				out = new PrintWriter(folder + "\\build_report.pl");
 				out.println(content);
 				out.close();
 				parsed = true;
@@ -1171,9 +1181,15 @@ public class CrsManagerPane extends JPanel
 			{
 				e.printStackTrace();
 			}
+			finally
+			{
+				if(out != null)
+					out.close();
+			}
 		}
 		
-		br.close();
+		if(br != null)
+			br.close();
 		
 		for (File file : filesList)
 		{
@@ -1185,10 +1201,12 @@ public class CrsManagerPane extends JPanel
 		
 		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd \"" + folder + "\" && build_report.pl " + bugreport + " > report-output.txt");
 		Logger.log(Logger.TAG_CRSMANAGER, "Bugreport file: " + bugreport);
+		
 		for (String c : builder.command())
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Commands: " + c);
 		}
+		
 		builder.redirectErrorStream(true);
 		Process p = builder.start();
 		BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -1198,13 +1216,18 @@ public class CrsManagerPane extends JPanel
 		while (true)
 		{
 			line = r.readLine();
+			
 			if (line == null)
 			{
 				break;
 			}
+			
 			output += line + "\n";
+			
 			Logger.log(Logger.TAG_CRSMANAGER, line);
 		}
+		
+		r.close();
 		
 		if (new File(folder + "/report-output.txt").length() < 10)
 		{
