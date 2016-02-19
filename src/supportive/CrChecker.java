@@ -62,6 +62,7 @@ public class CrChecker
 		cr = SharedObjs.getCrsList().getCrByB2gId(file.getName());
 
 		SharedObjs.crsManagerPane.addLogLine("Analysing " + cr.getJiraID());
+		Logger.log("CR CHECKER", "Analysing " + cr.getJiraID());
 		
 		if (cr != null)
 		{
