@@ -319,6 +319,10 @@ public class CrChecker
 			
 			btdParser.close();
 			
+			SharedObjs.crsManagerPane.addLogLine("CR " + cr.getJiraID() + " not closed");
+			
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath() + "  -  CR " + cr.getJiraID());
+			
 			return false;
 		}
 		
@@ -591,7 +595,7 @@ public class CrChecker
 					else
 					{
 						dupCRs = jqr.getItems().get(0).getKey();
-						dupComment = "*Wakelock detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+						dupComment = "*High CPU consumption detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
 					}
 					
 					dupped = true;
@@ -618,7 +622,7 @@ public class CrChecker
 					else
 					{
 						dupCRs = jqr.getItems().get(0).getKey();
-						dupComment = "*Wakelock detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+						dupComment = "*High CPU consumption detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
 					}
 					
 					dupped = true;
@@ -638,7 +642,7 @@ public class CrChecker
 			jira.addLabel(cr.getJiraID(), "cd_auto");
 			jira.addLabel(cr.getJiraID(), "sat_dupped");
 			jira.addLabel(cr.getJiraID(), "sat_closed");
-			jira.dupIssue(cr.getJiraID(), dupCRs, dupComment);
+			jira.dupIssue(cr.getJiraID(), dupCRs, dupComment.replace("\n", "\\n"));
 			SharedObjs.crsManagerPane.addLogLine("CR duplicated to " + dupCRs);
 			
 			return true;

@@ -419,13 +419,7 @@ public class Bug2goDownloader implements Runnable
 						
 						CrChecker crChecker = new CrChecker(file.getAbsolutePath());
 						
-						if (!crChecker.checkCR())
-						{
-							SharedObjs.crsManagerPane.addLogLine("CR not closed");
-							
-							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath());
-						}
-						else
+						if (crChecker.checkCR())
 						{
 							SharedObjs.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
 							SharedObjs.crsManagerPane.addLogLine("CR closed as " + SharedObjs.getCrsList().getCrByB2gId(file.getName()).getResolution());
