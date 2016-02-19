@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import objects.CrItem;
+import objects.HighConsumeItem;
 import supportive.preanalyzers.btdparser.BtdParser;
 import supportive.preanalyzers.btdparser.BtdUptimePeriod;
 import supportive.preanalyzers.btdparser.BtdWL;
@@ -17,6 +18,7 @@ import supportive.preanalyzers.logsparser.MainParser;
 import tests.JiraUser;
 import core.Logger;
 import core.SharedObjs;
+import filters.Consume;
 
 
 @SuppressWarnings("unused")
@@ -58,6 +60,8 @@ public class CrChecker
 	{
 		File file = new File(crPath);
 		cr = SharedObjs.getCrsList().getCrByB2gId(file.getName());
+
+		SharedObjs.crsManagerPane.addLogLine("Analysing " + cr.getJiraID());
 		
 		if (cr != null)
 		{
@@ -183,7 +187,7 @@ public class CrChecker
 						SharedObjs.satDB.insertAnalyzedCR(cr);
 					}
 				
-				SharedObjs.crsManagerPane.addLogLine("SystemPM detected. Needs manual analysis.");
+				SharedObjs.crsManagerPane.addLogLine("Could not duplicate this CR. Needs manual analysis.");
 				
 				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath() + ". SystemPM detected. Needs manual analysis.");
 				
@@ -221,6 +225,7 @@ public class CrChecker
 			System.out.println("\n\n");
 			SharedObjs.crsManagerPane.addLogLine("Checking for uptime ...");
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for uptime");
+			
 			if (checkIfUptime())
 			{
 				jira.addComment(cr.getJiraID(),
@@ -246,8 +251,27 @@ public class CrChecker
 			}
 			
 			System.out.println("\n\n");
+			SharedObjs.crsManagerPane.addLogLine("Checking for high consumption issues ...");
+			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for high consumption issues");
+			
+			if (checkIfHighCons())
+			{
+				if (dupComment.length() > 5)
+				{
+					cr.setResolution("Duplicated");
+					cr.setStatus("Closed");
+					cr.setAssignee(SharedObjs.getUser());
+					
+					return true;
+				}
+				
+				//TODO Generate a comment about processes consumption ???
+			}
+			
+			System.out.println("\n\n");
 			SharedObjs.crsManagerPane.addLogLine("Checking if false positive ...");
 			Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Checking for false positive");
+			
 			if (checkIfFalsePositive())
 			{
 				return true;
@@ -281,6 +305,7 @@ public class CrChecker
 			Logger.log(Logger.TAG_FALSE_POSITIVE, DateTimeOperator.getTimeStringFromMillis((System.currentTimeMillis() - start)));
 			
 			if (SharedObjs.satDB != null)
+			{
 				if (SharedObjs.satDB.existsAnalyzedCR(cr.getJiraID()) > 0)
 				{
 					SharedObjs.satDB.updateAnalyzedCR(cr);
@@ -289,6 +314,7 @@ public class CrChecker
 				{
 					SharedObjs.satDB.insertAnalyzedCR(cr);
 				}
+			}
 			
 			btdParser.close();
 			
@@ -520,6 +546,104 @@ public class CrChecker
 		{
 			return false;
 		}
+	}
+	
+	private boolean checkIfHighCons()
+	{
+		dupComment = "";
+		Consume.makelog(crPath + "\\");
+		
+		HighConsumeItem system_server = null;
+		
+		if (Consume.getHCList().indexOf("system_server") >= 0)
+		{
+			system_server = Consume.getHCList().get(Consume.getHCList().indexOf("system_server"));
+		}
+		else
+		{
+			return false;
+		}
+		
+		HighConsumeItem hci = null;
+		boolean dupped = false;
+		String dupCRs = "";
+		
+		SharedObjs.crsManagerPane.addLogLine("Consumption issue detected. Searching for a root CR for this issue...");
+		
+		for (int i = 0; i < Consume.getHCList().size(); i++)
+		{
+			hci = Consume.getHCList().get(i);
+			
+			if ((hci.getScOffConsume() >= 10 || hci.getConsumeAvg() >= 23) && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.3) // High consumption
+			{
+				String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + hci.getProcess()
+				                               + "\\\" AND summary ~ \\\"consuming too much CPU power\\\" AND (labels = cd_auto OR labels = cd_manual)");
+				JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
+				
+				if (jqr.getResultCount() == 1)
+				{
+					if (dupCRs.length() > 5)
+					{
+						dupCRs += ", " + jqr.getItems().get(0).getKey();
+						dupComment += "\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+					}
+					else
+					{
+						dupCRs = jqr.getItems().get(0).getKey();
+						dupComment = "*Wakelock detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+					}
+					
+					dupped = true;
+				}
+				
+				if (i == 0 && dupped == false)
+				{
+					break;
+				}
+			}
+			else if (hci.getProcess().equals("system_server") && hci.getScOffConsume() < 10 && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.7) // Too often
+			{
+				String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + hci.getProcess()
+				                               + "\\\" AND summary ~ \\\"running nonstop in background\\\" AND (labels = cd_auto OR labels = cd_manual)");
+				JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
+				
+				if (jqr.getResultCount() == 1)
+				{
+					if (dupCRs.length() > 5)
+					{
+						dupCRs += ", " + jqr.getItems().get(0).getKey();
+						dupComment += "\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+					}
+					else
+					{
+						dupCRs = jqr.getItems().get(0).getKey();
+						dupComment = "*Wakelock detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+					}
+					
+					dupped = true;
+				}
+				
+				if (i == 0 && dupped == false)
+				{
+					break;
+				}
+			}
+		}
+		
+		if (dupCRs.length() > 5)
+		{
+			SharedObjs.crsManagerPane.addLogLine("Consumption issue root detected, duplicating CR ...");
+			jira.assignIssue(cr.getJiraID());
+			jira.addLabel(cr.getJiraID(), "cd_auto");
+			jira.addLabel(cr.getJiraID(), "sat_dupped");
+			jira.addLabel(cr.getJiraID(), "sat_closed");
+			jira.dupIssue(cr.getJiraID(), dupCRs, dupComment);
+			SharedObjs.crsManagerPane.addLogLine("CR duplicated to " + dupCRs);
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public boolean checkIfFalsePositive()
@@ -1021,11 +1145,11 @@ public class CrChecker
 										dupCRs = jqr.getItems().get(0).getKey();
 										dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
 									}
-
+									
 									dupped = true;
 								}
 								
-								if(i == 0 && dupped == false)
+								if (i == 0 && dupped == false)
 								{
 									break;
 								}
@@ -1033,14 +1157,13 @@ public class CrChecker
 						}
 					}
 					
-					
 					// Check for Kernel wake locks
 					if (wakelocksComment.contains("Bugreport Kernel wake locks"))
 					{
 						boolean dupped = false;
 						BugRepKernelWL wl = kernelWkls.get(0);
 						
-						if (!(wl.getName().contains("PowerManagerService.WakeLocks") && wl.getDuration() > kernelWkls.get(1).getDuration() + 60 * 60 * 1000))
+						if (!wl.getName().contains("PowerManagerService.WakeLocks") && wl.getDuration() > kernelWkls.get(1).getDuration() + 60 * 60 * 1000)
 						{
 							for (int i = 0; i < 4; i++)
 							{
@@ -1076,7 +1199,6 @@ public class CrChecker
 							}
 						}
 					}
-					
 					
 					if (dupCRs.length() > 5)
 					{

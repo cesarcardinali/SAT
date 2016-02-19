@@ -70,6 +70,11 @@ public class HighConsumeItem
 	{
 		Log = Log + line + "\n";
 		
+		if(cons > 1000.0)
+			cons = (float) (cons/100.0);
+		if(cons > 100.0)
+			cons = (float) (cons/10.0);
+		
 		if (line.charAt(8) == 'F')
 		{
 			LogOff = LogOff + line + "\n";
@@ -245,7 +250,7 @@ public class HighConsumeItem
 	 */
 	public String toString()
 	{
-		return "Process: *" + process + "*\nPID: " + PID + "\nPeak Consume: " + consumePeak
+		return "Process: *" + process + "*\nPID: " + PID + "\nTotal Occurences: " + occurencesTotal  + "\nPeak Consume: " + consumePeak
 			   + "\nAvg. Consume: " + (sumConsAvg / occurencesTotal) + "\nScrOff Consume: "
 			   + (sumConsOff / occurencesOff) + "\n" + "{noformat}\n" + Log + "{noformat}\n";
 	}

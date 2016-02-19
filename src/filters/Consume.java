@@ -23,11 +23,11 @@ import objects.HighConsumeItem;
  */
 public class Consume
 {
-	private static HighConsume_List	hcList;			  // List of apps detected
-	private static String			result;			  // Final result
-	private static int				totalOccurrences; // Total occurrences of lines about app consumption
-	private static boolean			enabled	= true;	  // If result is edited by the user
-	
+	private static HighConsume_List hcList;          // List of apps detected
+	private static String           result;          // Final result
+	private static int              totalOccurrences; // Total occurrences of lines about app consumption
+	private static boolean          enabled = true;  // If result is edited by the user
+	                                                  
 	/*
 	 * Logger.log(Logger.TAG_CONSUME, "Month:\t\t" + matcher.group(1)); Logger.log(Logger.TAG_CONSUME, "Day:\t\t" + matcher.group(2));
 	 * Logger.log(Logger.TAG_CONSUME, "Hour:\t\t" + matcher.group(3)); Logger.log(Logger.TAG_CONSUME, "Minute:\t\t" + matcher.group(4));
@@ -73,8 +73,7 @@ public class Consume
 			// Search for the file to be parsed
 			for (int i = 0; i < listOfFiles.length; i++)
 			{
-				if (listOfFiles[i].isFile() && (listOfFiles[i].getName().toLowerCase().endsWith(".txt")
-												&& listOfFiles[i].getName().contains("main")))
+				if (listOfFiles[i].isFile() && (listOfFiles[i].getName().toLowerCase().endsWith(".txt") && listOfFiles[i].getName().contains("main")))
 				{
 					file = listOfFiles[i].getName();
 					
@@ -123,7 +122,7 @@ public class Consume
 					}
 					else
 						matcherBTT = patternBTT.matcher(sCurrentLine);
-						
+					
 					if (matcherBTT.matches())
 					{
 						if (matcherBTT.group(8).contains("kworker")) // Group up kworker processes
@@ -133,18 +132,15 @@ public class Consume
 							if (index == -1)
 							{
 								HighConsumeItem hcItem = new HighConsumeItem("kworker",
-																			 matcherBTT.group(7),
-																			 Float.parseFloat(matcherBTT.group(6)
-																										.replace(",",
-																												 ".")),
-																			 screenStatus + sCurrentLine);
+								                                             matcherBTT.group(7),
+								                                             Float.parseFloat(matcherBTT.group(6).replace(",", ".")),
+								                                             screenStatus + sCurrentLine);
 								hcList.add(hcItem);
 							}
 							else
 							{
 								HighConsumeItem hcItem = hcList.get(index);
-								hcItem.updateItem(Float.parseFloat(matcherBTT.group(6).replace(",", ".")),
-												  screenStatus + sCurrentLine);
+								hcItem.updateItem(Float.parseFloat(matcherBTT.group(6).replace(",", ".")), screenStatus + sCurrentLine);
 								hcList.set(index, hcItem);
 							}
 						}
@@ -155,19 +151,16 @@ public class Consume
 							if (index == -1) // Check if app was not detected already
 							{
 								HighConsumeItem hcItem = new HighConsumeItem(matcherBTT.group(8),
-																			 matcherBTT.group(7),
-																			 Float.parseFloat(matcherBTT.group(6)
-																										.replace(",",
-																												 ".")),
-																			 screenStatus + sCurrentLine);
+								                                             matcherBTT.group(7),
+								                                             Float.parseFloat(matcherBTT.group(6).replace(",", ".")),
+								                                             screenStatus + sCurrentLine);
 								hcList.add(hcItem);
 								totalOccurrences++;
 							}
 							else
 							{
 								HighConsumeItem hcItem = hcList.get(index);
-								hcItem.updateItem(Float.parseFloat(matcherBTT.group(6).replace(",", ".")),
-												  screenStatus + sCurrentLine);
+								hcItem.updateItem(Float.parseFloat(matcherBTT.group(6).replace(",", ".")), screenStatus + sCurrentLine);
 								hcList.set(index, hcItem);
 								totalOccurrences++;
 							}
@@ -196,8 +189,7 @@ public class Consume
 			{
 				HighConsumeItem aux = l.next();
 				
-				if (100.0 * (float) aux.getOccurencesTotal() / (float) totalOccurrences > 1
-					&& !aux.getProcess().contains("motorola.tools.batterytracer"))
+				if (100.0 * (float) aux.getOccurencesTotal() / (float) totalOccurrences > 1 && !aux.getProcess().contains("motorola.tools.batterytracer"))
 				{
 					hcitems++;
 				}
