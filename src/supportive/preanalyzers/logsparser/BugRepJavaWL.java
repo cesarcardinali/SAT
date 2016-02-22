@@ -42,6 +42,11 @@ public class BugRepJavaWL
 		return tagName;
 	}
 	
+	public void setTagName(String tag)
+	{
+		tagName = tag;
+	}
+	
 	public void setName(String name)
 	{
 		this.tagName = name;

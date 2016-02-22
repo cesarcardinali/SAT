@@ -6,6 +6,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.json.simple.parser.ParseException;
+
 import objects.CrItem;
 import objects.HighConsumeItem;
 import supportive.preanalyzers.btdparser.BtdParser;
@@ -60,7 +62,7 @@ public class CrChecker
 	{
 		File file = new File(crPath);
 		cr = SharedObjs.getCrsList().getCrByB2gId(file.getName());
-
+		
 		SharedObjs.crsManagerPane.addLogLine("Analysing " + cr.getJiraID());
 		Logger.log("CR CHECKER", "Analysing " + cr.getJiraID());
 		
@@ -266,7 +268,7 @@ public class CrChecker
 					return true;
 				}
 				
-				//TODO Generate a comment about processes consumption ???
+				// TODO Generate a comment about processes consumption ???
 			}
 			
 			System.out.println("\n\n");
@@ -579,7 +581,8 @@ public class CrChecker
 		{
 			hci = Consume.getHCList().get(i);
 			
-			if ((hci.getScOffConsume() >= 10 || hci.getConsumeAvg() >= 23) && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.3) // High consumption
+			if ((hci.getScOffConsume() >= 10 || hci.getConsumeAvg() >= 23) && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.3) // High
+																																				// consumption
 			{
 				String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + hci.getProcess()
 				                               + "\\\" AND summary ~ \\\"consuming too much CPU power\\\" AND (labels = cd_auto OR labels = cd_manual)");
@@ -587,18 +590,46 @@ public class CrChecker
 				
 				if (jqr.getResultCount() == 1)
 				{
-					if (dupCRs.length() > 5)
+					try
 					{
-						dupCRs += ", " + jqr.getItems().get(0).getKey();
-						dupComment += "\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+						SharedObjs.crsManagerPane.addLogLine("Root CR " + jqr.getItems().get(0).getKey() + " detected. Checking if CR is valid ...");
+						CrItem root = jira.getCrData(jqr.getItems().get(0).getKey());
+						
+						if (root.getResolution().equals("Duplicate"))
+						{
+							if (dupCRs.length() > 5)
+							{
+								dupCRs += ", " + root.getDup();
+								dupComment += "\\n\\n" + hci + "Duplicated of " + root.getDup();
+							}
+							else
+							{
+								dupCRs = root.getDup();
+								dupComment = "*High CPU consumption detected*\\n\\n" + hci + "Duplicated of " + root.getDup();
+							}
+							
+							dupped = true;
+						}
+						else
+						{
+							if (dupCRs.length() > 5)
+							{
+								dupCRs += ", " + jqr.getItems().get(0).getKey();
+								dupComment += "\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+							}
+							else
+							{
+								dupCRs = jqr.getItems().get(0).getKey();
+								dupComment = "*High CPU consumption detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+							}
+							
+							dupped = true;
+						}
 					}
-					else
+					catch (ParseException e)
 					{
-						dupCRs = jqr.getItems().get(0).getKey();
-						dupComment = "*High CPU consumption detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+						e.printStackTrace();
 					}
-					
-					dupped = true;
 				}
 				
 				if (i == 0 && dupped == false)
@@ -606,7 +637,8 @@ public class CrChecker
 					break;
 				}
 			}
-			else if (hci.getProcess().equals("system_server") && hci.getScOffConsume() < 10 && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.7) // Too often
+			else if (hci.getProcess().equals("system_server") && hci.getScOffConsume() < 10 && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.7) // Too
+			                                                                                                                                                     // often
 			{
 				String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + hci.getProcess()
 				                               + "\\\" AND summary ~ \\\"running nonstop in background\\\" AND (labels = cd_auto OR labels = cd_manual)");
@@ -614,18 +646,46 @@ public class CrChecker
 				
 				if (jqr.getResultCount() == 1)
 				{
-					if (dupCRs.length() > 5)
+					try
 					{
-						dupCRs += ", " + jqr.getItems().get(0).getKey();
-						dupComment += "\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+						SharedObjs.crsManagerPane.addLogLine("Root CR " + jqr.getItems().get(0).getKey() + " detected. Checking if CR is valid ...");
+						CrItem root = jira.getCrData(jqr.getItems().get(0).getKey());
+						
+						if (root.getResolution().equals("Duplicate"))
+						{
+							if (dupCRs.length() > 5)
+							{
+								dupCRs += ", " + root.getDup();
+								dupComment += "\\n\\n" + hci + "Duplicated of " + root.getDup();
+							}
+							else
+							{
+								dupCRs = root.getDup();
+								dupComment = "*High CPU consumption detected*\\n\\n" + hci + "Duplicated of " + root.getDup();
+							}
+							
+							dupped = true;
+						}
+						else
+						{
+							if (dupCRs.length() > 5)
+							{
+								dupCRs += ", " + jqr.getItems().get(0).getKey();
+								dupComment += "\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+							}
+							else
+							{
+								dupCRs = jqr.getItems().get(0).getKey();
+								dupComment = "*High CPU consumption detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+							}
+							
+							dupped = true;
+						}
 					}
-					else
+					catch (ParseException e)
 					{
-						dupCRs = jqr.getItems().get(0).getKey();
-						dupComment = "*High CPU consumption detected*\\n\\n" + hci + "Duplicated of " + jqr.getItems().get(0).getKey();
+						e.printStackTrace();
 					}
-					
-					dupped = true;
 				}
 				
 				if (i == 0 && dupped == false)
@@ -1134,24 +1194,61 @@ public class CrChecker
 							if (javaWkls.get(i).getDuration() > 60 * 60 * 1000)
 							{
 								BugRepJavaWL wl = javaWkls.get(i);
+								
+								if (wl.getTagName().contains("*sync*/gmail-ls/com.google") || wl.getTagName().contains("*sync*/com.motorola.email.exchange.push/com.android.exchange/"))
+								{
+									wl.setTagName(wl.getTagName().substring(0, wl.getTagName().lastIndexOf("/")));
+								}
+								
 								String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getProcessName() + "\\\" AND summary ~ \\\""
 								                               + wl.getTagName().replace("*", "") + "\\\" AND (labels = cd_auto OR labels = cd_manual)");
 								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 								
 								if (jqr.getResultCount() == 1)
 								{
-									if (dupCRs.length() > 5)
-									{
-										dupCRs += ", " + jqr.getItems().get(0).getKey();
-										dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
-									}
-									else
-									{
-										dupCRs = jqr.getItems().get(0).getKey();
-										dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
-									}
+									SharedObjs.crsManagerPane.addLogLine("Root CR " + jqr.getItems().get(0).getKey() + " detected. Checking if CR is valid ...");
+									CrItem root;
 									
-									dupped = true;
+									try
+									{
+										root = jira.getCrData(jqr.getItems().get(0).getKey());
+										
+										if (root.getResolution().equals("Duplicate"))
+										{
+											if (dupCRs.length() > 5)
+											{
+												dupCRs += ", " + root.getDup();
+												dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + root.getDup();
+											}
+											else
+											{
+												dupCRs = root.getDup();
+												dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + root.getDup();
+											}
+											
+											dupped = true;
+										}
+										else
+										{
+											if (dupCRs.length() > 5)
+											{
+												dupCRs += ", " + jqr.getItems().get(0).getKey();
+												dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
+											}
+											else
+											{
+												dupCRs = jqr.getItems().get(0).getKey();
+												dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of "
+												             + jqr.getItems().get(0).getKey();
+											}
+											
+											dupped = true;
+										}
+									}
+									catch (ParseException e)
+									{
+										e.printStackTrace();
+									}
 								}
 								
 								if (i == 0 && dupped == false)
@@ -1181,18 +1278,50 @@ public class CrChecker
 									
 									if (jqr.getResultCount() == 1)
 									{
-										if (dupCRs.length() > 5)
-										{
-											dupCRs += ", " + jqr.getItems().get(0).getKey();
-											dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
-										}
-										else
-										{
-											dupCRs = jqr.getItems().get(0).getKey();
-											dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
-										}
+										SharedObjs.crsManagerPane.addLogLine("Root CR " + jqr.getItems().get(0).getKey()
+										                                     + " detected. Checking if CR is valid ...");
+										CrItem root;
 										
-										dupped = true;
+										try
+										{
+											root = jira.getCrData(jqr.getItems().get(0).getKey());
+											
+											if (root.getResolution().equals("Duplicate"))
+											{
+												if (dupCRs.length() > 5)
+												{
+													dupCRs += ", " + root.getDup();
+													dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + root.getDup();
+												}
+												else
+												{
+													dupCRs = root.getDup();
+													dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + root.getDup();
+												}
+												
+												dupped = true;
+											}
+											else
+											{
+												if (dupCRs.length() > 5)
+												{
+													dupCRs += ", " + jqr.getItems().get(0).getKey();
+													dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
+												}
+												else
+												{
+													dupCRs = jqr.getItems().get(0).getKey();
+													dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of "
+													             + jqr.getItems().get(0).getKey();
+												}
+												
+												dupped = true;
+											}
+										}
+										catch (ParseException e)
+										{
+											e.printStackTrace();
+										}
 									}
 									
 									if (i == 0 && dupped == false)

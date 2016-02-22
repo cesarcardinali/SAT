@@ -68,6 +68,12 @@ public class SharedObjs
 	private static ListPane           closedList;
 	private static ListPane           openedList;
 	
+	/*
+	 *  Fixed parameters:
+	 */
+	// Thresholds for issue detectors:
+	public static long threshold;
+	
 	/**
 	 * Initialize class variables
 	 */
