@@ -1143,7 +1143,20 @@ public class CrsManagerPane extends JPanel
 					Scanner scanner = new Scanner(new File(folder + "\\build_report.pl"));
 					String content = scanner.useDelimiter("\\Z").next();
 					scanner.close();
-					content = content.replace("#bat_cap#", SharedObjs.advOptions.getBatCapValue(sCurrentLine));
+					
+					// Get/Set battery capacity
+					if(SharedObjs.advOptions.getBatCapValue(sCurrentLine) != null)
+					{
+						content = content.replace("#bat_cap#", SharedObjs.advOptions.getBatCapValue(sCurrentLine));
+					}
+					else
+					{
+						String pName = JOptionPane.showInputDialog("Type the product tagName");
+						String bCap = JOptionPane.showInputDialog("Type the battery capacity");
+						SharedObjs.advOptions.addNewBatCapValue(pName, bCap);
+						content = content.replace("#bat_cap#", bCap);
+					}
+					
 					out = new PrintWriter(folder + "\\build_report.pl");
 					out.println(content);
 					parsed = true;

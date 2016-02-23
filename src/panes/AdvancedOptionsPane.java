@@ -399,4 +399,9 @@ public class AdvancedOptionsPane extends JFrame
 	{
 		return bat_capMap.get(productName);
 	}
+	
+	public void addNewBatCapValue(String productName, String batCap)
+	{
+		bat_capMap.put(productName, batCap);
+	}
 }
