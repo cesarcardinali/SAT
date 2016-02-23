@@ -8,6 +8,11 @@
     <assign>true</assign>
     <label>true</label>
     <labels>cd_auto</labels>
+    <download>true</download>
+    <unzip>true</unzip>
+    <analyze>true</analyze>
+    <close>false</close>
+    <ignore>false</ignore>
   </crs_jira_pane>
   <option_pane>
     <full_log>- The process *#pname#* was consuming *~#avgconsume#* of CPU processing power.\n{noformat}\n#logfull#\n{noformat}</full_log>
@@ -32,7 +37,6 @@
     <remember>true</remember>
   </option_pane>
   <bat_cap>
-    <clark>3000</clark>
     <condor>1980</condor>
     <falcon>2070</falcon>
     <ghost>2200</ghost>
@@ -50,6 +54,7 @@
     <merlin>2470</merlin>
     <athene>3000</athene>
     <griffin>3490</griffin>
+    <clark>3000</clark>
   </bat_cap>
   <diag_dup>
     <surnia>IKSWL-1063</surnia>

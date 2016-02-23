@@ -1047,6 +1047,16 @@ public class CrsManagerPane extends JPanel
 		XmlMngr.setUserValueOf(xmlPath, chckbxLabels.isSelected() + "");
 		xmlPath[1] = "labels";
 		XmlMngr.setUserValueOf(xmlPath, textLabel.getText());
+		xmlPath[1] = "download";
+		XmlMngr.setUserValueOf(xmlPath, chckbxDownload.isSelected() + "");
+		xmlPath[1] = "unzip";
+		XmlMngr.setUserValueOf(xmlPath, chckbxUnzip.isSelected() + "");
+		xmlPath[1] = "analyze";
+		XmlMngr.setUserValueOf(xmlPath, chckbxAnalyze.isSelected() + "");
+		xmlPath[1] = "close";
+		XmlMngr.setUserValueOf(xmlPath, chckbxCloseAsOld.isSelected() + "");
+		xmlPath[1] = "ignore";
+		XmlMngr.setUserValueOf(xmlPath, chckbxIgnoreAnalyzed.isSelected() + "");
 		
 		Logger.log(Logger.TAG_CRSMANAGER, "CrsManagerPane data saved");
 	}
@@ -1060,13 +1070,31 @@ public class CrsManagerPane extends JPanel
 		SharedObjs.setDownloadPath(textPath.getText());
 		
 		xmlPath[1] = "assign";
-		chckbxAssign.setSelected(true);
+		chckbxUnassign.setSelected(!Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		chckbxAssign.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		
 		xmlPath[1] = "label";
-		chckbxLabels.setSelected(true);
+		chckbxRemLabels.setSelected(!Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		chckbxLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		
 		xmlPath[1] = "labels";
 		textLabel.setText(XmlMngr.getUserValueOf(xmlPath));
+		
+		xmlPath[1] = "download";
+		chckbxDownload.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		System.out.println("" + Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		
+		xmlPath[1] = "unzip";
+		chckbxUnzip.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+
+		xmlPath[1] = "analyze";
+		chckbxAnalyze.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+
+		xmlPath[1] = "close";
+		chckbxCloseAsOld.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+
+		xmlPath[1] = "ignore";
+		chckbxIgnoreAnalyzed.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		
 		Logger.log(Logger.TAG_CRSMANAGER, "CrsManagerPane variables Loaded");
 	}
@@ -1151,10 +1179,11 @@ public class CrsManagerPane extends JPanel
 					}
 					else
 					{
-						String pName = JOptionPane.showInputDialog("Type the product tagName");
+						String pName = JOptionPane.showInputDialog("Type the product tagName", sCurrentLine);
 						String bCap = JOptionPane.showInputDialog("Type the battery capacity");
 						SharedObjs.advOptions.addNewBatCapValue(pName, bCap);
 						content = content.replace("#bat_cap#", bCap);
+						// TODO add to xml too
 					}
 					
 					out = new PrintWriter(folder + "\\build_report.pl");

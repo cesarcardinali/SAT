@@ -403,5 +403,7 @@ public class AdvancedOptionsPane extends JFrame
 	public void addNewBatCapValue(String productName, String batCap)
 	{
 		bat_capMap.put(productName, batCap);
+		XmlMngr.setBatteryCapacityItems(bat_capMap);
+		Logger.log(Logger.TAG_OPTIONS, "Advanced Options Updated");
 	}
 }

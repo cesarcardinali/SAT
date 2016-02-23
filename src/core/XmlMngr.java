@@ -105,7 +105,15 @@ public class XmlMngr
 		
 		for (String item : path)
 		{
-			requestedElement = requestedElement.getChild(item);
+			if(requestedElement.getChild(item) != null)
+			{
+				requestedElement = requestedElement.getChild(item);
+			}
+			else
+			{
+				requestedElement.addContent(new Element(item));
+				requestedElement = requestedElement.getChild(item);
+			}
 		}
 		
 		if (requestedElement != userDocument.getRootElement())
