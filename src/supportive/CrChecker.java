@@ -1267,73 +1267,73 @@ public class CrChecker
 						boolean dupped = false;
 						BugRepKernelWL wl = kernelWkls.get(0);
 						
-						if (!wl.getName().contains("PowerManagerService.WakeLocks") && wl.getDuration() > kernelWkls.get(1).getDuration() + 60 * 60 * 1000)
+						for (int i = 0; i < 4; i++)
 						{
-							for (int i = 0; i < 4; i++)
+							if (wl.getName().contains("PowerManagerService.WakeLocks"))
+								continue;
+							
+							if (kernelWkls.get(i).getDuration() > 1.5 * 60 * 60 * 1000)
 							{
-								if (kernelWkls.get(i).getDuration() > 1.5 * 60 * 60 * 1000)
+								wl = kernelWkls.get(i);
+								String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getName()
+								                               + "\\\" AND summary ~ \\\"Kernel wkl stuck\\\" AND (labels = cd_auto OR labels = cd_manual)");
+								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
+								
+								if (jqr.getResultCount() == 1)
 								{
-									wl = kernelWkls.get(i);
-									String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getName()
-									                               + "\\\" AND summary ~ \\\"Kernel wkl stuck\\\" AND (labels = cd_auto OR labels = cd_manual)");
-									JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
+									SharedObjs.crsManagerPane.addLogLine("Root CR " + jqr.getItems().get(0).getKey() + " detected. Checking if CR is valid ...");
+									CrItem root;
 									
-									if (jqr.getResultCount() == 1)
+									try
 									{
-										SharedObjs.crsManagerPane.addLogLine("Root CR " + jqr.getItems().get(0).getKey()
-										                                     + " detected. Checking if CR is valid ...");
-										CrItem root;
+										root = jira.getCrData(jqr.getItems().get(0).getKey());
 										
-										try
+										if (root.getResolution().equals("Duplicate"))
 										{
-											root = jira.getCrData(jqr.getItems().get(0).getKey());
-											
-											if (root.getResolution().equals("Duplicate"))
+											if (dupCRs.length() > 5)
 											{
-												if (dupCRs.length() > 5)
-												{
-													dupCRs += ", " + root.getDup();
-													dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + root.getDup();
-												}
-												else
-												{
-													dupCRs = root.getDup();
-													dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + root.getDup();
-												}
-												
-												dupped = true;
+												dupCRs += ", " + root.getDup();
+												dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + root.getDup();
 											}
 											else
 											{
-												if (dupCRs.length() > 5)
-												{
-													dupCRs += ", " + jqr.getItems().get(0).getKey();
-													dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
-												}
-												else
-												{
-													dupCRs = jqr.getItems().get(0).getKey();
-													dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of "
-													             + jqr.getItems().get(0).getKey();
-												}
-												
-												dupped = true;
+												dupCRs = root.getDup();
+												dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of " + root.getDup();
 											}
+											
+											dupped = true;
 										}
-										catch (ParseException e)
+										else
 										{
-											e.printStackTrace();
+											if (dupCRs.length() > 5)
+											{
+												dupCRs += ", " + jqr.getItems().get(0).getKey();
+												dupComment += "\\n\\n" + wl.toJiraComment() + "Duplicated of " + jqr.getItems().get(0).getKey();
+											}
+											else
+											{
+												dupCRs = jqr.getItems().get(0).getKey();
+												dupComment = "*Wakelock detected*\\n\\n" + wl.toJiraComment() + "Duplicated of "
+												             + jqr.getItems().get(0).getKey();
+											}
+											
+											dupped = true;
 										}
 									}
-									
-									if (i == 0 && dupped == false)
+									catch (ParseException e)
 									{
-										
-										break;
+										e.printStackTrace();
 									}
+								}
+								
+								if (i == 0 && dupped == false)
+								{
+									
+									break;
 								}
 							}
 						}
+						
 					}
 					
 					if (dupCRs.length() > 5)

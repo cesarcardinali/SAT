@@ -506,6 +506,7 @@ public class BugrepParser
 						for (BugRepJavaWL j : javaWLs)
 						{
 							br.reset();
+							
 							while ((sCurrentLine = br.readLine()) != null
 							       && !sCurrentLine.contains("DUMP OF SERVICE appwidget:"))
 							{
@@ -514,6 +515,8 @@ public class BugrepParser
 									sCurrentLine = br.readLine();
 									j.setProcessName(sCurrentLine.replace(" ", "").replace(":", "")
 									                             .replace("Package", ""));
+									
+									// TODO Identify if there are more than one package for this UID
 									break;
 								}
 							}
@@ -596,7 +599,7 @@ public class BugrepParser
 			threashold = (float) 0.25;
 		}
 		
-		if (kernelWLs.size() > 0 && kernelWLs.get(0).getDuration() > getTimeOnBat() * threashold) // Update from 20% to 10%
+		if (kernelWLs.size() > 0 && kernelWLs.get(0).getDuration() > getTimeOnBat() * threashold)
 		{
 			wakelocksComment += "{panel:title=*Bugreport Kernel wake locks:*|titleBGColor=#E9F2FF}\\n";
 			wakelocksComment += kernelWLs.get(0).toJiraComment();

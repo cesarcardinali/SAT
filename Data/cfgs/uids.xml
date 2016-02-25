@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SAT>
+  <!-- Known UIDs: !-->
+  <Known>
+    <item_1>
+      <uid>null</uid>
+      <process>.*DATA_REGISTRATION_.*</process>
+    </item_1>
+  </Known>
+  
+  <!-- UIDs to be ignored: !-->
+  <IgnoreUIDs>
+    <item_1>
+      <uid>null</uid>
+      <process>.*DATA_REGISTRATION_.*</process>
+    </item_1>
+  </IgnoreUIDs>
+</SAT>
