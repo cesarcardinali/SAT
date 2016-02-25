@@ -12,7 +12,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.ws.rs.core.NewCookie;
 
 import org.apache.commons.io.FileUtils;
 
@@ -43,6 +42,7 @@ public class SharedObjs
 	public static final File          userCfgFile    = new File(contentFolder + "cfgs/user_cfg.xml");
 	public static final File          messageCfgFile = new File(contentFolder + "cfgs/message.xml");
 	public static final File          filtersFile    = new File(contentFolder + "cfgs/filters.xml");
+	public static final File          uidsFile    = new File(contentFolder + "cfgs/uids.xml");
 	public static final File          pwdFile        = new File(contentFolder + "cfgs/pass.pwd");
 	private static String             crPath;
 	private static String             rootFolderPath;

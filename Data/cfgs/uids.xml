@@ -2,17 +2,12 @@
 <SAT>
   <!-- Known UIDs: !-->
   <Known>
-    <item_1>
-      <uid>null</uid>
-      <process>.*DATA_REGISTRATION_.*</process>
-    </item_1>
+    <u_1000>android</u_1000>
+    <u_1001>com.android.phone</u_1001>
+    <u_1002>com.android.bluetooth</u_1002>
   </Known>
-  
   <!-- UIDs to be ignored: !-->
   <IgnoreUIDs>
-    <item_1>
-      <uid>null</uid>
-      <process>.*DATA_REGISTRATION_.*</process>
-    </item_1>
+    <u_0>root</u_0>
   </IgnoreUIDs>
 </SAT>

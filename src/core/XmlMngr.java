@@ -31,6 +31,7 @@ public class XmlMngr
 	private static Document systemDocument; // System XML file
 	private static Document messageDocument; // Message XML file
 	private static Document filtersDocument; // Filters XML file
+	private static Document uidsDocument; // Filters XML file
 	                                         
 	/**
 	 * Initialize all variables and configure the class
@@ -55,6 +56,7 @@ public class XmlMngr
 			systemDocument = (Document) builder.build(SharedObjs.sytemCfgFile);
 			messageDocument = (Document) builder.build(SharedObjs.messageCfgFile);
 			filtersDocument = (Document) builder.build(SharedObjs.filtersFile);
+			uidsDocument = (Document) builder.build(SharedObjs.uidsFile);
 		}
 		catch (IOException | JDOMException e)
 		{
@@ -227,6 +229,69 @@ public class XmlMngr
 		}
 		
 		if (requestedElement != null)
+		{
+			requestedElement.setText(value);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Returns value in user XML file.<br/>
+	 * Returns null if element not found.
+	 * <p>
+	 * <strong> Example: </strong> XmlMngr.getUserValueOf(new String[] {"parser_pane","path"});
+	 * <p>
+	 * 
+	 * @param path Array of strings to following value<br/>
+	 * @return Return the value as a string <br/>
+	 */
+	public static String getUidsValueOf(String path[])
+	{
+		Element requestedElement = uidsDocument.getRootElement();
+		
+		for (String item : path)
+		{
+			requestedElement = requestedElement.getChild(item);
+		}
+		
+		if (requestedElement != null)
+		{
+			return requestedElement.getText();
+		}
+		
+		return "null";
+	}
+	
+	/**
+	 * Update value in user XML file
+	 * <p>
+	 * <strong> Example: </strong> XmlMngr.getUserValueOf(new String[] {"parser_pane","path"}, "Ops, fail!");
+	 * <p>
+	 * 
+	 * @param path Array of strings to following value<br/>
+	 * @param value Value to be set as element text<br/>
+	 * @return Return true if successful. False otherwise.<br/>
+	 */
+	public static boolean setUidsValueOf(String path[], String value)
+	{
+		Element requestedElement = uidsDocument.getRootElement();
+		
+		for (String item : path)
+		{
+			if(requestedElement.getChild(item) != null)
+			{
+				requestedElement = requestedElement.getChild(item);
+			}
+			else
+			{
+				requestedElement.addContent(new Element(item));
+				requestedElement = requestedElement.getChild(item);
+			}
+		}
+		
+		if (requestedElement != userDocument.getRootElement())
 		{
 			requestedElement.setText(value);
 			return true;
@@ -595,35 +660,6 @@ public class XmlMngr
 	}
 	
 	/**
-	 * Save and close all XMLs files.
-	 */
-	public static void closeXmls()
-	{
-		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-		
-		// Enable the following line to output XML to console for
-		// debugging
-		// xmlOutputter.output(doc, System.out);
-		
-		// Save each XML file.
-		try
-		{
-			xmlOutputter.output(userDocument, new FileOutputStream(SharedObjs.userCfgFile));
-			xmlOutputter.output(systemDocument, new FileOutputStream(SharedObjs.sytemCfgFile));
-			xmlOutputter.output(messageDocument, new FileOutputStream(SharedObjs.messageCfgFile));
-			xmlOutputter.output(filtersDocument, new FileOutputStream(SharedObjs.filtersFile));
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	/**
 	 * @param pass
 	 */
 	public static void savePass(String pass)
@@ -771,5 +807,35 @@ public class XmlMngr
 		filter.setEditable(Boolean.parseBoolean(requestedElement.getChildText("editable")));
 		filter.setActive(Boolean.parseBoolean(requestedElement.getChildText("active")));
 		filter.setLastUpdate(requestedElement.getChildText("last_update"));
+	}
+
+	/**
+	 * Save and close all XMLs files.
+	 */
+	public static void closeXmls()
+	{
+		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+		
+		// Enable the following line to output XML to console for
+		// debugging
+		// xmlOutputter.output(doc, System.out);
+		
+		// Save each XML file.
+		try
+		{
+			xmlOutputter.output(userDocument, new FileOutputStream(SharedObjs.userCfgFile));
+			xmlOutputter.output(systemDocument, new FileOutputStream(SharedObjs.sytemCfgFile));
+			xmlOutputter.output(messageDocument, new FileOutputStream(SharedObjs.messageCfgFile));
+			xmlOutputter.output(filtersDocument, new FileOutputStream(SharedObjs.filtersFile));
+			xmlOutputter.output(uidsDocument, new FileOutputStream(SharedObjs.uidsFile));
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
