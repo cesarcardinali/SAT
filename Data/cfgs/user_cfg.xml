@@ -4,12 +4,12 @@
     <rootPath>C:\SAT</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\SAT\CRs\HighCons</path>
-    <assign>true</assign>
-    <label>true</label>
+    <path>C:\SAT\CRs\Lynx Verizon</path>
+    <assign>false</assign>
+    <label>false</label>
     <labels>cd_auto</labels>
     <download>true</download>
-    <unzip>true</unzip>
+    <unzip>false</unzip>
     <analyze>true</analyze>
     <close>false</close>
     <ignore>false</ignore>

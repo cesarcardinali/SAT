@@ -582,7 +582,7 @@ public class CrChecker
 			hci = Consume.getHCList().get(i);
 			
 			if ((hci.getScOffConsume() >= 10 || hci.getConsumeAvg() >= 23) && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.3) // High
-																																				// consumption
+			                                                                                                                                    // consumption
 			{
 				String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + hci.getProcess()
 				                               + "\\\" AND summary ~ \\\"consuming too much CPU power\\\" AND (labels = cd_auto OR labels = cd_manual)");
@@ -1195,13 +1195,15 @@ public class CrChecker
 							{
 								BugRepJavaWL wl = javaWkls.get(i);
 								
-								if (wl.getTagName().contains("*sync*/gmail-ls/com.google") || wl.getTagName().contains("*sync*/com.motorola.email.exchange.push/com.android.exchange/"))
+								if (wl.getTagName().contains("*sync*/gmail-ls/com.google")
+								    || wl.getTagName().contains("*sync*/com.motorola.email.exchange.push/com.android.exchange/"))
 								{
 									wl.setTagName(wl.getTagName().substring(0, wl.getTagName().lastIndexOf("/")));
 								}
 								
-								String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getProcessName() + "\\\" AND summary ~ \\\""
-								                               + wl.getTagName().replace("*", "") + "\\\" AND (labels = cd_auto OR labels = cd_manual)");
+								String jSONOutput = jira.query("project = IKSWM AND summary !~ \\\"CLONE\\\" AND summary ~ \\\"stuck\\\" AND summary ~ \\\""
+								                               + wl.getProcessName() + "\\\" AND summary ~ \\\"" + wl.getTagName().replace("*", "")
+								                               + "\\\" AND (labels = cd_auto OR labels = cd_manual)");
 								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 								
 								if (jqr.getResultCount() == 1)
@@ -1273,7 +1275,7 @@ public class CrChecker
 								{
 									wl = kernelWkls.get(i);
 									String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getName()
-									                               + "\\\" AND summary ~ \\\"Kernel wkl\\\" AND (labels = cd_auto OR labels = cd_manual)");
+									                               + "\\\" AND summary ~ \\\"Kernel wkl stuck\\\" AND (labels = cd_auto OR labels = cd_manual)");
 									JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 									
 									if (jqr.getResultCount() == 1)
