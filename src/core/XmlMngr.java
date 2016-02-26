@@ -250,6 +250,7 @@ public class XmlMngr
 	public static String getUidsValueOf(String path[])
 	{
 		Element requestedElement = uidsDocument.getRootElement();
+		path[path.length-1] = "u_" + path[path.length-1];
 		
 		for (String item : path)
 		{
@@ -277,6 +278,7 @@ public class XmlMngr
 	public static boolean setUidsValueOf(String path[], String value)
 	{
 		Element requestedElement = uidsDocument.getRootElement();
+		path[path.length-1] = "u_" + path[path.length-1];
 		
 		for (String item : path)
 		{
@@ -298,6 +300,28 @@ public class XmlMngr
 		}
 		
 		return false;
+	}
+	
+	public static void clearUids()
+	{
+		Element requestedElement = uidsDocument.getRootElement();
+		requestedElement = requestedElement.getChild("Known");
+		requestedElement.removeContent();
+	}
+	
+	public static HashMap<String, String> getAllUids()
+	{
+		Element requestedElement = uidsDocument.getRootElement();
+		requestedElement = requestedElement.getChild("Known");
+		
+		HashMap<String, String> hm = new HashMap<String, String>();
+		for (Element e : requestedElement.getChildren())
+		{
+			hm.put(e.getName(), e.getText().replace("u_", ""));
+			System.out.println(e.getName() + " - " + e.getText());
+		}
+		
+		return hm;
 	}
 	
 	/**

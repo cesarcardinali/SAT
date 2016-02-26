@@ -7,12 +7,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 import objects.CrItem;
 import objects.CrItemsList;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
+
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+
 import core.SharedObjs;
+import core.XmlMngr;
 
 
 /**
@@ -60,7 +65,9 @@ public class DBAdapter
 	 */
 	public DBAdapter(String user, String password) throws SQLException
 	{
-		this.DB_CONNECTION = "jdbc:mysql://172.16.20.15/sat_db"; // change hardcoded line to a default config in a xml file
+		this.DB_CONNECTION = "jdbc:mysql://" + XmlMngr.getSystemValueOf(new String[] {"configs", "db_server"}); // change hardcoded line to
+		                                                                                                        // a default config in a xml
+		                                                                                                        // file
 		this.DB_USER = user;
 		this.DB_PASSWORD = password;
 		
@@ -73,7 +80,9 @@ public class DBAdapter
 	 */
 	public DBAdapter() throws SQLException
 	{
-		this.DB_CONNECTION = "jdbc:mysql://172.16.20.15/sat_db"; // change hardcoded line to a default config in a xml file
+		this.DB_CONNECTION = "jdbc:mysql://" + XmlMngr.getSystemValueOf(new String[] {"configs", "db_server"}); // change hardcoded line to
+		                                                                                                        // a default config in a xml
+		                                                                                                        // file
 		this.DB_USER = "user";
 		this.DB_PASSWORD = "user";
 		
@@ -89,7 +98,6 @@ public class DBAdapter
 	 */
 	private Connection getDBConnection() throws SQLException
 	{
-		
 		try
 		{
 			Class.forName(DB_DRIVER);
@@ -295,8 +303,7 @@ public class DBAdapter
 	 */
 	public CustomFiltersList sharedFilters()
 	{
-		String selectSQL = "SELECT * FROM Filters WHERE shared = " + 1 + " AND user_key != '"
-		                   + SharedObjs.getUser() + "';";
+		String selectSQL = "SELECT * FROM Filters WHERE shared = " + 1 + " AND user_key != '" + SharedObjs.getUser() + "';";
 		CustomFilterItem aux = new CustomFilterItem();
 		CustomFiltersList flist = new CustomFiltersList();
 		
@@ -356,8 +363,7 @@ public class DBAdapter
 	
 	public CustomFiltersList activeFilters()
 	{
-		String selectSQL = "SELECT Filters.* FROM Filters, ActiveFilters WHERE (ActiveFilters.user = '"
-		                   + SharedObjs.getUser()
+		String selectSQL = "SELECT Filters.* FROM Filters, ActiveFilters WHERE (ActiveFilters.user = '" + SharedObjs.getUser()
 		                   + "' OR  ActiveFilters.user = 'Public') AND ActiveFilters.filter_id = Filters.f_id;";
 		CustomFilterItem aux = new CustomFilterItem();
 		CustomFiltersList flist = new CustomFiltersList();
@@ -395,8 +401,7 @@ public class DBAdapter
 	 */
 	public int existsFilterWithOwner(String filterName, String userName)
 	{
-		String selectSQL = "SELECT f_id FROM Filters WHERE tagName = '" + filterName + "' AND user_key = '"
-		                   + userName + "';";
+		String selectSQL = "SELECT f_id FROM Filters WHERE tagName = '" + filterName + "' AND user_key = '" + userName + "';";
 		int id = -1;
 		
 		try
@@ -437,13 +442,10 @@ public class DBAdapter
 		{
 			// Visual query example for reference:
 			// INSERT INTO Filters VALUES (null, 'Test_Filter', '- TestHeader' , '[A-z]', 1, 1, 0, 0, 1, 1, 1, 0, 'testuser', null);
-			String insertSQL = "INSERT INTO Filters VALUES (null, '" + filter.getName() + "', '"
-			                   + filter.getHeader() + "', '" + filter.getRegex() + "', "
-			                   + boolToByte(filter.isMain()) + ", " + boolToByte(filter.isSystem()) + ", "
-			                   + boolToByte(filter.isKernel()) + ", " + boolToByte(filter.isRadio()) + ", "
-			                   + boolToByte(filter.isBugreport()) + ", " + boolToByte(filter.isRoutput())
-			                   + ", " + boolToByte(filter.isShared()) + ", '"
-			                   + (filter.isPublic() ? "Public" : SharedObjs.getUser()) + "', null);";
+			String insertSQL = "INSERT INTO Filters VALUES (null, '" + filter.getName() + "', '" + filter.getHeader() + "', '" + filter.getRegex() + "', "
+			                   + boolToByte(filter.isMain()) + ", " + boolToByte(filter.isSystem()) + ", " + boolToByte(filter.isKernel()) + ", "
+			                   + boolToByte(filter.isRadio()) + ", " + boolToByte(filter.isBugreport()) + ", " + boolToByte(filter.isRoutput()) + ", "
+			                   + boolToByte(filter.isShared()) + ", '" + (filter.isPublic() ? "Public" : SharedObjs.getUser()) + "', null);";
 			
 			preparedStatement = dbConnection.prepareStatement(insertSQL);
 			
@@ -464,8 +466,7 @@ public class DBAdapter
 			
 			if (id >= 0)
 			{
-				String activeInsertSQL = "INSERT INTO ActiveFilters VALUES (null, '" + SharedObjs.getUser()
-				                         + "', " + id + ")";
+				String activeInsertSQL = "INSERT INTO ActiveFilters VALUES (null, '" + SharedObjs.getUser() + "', " + id + ")";
 				
 				try
 				{
@@ -517,19 +518,16 @@ public class DBAdapter
 	public int updateFilter(CustomFilterItem editedFilter)
 	{
 		// Visual query example for reference:
-		// UPDATE Filters SET tagName = 'Test_Filter', header = '- TestHeader', regex = '[A-z]', w_main = 1, w_syst = 1, w_krnl = 0, w_radio =
-		// 1, w_bugr = 0, w_rout = 1, shared = 1, active = 0, user_key = 'testuser' WHERE tagName = 'Test_Adapter' AND user_key = 'testuser';
+		// UPDATE Filters SET tagName = 'Test_Filter', header = '- TestHeader', regex = '[A-z]', w_main = 1, w_syst = 1, w_krnl = 0, w_radio
+		// =
+		// 1, w_bugr = 0, w_rout = 1, shared = 1, active = 0, user_key = 'testuser' WHERE tagName = 'Test_Adapter' AND user_key =
+		// 'testuser';
 		
-		String updateSQL = "UPDATE Filters SET tagName = '" + editedFilter.getName() + "', header = '"
-		                   + editedFilter.getHeader() + "', regex = '" + editedFilter.getRegex()
-		                   + "', w_main = " + boolToByte(editedFilter.isMain()) + ", w_syst = "
-		                   + boolToByte(editedFilter.isSystem()) + ", w_krnl = "
-		                   + boolToByte(editedFilter.isKernel()) + ", w_radio = "
-		                   + boolToByte(editedFilter.isRadio()) + ", w_bugr = "
-		                   + boolToByte(editedFilter.isBugreport()) + ", w_rout = "
-		                   + boolToByte(editedFilter.isRoutput()) + ", shared = "
-		                   + boolToByte(editedFilter.isShared()) + ", user_key = '" + editedFilter.getOwner()
-		                   + "' WHERE f_id = " + editedFilter.getId() + ";";
+		String updateSQL = "UPDATE Filters SET tagName = '" + editedFilter.getName() + "', header = '" + editedFilter.getHeader() + "', regex = '"
+		                   + editedFilter.getRegex() + "', w_main = " + boolToByte(editedFilter.isMain()) + ", w_syst = " + boolToByte(editedFilter.isSystem())
+		                   + ", w_krnl = " + boolToByte(editedFilter.isKernel()) + ", w_radio = " + boolToByte(editedFilter.isRadio()) + ", w_bugr = "
+		                   + boolToByte(editedFilter.isBugreport()) + ", w_rout = " + boolToByte(editedFilter.isRoutput()) + ", shared = "
+		                   + boolToByte(editedFilter.isShared()) + ", user_key = '" + editedFilter.getOwner() + "' WHERE f_id = " + editedFilter.getId() + ";";
 		
 		int updateDone = 0;
 		
@@ -554,8 +552,7 @@ public class DBAdapter
 			try
 			{
 				// Execute select SQL statement
-				String findOcc = "SELECT * FROM ActiveFilters WHERE user = '" + SharedObjs.getUser()
-				                 + "' AND filter_id = " + editedFilter.getId() + ";";
+				String findOcc = "SELECT * FROM ActiveFilters WHERE user = '" + SharedObjs.getUser() + "' AND filter_id = " + editedFilter.getId() + ";";
 				preparedStatement = dbConnection.prepareStatement(findOcc);
 				ResultSet rs = preparedStatement.executeQuery();
 				
@@ -563,13 +560,11 @@ public class DBAdapter
 				// if a line does not exist, add it.
 				if (!rs.next())
 				{
-					System.out.println("--------- Nao encontrado - " + SharedObjs.getUser()
-					                   + " - filter_id = " + editedFilter.getId());
+					System.out.println("--------- Nao encontrado - " + SharedObjs.getUser() + " - filter_id = " + editedFilter.getId());
 					try
 					{
 						// Execute insert (update) SQL statement
-						String activeInsertSQL = "INSERT INTO ActiveFilters VALUES (null, '"
-						                         + SharedObjs.getUser() + "', " + editedFilter.getId() + ")";
+						String activeInsertSQL = "INSERT INTO ActiveFilters VALUES (null, '" + SharedObjs.getUser() + "', " + editedFilter.getId() + ")";
 						preparedStatement = dbConnection.prepareStatement(activeInsertSQL);
 						System.out.println("-------- Active Insert: " + preparedStatement.executeUpdate());
 					}
@@ -592,8 +587,7 @@ public class DBAdapter
 			try
 			{
 				// Execute select SQL statement
-				String findOcc = "SELECT * FROM ActiveFilters WHERE user = '" + SharedObjs.getUser()
-				                 + "' AND filter_id = " + editedFilter.getId() + ";";
+				String findOcc = "SELECT * FROM ActiveFilters WHERE user = '" + SharedObjs.getUser() + "' AND filter_id = " + editedFilter.getId() + ";";
 				preparedStatement = dbConnection.prepareStatement(findOcc);
 				ResultSet rs = preparedStatement.executeQuery();
 				
@@ -605,8 +599,7 @@ public class DBAdapter
 					{
 						// Execute insert (update) SQL statement
 						// DELETE FROM `sat_db`.`ActiveFilters` WHERE `idActiveFilters`='5';
-						String activeInsertSQL = "DELETE FROM ActiveFilters WHERE idActiveFilters = "
-						                         + rs.getInt(1) + ";";
+						String activeInsertSQL = "DELETE FROM ActiveFilters WHERE idActiveFilters = " + rs.getInt(1) + ";";
 						preparedStatement = dbConnection.prepareStatement(activeInsertSQL);
 						preparedStatement.executeUpdate();
 					}
@@ -701,9 +694,8 @@ public class DBAdapter
 		
 		try
 		{
-			String insertSQL = "INSERT INTO Analyzed_CRs VALUES ('" + crc_item.getJiraID() + "', '"
-			                   + crc_item.getB2gID() + "', '" + crc_item.getAssignee() + "', '"
-			                   + crc_item.getProduct() + "', '" + crc_item.getResolution() + "', null);";
+			String insertSQL = "INSERT INTO Analyzed_CRs VALUES ('" + crc_item.getJiraID() + "', '" + crc_item.getB2gID() + "', '" + crc_item.getAssignee()
+			                   + "', '" + crc_item.getProduct() + "', '" + crc_item.getResolution() + "', null);";
 			
 			preparedStatement = dbConnection.prepareStatement(insertSQL);
 			
@@ -727,9 +719,8 @@ public class DBAdapter
 		
 		try
 		{
-			String insertSQL = "UPDATE Analyzed_CRs " + "SET assignee='" + crc_item.getAssignee() + "', "
-			                   + "resolution='" + crc_item.getResolution() + "' " + "WHERE cr_id='"
-			                   + crc_item.getJiraID() + "';";
+			String insertSQL = "UPDATE Analyzed_CRs " + "SET assignee='" + crc_item.getAssignee() + "', " + "resolution='" + crc_item.getResolution() + "' "
+			                   + "WHERE cr_id='" + crc_item.getJiraID() + "';";
 			
 			preparedStatement = dbConnection.prepareStatement(insertSQL);
 			
@@ -808,8 +799,7 @@ public class DBAdapter
 	 */
 	public CrItemsList AnalyzedCRsInRange(String from, String to)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
-		                   + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -847,8 +837,7 @@ public class DBAdapter
 	 */
 	public CrItemsList analyzedCRsInRangeWithAssignee(String from, String to, String assignee)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
-		                   + "' and assignee = '" + assignee + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to + "' and assignee = '" + assignee + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -886,8 +875,7 @@ public class DBAdapter
 	 */
 	public CrItemsList analyzedCRsInRangeWithResolution(String from, String to, String resolution)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
-		                   + "' and resolution = '" + resolution + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to + "' and resolution = '" + resolution + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -924,11 +912,10 @@ public class DBAdapter
 	 * @param resolution
 	 * @return
 	 */
-	public CrItemsList analyzedCRsInRangeWithAssigneeAndResolution(String from, String to, String assignee,
-	                                                               String resolution)
+	public CrItemsList analyzedCRsInRangeWithAssigneeAndResolution(String from, String to, String assignee, String resolution)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
-		                   + "' and assignee = '" + assignee + "' and resolution = '" + resolution + "';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to + "' and assignee = '" + assignee
+		                   + "' and resolution = '" + resolution + "';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -965,8 +952,7 @@ public class DBAdapter
 	 */
 	public CrItemsList closedCRsInRangeWithResolution(String from, String to)
 	{
-		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to
-		                   + "' and resolution = 'Unresolved';";
+		String selectSQL = "SELECT * FROM Analyzed_CRs WHERE date >= '" + from + "' and date <= '" + to + "' and resolution = 'Unresolved';";
 		CrItem aux = new CrItem();
 		CrItemsList crc_list = new CrItemsList();
 		
@@ -992,6 +978,135 @@ public class DBAdapter
 		}
 		
 		return crc_list;
+	}
+	
+	public int addUidProcess(String uid, String process)
+	{
+		int insertDone = 0;
+		
+		String insertSQL = "INSERT INTO uids_processes VALUES ('" + uid + "', '" + process + "');";
+		
+		try
+        {
+	        preparedStatement = dbConnection.prepareStatement(insertSQL);
+
+			// Execute insert SQL statement
+			insertDone = insertDone + preparedStatement.executeUpdate();
+        }
+		catch (MySQLIntegrityConstraintViolationException dup)
+		{
+			return -1;
+		}
+        catch (SQLException e)
+        {
+	        e.printStackTrace();
+        }
+		
+		return insertDone;
+	}
+	
+	public String existsUid(String uid)
+	{
+		String selectSQL = "SELECT process FROM uids_processes WHERE uid = '" + uid + "';";
+		String process = null;
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			// if a line exists (found a result) then found receives true
+			if (rs.next())
+			{
+				process = rs.getString(1);
+				return process;
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		return null;
+	}
+	
+	public HashMap<String, String> getAllUids()
+	{
+		String selectSQL = "SELECT * FROM uids_processes;";
+		HashMap<String, String> map = new HashMap<String, String>();
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(selectSQL);
+			
+			// execute select SQL statement
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			// if a line exists (found a result) then found receives true
+			while (rs.next())
+			{
+				map.put(rs.getString(1), rs.getString(2));
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		return map;
+	}
+	
+	public int updateUid(String uid, String process)
+	{
+		// Visual query example for reference:
+		// INSERT into Analyzed_CRs VALUES ('IKUT-1112', '8888888', 'testuser', 'Product','Tethering', '2015-08-05 18:19:03');
+		int insertDone = 0;
+		
+		try
+		{
+			String insertSQL = "UPDATE uids_processes " + "SET process='" + process + "' WHERE uid='" + uid + "';";
+			
+			preparedStatement = dbConnection.prepareStatement(insertSQL);
+			
+			// Execute insert SQL statement
+			insertDone = insertDone + preparedStatement.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		return insertDone;
+	}
+	
+	public int deleteUid(String uid)
+	{
+		// Visual query example for reference:
+		// DELETE from Analyzed_CRs where cr_id = 'IKUT-1111';
+		String deleteSQL = "DELETE from uids_processes where uid = '" + uid + "';";
+		
+		int deleteDone = 0;
+		
+		try
+		{
+			preparedStatement = dbConnection.prepareStatement(deleteSQL);
+			
+			// Execute delete SQL statement
+			deleteDone = preparedStatement.executeUpdate();
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		return deleteDone;
 	}
 	
 	/**

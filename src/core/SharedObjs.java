@@ -4,6 +4,7 @@ package core;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JOptionPane;
@@ -20,11 +21,11 @@ import objects.CrItem;
 import objects.CrItemsList;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
-import panes.AdvancedOptionsPane;
 import panes.CrsManagerPane;
 import panes.CustomFiltersPane;
 import panes.OptionsPane;
 import panes.ParserPane;
+import panes.secondarypanes.AdvancedOptionsPane;
 import panes.secondarypanes.ListPane;
 import supportive.DBAdapter;
 
@@ -42,7 +43,7 @@ public class SharedObjs
 	public static final File          userCfgFile    = new File(contentFolder + "cfgs/user_cfg.xml");
 	public static final File          messageCfgFile = new File(contentFolder + "cfgs/message.xml");
 	public static final File          filtersFile    = new File(contentFolder + "cfgs/filters.xml");
-	public static final File          uidsFile    = new File(contentFolder + "cfgs/uids.xml");
+	public static final File          uidsFile       = new File(contentFolder + "cfgs/uids.xml");
 	public static final File          pwdFile        = new File(contentFolder + "cfgs/pass.pwd");
 	private static String             crPath;
 	private static String             rootFolderPath;
@@ -65,14 +66,16 @@ public class SharedObjs
 	public static AdvancedOptionsPane advOptions;
 	public static SAT                 satFrame;
 	public static DBAdapter           satDB;
+	public static boolean             dbStatus;
 	private static ListPane           closedList;
 	private static ListPane           openedList;
 	
 	/*
-	 *  Fixed parameters:
+	 * Fixed parameters:
 	 */
 	// Thresholds for issue detectors:
-	public static long threshold;
+	public static long                threshold;
+	public static boolean             isUidsDBModified;
 	
 	/**
 	 * Initialize class variables
@@ -89,8 +92,30 @@ public class SharedObjs
 			e.printStackTrace();
 		}
 		
+		// Try to connect to DB
+		try
+		{
+			satDB = new DBAdapter();
+		}
+		catch (SQLException e1)
+		{
+			e1.printStackTrace();
+			Logger.log(Logger.TAG_SHAREDOBJS, "Could not connect to SQL DB");
+		}
+		
+		// Setup connection status
+		if (satDB != null)
+		{
+			dbStatus = true;
+		}
+		else
+		{
+			dbStatus = false;
+		}
+		
 		// Initialize variables
 		crPath = "";
+		isUidsDBModified = false;
 		updateFolder1 = XmlMngr.getSystemValueOf(new String[] {"configs", "update_path1"});
 		updateFolder2 = XmlMngr.getSystemValueOf(new String[] {"configs", "update_path2"});
 		rootFolderPath = XmlMngr.getUserValueOf(new String[] {"parser_pane", "rootPath"});
@@ -124,26 +149,10 @@ public class SharedObjs
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Downloader</body></html>", crsManagerPane);
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Options</body></html>", optionsPane);
 		
-		// Try to connect to DB
-		try
-		{
-			satDB = new DBAdapter();
-		}
-		catch (SQLException e1)
-		{
-			e1.printStackTrace();
-			Logger.log(Logger.TAG_SHAREDOBJS, "Could not connect to SQL DB");
-		}
-		
 		// Load filters and update tree
 		loadFilters();
 		parserPane.getFiltersResultsTree().updateFiltersTree();
-		
-		// Setup connection status
-		if (satDB != null)
-			optionsPane.setServerStatus(true);
-		else
-			optionsPane.setServerStatus(false);
+		optionsPane.setServerStatus(dbStatus);
 		
 		//
 		closedList = new ListPane();
@@ -562,5 +571,22 @@ public class SharedObjs
 		openedList = new ListPane();
 		openedList.setTitle("Not closed CRs");
 		openedList.setLocation(900, 250);
+	}
+	
+	public static void updateUidsXML()
+	{
+		if (isUidsDBModified)
+		{
+			Logger.log(Logger.TAG_SHAREDOBJS, "Updating XML UIDs File ...");
+			
+			HashMap<String, String> hm = satDB.getAllUids();
+			for (String key : hm.keySet())
+			{
+				Logger.log(Logger.TAG_SHAREDOBJS, key + "\t-\t" + hm.get(key));
+				XmlMngr.setUidsValueOf(new String[] {"Known", key}, hm.get(key));
+			}
+			
+			Logger.log(Logger.TAG_SHAREDOBJS, "Update completed");
+		}
 	}
 }

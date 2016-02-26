@@ -67,7 +67,7 @@ public class OptionsPane extends JPanel
 	private JRadioButton   rdbtnNotepad;
 	private JCheckBox      chkTextWrap;
 	private JButton        btnManageFilters;
-	private JButton        btnAdvanced;
+	private JButton        btnMoreOptions;
 	private JTextField     textUsername;
 	private JPasswordField textPassword;
 	private JCheckBox      chkbxRemember;
@@ -171,7 +171,6 @@ public class OptionsPane extends JPanel
 			public void focusLost(FocusEvent e)
 			{
 				updateUserdata();
-				System.out.println("fooooooooooooocus lost");
 			}
 			
 			@Override
@@ -1088,8 +1087,8 @@ public class OptionsPane extends JPanel
 		});
 		panel_5.add(btnManageFilters);
 		
-		btnAdvanced = new JButton("Advanced");
-		btnAdvanced.addActionListener(new ActionListener()
+		btnMoreOptions = new JButton("More Options");
+		btnMoreOptions.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
@@ -1097,9 +1096,9 @@ public class OptionsPane extends JPanel
 				SharedObjs.advOptions.setVisible(true);
 			}
 		});
-		btnAdvanced.setToolTipText("Click to see advanced options");
-		btnAdvanced.setPreferredSize(new Dimension(103, 23));
-		panel_5.add(btnAdvanced);
+		btnMoreOptions.setToolTipText("Click to see advanced options");
+		btnMoreOptions.setPreferredSize(new Dimension(103, 23));
+		panel_5.add(btnMoreOptions);
 		chkTextWrap.addItemListener(new ItemListener()
 		{
 			@Override

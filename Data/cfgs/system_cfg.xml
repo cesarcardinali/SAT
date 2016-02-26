@@ -15,5 +15,6 @@
     <clean_install>false</clean_install>
     <overwrite_usr_cfg>true</overwrite_usr_cfg>
     <debug_mode>true</debug_mode>
+    <db_server>172.16.20.15/sat_db</db_server>
   </configs>
 </SAT>

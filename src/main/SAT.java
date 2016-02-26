@@ -155,6 +155,7 @@ public class SAT extends JFrame
 					SharedObjs.crsManagerPane.saveUserData();
 					SharedObjs.parserPane.savePaneData();
 					SharedObjs.optionsPane.savePaneData();
+					SharedObjs.updateUidsXML();
 					run = 1;
 					Logger.log(Logger.TAG_SAT, "Done");
 				}
