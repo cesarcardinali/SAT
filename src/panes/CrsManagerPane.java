@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -880,6 +882,9 @@ public class CrsManagerPane extends JPanel
 							if (chckbxRemLabels.isSelected())
 							{
 								SharedObjs.crsManagerPane.addLogLine("Unassignin and removing labels ...");
+
+								// Get label list
+								labels = textLabel.getText().split(" ");
 								for (String crKey : CRs)
 								{
 									crKey = trimCR(crKey);
@@ -1144,9 +1149,21 @@ public class CrsManagerPane extends JPanel
 		
 		// Parse file
 		boolean parsed = false;
+		String bpVersion = "";
 		
 		while ((sCurrentLine = br.readLine()) != null)
 		{
+			if (sCurrentLine.toLowerCase().contains("bpversion"))
+			{
+				Logger.log(Logger.TAG_CRSMANAGER, "--- Initial line: " + sCurrentLine);
+				Matcher m = Pattern.compile(".*bpVersion\": \".+ (.+)\".*").matcher(sCurrentLine);
+				if(m.matches())
+				{
+					bpVersion = m.group(1);
+					Logger.log(Logger.TAG_CRSMANAGER, "bpVersion: " + bpVersion);
+					bpVersion = bpVersion.substring(0, bpVersion.indexOf("_"));
+				}
+			}
 			if (sCurrentLine.toLowerCase().contains("product"))
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "--- Initial line: " + sCurrentLine);
@@ -1162,6 +1179,13 @@ public class CrsManagerPane extends JPanel
 					sCurrentLine = sCurrentLine.substring(0, sCurrentLine.indexOf("\""));
 				}
 				Logger.log(Logger.TAG_CRSMANAGER, sCurrentLine);
+				
+				if(sCurrentLine.equals("griffin"))
+				{
+					sCurrentLine = bpVersion;
+				}
+				
+				Logger.log(Logger.TAG_CRSMANAGER, "Product name detected: " + sCurrentLine);
 				
 				SharedObjs.copyScript(new File("Data\\scripts\\_Base.pl"), new File(folder + "\\build_report.pl"));
 				

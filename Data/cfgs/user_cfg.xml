@@ -7,8 +7,8 @@
     <path>C:\SAT\CRs\tests</path>
     <assign>false</assign>
     <label>false</label>
-    <labels>cd_auto</labels>
-    <download>true</download>
+    <labels>cd_auto cd_auto</labels>
+    <download>false</download>
     <unzip>true</unzip>
     <analyze>true</analyze>
     <close>false</close>
@@ -56,6 +56,7 @@
     <merlin>2470</merlin>
     <athene>3000</athene>
     <griffin>3490</griffin>
+    <SHERIDAN>2750</SHERIDAN>
   </bat_cap>
   <diag_dup>
     <surnia>IKSWL-1063</surnia>

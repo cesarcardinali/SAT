@@ -1275,7 +1275,7 @@ public class CrChecker
 							if (kernelWkls.get(i).getDuration() > 1.5 * 60 * 60 * 1000)
 							{
 								wl = kernelWkls.get(i);
-								String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getName()
+								String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getName().replace("[", "").replace("]", "")
 								                               + "\\\" AND summary ~ \\\"Kernel wkl stuck\\\" AND (labels = cd_auto OR labels = cd_manual)");
 								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 								

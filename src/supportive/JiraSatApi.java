@@ -297,6 +297,12 @@ public class JiraSatApi
 		String input = prepareInputFromFile("deleteLabel");
 		String output = "";
 		
+//		if(labels == null)
+//		{
+//			System.out.println("Labels null");
+//			return "";
+//		}
+		
 		for (int i = 0; i < labels.length - 1; i++)
 		{
 			input = input.replace("#given_label#\"}", labels[i] + "\"} , {\"remove\": \"#given_label#\"}");

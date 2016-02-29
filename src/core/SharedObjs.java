@@ -127,6 +127,13 @@ public class SharedObjs
 		crsList = new CrItemsList();
 		user = XmlMngr.getUserValueOf(new String[] {"option_pane", "uname"});
 		
+		// User setup
+		if (user.equals("user"))
+		{
+			user = JOptionPane.showInputDialog(satFrame, "Before start using SAT, please, type your coreid");
+			pass = JOptionPane.showInputDialog(satFrame, "Now, configure your password");
+		}
+		
 		// Create Panes
 		parserPane = new ParserPane();
 		crsManagerPane = new CrsManagerPane();
@@ -260,8 +267,8 @@ public class SharedObjs
 		int ans = JOptionPane.showOptionDialog(SharedObjs.satFrame, "We noticed differences between your\n" + "local and your cloud filters file.\n"
 		                                                            + "\n    - Your filters in DB: " + dbFilters.size() + "\n    - Your filters in XML: "
 		                                                            + xmlFilters.size() + "\n\nWhat do you prefer to do?", "Filters files conflict",
-		                                       JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] {"Use local file",
-		                                               "Use cloud file"}, "Use cloud file");
+		                                       JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+		                                       new String[] {"Use local file", "Use cloud file"}, "Use cloud file");
 		
 		Logger.log(Logger.TAG_SHAREDOBJS, "Option selected: " + ans);
 		
