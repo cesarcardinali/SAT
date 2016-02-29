@@ -622,7 +622,8 @@ public class JiraSatApi
 		if (output.contains("Unauthorized (401)"))
 		{
 			Logger.log(TAG, "Jira action failed: " + output);
-			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "Login/Pass seems to be wrong.\n\n" + output);
+			JOptionPane.showMessageDialog(SharedObjs.crsManagerPane, "Login/Pass seems to be wrong.\n\n");
+			Logger.log("JIRA API", output);
 			return null;
 		}
 		else if (output.contains("Issue Does Not Exist"))
@@ -730,7 +731,9 @@ public class JiraSatApi
 		{
 			auxObj = (JSONObject) auxArray.get(0);
 			if (auxObj != null)
+			{
 				cr.setAffectedVersion(auxObj.get("name").toString());
+			}
 		}
 		
 		System.out.println(cr + "\n\n\n");

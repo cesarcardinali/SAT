@@ -260,54 +260,12 @@ public class SharedObjs
 		int ans = JOptionPane.showOptionDialog(SharedObjs.satFrame, "We noticed differences between your\n" + "local and your cloud filters file.\n"
 		                                                            + "\n    - Your filters in DB: " + dbFilters.size() + "\n    - Your filters in XML: "
 		                                                            + xmlFilters.size() + "\n\nWhat do you prefer to do?", "Filters files conflict",
-		                                       JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] {"Merge files", "Use local file",
-		                                               "Use cloud file"}, "Merge files");
+		                                       JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] {"Use local file",
+		                                               "Use cloud file"}, "Use cloud file");
 		
 		Logger.log(Logger.TAG_SHAREDOBJS, "Option selected: " + ans);
 		
 		if (ans == 0)
-		{
-			Logger.log(Logger.TAG_SHAREDOBJS, "Merging filters");
-			
-			CustomFiltersList aux = new CustomFiltersList();
-			
-			for (CustomFilterItem filter : xmlFilters)
-			{
-				if (dbFilters.indexOf(filter) == -1)
-				{
-					aux.add(filter);
-					satDB.insertFilter(filter);
-				}
-				else
-				{
-					// Comparar datas e pega ro mais atual
-					// As datas ja foram configuradas na 115
-					// para permitir essa modificação aqui.
-				}
-			}
-			
-			for (CustomFilterItem filter : dbFilters)
-			{
-				if (xmlFilters.indexOf(filter) == -1)
-				{
-					xmlFilters.add(filter);
-					XmlMngr.setMyFiltersValueOf(filter);
-				}
-				else
-				{
-					// Comparar datas e pega ro mais atual
-					// As datas ja foram configuradas na 115
-					// para permitir essa modificação aqui.
-				}
-			}
-			
-			dbFilters.addAll(aux);
-			
-			userFiltersList = satDB.myFilters();
-			
-			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size() + "\nYour filters in XML: " + xmlFilters.size());
-		}
-		else if (ans == 1)
 		{
 			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing with local xml file");
 			
@@ -319,7 +277,7 @@ public class SharedObjs
 			
 			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing done\nYour filters in DB: " + dbFilters.size() + "\nYour filters in XML: " + xmlFilters.size());
 		}
-		else
+		else if (ans == 1)
 		{
 			Logger.log(Logger.TAG_SHAREDOBJS, "Syncing with cloud data");
 			

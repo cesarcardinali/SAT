@@ -757,7 +757,9 @@ public class CrsManagerPane extends JPanel
 		}
 		catch (Exception ex)
 		{
-			JOptionPane.showMessageDialog(this, "Exception: " + ex.getMessage());
+			JOptionPane.showMessageDialog(this, "An error occurred. Please check logs.");
+			Logger.log(Logger.TAG_CRSMANAGER,  ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 	

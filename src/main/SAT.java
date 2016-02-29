@@ -37,8 +37,18 @@ public class SAT extends JFrame
 	/**
 	 * Variables
 	 */
-	boolean updating = false; // Checking for update
-	SAT     satPane;
+	private boolean    updating = false; // Checking for update
+	private SAT        satPane;
+	private Thread     onShutdown;
+	private JMenuBar   menuBar;
+	private JMenu      mnSAT;
+	private JMenuItem  mntmExit;
+	private JSeparator separator;
+	private JMenu      mnHelp;
+	private JMenuItem  mntmHelpContent;
+	private JMenuItem  mntmAbout;
+	private JMenuItem  mntmChangelog;
+	private JSeparator separator_1;
 	
 	/**
 	 * Runnable
@@ -108,8 +118,10 @@ public class SAT extends JFrame
 		menuBar.add(mnHelp);
 		
 		mntmHelpContent = new JMenuItem("Help Content");
-		mntmHelpContent.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		mntmHelpContent.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
 				HelpPane hp = new HelpPane();
 				hp.setLocationRelativeTo(satPane);
 				hp.setVisible(true);
@@ -187,7 +199,7 @@ public class SAT extends JFrame
 				{
 					try
 					{
-						Thread.sleep(900000); // Check for update each 15 minutes
+						Thread.sleep(600000); // Check for update each 15 minutes
 					}
 					catch (InterruptedException e)
 					{
@@ -275,17 +287,6 @@ public class SAT extends JFrame
 		
 		return 0;
 	}
-	
-	private Thread     onShutdown;
-	private JMenuBar   menuBar;
-	private JMenu      mnSAT;
-	private JMenuItem  mntmExit;
-	private JSeparator separator;
-	private JMenu      mnHelp;
-	private JMenuItem  mntmHelpContent;
-	private JMenuItem  mntmAbout;
-	private JMenuItem  mntmChangelog;
-	private JSeparator separator_1;
 	
 	// Getters and Setters:
 	public boolean isUpdating()

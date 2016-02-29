@@ -8,6 +8,11 @@
     <assign>true</assign>
     <label>true</label>
     <labels>cd_auto</labels>
+	<download>true</download>
+    <unzip>true</unzip>
+    <analyze>true</analyze>
+    <close>false</close>
+    <ignore>false</ignore>
   </crs_jira_pane>
   <option_pane>
     <full_log>- The process *#pname#* was consuming *~#avgconsume#* of CPU processing power.\n{noformat}\n#logfull#\n{noformat}</full_log>

@@ -378,7 +378,11 @@ public class CrItem
 		this.affectedVersion = affectedVersion;
 		// lux_verizon-userdebug 6.0.1 MCD24.107-48 452 intcfg,test-keys
 		String slices[] = affectedVersion.split(" ");
-		build = slices[2];
+
+		if(slices.length > 1)
+			build = slices[2];
+		else
+			build = slices[0];
 	}
 	
 	public String getComponent()

@@ -37,6 +37,7 @@
     <remember>true</remember>
   </option_pane>
   <bat_cap>
+    <clark>3000</clark>
     <condor>1980</condor>
     <falcon>2070</falcon>
     <ghost>2200</ghost>
@@ -46,6 +47,7 @@
     <otus>2390</otus>
     <peregrine>2070</peregrine>
     <quantum>3900</quantum>
+    <quark>3900</quark>
     <shamu>3220</shamu>
     <surnia>2390</surnia>
     <thea>2390</thea>
@@ -54,7 +56,6 @@
     <merlin>2470</merlin>
     <athene>3000</athene>
     <griffin>3490</griffin>
-    <clark>3000</clark>
   </bat_cap>
   <diag_dup>
     <surnia>IKSWL-1063</surnia>
@@ -73,5 +74,7 @@
     <quark>IKUT-4329</quark>
     <clark>IKUT-4329</clark>
     <merlin>IKUT-00000</merlin>
+    <athene>IKUT-00000</athene>
+    <griffin>IKUT-00000</griffin>
   </diag_dup>
 </SAT>
