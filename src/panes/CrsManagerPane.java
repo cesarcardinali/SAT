@@ -1050,8 +1050,12 @@ public class CrsManagerPane extends JPanel
 		XmlMngr.setUserValueOf(xmlPath, textPath.getText());
 		xmlPath[1] = "assign";
 		XmlMngr.setUserValueOf(xmlPath, chckbxAssign.isSelected() + "");
+		xmlPath[1] = "unassign";
+		XmlMngr.setUserValueOf(xmlPath, chckbxUnassign.isSelected() + "");
 		xmlPath[1] = "label";
 		XmlMngr.setUserValueOf(xmlPath, chckbxLabels.isSelected() + "");
+		xmlPath[1] = "rem_label";
+		XmlMngr.setUserValueOf(xmlPath, chckbxRemLabels.isSelected() + "");
 		xmlPath[1] = "labels";
 		XmlMngr.setUserValueOf(xmlPath, textLabel.getText());
 		xmlPath[1] = "download";
@@ -1077,12 +1081,14 @@ public class CrsManagerPane extends JPanel
 		SharedObjs.setDownloadPath(textPath.getText());
 		
 		xmlPath[1] = "assign";
-		chckbxUnassign.setSelected(!Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		chckbxAssign.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		xmlPath[1] = "unassign";
+		chckbxUnassign.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		
 		xmlPath[1] = "label";
-		chckbxRemLabels.setSelected(!Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		chckbxLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
+		xmlPath[1] = "rem_label";
+		chckbxRemLabels.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		
 		xmlPath[1] = "labels";
 		textLabel.setText(XmlMngr.getUserValueOf(xmlPath));
