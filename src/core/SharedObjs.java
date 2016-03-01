@@ -132,6 +132,7 @@ public class SharedObjs
 		{
 			user = JOptionPane.showInputDialog(satFrame, "Before start using SAT, please, type your coreid");
 			pass = JOptionPane.showInputDialog(satFrame, "Now, configure your password");
+			SharedObjs.setUser(user);
 		}
 		
 		// Create Panes
@@ -212,7 +213,7 @@ public class SharedObjs
 			{
 				boolean hasItem = true;
 				
-				System.out.println("List of XML Filters: \n" + xmlFilters); System.out.println("List of DB Filters: \n" + dbFilters);
+//				System.out.println("List of XML Filters: \n" + xmlFilters); System.out.println("List of DB Filters: \n" + dbFilters);
 				
 				for (CustomFilterItem filter : dbFilters)
 				{
@@ -441,9 +442,9 @@ public class SharedObjs
 	}
 	
 	// Setters:
-	public static void setUser(String user)
+	public static void setUser(String newuser)
 	{
-		SharedObjs.user = user;
+		user = newuser;
 	}
 	
 	public static void setPass(String pass)

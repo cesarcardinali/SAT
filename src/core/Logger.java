@@ -115,7 +115,7 @@ public class Logger
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				Logger.log(Logger.TAG_LOGGER, "Log file does not exist");
+				System.out.println("Log file does not exist");
 			}
 		}
 		

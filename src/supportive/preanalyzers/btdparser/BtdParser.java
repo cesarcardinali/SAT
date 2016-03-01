@@ -308,7 +308,7 @@ public class BtdParser
 		if (kernelWLs.getLongerWL() != null && getPercentage(kernelWLs.getLongerWL().getLongerPeriod(), realTimeOnBatt) > 7
 		    && kernelWLs.getLongerWL().getLongerPeriod() >= 45 * 60000 && !kernelWLs.getLongerWL().getName().contains("PowerManagerService.Display"))
 		{
-			Logger.log(Logger.TAG_BTD_PARSER, "SystemPM detected: " + kernelWLs.size());
+			Logger.log(Logger.TAG_BTD_PARSER, "PowerManagerService wakelock detected: " + kernelWLs.size());
 			Logger.log(Logger.TAG_BTD_PARSER, kernelWLs.getLongerWL().toString());
 			// System.out.println(kernelWLs.getLongerWL());
 			return true;

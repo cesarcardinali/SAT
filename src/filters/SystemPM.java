@@ -18,7 +18,6 @@ import supportive.DateTimeOperator;
 import com.google.common.base.Throwables;
 
 import core.Logger;
-import core.SharedObjs;
 
 
 /**
@@ -176,13 +175,11 @@ public class SystemPM
 						{
 							suspiciousWakelocks.get(wlIndex).updateTime(parsedDate.getTime(), year + "-" + sCurrentLine.subSequence(0, 18));
 							
+							if (suspiciousWakelocks.get(wlIndex).getHeldTime() > 60000)
+								okWakelocks.add(suspiciousWakelocks.get(wlIndex));
+							
 							if (suspiciousWakelocks.get(wlIndex).getHeldTime() < minHeldTime)
 							{
-								suspiciousWakelocks.remove(wlIndex);
-							}
-							else
-							{
-								okWakelocks.add(suspiciousWakelocks.get(wlIndex));
 								suspiciousWakelocks.remove(wlIndex);
 							}
 						}
@@ -224,7 +221,7 @@ public class SystemPM
 									
 									if (acquiredDate != null && releasedDate.getTime() - acquiredDate.getTime() > minHeldTime)
 									{
-										System.out.println("PM held for: "
+										System.out.println("PM suspend blocker held for: "
 										                   + DateTimeOperator.getTimeStringFromMillis(releasedDate.getTime() - acquiredDate.getTime()));
 										System.out.println("From: " + acqD + " - To: " + relD);
 										System.out.println("rel" + releasedDate.getTime() + "\nacq" + acquiredDate.getTime());
@@ -262,9 +259,9 @@ public class SystemPM
 			result = "Results:\n\n";
 			if (suspiciousWakelocks.size() > 0)
 			{
-				result = result + SharedObjs.optionsPane.getTextSuspiciousHeader() + "\n";
 				System.out.println("\n\n--------------- Results ---------------\n");
 				
+				System.out.println("-- PMS.Wakelocks suspicious --");
 				for (int i = 0; i < suspiciousWakelocks.size(); i++)
 				{
 					System.out.println("Stuck wakelock since " + suspiciousWakelocks.get(i).getAcquiredDate() + "-  " + "\tLock: "
@@ -274,17 +271,17 @@ public class SystemPM
 					         + "\tTag: " + suspiciousWakelocks.get(i).getTag() + "\n";
 				}
 				
-				System.out.println("------------------");
 				result = result + "\n-------------\n";
 				
+				System.out.println("\n-- PMS.Wakelocks suspended for more than 15 minutes --");
 				for (int i = 0; i < okWakelocks.size(); i++)
 				{
-					if (okWakelocks.get(i).getHeldTime() > minHeldTime)
+					if(okWakelocks.get(i).getHeldTime() > minHeldTime)
 					{
-						System.out.println("\nWakelock held for: " + DateTimeOperator.getTimeStringFromMillis(okWakelocks.get(i).getHeldTime()) + "\t - Lock: "
+						System.out.println("Wakelock held for: " + DateTimeOperator.getTimeStringFromMillis(okWakelocks.get(i).getHeldTime()) + "\t - Lock: "
 						                   + okWakelocks.get(i).getLock() + "\n\tFrom: " + okWakelocks.get(i).getAcquiredDate() + "   ->  To: "
-						                   + okWakelocks.get(i).getEndDate() + "\n\tUid: " + okWakelocks.get(i).getUid() + "\tTag: "
-						                   + okWakelocks.get(i).getTag());
+						                   + okWakelocks.get(i).getEndDate() + "\n\tUid: " + okWakelocks.get(i).getUid() + "\tTag: " + okWakelocks.get(i).getTag()
+						                   + "\n");
 						result += "Wakelock held for: " + DateTimeOperator.getTimeStringFromMillis(okWakelocks.get(i).getHeldTime()) + "\t - Lock: "
 						          + okWakelocks.get(i).getLock() + "\tUid: " + okWakelocks.get(i).getUid() + "\tTag: " + okWakelocks.get(i).getTag() + "\n";
 					}
@@ -298,14 +295,15 @@ public class SystemPM
 			System.out.println("\n\n");
 			for (PMWakelockPeriod p : pmWakeLocks)
 			{
-				System.out.println("Wakelocks inside PM held\n" + p);
+				System.out.println("Wakelocks while PM suspended:\n" + p);
 				for (SystemWLs w : okWakelocks)
 				{
-					if (w.getAcquiredTime() >= p.getAcquiredDate().getTime() && w.getHeldTime() + w.getAcquiredTime() < p.getReleasedDate().getTime())
+					if (w.getAcquiredTime() >= p.getAcquiredDate().getTime() - 60000 && w.getAcquiredTime() < p.getReleasedDate().getTime())
 					{
 						System.out.println(w);
 					}
 				}
+				System.out.println("------");
 			}
 		}
 		

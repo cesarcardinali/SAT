@@ -30,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1033,7 +1032,7 @@ public class CrsManagerPane extends JPanel
 		
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-		format.setTimeZone(TimeZone.getTimeZone("Brazil/East"));
+//		format.setTimeZone(TimeZone.getTimeZone("Brazil/East"));
 		
 		textLog.setText(textLog.getText() + format.format(date) + "\t" + line + "\n");
 		textLog.setCaretPosition(textLog.getText().length());

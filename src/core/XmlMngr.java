@@ -80,7 +80,8 @@ public class XmlMngr
 		
 		for (String item : path)
 		{
-			requestedElement = requestedElement.getChild(item);
+			if(requestedElement != null)
+				requestedElement = requestedElement.getChild(item);
 		}
 		
 		if (requestedElement != null)

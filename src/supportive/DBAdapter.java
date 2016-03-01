@@ -269,6 +269,7 @@ public class DBAdapter
 	public CustomFiltersList myFilters()
 	{
 		String selectSQL = "SELECT * FROM Filters WHERE user_key = '" + SharedObjs.getUser() + "';";
+		System.out.println("DB My Filters Query: " + selectSQL);
 		CustomFilterItem aux = new CustomFilterItem();
 		CustomFiltersList flist = new CustomFiltersList();
 		

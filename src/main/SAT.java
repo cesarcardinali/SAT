@@ -6,7 +6,10 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 
@@ -219,73 +222,130 @@ public class SAT extends JFrame
 	/**
 	 * Check for newer version
 	 */
-	public int checkForUpdate()
+	@SuppressWarnings("resource")
+    public int checkForUpdate()
 	{
 		Logger.log(Logger.TAG_SAT, "Checking for update");
 		
 		updating = true;
-		long dateRemote = 0, dateLocal = 0;
+		long dateLocal = 0;
 		
-		File f1;
+		File updateCfg;
 		File f2;
-		f1 = new File(SharedObjs.updateFolder1 + "/" + Strings.getToolFileName());
 		
-		Logger.log(Logger.TAG_SAT, "Remote file: " + f1.getAbsolutePath() + " - Modified: " + new Date(f1.lastModified()));
-		
-		f2 = new File(Strings.getToolFileName());
-		
-		Logger.log(Logger.TAG_SAT, "Local file: " + f2.getAbsolutePath() + " - Modified: " + new Date(f2.lastModified()));
-		
-		dateRemote = f1.lastModified();
-		dateLocal = f2.lastModified();
-		
-		if (dateLocal < dateRemote && dateLocal != 0)
+		try
 		{
-			Object[] options = new Object[] {"Yes", "No"};
-			int n = JOptionPane.showOptionDialog(null, XmlMngr.getMessageValueOf(new String[] {"messages", "new_version"}),
-			                                     XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), JOptionPane.YES_NO_CANCEL_OPTION,
-			                                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+			f2 = new File(Strings.getToolFileName());
+			dateLocal = f2.lastModified();
 			
-			if (n == 0)
+			updateCfg = new File(SharedObjs.updateFolder1 + "/Data/update/update.cfg");
+			BufferedReader br = new BufferedReader(new FileReader(updateCfg));
+			String currentLine;
+			String updateMessage = "";
+			Boolean mandatory = false;
+			long deployed = -1;
+			
+			while ((currentLine = br.readLine()) != null)
 			{
-				try
+				if (currentLine.contains("update_reason="))
 				{
-					Logger.log(Logger.TAG_SAT, "Updating the Updater first, from: " + SharedObjs.updateFolder1);
-					FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/" + Strings.getUpdaterFileName()), new File(Strings.getUpdaterFileName()));
+					updateMessage = currentLine.replace("update_reason=", "");
 				}
-				catch (IOException e)
+				else if (currentLine.contains("mandatory="))
 				{
-					Logger.log(Logger.TAG_SAT, "Updating the Updater failed");
-					e.printStackTrace();
+					mandatory = Boolean.parseBoolean(currentLine.replace("mandatory=", ""));
 				}
+				else if (currentLine.contains("deployed="))
+				{
+					deployed = Long.parseLong(currentLine.replace("deployed=", ""));
+				}
+			}
+			
+			Logger.log(Logger.TAG_SAT, "Update read data:");
+			Logger.log(Logger.TAG_SAT, "Message: " + updateMessage);
+			Logger.log(Logger.TAG_SAT, "Mandatory: " + mandatory);
+			Logger.log(Logger.TAG_SAT, "Deployed: " + deployed + " - " + new Date(deployed));
+			Logger.log(Logger.TAG_SAT, "Local: " + dateLocal + " - " + new Date(dateLocal));
+			
+			if (dateLocal < deployed && dateLocal != 0)
+			{
+				Object[] options = new Object[] {"Yes", "No"};
+				int n = JOptionPane.showOptionDialog(satPane, updateMessage.replace("\\n", "\n").replace("\\t", "\t") + "\n\nUpdate now?",
+				                                     "An update is available", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+				                                     options[1]);
 				
-				Logger.log(Logger.TAG_SAT, "Updating");
-				
-				try
+				if (n == 0)
 				{
-					Logger.log(Logger.TAG_SAT, "path: " + new File("").getAbsolutePath());
-					ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar "
-					                                                             + Strings.getUpdaterFileName());
-					builder.start();
+					doUpdate();
+					
+					return 1;
 				}
-				catch (IOException e2)
+				else
 				{
-					e2.printStackTrace();
+					if (mandatory)
+					{
+						n = JOptionPane.showOptionDialog(satPane, "This is a really recommended update\nDo you really want to skip this update for now?",
+						                                 "An REALLY IMPORTANT update is available", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+						                                 options, options[1]);
+						
+						if (n == 1)
+						{
+							doUpdate();
+							
+							return 1;
+						}
+						else
+						{
+							
+						}
+					}
+					return 2;
 				}
-				
-				return 1;
 			}
 			else
 			{
-				return 2;
+				Logger.log(Logger.TAG_SAT, "SAT is up to date");
 			}
 		}
-		else
+		catch (FileNotFoundException e2)
 		{
-			Logger.log(Logger.TAG_SAT, "SAT is up to date");
+			e2.printStackTrace();
+		}
+		catch (IOException e1)
+		{
+			e1.printStackTrace();
 		}
 		
 		return 0;
+	}
+	
+	// Do Update
+	private void doUpdate()
+	{
+		try
+		{
+			Logger.log(Logger.TAG_SAT, "Updating the Updater first, from: " + SharedObjs.updateFolder1);
+			FileUtils.copyFile(new File(SharedObjs.updateFolder1 + "/" + Strings.getUpdaterFileName()), new File(Strings.getUpdaterFileName()));
+		}
+		catch (IOException e)
+		{
+			Logger.log(Logger.TAG_SAT, "Updating the Updater failed");
+			e.printStackTrace();
+		}
+		
+		Logger.log(Logger.TAG_SAT, "Updating");
+		
+		try
+		{
+			Logger.log(Logger.TAG_SAT, "path: " + new File("").getAbsolutePath());
+			ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + new File("").getAbsolutePath() + " && java -jar "
+			                                                             + Strings.getUpdaterFileName());
+			builder.start();
+		}
+		catch (IOException e2)
+		{
+			e2.printStackTrace();
+		}
 	}
 	
 	// Getters and Setters:

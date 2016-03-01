@@ -192,7 +192,7 @@ public class CrChecker
 				
 				SharedObjs.crsManagerPane.addLogLine("Could not duplicate this CR. Needs manual analysis.");
 				
-				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath() + ". SystemPM detected. Needs manual analysis.");
+				Logger.log(Logger.TAG_BUG2GODOWNLOADER, "Done for " + file.getAbsolutePath() + ". PMS stuck was detected. Needs manual analysis.");
 				
 				return false;
 			}
