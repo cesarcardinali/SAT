@@ -1159,7 +1159,7 @@ public class CrsManagerPane extends JPanel
 				Matcher m = Pattern.compile(".*bpVersion\": \".+ (.+)\".*").matcher(sCurrentLine);
 				if(m.matches())
 				{
-					bpVersion = m.group(1);
+					bpVersion = m.group(1).toLowerCase();
 					Logger.log(Logger.TAG_CRSMANAGER, "bpVersion: " + bpVersion);
 					bpVersion = bpVersion.substring(0, bpVersion.indexOf("_"));
 				}

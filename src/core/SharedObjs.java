@@ -212,9 +212,7 @@ public class SharedObjs
 			{
 				boolean hasItem = true;
 				
-				/*
-				 * System.out.println("List of XML Filters: \n" + xmlFilters); System.out.println("List of DB Filters: \n" + dbFilters);
-				 */
+				System.out.println("List of XML Filters: \n" + xmlFilters); System.out.println("List of DB Filters: \n" + dbFilters);
 				
 				for (CustomFilterItem filter : dbFilters)
 				{
@@ -224,6 +222,7 @@ public class SharedObjs
 						break;
 					}
 				}
+				
 				for (CustomFilterItem filter : xmlFilters)
 				{
 					if (dbFilters.indexOf(filter) < 0)

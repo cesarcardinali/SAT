@@ -45,6 +45,15 @@ public class DateTimeOperator
 		for (int i = 0; i < timeParts.length; i++)
 		{
 			time[timeParts.length - i - 1] = Integer.parseInt(timeParts[i].replaceAll("[a-z]", ""));
+//			try
+//			{
+//				time[timeParts.length - i - 1] = Integer.parseInt(timeParts[i].replaceAll("[a-z]", ""));
+//			}
+//			catch (NumberFormatException ne)
+//			{
+//				System.out.println("Error parsing time:\n" + stime);
+//				return null;
+//			}
 		}
 		
 		return time;
@@ -64,7 +73,7 @@ public class DateTimeOperator
 		}
 		catch (ArrayIndexOutOfBoundsException e)
 		{
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 		
 		return millis;

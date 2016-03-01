@@ -231,9 +231,18 @@ public class MainParser
 				}
 			}
 			
+			br.close();
+			
 			if (logState.getEnd() == -1)
 			{
 				logState.setEnd(actualTime);
+				
+				if(logState.getStatus() == -1)
+				{
+					Logger.log(Logger.TAG_MAINLOG_PARSER, "Could not generate status data");
+					return false;
+				}
+				
 				statesData.add(logState);
 			}
 			
@@ -247,8 +256,6 @@ public class MainParser
 			}
 			
 			totalLogTime = endTime - startTime;
-			
-			br.close();
 			
 			return true;
 		}

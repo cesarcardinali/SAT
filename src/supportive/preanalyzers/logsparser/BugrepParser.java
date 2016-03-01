@@ -170,7 +170,7 @@ public class BugrepParser
 						Logger.log(Logger.TAG_BUGREPORT_PARSER, "Statistics line found: " + sCurrentLine);
 						
 						// Read next line
-						while ((sCurrentLine = br.readLine()) != null)
+						while ((sCurrentLine = br.readLine()) != null && !sCurrentLine.contains("DUMP OF SERVICE bluetooth_manager"))
 						{
 							if (sCurrentLine.contains("Cell standby: ")
 							    || sCurrentLine.contains("Unaccounted: ")
@@ -264,6 +264,7 @@ public class BugrepParser
 								matcher = ptSignalPoor.matcher(sCurrentLine);
 								if (matcher.find())
 								{
+									System.out.println("Error at: " + sCurrentLine);
 									signalPoor = DateTimeOperator.getMillisFromBtdStringDate(matcher.group(1));
 									System.out.println("11 ptSignalPoor " + signalPoor);
 									continue;

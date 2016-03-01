@@ -4,11 +4,11 @@
     <rootPath>C:\SAT</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\SAT\CRs\tests</path>
+    <path>C:\SAT\CRs\BATTRIAGE-236</path>
     <assign>false</assign>
     <label>false</label>
-    <labels>cd_auto cd_auto</labels>
-    <download>false</download>
+    <labels>cd_auto</labels>
+    <download>true</download>
     <unzip>true</unzip>
     <analyze>true</analyze>
     <close>false</close>
@@ -57,6 +57,8 @@
     <athene>3000</athene>
     <griffin>3490</griffin>
     <SHERIDAN>2750</SHERIDAN>
+    <GRIFFIN>3490</GRIFFIN>
+    <sheridan>2750</sheridan>
   </bat_cap>
   <diag_dup>
     <surnia>IKSWL-1063</surnia>
