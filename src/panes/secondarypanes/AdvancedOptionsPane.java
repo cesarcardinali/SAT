@@ -153,7 +153,7 @@ public class AdvancedOptionsPane extends JFrame
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				String pName = JOptionPane.showInputDialog(thisPane, "Type the product tagName");
+				String pName = JOptionPane.showInputDialog(thisPane, "Type the product name");
 				String bCap = JOptionPane.showInputDialog(thisPane, "Type the battery capacity");
 				
 				if (pName != null && bCap != null)

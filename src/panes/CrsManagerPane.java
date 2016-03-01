@@ -1138,8 +1138,8 @@ public class CrsManagerPane extends JPanel
 		if (reportFile == null)
 		{
 			Logger.log(Logger.TAG_CRSMANAGER, "Log not found: " + reportFile);
-			Logger.log(Logger.TAG_CRSMANAGER, "Not possible to find product tagName");
-			JOptionPane.showMessageDialog(null, "Could not find product tagName! Report output not being generated for this CR");
+			Logger.log(Logger.TAG_CRSMANAGER, "Not possible to find product ");
+			JOptionPane.showMessageDialog(null, "Could not find product ! Report output not being generated for this CR");
 			return;
 		}
 		else
@@ -1205,7 +1205,7 @@ public class CrsManagerPane extends JPanel
 					}
 					else
 					{
-						String pName = JOptionPane.showInputDialog("Type the product tagName", sCurrentLine);
+						String pName = JOptionPane.showInputDialog("Type the product name", sCurrentLine);
 						String bCap = JOptionPane.showInputDialog("Type the battery capacity");
 						SharedObjs.advOptions.addNewBatCapValue(pName, bCap);
 						content = content.replace("#bat_cap#", bCap);
@@ -1234,8 +1234,8 @@ public class CrsManagerPane extends JPanel
 			PrintWriter out = null;
 			try
 			{
-				Logger.log(Logger.TAG_CRSMANAGER, "Could not find product tagName or product battery capacity. Using 3000 as bat cap");
-				JOptionPane.showMessageDialog(null, "Could not find product tagName or product battery capacity.\nUsing 3000 as battery capacity");
+				Logger.log(Logger.TAG_CRSMANAGER, "Could not find product  or product battery capacity. Using 3000 as bat cap");
+				JOptionPane.showMessageDialog(null, "Could not find product  or product battery capacity.\nUsing 3000 as battery capacity");
 				@SuppressWarnings("resource")
 				Scanner scanner = new Scanner(new File(folder + "\\build_report.pl"));
 				String content = scanner.useDelimiter("\\Z").next();

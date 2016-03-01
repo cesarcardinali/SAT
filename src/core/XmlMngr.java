@@ -327,14 +327,14 @@ public class XmlMngr
 	/**
 	 * Get user filter item
 	 * 
-	 * @param tagName Name of the filter
+	 * @param name Name of the filter
 	 * @return Filter item as {@link CustomFilterItem}. Null if not found.
 	 */
 	public static CustomFilterItem getMyFiltersValueOf(String name)
 	{
 		for (Element requestedElement : filtersDocument.getRootElement().getChild("myFilters").getChildren())
 		{
-			if (requestedElement.getChildText("tagName").equals(name))
+			if (requestedElement.getChildText("name").equals(name))
 			{
 				CustomFilterItem filter;
 				filter = new CustomFilterItem();
@@ -360,7 +360,7 @@ public class XmlMngr
 			
 			for (Element requestedElement : myFiltersElement.getChildren())
 			{
-				if (requestedElement.getChildText("tagName").equals(filter.getName()))
+				if (requestedElement.getChildText("name").equals(filter.getName()))
 				{
 					updateElement(requestedElement, filter);
 					
@@ -379,8 +379,8 @@ public class XmlMngr
 	/**
 	 * Get shared filter item
 	 * 
-	 * @param tagName Name of the filter
-	 * @param owner Filter owner tagName
+	 * @param name Name of the filter
+	 * @param owner Filter owner name
 	 * @return Filter item as {@link CustomFilterItem}. Null if not found.
 	 */
 	public static CustomFilterItem getSharedFiltersValueOf(String name, String owner)
@@ -414,7 +414,7 @@ public class XmlMngr
 		{
 			for (Element requestedElement : sharedFiltersElement.getChildren())
 			{
-				if (requestedElement.getChildText("tagName").equals(filter.getName()))
+				if (requestedElement.getChildText("name").equals(filter.getName()))
 				{
 					updateElement(requestedElement, filter);
 					return true;
@@ -434,7 +434,7 @@ public class XmlMngr
 		for (Element requestedElement : filtersDocument.getRootElement().getChild("activeFilters")
 		                                               .getChildren())
 		{
-			if (requestedElement.getChildText("tagName").equals(name))
+			if (requestedElement.getChildText("name").equals(name))
 			{
 				CustomFilterItem filter;
 				filter = new CustomFilterItem();
@@ -455,7 +455,7 @@ public class XmlMngr
 			
 			for (Element requestedElement : activeFiltersElement.getChildren())
 			{
-				if (requestedElement.getChildText("tagName").equals(filter.getName()))
+				if (requestedElement.getChildText("name").equals(filter.getName()))
 				{
 					updateElement(requestedElement, filter);
 					return true;
@@ -588,7 +588,7 @@ public class XmlMngr
 		
 		for (Element requestedElement : myFiltersElement.getChildren())
 		{
-			if (requestedElement.getChildText("tagName").equals(filter.getName()))
+			if (requestedElement.getChildText("name").equals(filter.getName()))
 			{
 				myFiltersElement.removeChild(requestedElement.getName());
 				return true;
@@ -623,7 +623,7 @@ public class XmlMngr
 		
 		for (Element requestedElement : sharedFiltersElement.getChildren())
 		{
-			if (requestedElement.getChildText("tagName").equals(filter.getName()))
+			if (requestedElement.getChildText("name").equals(filter.getName()))
 			{
 				sharedFiltersElement.removeChild(requestedElement.getName());
 				return true;
@@ -658,7 +658,7 @@ public class XmlMngr
 		
 		for (Element requestedElement : activeFiltersElement.getChildren())
 		{
-			if (requestedElement.getChildText("tagName").equals(filter.getName()))
+			if (requestedElement.getChildText("name").equals(filter.getName()))
 			{
 				activeFiltersElement.removeChild(requestedElement.getName());
 				return true;
@@ -780,7 +780,7 @@ public class XmlMngr
 	private static Element createElement(CustomFilterItem filter, int index)
 	{
 		Element xmlElement = new Element("item_" + index);
-		xmlElement.addContent(new Element("tagName").setText(filter.getName()));
+		xmlElement.addContent(new Element("name").setText(filter.getName()));
 		xmlElement.addContent(new Element("regex").setText(filter.getRegex()));
 		xmlElement.addContent(new Element("header").setText(filter.getHeader()));
 		xmlElement.addContent(new Element("owner").setText(filter.getOwner()));
@@ -799,7 +799,7 @@ public class XmlMngr
 	
 	private static void updateElement(Element requestedElement, CustomFilterItem filter)
 	{
-		requestedElement.getChild("tagName").setText(filter.getName());
+		requestedElement.getChild("name").setText(filter.getName());
 		requestedElement.getChild("regex").setText(filter.getRegex());
 		requestedElement.getChild("header").setText(filter.getHeader());
 		requestedElement.getChild("owner").setText(filter.getOwner());
@@ -817,7 +817,7 @@ public class XmlMngr
 	
 	private static void updateFilter(Element requestedElement, CustomFilterItem filter)
 	{
-		filter.setName(requestedElement.getChildText("tagName"));
+		filter.setName(requestedElement.getChildText("name"));
 		filter.setRegex(requestedElement.getChildText("regex"));
 		filter.setHeader(requestedElement.getChildText("header"));
 		filter.setOwner(requestedElement.getChildText("owner"));

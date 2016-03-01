@@ -90,7 +90,7 @@ public class Diag
 			// Find DIAG_WS evidences
 			while ((line = reader.readLine()) != null)
 			{
-				// Find product tagName
+				// Find product name
 				if (line.contains("Build fingerprint:") && product.equals(""))
 				{
 					regex = ".*/([a-z]*)_.*";
@@ -156,7 +156,7 @@ public class Diag
 					diagMs = "DIAG_WS is held for more than "
 					         + (diagDuration / 3600000)
 					         + " hours following max_time:\n"
-					         + "||tagName		|active_count	|event_count	|wakeup_count	|expire_count	|active_since	|total_time	|max_time	|last_change | prevent_suspend_time|"
+					         + "||name		|active_count	|event_count	|wakeup_count	|expire_count	|active_since	|total_time	|max_time	|last_change | prevent_suspend_time|"
 					         + "\n||" + line.replaceAll("\t\t|\t", "|") + "|\n";
 				}
 				

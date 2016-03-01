@@ -39,7 +39,7 @@ public class Alarm
 		
 		long now = System.currentTimeMillis();
 		String sCurrentLine; // Read line to be parsed
-		String file = ""; // File tagName to be parsed
+		String file = ""; // File name to be parsed
 		String panel = "{panel}\n"; // Panel tag
 		String regexAlarmLine = "([0-9]{2}-[0-9]{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]).*send.*\\*(.+)\\*:([a-z\\W_/$]*)([A-Z]+.+)\\}.*";
 		

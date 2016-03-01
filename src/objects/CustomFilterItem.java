@@ -72,7 +72,7 @@ public class CustomFilterItem
 	 * Class constructor
 	 * 
 	 * @param own Filter owner
-	 * @param tagName Filter tagName
+	 * @param name Filter name
 	 * @param regex Filter regex
 	 * @param header Filter header
 	 * @param m If looks at main log

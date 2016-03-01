@@ -141,7 +141,7 @@ public class Suspicious
 					{
 						wl.quantityInc();
 						
-						// Search for the process tagName in bugreport file
+						// Search for the process name in bugreport file
 						if (uid.length() == 5)
 						{
 							for (int i = 0; i < listOfFiles.length; i++)
@@ -231,7 +231,7 @@ public class Suspicious
 							}
 						}
 						
-						// Search for process tagName in BTD file
+						// Search for process name in BTD file
 						else
 						{
 							for (int i = 0; i < listOfFiles.length; i++)

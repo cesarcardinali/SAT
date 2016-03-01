@@ -37,7 +37,7 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	}
 	
 	/**
-	 * Return the index of a filter with the tagName
+	 * Return the index of a filter with the name
 	 * 
 	 * @param id SQL ID of this filter
 	 * @return Index as {@link int}. -1 if not found
@@ -73,7 +73,7 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	}
 	
 	/**
-	 * @param tagName
+	 * @param name
 	 * @return Index
 	 */
 	public int indexOfName(String name)
@@ -106,7 +106,7 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	}
 	
 	/**
-	 * FilterItem comparator by tagName
+	 * FilterItem comparator by name
 	 */
 	public class itensNameComparator implements Comparator<CustomFilterItem>
 	{
@@ -139,7 +139,7 @@ public class CustomFiltersList extends ArrayList<CustomFilterItem>
 	}
 	
 	/**
-	 * Sort list by tagName
+	 * Sort list by name
 	 */
 	public void sortByName()
 	{

@@ -17,7 +17,7 @@ public class HighConsumeItem
 	/**
 	 * Constructor
 	 * 
-	 * @param proc Process tagName
+	 * @param proc Process name
 	 * @param pid PID
 	 * @param cons Consume
 	 * @param line Lof line

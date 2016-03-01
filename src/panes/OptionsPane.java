@@ -462,7 +462,7 @@ public class OptionsPane extends JPanel
 		JButton button_12 = new JButton("?");
 		button_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				warning.setText("#pname#: Process tagName\n#avgconsume#: Average process CPU consumption\n"
+				warning.setText("#pname#: Process name\n#avgconsume#: Average process CPU consumption\n"
 								+ "#scoffconsume#: Average consumption while screen off\n"
 								+ "#sconconsume#: Average consumption while screen on\n"
 								+ "#logfull#: Show complete log results\n#logoff#: Log lines while screen off\n"
@@ -655,7 +655,7 @@ public class OptionsPane extends JPanel
 		JButton button_18 = new JButton("?");
 		button_18.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				warning.setText("#pname#*: Process tagName\n#tag#: Process tag held\n#duration#: Wakelock duration\n#log#: Android logs");
+				warning.setText("#pname#*: Process name\n#tag#: Process tag held\n#duration#: Wakelock duration\n#log#: Android logs");
 				warning.setVisible(true);
 			}
 		});
@@ -731,7 +731,7 @@ public class OptionsPane extends JPanel
 		JButton button_20 = new JButton("?");
 		button_20.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				warning.setText("#pname#*: Process tagName\n#log#: Android logs");
+				warning.setText("#pname#*: Process name\n#log#: Android logs");
 				warning.setVisible(true);
 			}
 		});

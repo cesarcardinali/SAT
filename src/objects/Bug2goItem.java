@@ -123,7 +123,7 @@ public class Bug2goItem implements Runnable
 				
 				File downloadFolder;
 				
-				// Get the file tagName to be downloaded
+				// Get the file name to be downloaded
 				String fileName = connection.getHeaderField("Content-Disposition");
 				Logger.log(Logger.TAG_BUG2GOITEM, fileName + ": 1");
 				fileName = fileName.replace("\"", "");
@@ -140,7 +140,7 @@ public class Bug2goItem implements Runnable
 				// Get download folder
 				downloadFolder = new File(SharedObjs.getDownloadPath());
 				
-				// If user doesn't want to overwrite an existing file with the same tagName, abort download
+				// If user doesn't want to overwrite an existing file with the same name, abort download
 				if (!overwrite)
 				{
 					for (File f : downloadFolder.listFiles())

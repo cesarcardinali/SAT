@@ -386,7 +386,7 @@ public class UnZip implements Runnable
 	private String getFileName(String fullPath)
 	{
 		String[] folders = fullPath.split("\\\\");
-		Logger.log(Logger.TAG_UNZIP, "File tagName: " + folders[folders.length - 1] + "\nSubstring: "
+		Logger.log(Logger.TAG_UNZIP, "File name: " + folders[folders.length - 1] + "\nSubstring: "
 		                             + folders[folders.length - 1].subSequence(0, 8));
 		
 		return (String) folders[folders.length - 1].subSequence(0, 8);

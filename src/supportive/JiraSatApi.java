@@ -175,7 +175,7 @@ public class JiraSatApi
 	 * Add a label
 	 * 
 	 * @param key Jira issue key
-	 * @param label Label tagName
+	 * @param label Label name
 	 * @return Server response
 	 */
 	public String addLabel(String key, String label)
@@ -253,7 +253,7 @@ public class JiraSatApi
 	 * Remove a label
 	 * 
 	 * @param key Jira issue key
-	 * @param label Label tagName
+	 * @param label Label name
 	 * @return Server response
 	 */
 	public String removeLabel(String key, String label)
