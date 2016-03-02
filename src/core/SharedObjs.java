@@ -128,7 +128,7 @@ public class SharedObjs
 		user = XmlMngr.getUserValueOf(new String[] {"option_pane", "uname"});
 		
 		// User setup
-		if (user.equals("user"))
+		if (user.equals("user") || user.equals("null") || user.equals(""))
 		{
 			user = JOptionPane.showInputDialog(satFrame, "Before start using SAT, please, type your coreid");
 			pass = JOptionPane.showInputDialog(satFrame, "Now, configure your password");

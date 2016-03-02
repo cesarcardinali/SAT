@@ -13,6 +13,8 @@
     <analyze>true</analyze>
     <close>false</close>
     <ignore>false</ignore>
+    <unassign>false</unassign>
+    <rem_label>false</rem_label>
   </crs_jira_pane>
   <option_pane>
     <full_log>- The process *#pname#* was consuming *~#avgconsume#* of CPU processing power.\n{noformat}\n#logfull#\n{noformat}</full_log>

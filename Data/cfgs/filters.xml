@@ -3,7 +3,7 @@
   <!-- User defined filters: !-->
   <myFilters>
     <item_1>
-      <tagName>errors</tagName>
+      <name>errors</name>
       <regex>.*error.*</regex>
       <header>Errors:</header>
       <owner>cesarc</owner>
@@ -19,7 +19,7 @@
       <last_update>2016-02-29 07:06:36</last_update>
     </item_1>
     <item_2>
-      <tagName>radio</tagName>
+      <name>radio</name>
       <regex>.*DATA_REGISTRATION.*</regex>
       <header>Radio Network</header>
       <owner>cesarc</owner>
@@ -34,11 +34,27 @@
       <active>false</active>
       <last_update>2016-02-29 06:59:27</last_update>
     </item_2>
+    <item_3>
+      <name>SQL Messages</name>
+      <regex>.*(sql|SQL).*(ERRORS?|Errors?|errors?).*</regex>
+      <header>SQL messages at Main log:</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2016-03-01 10:13:09</last_update>
+    </item_3>
   </myFilters>
   <!-- Users shared filters: !-->
   <sharedFilters>
     <item_1>
-      <tagName>Active Wakeup</tagName>
+      <name>Active Wakeup</name>
       <regex>active wakeup</regex>
       <header>- Active Wakeup Sources:</header>
       <owner>Public</owner>
@@ -54,7 +70,23 @@
       <last_update>2015-09-08 10:40:50</last_update>
     </item_1>
     <item_2>
-      <tagName>All Errors</tagName>
+      <name>All Errors</name>
+      <regex>.*error.*</regex>
+      <header />
+      <owner>mvtoledo</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2016-02-29 07:26:52</last_update>
+    </item_2>
+    <item_3>
+      <name>All Errors(1)</name>
       <regex>.*error.*</regex>
       <header />
       <owner>andremar</owner>
@@ -67,10 +99,10 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2016-02-29 08:23:37</last_update>
-    </item_2>
-    <item_3>
-      <tagName>radio</tagName>
+      <last_update>2016-03-01 10:15:24</last_update>
+    </item_3>
+    <item_4>
+      <name>radio(1)</name>
       <regex>.*DATA_REGISTRATION.*</regex>
       <header>Radio Network</header>
       <owner>user</owner>
@@ -83,13 +115,29 @@
       <shared>true</shared>
       <editable>false</editable>
       <active>false</active>
-      <last_update>2016-02-29 09:12:15</last_update>
-    </item_3>
+      <last_update>2016-03-01 10:15:24</last_update>
+    </item_4>
+    <item_5>
+      <name>SQL Lite</name>
+      <regex>.*sqlite.*</regex>
+      <header />
+      <owner>andremar</owner>
+      <main>true</main>
+      <system>true</system>
+      <kernel>true</kernel>
+      <radio>true</radio>
+      <bugreport>true</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2016-03-01 12:05:47</last_update>
+    </item_5>
   </sharedFilters>
   <!-- Active filters: !-->
   <activeFilters>
     <item_1>
-      <tagName>errors</tagName>
+      <name>errors</name>
       <regex>.*error.*</regex>
       <header>Errors:</header>
       <owner>cesarc</owner>
@@ -105,7 +153,7 @@
       <last_update>2016-02-29 07:06:36</last_update>
     </item_1>
     <item_2>
-      <tagName>radio</tagName>
+      <name>radio</name>
       <regex>.*DATA_REGISTRATION.*</regex>
       <header>Radio Network</header>
       <owner>cesarc</owner>
@@ -120,5 +168,21 @@
       <active>false</active>
       <last_update>2016-02-29 06:59:27</last_update>
     </item_2>
+    <item_3>
+      <name>SQL Messages</name>
+      <regex>.*(sql|SQL).*(ERRORS?|Errors?|errors?).*</regex>
+      <header>SQL messages at Main log:</header>
+      <owner>cesarc</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2016-03-01 10:13:09</last_update>
+    </item_3>
   </activeFilters>
 </SAT>

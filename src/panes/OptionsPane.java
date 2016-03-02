@@ -1160,19 +1160,29 @@ public class OptionsPane extends JPanel
 			rdbtnNotepad.setSelected(true);
 		
 		textUsername.setText(XmlMngr.getUserValueOf(new String[] {"option_pane", "uname"}));
-		SharedObjs.setUser("" + textUsername.getText());
+		if(textUsername.getText().equals("user") || textUsername.getText().equals("null") || textUsername.getText().equals(""))
+			textUsername.setText(SharedObjs.getUser());
+		else
+			SharedObjs.setUser("" + textUsername.getText());
 		
 		try
 		{
 			BufferedInputStream bin;
 			bin = new BufferedInputStream(new FileInputStream(SharedObjs.pwdFile));
 			String encrypt_len = XmlMngr.getUserValueOf(new String[] {"option_pane", "encrypt_len"});
-			byte[] toDecrypt = new byte[Integer.parseInt(encrypt_len)];
+			if(encrypt_len.equals("null"))
+				encrypt_len = "0";
 			
+			byte[] toDecrypt = new byte[Integer.parseInt(encrypt_len)];
 			bin.read(toDecrypt);
-			textPassword.setText("" + Encryptation.decrypt(toDecrypt));
-			SharedObjs.setPass("" + Encryptation.decrypt(toDecrypt));
 			bin.close();
+			String decryptedPass = Encryptation.decrypt(toDecrypt);
+			textPassword.setText(decryptedPass);
+			if(!decryptedPass.equals(""))
+			{
+				SharedObjs.setPass(decryptedPass);
+			}
+			textPassword.setText(SharedObjs.getPass());
 		}
 		catch (Exception e2)
 		{
