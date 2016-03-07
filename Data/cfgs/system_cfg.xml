@@ -12,11 +12,11 @@
     <pics_folder>pics/</pics_folder>
     <logs_folder>logs/</logs_folder>
     <db_server>172.16.20.15/sat_db</db_server>
+    <debug_mode>true</debug_mode>
     <!-- Updater cfgs -->
     <update_path1>S:/Rio_Itu/SAT/</update_path1>
     <update_path2>S:/Rio_Itu/Temporário/Cesar/SAT/</update_path2>
     <clean_install>false</clean_install>
     <overwrite_usr_cfg>true</overwrite_usr_cfg>
-    <debug_mode>true</debug_mode>
   </configs>
 </SAT>

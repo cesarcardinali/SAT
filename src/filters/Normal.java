@@ -2,10 +2,11 @@ package filters;
 
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import supportive.FileFinder;
 
 import com.google.common.base.Throwables;
 
@@ -36,41 +37,27 @@ public class Normal
 			String str_report = "";
 			
 			// Find file to be parsed
-			File folder = new File(path);
-			File[] listOfFiles = folder.listFiles();
+			FileFinder ff = new FileFinder(path);
+			str_report = ff.getFilePath(FileFinder.REPORT_OUTPUT);
 			
-			if (!folder.isDirectory())
+			// Check if is directory exists
+			if (!ff.getFound())
 			{
-				result = "Not a directory";
+				result = FileFinder.REPORT_OUTPUT + " " + str_report;
 				return result;
 			}
 			
-			for (int i = 0; i < listOfFiles.length; i++)
+			// Initialize file reader
+			try
 			{
-				if (listOfFiles[i].isFile())
-				{
-					String files = listOfFiles[i].getName();
-					// Logger.log(Logger.TAG_NORMAL, "" + files);
-					
-					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
-						&& (files.contains("report-output")))
-					{
-						if (path.equals("."))
-							str_report = files;
-						else
-							str_report = path + "\\" + files;
-						break;
-					}
-				}
+				br = new BufferedReader(new FileReader(str_report));
 			}
-			
-			// Try to open file
-			if (str_report.equals(""))
+			catch (FileNotFoundException e)
 			{
-				throw new FileNotFoundException();
+				e.printStackTrace();
+				result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
+				return result;
 			}
-			
-			br = new BufferedReader(new FileReader(str_report));
 			
 			String sCurrentLine;
 			String secondaryData1 = "";

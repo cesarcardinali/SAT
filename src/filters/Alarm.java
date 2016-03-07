@@ -2,7 +2,6 @@ package filters;
 
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,6 +18,7 @@ import core.SharedObjs;
 import objects.AlarmItem;
 import objects.Alarms_List;
 import supportive.DateTimeOperator;
+import supportive.FileFinder;
 
 
 /**
@@ -46,29 +46,14 @@ public class Alarm
 		Pattern patternAlarmLine = Pattern.compile(regexAlarmLine); // Pattern configuration
 		Matcher matcherAlarmLine = null; // Matcher
 		
-		File folder = new File(path); // CR folder
-		File[] listOfFiles = folder.listFiles(); // List of files inside CR folder
+		FileFinder ff = new FileFinder(path);
+		file = ff.getFilePath(FileFinder.SYSTEM);
 		
 		// Check if is directory exists
-		if (!folder.isDirectory())
+		if (!ff.getFound())
 		{
-			result = "Not a directory";
+			result = file;
 			return result;
-		}
-		
-		// Search for file to be parsed
-		for (int i = 0; i < listOfFiles.length; i++)
-		{
-			if (listOfFiles[i].isFile()
-			    && (listOfFiles[i].getName().toLowerCase().endsWith(".txt") && listOfFiles[i].getName()
-			                                                                                 .contains("system")))
-			{
-				file = listOfFiles[i].getName();
-				
-				if (!path.equals("."))
-					file = path + listOfFiles[i].getName();
-				break;
-			}
 		}
 		
 		// Initialize file reader
@@ -107,8 +92,7 @@ public class Alarm
 						}
 						catch (Exception e)
 						{
-							Logger.log(Logger.TAG_ALARM,
-							           "********Error: " + Throwables.getStackTraceAsString(e));
+							Logger.log(Logger.TAG_ALARM, "********Error: " + Throwables.getStackTraceAsString(e));
 						}
 						
 						// Create a Alarm item
@@ -116,20 +100,13 @@ public class Alarm
 						{
 							alarm = new AlarmItem(parsedDate,
 							                      matcherAlarmLine.group(2),
-							                      matcherAlarmLine.group(3)
-							                                      .substring(0,
-							                                                 matcherAlarmLine.group(3)
-							                                                                 .length() - 1),
+							                      matcherAlarmLine.group(3).substring(0, matcherAlarmLine.group(3).length() - 1),
 							                      matcherAlarmLine.group(4),
 							                      matcherAlarmLine.group(0));
 						}
 						else
 						{
-							alarm = new AlarmItem(parsedDate,
-							                      matcherAlarmLine.group(2),
-							                      "Unknown",
-							                      matcherAlarmLine.group(4),
-							                      matcherAlarmLine.group(0));
+							alarm = new AlarmItem(parsedDate, matcherAlarmLine.group(2), "Unknown", matcherAlarmLine.group(4), matcherAlarmLine.group(0));
 						}
 					}
 					

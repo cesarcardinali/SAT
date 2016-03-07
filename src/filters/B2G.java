@@ -2,10 +2,11 @@ package filters;
 
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import supportive.FileFinder;
 
 import com.google.common.base.Throwables;
 
@@ -17,9 +18,9 @@ import core.Logger;
  */
 public class B2G
 {
-	private static String  result;         // Parser result
+	private static String  result;          // Parser result
 	private static boolean edited  = false; // If result edited by the user
-	private static boolean enabled = true; // If filter is enabled
+	private static boolean enabled = true;  // If filter is enabled
 	                                        
 	public static String makelog(String path)
 	{
@@ -31,47 +32,25 @@ public class B2G
 		try
 		{
 			String file_report = "";
-			File folder = new File(path);
-			File[] listOfFiles = folder.listFiles();
 			
-			if (!folder.isDirectory())
+			FileFinder ff = new FileFinder(path);
+			file_report = ff.getFilePath(FileFinder.SYSTEM);
+			
+			// Check if is directory exists
+			if (!ff.getFound())
 			{
-				result = "Not a directory";
-				return result;
+				result = "System " + file_report + "\n";
 			}
-			
-			// Look for the file to be parsed
-			for (int i = 0; i < listOfFiles.length; i++)
+			else
 			{
-				if (listOfFiles[i].isFile())
-				{
-					String files = listOfFiles[i].getName();
-					Logger.log(Logger.TAG_B2G, "" + files);
-					
-					if (((files.endsWith(".txt")) || (files.endsWith(".TXT"))) && (files.contains("system")))
-					{
-						if (path.equals("."))
-							file_report = files;
-						else
-							file_report = path + "\\" + files;
-						
-						break;
-					}
-				}
-			}
-			
-			Logger.log(Logger.TAG_B2G, "\nB2G: system file: " + file_report);
-			
-			// Try to open file
-			if (!file_report.equals(""))
-			{
+				Logger.log(Logger.TAG_B2G, "\nB2G: system file: " + file_report);
+				
 				br = new BufferedReader(new FileReader(file_report));
 				
 				// Search for b2g evidences
 				while ((sCurrentLine = br.readLine()) != null)
 				{
-					if (sCurrentLine.contains("tag=\"BUG2GO-UploadWorker\"")
-					    || sCurrentLine.contains("tag=BUG2GO-UploadWorker"))
+					if (sCurrentLine.contains("tag=\"BUG2GO-UploadWorker\"") || sCurrentLine.contains("tag=BUG2GO-UploadWorker"))
 					{
 						bug2goData = bug2goData + sCurrentLine + "\n";
 					}
@@ -94,22 +73,13 @@ public class B2G
 			// not enough
 			{
 				// Look for the secondary file
-				for (int i = 0; i < listOfFiles.length; i++)
+				file_report = ff.getFilePath(FileFinder.MAIN);
+				
+				// Check if is directory exists
+				if (!ff.getFound())
 				{
-					if (listOfFiles[i].isFile())
-					{
-						String files = listOfFiles[i].getName();
-						Logger.log(Logger.TAG_B2G, "" + files);
-						if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
-						    && (files.contains("main")))
-						{
-							if (path.equals("."))
-								file_report = files;
-							else
-								file_report = path + "\\" + files;
-							break;
-						}
-					}
+					result += "Main " + file_report;
+					return result;
 				}
 				
 				Logger.log(Logger.TAG_B2G, "\nB2G: main file: " + file_report);
@@ -160,7 +130,6 @@ public class B2G
 			result = "IOException\n" + Throwables.getStackTraceAsString(e);
 			e.printStackTrace();
 		}
-		
 		
 		try
 		{

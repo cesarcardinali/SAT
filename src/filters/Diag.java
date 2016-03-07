@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +13,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+
+import supportive.FileFinder;
 
 import com.google.common.base.Throwables;
 
@@ -50,29 +51,15 @@ public class Diag
 		{
 			// File seek and load configuration
 			String file_report = "";
-			File folder = new File(path);
-			File[] listOfFiles = folder.listFiles();
+
+			FileFinder ff = new FileFinder(path);
+			file_report = ff.getFilePath(FileFinder.BUGREPORT);
 			
-			if (!folder.isDirectory())
+			// Check if is directory exists
+			if (!ff.getFound())
 			{
-				result = "Not a directory";
+				result = FileFinder.BUGREPORT + " " + file_report;
 				return result;
-			}
-			
-			// Look for the file
-			for (int i = 0; i < listOfFiles.length; i++)
-			{
-				// Logger.log(Logger.TAG_DIAG, folder.listFiles()[i]);
-				if (listOfFiles[i].isFile())
-				{
-					String files = listOfFiles[i].getName();
-					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
-					    && (files.contains("bugreport")))
-					{
-						file_report = path + "\\" + files;
-						break;
-					}
-				}
 			}
 			
 			try

@@ -2,11 +2,12 @@ package filters;
 
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.Pattern;
+
+import supportive.FileFinder;
 
 import com.google.common.base.Throwables;
 
@@ -44,37 +45,28 @@ public class Issue
 			
 			// File seek and load configuration
 			String file_report = "";
-			File folder = new File(path);
-			File[] listOfFiles = folder.listFiles();
-			if (!folder.isDirectory())
+			// Find file to be parsed
+			FileFinder ff = new FileFinder(path);
+			file_report = ff.getFilePath(FileFinder.REPORT_OUTPUT);
+			
+			// Check if is directory exists
+			if (!ff.getFound())
 			{
-				result = "Not a directory";
+				result = FileFinder.REPORT_OUTPUT + " " + file_report;
 				return result;
 			}
-			// Look for the file
-			for (int i = 0; i < listOfFiles.length; i++)
-			{
-				if (listOfFiles[i].isFile())
-				{
-					String files = listOfFiles[i].getName();
-					if (((files.endsWith(".txt")) || (files.endsWith(".TXT")))
-						&& (files.contains("report-output")))
-					{
-						if (path.equals("."))
-							file_report = files;
-						else
-							file_report = path + files;
-						break;
-					}
-				}
-			}
 			
-			if (file_report.equals(""))
+			// Initialize file reader
+			try
 			{
-				throw new FileNotFoundException();
+				br = new BufferedReader(new FileReader(file_report));
 			}
-			
-			br = new BufferedReader(new FileReader(file_report));
+			catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+				result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
+				return result;
+			}
 			
 			// Parse file
 			while ((sCurrentLine = br.readLine()) != null)
@@ -87,10 +79,7 @@ public class Issue
 						if (patternHC.matcher(sCurrentLine).matches())
 						{
 							hc = true;
-							screenOffData = screenOffData
-											+ sCurrentLine.replace("=> ", "=> *")
-														  .replace(" mA average", "* mA average")
-											+ "\n";
+							screenOffData = screenOffData + sCurrentLine.replace("=> ", "=> *").replace(" mA average", "* mA average") + "\n";
 						}
 						else
 							screenOffData = screenOffData + sCurrentLine + "\n";
@@ -99,8 +88,13 @@ public class Issue
 					screenOffData = screenOffData + "{panel}\n";
 				}
 				
-				while (sCurrentLine.matches(".*Kernel Wake lock.*: [3-5][0-9]m.*")
-					   || sCurrentLine.matches(".*Kernel Wake lock .*: [1-9]h.*")) // Try to get kernel wake lock information
+				while (sCurrentLine.matches(".*Kernel Wake lock.*: [3-5][0-9]m.*") || sCurrentLine.matches(".*Kernel Wake lock .*: [1-9]h.*")) // Try
+																																			   // to
+																																			   // get
+																																			   // kernel
+																																			   // wake
+																																			   // lock
+																																			   // information
 				{
 					kernelWakelockData = kernelWakelockData + "|" + sCurrentLine.replace(":", "|") + "|\n";
 					sCurrentLine = br.readLine();
@@ -114,14 +108,11 @@ public class Issue
 						if (patternHC.matcher(sCurrentLine).matches())
 						{
 							hc = true;
-							screenOffData = screenOffData
-											+ sCurrentLine.replace("=> ", "=> *")
-														  .replace(" mA average", "* mA average")
-											+ "\n";
+							screenOffData = screenOffData + sCurrentLine.replace("=> ", "=> *").replace(" mA average", "* mA average") + "\n";
 						}
 						else
 							screenOffData = screenOffData + sCurrentLine + "\n";
-							
+						
 						sCurrentLine = br.readLine();
 					}
 					
@@ -144,8 +135,7 @@ public class Issue
 						}
 						else
 						{
-							kernelWakelockData = kernelWakelockData + "|" + sCurrentLine.replace(":", "|")
-												 + "|\n";
+							kernelWakelockData = kernelWakelockData + "|" + sCurrentLine.replace(":", "|") + "|\n";
 						}
 						
 						sCurrentLine = br.readLine();
@@ -160,7 +150,7 @@ public class Issue
 			
 			if (br != null)
 				br.close();
-				
+			
 			// Building final results
 			result = "Issues seen in this CR:\n\n";
 			
