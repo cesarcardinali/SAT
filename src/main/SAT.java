@@ -6,10 +6,7 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 
@@ -230,95 +227,45 @@ public class SAT extends JFrame
 		Logger.log(Logger.TAG_SAT, "Checking for update");
 		
 		updating = true;
-		long dateLocal = 0;
+		long dateRemote = 0, dateLocal = 0;
 		
-		File updateCfg;
+		File f1;
 		File f2;
 		
-		try
+		f1 = new File(SharedObjs.updateFolder1 + "/" + Strings.getToolFileName());
+		Logger.log(Logger.TAG_SAT, "Remote file: " + f1.getAbsolutePath() + " - Modified: " + new Date(f1.lastModified()));
+		
+		f2 = new File(Strings.getToolFileName());
+		Logger.log(Logger.TAG_SAT, "Local file: " + f2.getAbsolutePath() + " - Modified: " + new Date(f2.lastModified()));
+		
+		dateRemote = f1.lastModified();
+		dateLocal = f2.lastModified();
+		
+		if (dateLocal < dateRemote && dateLocal != 0)
 		{
-			f2 = new File(Strings.getToolFileName());
-			dateLocal = f2.lastModified();
+			Object[] options = new Object[] {"Yes", "No"};
+			int n = JOptionPane.showOptionDialog(null, XmlMngr.getMessageValueOf(new String[] {"messages", "new_version"}),
+			                                     XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), JOptionPane.YES_NO_CANCEL_OPTION,
+			                                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 			
-			updateCfg = new File(SharedObjs.updateFolder1 + "/Data/update/update.cfg");
-			BufferedReader br = new BufferedReader(new FileReader(updateCfg));
-			String currentLine;
-			String updateMessage = "";
-			Boolean mandatory = false;
-			long deployed = -1;
-			
-			while ((currentLine = br.readLine()) != null)
+			if (n == 0)
 			{
-				if (currentLine.contains("update_reason="))
-				{
-					updateMessage = currentLine.replace("update_reason=", "");
-				}
-				else if (currentLine.contains("mandatory="))
-				{
-					mandatory = Boolean.parseBoolean(currentLine.replace("mandatory=", ""));
-				}
-				else if (currentLine.contains("deployed="))
-				{
-					deployed = Long.parseLong(currentLine.replace("deployed=", ""));
-				}
-			}
-			
-			Logger.log(Logger.TAG_SAT, "Update read data:");
-			Logger.log(Logger.TAG_SAT, "Message: " + updateMessage);
-			Logger.log(Logger.TAG_SAT, "Mandatory: " + mandatory);
-			Logger.log(Logger.TAG_SAT, "Deployed: " + deployed + " - " + new Date(deployed));
-			Logger.log(Logger.TAG_SAT, "Local: " + dateLocal + " - " + new Date(dateLocal));
-			
-			if (dateLocal < deployed && dateLocal != 0)
-			{
-				Object[] options = new Object[] {"Yes", "No"};
-				int n = JOptionPane.showOptionDialog(satPane, updateMessage.replace("\\n", "\n").replace("\\t", "\t") + "\n\nUpdate now?",
-				                                     "An update is available", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-				                                     options[1]);
+				doUpdate();
 				
-				if (n == 0)
-				{
-					doUpdate();
-					
-					return 1;
-				}
-				else
-				{
-					if (mandatory)
-					{
-						n = JOptionPane.showOptionDialog(satPane, "This is a really recommended update\nDo you really want to skip this update for now?",
-						                                 "An REALLY IMPORTANT update is available", JOptionPane.YES_NO_CANCEL_OPTION,
-						                                 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-						
-						if (n == 1)
-						{
-							doUpdate();
-							
-							return 1;
-						}
-						else
-						{
-							
-						}
-					}
-					return 2;
-				}
+				return 1;
 			}
 			else
 			{
-				Logger.log(Logger.TAG_SAT, "SAT is up to date");
+				return 2;
 			}
 		}
-		catch (FileNotFoundException e2)
+		else
 		{
-			e2.printStackTrace();
-		}
-		catch (IOException e1)
-		{
-			e1.printStackTrace();
+			Logger.log(Logger.TAG_SAT, "SAT is up to date");
 		}
 		
 		return 0;
+		
 	}
 	
 	// Do Update
