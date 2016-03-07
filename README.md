@@ -1,15 +1,15 @@
-BatTracer:
+SAT:
 =========
 A text parser example with some features.
 
 
-How to update your local git repository:\n
+How to update your local git repository:
 
-git fetch BatTracer base.
-git merge BatTracer/base --strategy-option theirs.
+git fetch SAT base.
+git merge SAT/base --strategy-option theirs.
   
 How to send your updates to remote:
 
 git checkout -b novo_branch.
 git commit - m "Mensagem".
-git push BatTracer base.
+git push SAT base.

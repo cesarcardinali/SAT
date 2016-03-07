@@ -23,8 +23,8 @@ hs_err_pid*
 *.log
 src/tests/*.java
 Data/cfgs/pass.pwd
-BatTracer.jar
-Updater.jar
+SAT.jar
+SAT_Updater.jar
 /TestDataCRs/
 /TestDataCRs/*.*
 /btdTestData/

@@ -173,6 +173,8 @@ public class SAT extends JFrame
 					SharedObjs.updateUidsXML();
 					run = 1;
 					Logger.log(Logger.TAG_SAT, "Done");
+					Logger.log(Logger.TAG_SAT, "Trying to update SAT");
+					checkForUpdate();
 				}
 				
 				XmlMngr.closeXmls();
@@ -223,7 +225,7 @@ public class SAT extends JFrame
 	 * Check for newer version
 	 */
 	@SuppressWarnings("resource")
-    public int checkForUpdate()
+	public int checkForUpdate()
 	{
 		Logger.log(Logger.TAG_SAT, "Checking for update");
 		
@@ -285,8 +287,8 @@ public class SAT extends JFrame
 					if (mandatory)
 					{
 						n = JOptionPane.showOptionDialog(satPane, "This is a really recommended update\nDo you really want to skip this update for now?",
-						                                 "An REALLY IMPORTANT update is available", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-						                                 options, options[1]);
+						                                 "An REALLY IMPORTANT update is available", JOptionPane.YES_NO_CANCEL_OPTION,
+						                                 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 						
 						if (n == 1)
 						{
