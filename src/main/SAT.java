@@ -6,7 +6,10 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 
@@ -243,10 +246,37 @@ public class SAT extends JFrame
 		
 		if (dateLocal < dateRemote && dateLocal != 0)
 		{
+			Boolean mandatory = false;
+			String message = null;
+			String currentLine;
+			
+			try
+			{
+				BufferedReader br = new BufferedReader(new FileReader(SharedObjs.contentFolder + "/update/update.cfg"));
+				while ((currentLine = br.readLine()) != null)
+				{
+					if (currentLine.contains("message="))
+					{
+						message = currentLine.replace("message=", "");
+					}
+					else if (currentLine.contains("mandatory="))
+					{
+						mandatory = Boolean.parseBoolean(currentLine.replace("mandatory=", ""));
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			
 			Object[] options = new Object[] {"Yes", "No"};
-			int n = JOptionPane.showOptionDialog(null, XmlMngr.getMessageValueOf(new String[] {"messages", "new_version"}),
-			                                     XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), JOptionPane.YES_NO_CANCEL_OPTION,
-			                                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+			int n = JOptionPane.showOptionDialog(null, message, XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}),
+			                                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 			
 			if (n == 0)
 			{
@@ -256,6 +286,21 @@ public class SAT extends JFrame
 			}
 			else
 			{
+				if (mandatory)
+				{
+					n = JOptionPane.showOptionDialog(null,
+					                                 "Please, advise.\nThis is a really important update and you should consider to accept it as soon as possible.",
+					                                 XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), JOptionPane.YES_NO_CANCEL_OPTION,
+					                                 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+					
+					if (n == 0)
+					{
+						doUpdate();
+						
+						return 1;
+					}
+				}
+				
 				return 2;
 			}
 		}
