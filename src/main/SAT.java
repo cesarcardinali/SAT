@@ -252,12 +252,13 @@ public class SAT extends JFrame
 			
 			try
 			{
-				BufferedReader br = new BufferedReader(new FileReader(SharedObjs.contentFolder + "/update/update.cfg"));
+				System.out.println("Updater file: " + SharedObjs.updateFolder1 + "/Data/update/update.cfg");
+				BufferedReader br = new BufferedReader(new FileReader(SharedObjs.updateFolder1 + "/Data/update/update.cfg"));
 				while ((currentLine = br.readLine()) != null)
 				{
 					if (currentLine.contains("message="))
 					{
-						message = currentLine.replace("message=", "");
+						message = currentLine.replace("message=", "").replace("\\n", "\n") + "\n\nDo you want to update now?";
 					}
 					else if (currentLine.contains("mandatory="))
 					{
@@ -289,7 +290,8 @@ public class SAT extends JFrame
 				if (mandatory)
 				{
 					n = JOptionPane.showOptionDialog(null,
-					                                 "Please, advise.\nThis is a really important update and you should consider to accept it as soon as possible.",
+					                                 "Please, advise.\nThis is a really important update and you should consider to accept it as soon as possible."
+					                                 + "\n\nUpdate now?",
 					                                 XmlMngr.getMessageValueOf(new String[] {"tittles", "new_version"}), JOptionPane.YES_NO_CANCEL_OPTION,
 					                                 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 					

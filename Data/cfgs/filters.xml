@@ -102,22 +102,6 @@
       <last_update>2016-03-01 10:15:24</last_update>
     </item_3>
     <item_4>
-      <name>radio(1)</name>
-      <regex>.*DATA_REGISTRATION.*</regex>
-      <header>Radio Network</header>
-      <owner>user</owner>
-      <main>false</main>
-      <system>false</system>
-      <kernel>false</kernel>
-      <radio>true</radio>
-      <bugreport>false</bugreport>
-      <routput>false</routput>
-      <shared>true</shared>
-      <editable>false</editable>
-      <active>false</active>
-      <last_update>2016-03-01 10:15:24</last_update>
-    </item_4>
-    <item_5>
       <name>SQL Lite</name>
       <regex>.*sqlite.*</regex>
       <header />
@@ -132,7 +116,7 @@
       <editable>false</editable>
       <active>false</active>
       <last_update>2016-03-01 12:05:47</last_update>
-    </item_5>
+    </item_4>
   </sharedFilters>
   <!-- Active filters: !-->
   <activeFilters>
