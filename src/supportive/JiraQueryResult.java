@@ -11,12 +11,12 @@ import org.json.simple.parser.ParseException;
 
 public class JiraQueryResult
 {
-	long                        resultCount;
-	ArrayList<queryResultItem> items;
+	long                       resultCount;
+	ArrayList<QueryResultItem> items;
 	
 	public JiraQueryResult(String jSON)
 	{
-		items = new ArrayList<queryResultItem>();
+		items = new ArrayList<QueryResultItem>();
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObj;
 		
@@ -34,19 +34,34 @@ public class JiraQueryResult
 					JSONObject obj = (JSONObject) issues.get(i);
 					JSONObject fields = (JSONObject) obj.get("fields");
 					JSONObject status = (JSONObject) fields.get("status");
+					JSONObject comment = (JSONObject) fields.get("comment");
+					JSONArray comments = (JSONArray)comment.get("comments");
+					QueryResultItem qr = new QueryResultItem((String) obj.get("key"),
+					                                         (String) fields.get("summary"),
+					                                         (String) fields.get("updated"),
+					                                         (String) status.get("description"));
+					for (int j = 0; j < comments.size(); j++)
+					{
+						JSONObject c = (JSONObject) comments.get(j);
+						qr.addcomment((String)c.get("body"));
+					}
 					
-					items.add(new queryResultItem((String) obj.get("key"),
-					                              (String) fields.get("summary"),
-					                              (String) fields.get("updated"),
-					                              (String) status.get("description")));
-					System.out.println("Key: " + obj.get("key"));
-					System.out.println("Summary: " + fields.get("summary"));
-					System.out.println("Assignee: " + fields.get("assignee"));
-					System.out.println("Dup to: " + fields.get("customfield_10622"));
-					System.out.println("Updated: " + fields.get("updated"));
-					System.out.println("Status: " + status.get("description"));
+					items.add(qr);
 					
-					System.out.println("\n---------------------------------\n");
+//					System.out.println("Key: " + obj.get("key"));
+//					System.out.println("Summary: " + fields.get("summary"));
+//					System.out.println("Assignee: " + fields.get("assignee"));
+//					System.out.println("Dup to: " + fields.get("customfield_10622"));
+//					System.out.println("Updated: " + fields.get("updated"));
+//					System.out.println("Status: " + status.get("description"));
+//					System.out.println("Description: " + fields.get("description"));
+//					System.out.println("Comments: ");
+//					for(String c : qr.getComments())
+//					{
+//						System.out.println(c);
+//					}
+//					
+//					System.out.println("\n---------------------------------\n");
 				}
 			}
 		}
@@ -61,24 +76,35 @@ public class JiraQueryResult
 		return resultCount;
 	}
 	
-	public ArrayList<queryResultItem> getItems()
+	public ArrayList<QueryResultItem> getItems()
 	{
 		return items;
 	}
 	
-	class queryResultItem
+	public class QueryResultItem
 	{
-		String key;
-		String summary;
-		String updated;
-		String status;
+		String            key;
+		String            summary;
+		String            updated;
+		String            status;
+		ArrayList<String> comments;
 		
-		public queryResultItem(String key, String summary, String updated, String status)
+		public QueryResultItem(String key, String summary, String updated, String status)
 		{
 			this.key = key;
 			this.summary = summary;
 			this.updated = updated;
 			this.status = status;
+			comments = new ArrayList<String>();
+		}
+		
+		public QueryResultItem(String key, String summary, String updated, String status, ArrayList<String> comments)
+		{
+			this.key = key;
+			this.summary = summary;
+			this.updated = updated;
+			this.status = status;
+			this.comments = comments;
 		}
 		
 		public String getKey()
@@ -99,6 +125,16 @@ public class JiraQueryResult
 		public String getStatus()
 		{
 			return status;
+		}
+		
+		public void addcomment(String comment)
+		{
+			comments.add(comment);
+		}
+		
+		public ArrayList<String> getComments()
+		{
+			return comments;
 		}
 		
 		public String toString()

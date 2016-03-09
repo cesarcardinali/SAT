@@ -104,10 +104,12 @@ public class Logger
 			{
 				openFile();
 				String fTag = tag;
+				
 				for (int i = tag.length(); i < 20; i++)
 				{
 					fTag += " ";
 				}
+				
 				logWriter.write(new SimpleDateFormat("HH:mm:ss.SSS").format(new Date()) + "   " + fTag + "\t : "
 				                + text + "\n");
 				close();
