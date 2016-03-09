@@ -4,7 +4,7 @@
     <rootPath>C:\SAT\CRs</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\SAT\CRs\unicamp</path>
+    <path>C:\SAT\CRs\hu3</path>
     <assign>false</assign>
     <label>false</label>
     <labels>cd_auto</labels>

@@ -779,6 +779,10 @@ public class CrsManagerPane extends JPanel
 					// Download proccess
 					if (chckbxDownload.isSelected())
 					{
+						File downloadPath = new File(textPath.getText().replace("\\", "/"));
+						if(!downloadPath.exists())
+							downloadPath.mkdir();
+						
 						downloadCRs();
 					}
 					
