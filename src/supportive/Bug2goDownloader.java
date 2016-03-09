@@ -17,8 +17,6 @@ import javax.swing.JOptionPane;
 
 import objects.Bug2goItem;
 import objects.CrItem;
-import supportive.CrChecker;
-import supportive.UnZip;
 import core.Logger;
 import core.SharedObjs;
 
@@ -403,8 +401,10 @@ public class Bug2goDownloader implements Runnable
 				if (SharedObjs.crsManagerPane.getChckbxUnzip().isSelected() && file.isFile() && file.getName().contains(".zip")
 				    && file.getName().contains("_B2G_") && b2gdoneListContains(file.getName().substring(0, file.getName().indexOf("_"))))
 				{
+					String b2gID = file.getName().substring(0, file.getName().indexOf("_")); //Pegar b2gID pelo nome do arquivo;
+					
 					// Unzip
-					SharedObjs.crsManagerPane.addLogLine("Unzipping " + file.getName().substring(0, file.getName().indexOf("_")) + " ...");
+					SharedObjs.crsManagerPane.addLogLine("Unzipping " + b2gID + " ...");
 					
 					UnZip.unZipIt(file.getAbsolutePath(), file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 28));
 					
@@ -415,33 +415,43 @@ public class Bug2goDownloader implements Runnable
 					// Analyze
 					if (SharedObjs.crsManagerPane.getChckbxAnalyze().isSelected())
 					{
-						SharedObjs.crsManagerPane.addLogLine("Pre analyzing CR ...");
+						CrItem cr = SharedObjs.crsManagerPane.getIgnoredList().getCrByB2gId(b2gID);
 						
-						CrChecker crChecker = new CrChecker(file.getAbsolutePath());
-						
-						if (crChecker.checkCR())
+						// Check if should be ignored
+						if(cr != null)
 						{
-							SharedObjs.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
-							SharedObjs.crsManagerPane.addLogLine("CR closed as " + SharedObjs.getCrsList().getCrByB2gId(file.getName()).getResolution());
-						}
-						
-						if (!crChecker.getIncompleteFiles().contains("bugreport"))
-						{
-							try
-							// BATTRIAGE-175
-							{
-								SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
-							}
-							catch (IOException e)
-							{
-								e.printStackTrace();
-								Logger.log(Logger.TAG_BUG2GODOWNLOADER, e.getMessage());
-							}
+							SharedObjs.crsManagerPane.addLogLine("Ignoring analysis process for " + b2gID);
 						}
 						else
 						{
-							SharedObjs.crsManagerPane.addLogLine("No bugreport file. Report output not generated.");
-							Logger.log(Logger.TAG_BUG2GODOWNLOADER, "No bugreport file. Report output not generated.");
+							SharedObjs.crsManagerPane.addLogLine("Pre analyzing CR ...");
+							
+							CrChecker crChecker = new CrChecker(file.getAbsolutePath());
+							
+							if (crChecker.checkCR())
+							{
+								SharedObjs.getCrsList().getCrByB2gId(file.getName()).setStatus("Closed");
+								SharedObjs.crsManagerPane.addLogLine("CR closed as " + SharedObjs.getCrsList().getCrByB2gId(file.getName()).getResolution());
+							}
+							
+							if (!crChecker.getIncompleteFiles().contains("bugreport"))
+							{
+								try
+								// BATTRIAGE-175
+								{
+									SharedObjs.crsManagerPane.runScript(file.getAbsolutePath());
+								}
+								catch (IOException e)
+								{
+									e.printStackTrace();
+									Logger.log(Logger.TAG_BUG2GODOWNLOADER, e.getMessage());
+								}
+							}
+							else
+							{
+								SharedObjs.crsManagerPane.addLogLine("No bugreport file. Report output not generated.");
+								Logger.log(Logger.TAG_BUG2GODOWNLOADER, "No bugreport file. Report output not generated.");
+							}
 						}
 					}
 				}

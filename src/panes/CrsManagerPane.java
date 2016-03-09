@@ -51,6 +51,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import objects.CrItem;
+import objects.CrItemsList;
 
 import org.json.simple.parser.ParseException;
 
@@ -68,25 +69,25 @@ public class CrsManagerPane extends JPanel
 	/**
 	 * Global Variables
 	 */
-	private JTextArea         textDownload;
-	private JTextField        textPath;
-	private JTextPane         textLog;
-	private JTextPane         textPane;
-	private JCheckBox         chckbxAssign;
-	private JCheckBox         chckbxLabels;
-	private String            CRs[];
-	private String            labels[];
-	private JTextField        textLabel;
-	private int               errors;
-	private JButton           btnDownload;
-	private JCheckBox         chckbxUnassign;
-	private JCheckBox         chckbxRemLabels;
-	private JCheckBox         chckbxDownload;
-	private JCheckBox         chckbxUnzip;
-	private JCheckBox         chckbxAnalyze;
-	private JCheckBox         chckbxCloseAsOld;
-	private JCheckBox         chckbxIgnoreAnalyzed;
-	private ArrayList<CrItem> ignoredList;
+	private JTextArea   textDownload;
+	private JTextField  textPath;
+	private JTextPane   textLog;
+	private JTextPane   textPane;
+	private JCheckBox   chckbxAssign;
+	private JCheckBox   chckbxLabels;
+	private String      CRs[];
+	private String      labels[];
+	private JTextField  textLabel;
+	private int         errors;
+	private JButton     btnDownload;
+	private JCheckBox   chckbxUnassign;
+	private JCheckBox   chckbxRemLabels;
+	private JCheckBox   chckbxDownload;
+	private JCheckBox   chckbxUnzip;
+	private JCheckBox   chckbxAnalyze;
+	private JCheckBox   chckbxCloseAsOld;
+	private JCheckBox   chckbxIgnoreAnalyzed;
+	private CrItemsList ignoredList;
 	
 	/**
 	 * Create the panel.
@@ -626,7 +627,7 @@ public class CrsManagerPane extends JPanel
 		
 		// Manage CR
 		int crsCount = 0;
-		ignoredList = new ArrayList<CrItem>();
+		ignoredList = new CrItemsList();
 		for (String crKey : CRs)
 		{
 			crKey = trimCR(crKey);
@@ -645,9 +646,8 @@ public class CrsManagerPane extends JPanel
 				{
 					if (crItem.getLabels().contains("sat_pre_analyzed"))
 					{
-						addLogLine(crsCount + " - " + crKey + " - Ignored");
+						addLogLine(crsCount + " - " + crKey + " - Will not be analyzed");
 						ignoredList.add(crItem);
-						continue;
 					}
 				}
 				
@@ -759,7 +759,7 @@ public class CrsManagerPane extends JPanel
 		catch (Exception ex)
 		{
 			JOptionPane.showMessageDialog(this, "An error occurred. Please check logs.");
-			Logger.log(Logger.TAG_CRSMANAGER,  ex.getMessage());
+			Logger.log(Logger.TAG_CRSMANAGER, ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -780,7 +780,7 @@ public class CrsManagerPane extends JPanel
 					if (chckbxDownload.isSelected())
 					{
 						File downloadPath = new File(textPath.getText().replace("\\", "/"));
-						if(!downloadPath.exists())
+						if (!downloadPath.exists())
 							downloadPath.mkdir();
 						
 						downloadCRs();
@@ -885,7 +885,7 @@ public class CrsManagerPane extends JPanel
 							if (chckbxRemLabels.isSelected())
 							{
 								SharedObjs.crsManagerPane.addLogLine("Unassignin and removing labels ...");
-
+								
 								// Get label list
 								labels = textLabel.getText().split(" ");
 								for (String crKey : CRs)
@@ -1036,7 +1036,7 @@ public class CrsManagerPane extends JPanel
 		
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-//		format.setTimeZone(TimeZone.getTimeZone("Brazil/East"));
+		// format.setTimeZone(TimeZone.getTimeZone("Brazil/East"));
 		
 		textLog.setText(textLog.getText() + format.format(date) + "\t" + line + "\n");
 		textLog.setCaretPosition(textLog.getText().length());
@@ -1102,13 +1102,13 @@ public class CrsManagerPane extends JPanel
 		
 		xmlPath[1] = "unzip";
 		chckbxUnzip.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
-
+		
 		xmlPath[1] = "analyze";
 		chckbxAnalyze.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
-
+		
 		xmlPath[1] = "close";
 		chckbxCloseAsOld.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
-
+		
 		xmlPath[1] = "ignore";
 		chckbxIgnoreAnalyzed.setSelected(Boolean.parseBoolean(XmlMngr.getUserValueOf(xmlPath)));
 		
@@ -1166,7 +1166,7 @@ public class CrsManagerPane extends JPanel
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "--- Initial line: " + sCurrentLine);
 				Matcher m = Pattern.compile(".*bpVersion\": \".+ (.+)\".*").matcher(sCurrentLine);
-				if(m.matches())
+				if (m.matches())
 				{
 					bpVersion = m.group(1).toLowerCase();
 					Logger.log(Logger.TAG_CRSMANAGER, "bpVersion: " + bpVersion);
@@ -1189,7 +1189,7 @@ public class CrsManagerPane extends JPanel
 				}
 				Logger.log(Logger.TAG_CRSMANAGER, sCurrentLine);
 				
-				if(sCurrentLine.equals("griffin"))
+				if (sCurrentLine.equals("griffin"))
 				{
 					sCurrentLine = bpVersion;
 				}
@@ -1208,7 +1208,7 @@ public class CrsManagerPane extends JPanel
 					scanner.close();
 					
 					// Get/Set battery capacity
-					if(SharedObjs.advOptions.getBatCapValue(sCurrentLine) != null)
+					if (SharedObjs.advOptions.getBatCapValue(sCurrentLine) != null)
 					{
 						content = content.replace("#bat_cap#", SharedObjs.advOptions.getBatCapValue(sCurrentLine));
 					}
@@ -1260,12 +1260,12 @@ public class CrsManagerPane extends JPanel
 			}
 			finally
 			{
-				if(out != null)
+				if (out != null)
 					out.close();
 			}
 		}
 		
-		if(br != null)
+		if (br != null)
 			br.close();
 		
 		for (File file : filesList)
@@ -1387,5 +1387,10 @@ public class CrsManagerPane extends JPanel
 	public JCheckBox getChckbxCloseAsOld()
 	{
 		return chckbxCloseAsOld;
+	}
+	
+	public CrItemsList getIgnoredList()
+	{
+		return ignoredList;
 	}
 }
