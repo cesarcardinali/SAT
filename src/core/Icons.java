@@ -33,6 +33,7 @@ public class Icons
 	
 	// General icons
 	public static ImageIcon add                 = new ImageIcon("Data\\pics\\add.png");
+	public static ImageIcon edit                 = new ImageIcon("Data\\pics\\edit.png");
 	public static ImageIcon remove              = new ImageIcon("Data\\pics\\remove.png");
 	public static ImageIcon delete              = new ImageIcon("Data\\pics\\delete.png");
 	public static ImageIcon icon                = new ImageIcon("Data\\pics\\icon.png");

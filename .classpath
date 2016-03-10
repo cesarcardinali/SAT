@@ -14,5 +14,7 @@
 	<classpathentry kind="lib" path="libs/jdom/jdom-2.0.6.jar"/>
 	<classpathentry kind="lib" path="libs/guava/guava-r05.jar"/>
 	<classpathentry kind="lib" path="libs/commons-io/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="libs/javamail-1.4.3/mail.jar"/>
+	<classpathentry kind="lib" path="libs/jfreechart-1.0.19/jfreechart-1.0.19-demo.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

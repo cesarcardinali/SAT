@@ -254,6 +254,7 @@ public class SAT extends JFrame
 			{
 				System.out.println("Updater file: " + SharedObjs.updateFolder1 + "/Data/update/update.cfg");
 				BufferedReader br = new BufferedReader(new FileReader(SharedObjs.updateFolder1 + "/Data/update/update.cfg"));
+				
 				while ((currentLine = br.readLine()) != null)
 				{
 					if (currentLine.contains("message="))

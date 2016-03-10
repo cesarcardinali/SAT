@@ -616,6 +616,63 @@ public class JiraSatApi
 		return output;
 	}
 	
+	/**
+	 * Query results count
+	 * 
+	 * @param Jira query
+	 * @return count
+	 */
+	public long queryCount(String query)
+	{
+		WebResource webResource = client.resource(baseURL.replace("/issue", "") + SEARCH_TAG);
+		String output;
+		String input = prepareInputFromFile("query").replace("#jira_query#", query);
+		Logger.log(TAG, "HTTP Request input: " + input + "\n" + baseURL + SEARCH_TAG);
+		
+		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, input);
+		
+		if (response.getStatus() != 204)
+		{
+			output = response.getEntity(String.class);
+		}
+		else
+		{
+			output = response.toString();
+		}
+		
+		Logger.log(TAG, "Query performed");
+		
+		if(output.contains("{\"errorMessages\":"))
+		{
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
+		}
+		else
+		{
+			
+		}
+		
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObj;
+		long resultCount = -1;
+		
+		try
+        {
+	        jsonObj = (JSONObject) jsonParser.parse(output);
+	        resultCount = (long) jsonObj.get("total");
+        }
+        catch (ParseException e)
+        {
+	        e.printStackTrace();
+        }
+		
+		return resultCount;
+	}
+	
 	// Supportive methods
 	@SuppressWarnings("unchecked")
 	public CrItem getCrData(String key) throws ParseException

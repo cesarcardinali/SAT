@@ -44,6 +44,7 @@ public class SharedObjs
 	public static final File          messageCfgFile = new File(contentFolder + "cfgs/message.xml");
 	public static final File          filtersFile    = new File(contentFolder + "cfgs/filters.xml");
 	public static final File          uidsFile       = new File(contentFolder + "cfgs/uids.xml");
+	public static final File          reportFile       = new File(contentFolder + "cfgs/report.xml");
 	public static final File          pwdFile        = new File(contentFolder + "cfgs/pass.pwd");
 	private static String             crPath;
 	private static String             rootFolderPath;

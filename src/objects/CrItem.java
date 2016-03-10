@@ -83,10 +83,10 @@ public class CrItem
 	// Class to string
 	public String toString()
 	{
-		return "Jira: " + jiraID + " || B2gID: " + b2gID + " || Summary: " + summary + " || Status: " + status + " || Resolution: " + resolution
+		return "Jira: " + jiraID + " || B2gID: " + b2gID + " || Summary: " + summary + " || Build: " + build + " || Status: " + status + " || Resolution: " + resolution
 		       + " || Assignee: " + assignee + " || Product: " + product + " || Created: " + created + " || Updated: " + updated + " || Resolved: "
 		       + closureDate + " || AffectedVersions: " + affectedVersion + " || Component/s: " + component + " || Fixed at: " + fixMerges + " || Assignee: "
-		       + assignee + " || Assignee: " + assignee + " || Labels: " + labels + " || Dup: " + dup; // description / comment
+		       + assignee + " || Assignee: " + assignee + " || Labels: " + labels + " || Dup: " + dup + " || Description: " + description; // description / comment
 	}
 	
 	

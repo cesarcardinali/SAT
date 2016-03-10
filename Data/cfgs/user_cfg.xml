@@ -4,7 +4,7 @@
     <rootPath>C:\SAT\CRs</rootPath>
   </parser_pane>
   <crs_jira_pane>
-    <path>C:\SAT\CRs\hu3</path>
+    <path>C:\SAT\CRs\BATTRIAGE-242</path>
     <assign>false</assign>
     <label>false</label>
     <labels>cd_auto</labels>
@@ -12,7 +12,7 @@
     <unzip>true</unzip>
     <analyze>true</analyze>
     <close>false</close>
-    <ignore>true</ignore>
+    <ignore>false</ignore>
     <unassign>false</unassign>
     <rem_label>false</rem_label>
   </crs_jira_pane>

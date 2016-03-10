@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import objects.CustomFilterItem;
@@ -17,6 +18,8 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+
+import tests.report.ProductReport;
 
 
 /**
@@ -31,7 +34,8 @@ public class XmlMngr
 	private static Document systemDocument; // System XML file
 	private static Document messageDocument; // Message XML file
 	private static Document filtersDocument; // Filters XML file
-	private static Document uidsDocument; // Filters XML file
+	private static Document uidsDocument;   // UIDs XML file
+	private static Document reportDocument; // UIDs XML file
 	                                         
 	/**
 	 * Initialize all variables and configure the class
@@ -57,6 +61,7 @@ public class XmlMngr
 			messageDocument = (Document) builder.build(SharedObjs.messageCfgFile);
 			filtersDocument = (Document) builder.build(SharedObjs.filtersFile);
 			uidsDocument = (Document) builder.build(SharedObjs.uidsFile);
+			reportDocument = (Document) builder.build(SharedObjs.reportFile);
 		}
 		catch (IOException | JDOMException e)
 		{
@@ -80,7 +85,7 @@ public class XmlMngr
 		
 		for (String item : path)
 		{
-			if(requestedElement != null)
+			if (requestedElement != null)
 				requestedElement = requestedElement.getChild(item);
 		}
 		
@@ -108,7 +113,7 @@ public class XmlMngr
 		
 		for (String item : path)
 		{
-			if(requestedElement.getChild(item) != null)
+			if (requestedElement.getChild(item) != null)
 			{
 				requestedElement = requestedElement.getChild(item);
 			}
@@ -251,7 +256,7 @@ public class XmlMngr
 	public static String getUidsValueOf(String path[])
 	{
 		Element requestedElement = uidsDocument.getRootElement();
-		path[path.length-1] = "u_" + path[path.length-1];
+		path[path.length - 1] = "u_" + path[path.length - 1];
 		
 		for (String item : path)
 		{
@@ -279,11 +284,11 @@ public class XmlMngr
 	public static boolean setUidsValueOf(String path[], String value)
 	{
 		Element requestedElement = uidsDocument.getRootElement();
-		path[path.length-1] = "u_" + path[path.length-1];
+		path[path.length - 1] = "u_" + path[path.length - 1];
 		
 		for (String item : path)
 		{
-			if(requestedElement.getChild(item) != null)
+			if (requestedElement.getChild(item) != null)
 			{
 				requestedElement = requestedElement.getChild(item);
 			}
@@ -324,6 +329,118 @@ public class XmlMngr
 		
 		return hm;
 	}
+	
+	// Products to generate report methods group
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	public static ProductReport getProductReportValueOf(String productName)
+	{
+		Element requestedElement = reportDocument.getRootElement();
+		
+		for (Element item : requestedElement.getChildren())
+		{
+			if (item.getChildText("name").equals(productName))
+			{
+				ProductReport pr = new ProductReport();
+				pr.setName(item.getChildText("name"));
+				pr.setAddChart(Boolean.parseBoolean(item.getChildText("add_chart")));
+				pr.setAddHighlight(Boolean.parseBoolean(item.getChild("highligths").getAttributeValue("add")));
+				pr.setHighlights(item.getChildText("highligths"));
+				pr.setDashboardLink(item.getChildText("dashboard_link"));
+				pr.setProductID(item.getChildText("product_ids"));
+				pr.setSpreadsheetLink(item.getChildText("spreadsheet_link"));
+				
+				return pr;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static boolean setProductReportValueOf(ProductReport pr)
+	{
+		Element requestedElement = reportDocument.getRootElement();
+		
+		try
+		{
+			for (Element item : requestedElement.getChildren())
+			{
+				if (item.getChildText("name").equals(pr.getName()))
+				{
+					item.getChild("name").setText(pr.getName());
+					item.getChild("add_chart").setText(pr.getAddChart() + "");
+					item.getChild("highligths").setAttribute("add", pr.getAddHighlight() + "");
+					item.getChild("highligths").setText(pr.getHighlights());
+					item.getChild("dashboard_link").setText(pr.getDashboardLink());
+					item.getChild("product_ids").setText(pr.getProductID());
+					item.getChild("spreadsheet_link").setText(pr.getSpreadsheetLink());
+					
+					return true;
+				}
+			}
+			
+			Element newItem = new Element("product_" + (requestedElement.getContentSize() + 1));
+			newItem.getChild("name").setText(pr.getName());
+			newItem.getChild("add_chart").setText(pr.getAddChart() + "");
+			newItem.getChild("highligths").setAttribute("add", pr.getAddHighlight() + "");
+			newItem.getChild("highligths").setText(pr.getHighlights());
+			newItem.getChild("dashboard_link").setText(pr.getDashboardLink());
+			newItem.getChild("product_ids").setText(pr.getProductID());
+			newItem.getChild("spreadsheet_link").setText(pr.getSpreadsheetLink());
+			requestedElement.addContent(newItem);
+			
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
+	
+	public static ArrayList<ProductReport> getAllProductsReport()
+	{
+		Element requestedElement = reportDocument.getRootElement();
+		ArrayList<ProductReport> elements = new ArrayList<ProductReport>();
+		ProductReport pr = new ProductReport();
+		
+		for (Element item : requestedElement.getChildren())
+		{
+			pr = new ProductReport();
+			pr.setName(item.getChildText("name"));
+			pr.setProductID(item.getChildText("product_ids"));
+			pr.setReleases(item.getChildText("releases").split(" "));
+			pr.setTopIssueLabel(item.getChildText("til"));
+			pr.setDashboardLink(item.getChildText("dashboard_link"));
+			pr.setSpreadsheetLink(item.getChildText("spreadsheet_link"));
+			pr.setAddChart(Boolean.parseBoolean(item.getChildText("add_chart")));
+			pr.setChartBuild(item.getChildText("chart_build"));
+			pr.setChartIssues(item.getChildText("issues"));
+			pr.setAddChart(Boolean.parseBoolean(item.getChildText("add_chart")));
+			pr.setAddHighlight(Boolean.parseBoolean(item.getChild("highligths").getAttributeValue("add")));
+			pr.setHighlights(item.getChildText("highligths"));
+			
+			elements.add(pr);
+		}
+		
+		return elements;
+	}
+	
+	public static void clearProductsReport()
+	{
+		Element requestedElement = reportDocument.getRootElement();
+		requestedElement.removeContent();
+	}
+	
+	public static void addAllProductsReport(ArrayList<ProductReport> products)
+	{
+		Element requestedElement = uidsDocument.getRootElement();
+		requestedElement = requestedElement.getChild("Known");
+		requestedElement.removeContent();
+	}
+	
+	// End
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/**
 	 * Get user filter item
@@ -386,8 +503,7 @@ public class XmlMngr
 	 */
 	public static CustomFilterItem getSharedFiltersValueOf(String name, String owner)
 	{
-		for (Element requestedElement : filtersDocument.getRootElement().getChild("sharedFilters")
-		                                               .getChildren())
+		for (Element requestedElement : filtersDocument.getRootElement().getChild("sharedFilters").getChildren())
 		{
 			if (requestedElement.getName().equals(name))
 			{
@@ -422,8 +538,7 @@ public class XmlMngr
 				}
 			}
 			
-			sharedFiltersElement.addContent(createElement(filter,
-			                                              sharedFiltersElement.getChildren().size() + 1));
+			sharedFiltersElement.addContent(createElement(filter, sharedFiltersElement.getChildren().size() + 1));
 			return true;
 		}
 		
@@ -432,8 +547,7 @@ public class XmlMngr
 	
 	public static CustomFilterItem getActiveFiltersValueOf(String name, String owner)
 	{
-		for (Element requestedElement : filtersDocument.getRootElement().getChild("activeFilters")
-		                                               .getChildren())
+		for (Element requestedElement : filtersDocument.getRootElement().getChild("activeFilters").getChildren())
 		{
 			if (requestedElement.getChildText("name").equals(name))
 			{
@@ -463,8 +577,7 @@ public class XmlMngr
 				}
 			}
 			
-			activeFiltersElement.addContent(createElement(filter,
-			                                              activeFiltersElement.getChildren().size() + 1));
+			activeFiltersElement.addContent(createElement(filter, activeFiltersElement.getChildren().size() + 1));
 			
 			return true;
 		}
@@ -735,7 +848,7 @@ public class XmlMngr
 		for (String value : items.keySet())
 		{
 			Element e = element.getChild(value);
-			if(e == null)
+			if (e == null)
 			{
 				element.addContent(new Element(value));
 				e = element.getChild(value).setText(items.get(value));
@@ -754,7 +867,7 @@ public class XmlMngr
 		for (String value : items.keySet())
 		{
 			Element e = element.getChild(value);
-			if(e == null)
+			if (e == null)
 			{
 				element.addContent(new Element(value));
 				e = element.getChild(value).setText(items.get(value));
@@ -833,7 +946,7 @@ public class XmlMngr
 		filter.setActive(Boolean.parseBoolean(requestedElement.getChildText("active")));
 		filter.setLastUpdate(requestedElement.getChildText("last_update"));
 	}
-
+	
 	/**
 	 * Save and close all XMLs files.
 	 */
