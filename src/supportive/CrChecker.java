@@ -584,7 +584,19 @@ public class CrChecker
 			if ((hci.getScOffConsume() >= 10 || hci.getConsumeAvg() >= 23) && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.3) // High
 			                                                                                                                                    // consumption
 			{
-				String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + hci.getProcess()
+				String project = "IKSW";
+				if (cr.getBuild().equals(""))
+				{
+					project += "M";
+				}
+				else
+				{
+					project += cr.getBuild().toUpperCase().substring(0, 1);
+				}
+				
+				Logger.log(Logger.TAG_CR_CHECKER, "Project to dup for: " + project);
+				
+				String jSONOutput = jira.query("project = " + project + " AND summary ~ \\\"" + hci.getProcess()
 				                               + "\\\" AND summary ~ \\\"consuming too much CPU power\\\" AND (labels = cd_auto OR labels = cd_manual)");
 				JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 				
@@ -640,7 +652,19 @@ public class CrChecker
 			else if (hci.getProcess().equals("system_server") && hci.getScOffConsume() < 10 && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.7) // Too
 			                                                                                                                                                     // often
 			{
-				String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + hci.getProcess()
+				String project = "IKSW";
+				if (cr.getBuild().equals(""))
+				{
+					project += "M";
+				}
+				else
+				{
+					project += cr.getBuild().toUpperCase().substring(0, 1);
+				}
+				
+				Logger.log(Logger.TAG_CR_CHECKER, "Project to dup for: " + project);
+				
+				String jSONOutput = jira.query("project = " + project + " AND summary ~ \\\"" + hci.getProcess()
 				                               + "\\\" AND summary ~ \\\"running nonstop in background\\\" AND (labels = cd_auto OR labels = cd_manual)");
 				JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 				
@@ -1201,7 +1225,19 @@ public class CrChecker
 									wl.setTagName(wl.getTagName().substring(0, wl.getTagName().lastIndexOf("/")));
 								}
 								
-								String jSONOutput = jira.query("project = IKSWM AND summary !~ \\\"CLONE\\\" AND summary ~ \\\"stuck\\\" AND summary ~ \\\""
+								String project = "IKSW";
+								if (cr.getBuild().equals(""))
+								{
+									project += "M";
+								}
+								else
+								{
+									project += cr.getBuild().toUpperCase().substring(0, 1);
+								}
+								
+								Logger.log(Logger.TAG_CR_CHECKER, "Project to dup for: " + project);
+								
+								String jSONOutput = jira.query("project = " + project + " AND summary !~ \\\"CLONE\\\" AND summary ~ \\\"stuck\\\" AND summary ~ \\\""
 								                               + wl.getProcessName() + "\\\" AND summary ~ \\\"" + wl.getTagName().replace("*", "")
 								                               + "\\\" AND (labels = cd_auto OR labels = cd_manual)");
 								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
@@ -1275,7 +1311,19 @@ public class CrChecker
 							if (kernelWkls.get(i).getDuration() > 1.5 * 60 * 60 * 1000)
 							{
 								wl = kernelWkls.get(i);
-								String jSONOutput = jira.query("project = IKSWM AND summary ~ \\\"" + wl.getName().replace("[", "").replace("]", "")
+								String project = "IKSW";
+								if (cr.getBuild().equals(""))
+								{
+									project += "M";
+								}
+								else
+								{
+									project += cr.getBuild().toUpperCase().substring(0, 1);
+								}
+								
+								Logger.log(Logger.TAG_CR_CHECKER, "Project to dup for: " + project);
+								
+								String jSONOutput = jira.query("project = " + project + " AND summary ~ \\\"" + wl.getName().replace("[", "").replace("]", "")
 								                               + "\\\" AND summary ~ \\\"Kernel wkl stuck\\\" AND (labels = cd_auto OR labels = cd_manual)");
 								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 								
