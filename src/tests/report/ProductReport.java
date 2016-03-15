@@ -104,7 +104,7 @@ public class ProductReport
 		analyzedCRs = (int) queryResult.getResultCount();
 		
 		System.out.println("Query results count: " + queryResult.getResultCount());
-
+		
 		return analyzedCRs;
 	}
 	
