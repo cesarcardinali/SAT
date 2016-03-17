@@ -1,58 +1,41 @@
 package tests.report;
 
 
-import java.awt.Desktop;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 
 
 public class ReportController
 {
-	private ReportFrame frame;
+	private ReportFrame view;
 	private ReportModel model;
 	
 	public ReportController()
 	{
-		frame = null;
+		view = null;
 		model = null;
 	}
 	
 	// Frame manipulation methods ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	public void resetTxtFields()
 	{
-		frame.resetFields();
+		view.resetFields();
 	}
 	
-	public void setupFields()
+	public void updateFieldsForSelectedProduct(int productId)
 	{
-		int id = frame.getComboBox().getSelectedIndex();
-		frame.setReleases(model.getProductList().get(id).getReleasesString());
-		frame.setTopIssuesLabel(model.getProductList().get(id).getTopIssueLabel());
-		frame.setDashboardLink(model.getProductList().get(id).getDashboardLink());
-		frame.setSpreadsheetLink(model.getProductList().get(id).getSpreadsheetLink());
-		frame.setAddChart(model.getProductList().get(id).getAddChart());
-		frame.setChartBuild(model.getProductList().get(id).getChartBuild());
-		frame.setChartIssues(model.getProductList().get(id).getChartIssues());
-		frame.setAddHighlights(model.getProductList().get(id).getAddHighlight());
-		frame.setHighlights(model.getProductList().get(id).getHighlights());
+		int id = productId;
+		ProductReport pr = model.getProductList().get(id);
+		view.setupFields(pr);
 	}
 	
 	public void setupCombobox()
 	{
-		JComboBox<String> comboBox = frame.getComboBox();
-		comboBox.removeAllItems();
-		
-		for (ProductReport pr : model.getProductList())
-		{
-			comboBox.addItem(pr.getName());
-		}
-		
-		setupFields();
+		ArrayList<ProductReport> productList = model.getProductList();
+		view.setupComboBox(productList);
+		if(productList.size() > 0)
+			view.setupFields(productList.get(0));
 	}
 	
 	// Model manipulation methods ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -62,37 +45,34 @@ public class ReportController
 		setupCombobox();
 	}
 	
-	// Controller connection methods ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	@SuppressWarnings("resource")
-	public File generateProductReport()
+	public void updateProducts()
 	{
-		File reportFile = new File("Report/report.html");
 		
-		try
-		{
-			BufferedWriter bw = new BufferedWriter(new FileWriter(reportFile));
-			bw.write(model.generateReport());
-			bw.close();
-			
-			Desktop.getDesktop().browse(reportFile.toURI());
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		
-		return reportFile;
+	}
+	
+	// Controller connection methods ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	public void generateProductReport()
+	{
+		model.generateReport();
+	}
+	
+	public void sendReportMail()
+	{
+		if(model.getReportOutput() != null && !model.getReportOutput().equals(""))
+			model.sendReportEmail();
+		else
+			JOptionPane.showMessageDialog(null, "There is no report to be sent");
 	}
 	
 	// Getters and Setters -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	public ReportFrame getFrame()
 	{
-		return frame;
+		return view;
 	}
 	
 	public void setFrame(ReportFrame frame)
 	{
-		this.frame = frame;
+		this.view = frame;
 	}
 	
 	public ReportModel getModel()

@@ -117,6 +117,38 @@
       <active>false</active>
       <last_update>2016-03-01 12:05:47</last_update>
     </item_4>
+    <item_5>
+      <name>radio</name>
+      <regex>.*DATA_REGISTRATION.*</regex>
+      <header>Radio Network</header>
+      <owner>amaciel</owner>
+      <main>false</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>true</radio>
+      <bugreport>false</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2016-03-10 07:38:25</last_update>
+    </item_5>
+    <item_6>
+      <name>SQL Messages</name>
+      <regex>.*(sql|SQL).*(ERRORS?|Errors?|errors?).*</regex>
+      <header>SQL messages at Main log:</header>
+      <owner>amaciel</owner>
+      <main>true</main>
+      <system>false</system>
+      <kernel>false</kernel>
+      <radio>false</radio>
+      <bugreport>true</bugreport>
+      <routput>false</routput>
+      <shared>true</shared>
+      <editable>false</editable>
+      <active>false</active>
+      <last_update>2016-03-10 07:38:25</last_update>
+    </item_6>
   </sharedFilters>
   <!-- Active filters: !-->
   <activeFilters>

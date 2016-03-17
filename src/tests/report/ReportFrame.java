@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -57,9 +58,9 @@ public class ReportFrame extends JFrame
 	private JTextField        txtSpreadsheetLink;
 	private JTextField        txtChartBuild;
 	private ReportController  controller;
-	private JPanel panel;
-	private JScrollPane scrollPane_1;
-	private JTextPane txtpnIssuesId;
+	private JPanel            panel;
+	private JScrollPane       scrollPane_1;
+	private JTextPane         txtpnIssuesId;
 	
 	public static void main(String[] args)
 	{
@@ -284,10 +285,10 @@ public class ReportFrame extends JFrame
 		gbc_panel.gridy = 5;
 		dataPane.add(panel, gbc_panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{170, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[] {170, 0, 0};
+		gbl_panel.rowHeights = new int[] {0, 0};
+		gbl_panel.columnWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[] {1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
 		txtChartBuild = new JTextField();
@@ -396,11 +397,12 @@ public class ReportFrame extends JFrame
 			}
 		});
 		
-		btnReset.addActionListener(new ActionListener()
+		btnEdit.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				
+				controller.generateProductReport();
+				controller.sendReportMail();
 			}
 		});
 		
@@ -408,7 +410,7 @@ public class ReportFrame extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				
+				controller.sendReportMail();
 			}
 		});
 		
@@ -442,7 +444,7 @@ public class ReportFrame extends JFrame
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				controller.setupFields();
+				controller.updateFieldsForSelectedProduct(comboBox.getSelectedIndex());
 			}
 		});
 	}
@@ -463,9 +465,50 @@ public class ReportFrame extends JFrame
 		controller.loadProducts();
 	}
 	
-	public void setupFields()
+	public void setupFields(ProductReport pr)
 	{
-		controller.setupFields();
+		setReleases(pr.getReleasesString());
+		setTopIssuesLabel(pr.getTopIssueLabel());
+		setDashboardLink(pr.getDashboardLink());
+		setSpreadsheetLink(pr.getSpreadsheetLink());
+		setAddChart(pr.getAddChart());
+		setChartBuild(pr.getChartBuild());
+		setChartIssues(pr.getChartIssues());
+		setAddHighlights(pr.getAddHighlight());
+		setHighlights(pr.getHighlights());
+	}
+	
+	public ProductReport getFieldsAsProduct()
+	{
+		ProductReport pr = new ProductReport();
+		
+		pr.setName(getProductName());
+		pr.setReleases(getReleases().split(" "));
+		pr.setTopIssueLabel(getTopIssueLabel());
+		pr.setDashboardLink(getDashboardLink());
+		pr.setSpreadsheetLink(getSpreadsheetLink());
+		pr.setAddChart(addChart());
+		pr.setChartBuild(getChartBuilds());
+		pr.setChartIssues(getChartIssues());
+		pr.setAddHighlight(addHighlights());
+		pr.setHighlights(getHighlights());
+		
+		JComboBox<ProductReport> getCom;
+		
+		return pr;
+	}
+	
+	public void setupComboBox(ArrayList<ProductReport> products)
+	{
+		comboBox.removeAllItems();
+		
+		for (ProductReport pr : products)
+		{
+			comboBox.addItem(pr.getName());
+		}
+		
+		if(comboBox.getItemCount() > 0)
+			comboBox.setSelectedIndex(0);
 	}
 	
 	// Getters and Setters
@@ -522,6 +565,16 @@ public class ReportFrame extends JFrame
 	public boolean addChart()
 	{
 		return chckbxAddCharts.isSelected();
+	}
+	
+	public String getChartBuilds()
+	{
+		return txtChartBuild.getText();
+	}
+	
+	public String getChartIssues()
+	{
+		return txtpnIssuesId.getText();
 	}
 	
 	public boolean addHighlights()

@@ -17,8 +17,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
-import core.SharedObjs;
-
 
 public class ListPane extends JFrame
 {
@@ -37,7 +35,7 @@ public class ListPane extends JFrame
 	{
 		setTitle("Automatically closed CRs");
 		setResizable(false);
-		setAlwaysOnTop(true);
+		setAlwaysOnTop(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 274, 434);
 		contentPane = new JPanel();
@@ -130,7 +128,7 @@ public class ListPane extends JFrame
 	
 	public void showWindow()
 	{
-		setLocationRelativeTo(SharedObjs.crsManagerPane);
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 }

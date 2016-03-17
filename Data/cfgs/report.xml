@@ -3,7 +3,7 @@
 	<product_3>
 		<name>Affinity</name>
 		<product_ids>Athene - 13MP;Athene - 16MP</product_ids>
-		<releases>MPJ24.121 MPJ24.124</releases>
+		<releases>MPJ24.124 MPJ24.125</releases>
 		<til>athene_cd_top</til>
 		<dashboard_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=43268</dashboard_link>
 		<spreadsheet_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=43268</spreadsheet_link>
@@ -16,6 +16,7 @@ IKSWM-18232
 IKSWM-18232
 IKSWM-21996
 IKSWM-18456
+IKSWM-20961
 IKSWM-24078
 IKSWM-24853
 IKSWM-12683

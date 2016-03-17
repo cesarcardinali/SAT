@@ -3,42 +3,48 @@ package tests.report;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.util.Scanner;
 
+import objects.CrItem;
+
+import org.jfree.data.general.DefaultPieDataset;
 import org.json.simple.parser.ParseException;
 
 import panes.secondarypanes.ListPane;
 import supportive.JiraQueryResult;
 import supportive.JiraSatApi;
 import tests.JiraUser;
+import tests.PieChartBuilder;
 
 
 public class ProductReport
 {
 	// Variables
 	// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	private String       name;
-	private String       productID;
-	private String[]     releases;
-	private String       topIssueLabel;
-	private String       dashboardLink;
-	private String       spreadsheetLink;
-	private Boolean      addChart;
-	private String       chartBuild;
-	private String       chartIssues;
-	private Boolean      addHighlight;
-	private String       highlights;
-	private String       topIssues;
-	private int          analyzedCRs;
-	private String       htmlOutput;
-	private HashMap<String, Long> issueDupsCount;
+	private String            name;
+	private String            productID;
+	private String[]          releases;
+	private String            topIssueLabel;
+	private String            dashboardLink;
+	private String            spreadsheetLink;
+	private Boolean           addChart;
+	private String            chartBuild;
+	private String            chartIssues;
+	private Boolean           addHighlight;
+	private String            highlights;
+	private String            topIssues;
+	private int               analyzedCRs;
+	private String            htmlOutput;
+	private DefaultPieDataset issueDupsCount;
 	
 	// Final variables
 	// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	private final String topIssuesQuery = "labels = #top issues label#";
-	private final String analyzedQuery  = "labels = cd_auto AND updated >= startOfDay() AND created >= startOfDay(-1d) AND (#releases#) ORDER BY key ASC";
-	private final String chartIssuesCountQuery = "\\\"Duplicate CR\\\" ~ #issue key# AND labels = cd_auto AND (description ~ #chart build#)";
+	private final String      topIssuesQuery        = "labels = #top issues label#";
+	private final String      topIssuesHTMLTemplate = "<li><a href=\"http://idart.mot.com/browse/#cr key#\" target=\"_blank\">#cr key#</a> - #summary#</li>";
+	private final String      analyzedQuery         = "labels = cd_auto AND updated >= startOfDay() AND created >= startOfDay(-1d) AND (#releases#) ORDER BY key ASC";
+	private final String      chartIssuesCountQuery = "\\\"Duplicate CR\\\" ~ #issue key# AND labels = cd_auto AND (description ~ #chart build#)";
+	private final String      chartsOutputFolder    = "Data/complements/report/charts/";
+	private final String      htmlTemplatesFolder   = "Data/complements/report/templates/";
 	
 	// Constructor
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -135,7 +141,8 @@ public class ProductReport
 		
 		for (int i = 0; i < queryResult.getItems().size(); i++)
 		{
-			topIssues += "<li>" + queryResult.getItems().get(i).getKey() + " - " + queryResult.getItems().get(i).getSummary() + "</li>\n";
+			topIssues += topIssuesHTMLTemplate.replace("#cr key#", queryResult.getItems().get(i).getKey()).replace("#summary#",
+			                                                                                                       queryResult.getItems().get(i).getSummary());
 		}
 		
 		System.out.println("Query results count: " + queryResult.getResultCount());
@@ -148,7 +155,7 @@ public class ProductReport
 	{
 		try
 		{
-			String product = new Scanner(new File("test files/html structures/addProductReport.txt")).useDelimiter("\\Z").next();
+			String product = new Scanner(new File(htmlTemplatesFolder + "addProductReport.tmpl")).useDelimiter("\\Z").next();
 			product = product.replace("#product name#", name);
 			product = product.replace("#analyzed crs#", "" + analyzedCRs);
 			String releasesHTML = "";
@@ -172,7 +179,7 @@ public class ProductReport
 			
 			if (addChart)
 			{
-				String chartHTML = new Scanner(new File("test files/html structures/addChart.txt")).useDelimiter("\\Z").next();
+				String chartHTML = new Scanner(new File(htmlTemplatesFolder + "addChart.tmpl")).useDelimiter("\\Z").next();
 				product = product.replace("#Wakelock Chart#", chartHTML.replace("#image cid#", name.replace(" ", "_") + ""));
 			}
 			else
@@ -194,24 +201,25 @@ public class ProductReport
 	
 	public boolean generateChart()
 	{
-		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, JiraUser.getUser(), JiraUser.getPass());
-		long queryResultcount = -1;
-		String issuesDupCount = "";
 		ListPane lp = new ListPane();
+		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, JiraUser.getUser(), JiraUser.getPass());
+		CrItem crAux;
+		long queryResultcount = -1;
+		// long totalDupsCount = 0;
 		String chartBuilds[] = chartBuild.trim().split(" ");
 		String queryBuilds = "";
-		issueDupsCount = new HashMap<String, Long>();
+		issueDupsCount = new DefaultPieDataset();
 		
-		for(String key : chartIssues.split("\n"))
+		for (String key : chartIssues.split("\n"))
 		{
 			queryResultcount = 0;
 			
-			if(key.contains("-") && key.length() > 5)
+			if (key.contains("-") && key.length() > 5)
 			{
-				if(chartBuilds.length > 1)
+				if (chartBuilds.length > 1)
 				{
 					queryBuilds = chartBuilds[0];
-					for(int i = 1; i < chartBuilds.length; i++)
+					for (int i = 1; i < chartBuilds.length; i++)
 					{
 						queryBuilds += " OR description ~ " + chartBuilds;
 					}
@@ -222,37 +230,48 @@ public class ProductReport
 				}
 				
 				try
-                {
-	                if(queryBuilds.contains(jira.getCrData(key).getBuild()))
-	                {
-	                	queryResultcount++;
-	                }
-	                else
-	                {
-	                	for(String b : chartBuilds)
-	                	{
-	                		if(jira.getCrData(key).getDescription().contains(b))
-	                		{
-	                			queryResultcount++;
-	                		}
-	                	}
-	                }
-                }
-                catch (ParseException e)
-                {
-	                e.printStackTrace();
-                }
-				
-				System.out.println("Count result: " + queryResultcount);
-				queryResultcount += jira.queryCount(chartIssuesCountQuery.replace("#chart build#", queryBuilds).replace("#issue key#", key.trim()));
-				issuesDupCount += key + "\t" + queryResultcount;
-				issueDupsCount.put(key, new Long(queryResultcount));
-				lp.addItemList1(key);
-				lp.addItemList2("" + queryResultcount);
+				{
+					crAux = jira.getCrData(key);
+					if (queryBuilds.contains(crAux.getBuild()))
+					{
+						queryResultcount++;
+					}
+					else
+					{
+						for (String b : chartBuilds)
+						{
+							if (crAux.getDescription().contains(b))
+							{
+								queryResultcount++;
+							}
+						}
+					}
+					
+					queryResultcount += jira.queryCount(chartIssuesCountQuery.replace("#chart build#", queryBuilds).replace("#issue key#", key.trim()));
+					System.out.println("Count result: " + queryResultcount);
+					
+					// totalDupsCount += queryResultcount;
+					if (crAux.getSummary().length() > 100)
+						crAux.setSummary(crAux.getSummary().substring(0, 101));
+					issueDupsCount.setValue(key + " - " + crAux.getSummary(), queryResultcount);
+					
+					lp.addItemList1(key);
+					lp.addItemList2("" + queryResultcount);
+				}
+				catch (ParseException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 		
 		lp.showWindow();
+		
+//		ChartGenerator cg = new ChartGenerator(name, issueDupsCount, chartsOutputFolder + name.replace(" ", "_"));
+//		cg.buildAndShow();
+		
+		PieChartBuilder cb = new PieChartBuilder(name, issueDupsCount, chartsOutputFolder + name.replace(" ", "_") + ".png");
+		cb.buildAndShow();
 		
 		return false;
 	}
@@ -408,5 +427,10 @@ public class ProductReport
 	public void setChartIssues(String chartIssues)
 	{
 		this.chartIssues = chartIssues;
+	}
+	
+	public String toString()
+	{
+		return name;
 	}
 }

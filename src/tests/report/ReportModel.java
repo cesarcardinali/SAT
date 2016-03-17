@@ -1,9 +1,12 @@
 package tests.report;
 
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
@@ -24,6 +27,10 @@ public class ReportModel
 	private ArrayList<ProductReport> productList;
 	private ReportController         controller;
 	private String                   reportOutput;
+	private File                     reportFile;
+	
+	private final String      htmlTemplatesFolder   = "Data/complements/report/templates/";
+	private final String      chartsOutputFolder    = "Data/complements/report/charts/";
 	
 	public ReportModel()
 	{
@@ -44,20 +51,21 @@ public class ReportModel
 	{
 		try
 		{
-			String htmlOutput = new Scanner(new File("Data/complements/report/templates/baseBody.tmpl")).useDelimiter("\\Z").next();
+			String htmlOutput = new Scanner(new File(htmlTemplatesFolder + "baseBody.tmpl")).useDelimiter("\\Z").next();
 			String highlights = "";
 			String productsReport = "";
 			
 			for (ProductReport pr : productList)
 			{
 				productsReport += pr.generateProductReport();
+				
 				if (pr.getAddHighlight())
 				{
 					highlights += "<li>" + pr.getHighlights() + "</li>\n";
 				}
 			}
 			
-			if(highlights.equals(""))
+			if (highlights.equals(""))
 			{
 				highlights = "None";
 			}
@@ -65,9 +73,24 @@ public class ReportModel
 			htmlOutput = htmlOutput.replace("#products highlights#", highlights);
 			htmlOutput = htmlOutput.replace("#product details#", productsReport);
 			
+			// Generate report file
+			reportFile = new File("Report/report.html");
+			
+			BufferedWriter bw = new BufferedWriter(new FileWriter(reportFile));
+			bw.write(htmlOutput);
+			bw.close();
+			
+//			Desktop.getDesktop().browse(reportFile.toURI());
+			
+			reportOutput = htmlOutput;
+			
 			return htmlOutput;
 		}
 		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -104,15 +127,6 @@ public class ReportModel
 			// Start session
 			Session ses = Session.getDefaultInstance(props, null);
 			
-			// Setup "from" mail list
-			String[] to = new String[1];
-			to[0] = "cesarc@motorola.com";
-			InternetAddress[] sendTo = new InternetAddress[1];
-			for (int j = 0; j < 1; j++)
-			{
-				sendTo[j] = new InternetAddress(to[j]);
-			}
-			
 			MimeMessage message = new MimeMessage(ses);
 			
 			// Set text
@@ -121,32 +135,45 @@ public class ReportModel
 			byte[] data = new byte[(int) file.length()];
 			fis.read(data);
 			fis.close();
-
+			
 			String str = new String(data, "UTF-8");
 			message.setText(str, "utf-8", "html");
 			
-			//---
+			// ---
 			MimeMultipart content = new MimeMultipart("related");
 			MimeBodyPart htmlPart = new MimeBodyPart();
-			String cid = "Afinity";
+			String cid;
 			
 			htmlPart.setText(str, "utf-8", "html");
 			content.addBodyPart(htmlPart);
 			
-			MimeBodyPart imagePart = new MimeBodyPart();
-			imagePart.attachFile("test files/Afinity.png");
-			imagePart.setContentID("<" + cid + ">");
-			imagePart.setDisposition(MimeBodyPart.INLINE);
-			content.addBodyPart(imagePart);
-			
+			for (ProductReport pr : productList)
+			{
+				cid = pr.getName().replace(" ", "_");
+				MimeBodyPart imagePart = new MimeBodyPart();
+				imagePart.attachFile(chartsOutputFolder + pr.getName().replace(" ", "_") + ".png");
+				imagePart.setContentID("<" + cid + ">");
+				imagePart.setDisposition(MimeBodyPart.INLINE);
+				content.addBodyPart(imagePart);
+			}
 			message.setContent(content);
 			
+			// Setup "To" mail list
+			String[] to = new String[1];
+			to[0] = "cesarc@motorola.com";
+			InternetAddress[] sendTo = new InternetAddress[1];
+			for (int j = 0; j < 1; j++)
+			{
+				sendTo[j] = new InternetAddress(to[j]);
+			}
+			
+			// Setup mail fields
 			message.setFrom(new InternetAddress(from));
 			message.setRecipients(Message.RecipientType.TO, sendTo);
 			message.setSubject("Automatic Daily Report");
 			
-			System.out.println("Sending ...");
 			// Send mail
+			System.out.println("Sending ...");
 			Transport transport = ses.getTransport("smtp");
 			transport.connect(host, from, pwd);
 			transport.sendMessage(message, message.getAllRecipients());
@@ -170,22 +197,22 @@ public class ReportModel
 	{
 		return controller;
 	}
-
+	
 	public ArrayList<ProductReport> getProductList()
 	{
 		return productList;
 	}
-
+	
 	public void setProductList(ArrayList<ProductReport> productList)
 	{
 		this.productList = productList;
 	}
-
+	
 	public String getReportOutput()
 	{
 		return reportOutput;
 	}
-
+	
 	public void setReportOutput(String reportOutput)
 	{
 		this.reportOutput = reportOutput;
