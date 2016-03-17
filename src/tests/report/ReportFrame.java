@@ -9,14 +9,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -28,39 +30,49 @@ import javax.swing.border.EmptyBorder;
 
 import core.Icons;
 import core.XmlMngr;
+import javax.swing.JPasswordField;
 
 
 public class ReportFrame extends JFrame
 {
-	private JPanel            contentPane;
-	private JPanel            dataPane;
-	private JPanel            btnsPane;
-	private JTextPane         txtpnHighlights;
-	private JSeparator        separator;
-	private JScrollPane       scrollPane;
-	private JComboBox<String> comboBox;
-	private JCheckBox         chckbxAddCharts;
-	private JCheckBox         chckbxAddToHighlights;
-	private JButton           btnReset;
-	private JButton           btnSave;
-	private JButton           btnClose;
-	private JButton           btnAdd;
-	private JButton           btnDel;
-	private JButton           btnEdit;
-	private JLabel            lblProductsreports;
-	private JLabel            lblDashboardLink;
-	private JLabel            lblSpreadsheetLink;
-	private JLabel            lblTopIssues;
-	private JLabel            lblReleasesUnderAnalysis;
-	private JTextField        txtReleases;
-	private JTextField        txtTopIssuesLabel;
-	private JTextField        txtDashboardLink;
-	private JTextField        txtSpreadsheetLink;
-	private JTextField        txtChartBuild;
-	private ReportController  controller;
-	private JPanel            panel;
-	private JScrollPane       scrollPane_1;
-	private JTextPane         txtpnIssuesId;
+	private JPanel                   contentPane;
+	private JPanel                   dataPane;
+	private JPanel                   btnsPane;
+	private JTextPane                txtpnHighlights;
+	private JSeparator               separator;
+	private JScrollPane              scrollPane;
+	private JComboBox<ProductReport> comboBox;
+	private JCheckBox                chckbxAddCharts;
+	private JCheckBox                chckbxAddToHighlights;
+	private JButton                  btnReset;
+	private JButton                  btnSave;
+	private JButton                  btnClose;
+	private JButton                  btnAdd;
+	private JButton                  btnDel;
+	private JButton                  btnEdit;
+	private JLabel                   lblProductsreports;
+	private JLabel                   lblDashboardLink;
+	private JLabel                   lblSpreadsheetLink;
+	private JLabel                   lblTopIssues;
+	private JLabel                   lblReleasesUnderAnalysis;
+	private JTextField               txtReleases;
+	private JTextField               txtTopIssuesLabel;
+	private JTextField               txtDashboardLink;
+	private JTextField               txtSpreadsheetLink;
+	private JTextField               txtChartBuild;
+	private ReportController         controller;
+	private JPanel                   panel;
+	private JScrollPane              scrollPane_1;
+	private JTextPane                txtpnIssuesId;
+	private ReportFrame              view;
+	private int                      lastComboBoxIndex;
+	private JPanel                   panel_1;
+	private JButton                  btnGenerateReport;
+	private JButton                  btnSendGeneratedReport;
+	private JButton                  btnGenerateAndSend;
+	private JLabel lblUserpass;
+	private JTextField txtUser;
+	private JPasswordField pwdPass;
 	
 	public static void main(String[] args)
 	{
@@ -104,17 +116,19 @@ public class ReportFrame extends JFrame
 			e.printStackTrace();
 		}
 		
+		view = this;
+		
 		setTitle("Reports Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 888, 344);
+		setBounds(100, 100, 888, 407);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_contentPane.rowHeights = new int[] {0, 0, 0, 0};
+		gbl_contentPane.rowHeights = new int[] {0, 0, 0, 0, 0};
 		gbl_contentPane.columnWeights = new double[] {0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[] {0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPane.rowWeights = new double[] {0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 		contentPane.setLayout(gbl_contentPane);
 		
 		lblProductsreports = new JLabel("Products/Reports:");
@@ -126,8 +140,7 @@ public class ReportFrame extends JFrame
 		gbc_lblProductsreports.gridy = 0;
 		contentPane.add(lblProductsreports, gbc_lblProductsreports);
 		
-		comboBox = new JComboBox<String>();
-		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Bounce M", "Vector", "Afinity", "All top issues", "Issues not updated for long time"}));
+		comboBox = new JComboBox<ProductReport>();
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.gridwidth = 4;
 		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
@@ -178,7 +191,7 @@ public class ReportFrame extends JFrame
 		gbl_dataPane.columnWidths = new int[] {0, 0, 0};
 		gbl_dataPane.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_dataPane.columnWeights = new double[] {0.0, 1.0, Double.MIN_VALUE};
-		gbl_dataPane.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_dataPane.rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 1.0, Double.MIN_VALUE};
 		dataPane.setLayout(gbl_dataPane);
 		
 		lblReleasesUnderAnalysis = new JLabel("Releases Under Analysis:");
@@ -345,6 +358,7 @@ public class ReportFrame extends JFrame
 		
 		btnsPane = new JPanel();
 		GridBagConstraints gbc_btnsPane = new GridBagConstraints();
+		gbc_btnsPane.insets = new Insets(0, 0, 5, 0);
 		gbc_btnsPane.gridwidth = 8;
 		gbc_btnsPane.fill = GridBagConstraints.BOTH;
 		gbc_btnsPane.gridx = 0;
@@ -379,12 +393,88 @@ public class ReportFrame extends JFrame
 		gbc_btnClose.gridx = 3;
 		gbc_btnClose.gridy = 0;
 		btnsPane.add(btnClose, gbc_btnClose);
+		
+		panel_1 = new JPanel();
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.gridwidth = 8;
+		gbc_panel_1.fill = GridBagConstraints.BOTH;
+		gbc_panel_1.gridx = 0;
+		gbc_panel_1.gridy = 3;
+		contentPane.add(panel_1, gbc_panel_1);
+		GridBagLayout gbl_panel_1 = new GridBagLayout();
+		gbl_panel_1.columnWidths = new int[] {0, 0, 0, 0, 0, 0};
+		gbl_panel_1.rowHeights = new int[] {0, 0, 0};
+		gbl_panel_1.columnWeights = new double[] {1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel_1.rowWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
+		panel_1.setLayout(gbl_panel_1);
+		
+		lblUserpass = new JLabel("User/Pass");
+		GridBagConstraints gbc_lblUserpass = new GridBagConstraints();
+		gbc_lblUserpass.anchor = GridBagConstraints.EAST;
+		gbc_lblUserpass.insets = new Insets(0, 0, 5, 5);
+		gbc_lblUserpass.gridx = 1;
+		gbc_lblUserpass.gridy = 0;
+		panel_1.add(lblUserpass, gbc_lblUserpass);
+		
+		txtUser = new JTextField();
+		txtUser.setText("user");
+		GridBagConstraints gbc_txtUser = new GridBagConstraints();
+		gbc_txtUser.insets = new Insets(0, 0, 5, 5);
+		gbc_txtUser.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtUser.gridx = 2;
+		gbc_txtUser.gridy = 0;
+		panel_1.add(txtUser, gbc_txtUser);
+		txtUser.setColumns(10);
+		
+		pwdPass = new JPasswordField();
+		pwdPass.setText("pass");
+		GridBagConstraints gbc_pwdPass = new GridBagConstraints();
+		gbc_pwdPass.insets = new Insets(0, 0, 5, 5);
+		gbc_pwdPass.fill = GridBagConstraints.HORIZONTAL;
+		gbc_pwdPass.gridx = 3;
+		gbc_pwdPass.gridy = 0;
+		panel_1.add(pwdPass, gbc_pwdPass);
+		
+		btnGenerateReport = new JButton("Generate Report");
+		GridBagConstraints gbc_btnGenerateReport = new GridBagConstraints();
+		gbc_btnGenerateReport.insets = new Insets(0, 0, 0, 5);
+		gbc_btnGenerateReport.gridx = 1;
+		gbc_btnGenerateReport.gridy = 1;
+		panel_1.add(btnGenerateReport, gbc_btnGenerateReport);
+		
+		btnSendGeneratedReport = new JButton("Send Generated Report");
+		GridBagConstraints gbc_btnSendGeneratedReport = new GridBagConstraints();
+		gbc_btnSendGeneratedReport.insets = new Insets(0, 0, 0, 5);
+		gbc_btnSendGeneratedReport.gridx = 2;
+		gbc_btnSendGeneratedReport.gridy = 1;
+		panel_1.add(btnSendGeneratedReport, gbc_btnSendGeneratedReport);
+		
+		btnGenerateAndSend = new JButton("Generate and Send Report");
+		GridBagConstraints gbc_btnGenerateAndSend = new GridBagConstraints();
+		gbc_btnGenerateAndSend.insets = new Insets(0, 0, 0, 5);
+		gbc_btnGenerateAndSend.gridx = 3;
+		gbc_btnGenerateAndSend.gridy = 1;
+		panel_1.add(btnGenerateAndSend, gbc_btnGenerateAndSend);
 	}
 	
 	public void init()
 	{
 		loadProducts();
 		setupBtnsAction();
+		setupCloseAction();
+	}
+	
+	private void setupCloseAction()
+	{
+		addWindowListener(new java.awt.event.WindowAdapter()
+		{
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent)
+			{
+				System.out.println("Closed");
+				// TODO Save settings
+			}
+		});
 	}
 	
 	private void setupBtnsAction()
@@ -393,7 +483,7 @@ public class ReportFrame extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				controller.generateProductReport();
+				controller.addNewProduct();
 			}
 		});
 		
@@ -401,8 +491,7 @@ public class ReportFrame extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				controller.generateProductReport();
-				controller.sendReportMail();
+				controller.editProductName((ProductReport) comboBox.getSelectedItem(), JOptionPane.showInputDialog(view, "Type the new product name:"));
 			}
 		});
 		
@@ -410,7 +499,7 @@ public class ReportFrame extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				controller.sendReportMail();
+				controller.removeProduct(comboBox.getSelectedIndex());
 			}
 		});
 		
@@ -418,7 +507,7 @@ public class ReportFrame extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				resetFields();
+				setupFields((ProductReport) comboBox.getSelectedItem());
 			}
 		});
 		
@@ -426,7 +515,7 @@ public class ReportFrame extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				
+				controller.updateProductFields((ProductReport) comboBox.getSelectedItem());
 			}
 		});
 		
@@ -434,22 +523,87 @@ public class ReportFrame extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
+				controller.updateProductFields((ProductReport) comboBox.getSelectedItem());
+				controller.saveProductsToXML();
+				XmlMngr.closeXmls();
 				dispose();
+			}
+		});
+		
+		btnGenerateAndSend.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				controller.generateProductReport();
+				controller.sendReportMail();
+			}
+		});
+		
+		btnGenerateReport.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				controller.generateProductReport();
+			}
+		});
+		
+		btnSendGeneratedReport.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				controller.sendReportMail();
+			}
+		});
+		
+		comboBox.addMouseListener(new MouseListener()
+		{
+			@Override
+			public void mouseReleased(MouseEvent e)
+			{
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e)
+			{
+				controller.updateProductFields((ProductReport) comboBox.getSelectedItem());
+				lastComboBoxIndex = comboBox.getSelectedIndex();
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e)
+			{
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e)
+			{
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				
 			}
 		});
 		
 		comboBox.addActionListener(new ActionListener()
 		{
-			
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				controller.updateFieldsForSelectedProduct(comboBox.getSelectedIndex());
+				if (lastComboBoxIndex != comboBox.getSelectedIndex())
+				{
+					controller.updateFieldsForSelectedProduct(comboBox.getSelectedIndex());
+					lastComboBoxIndex = comboBox.getSelectedIndex();
+				}
 			}
 		});
 	}
 	
-	public void resetFields()
+	public void clearFields()
 	{
 		txtDashboardLink.setText("");
 		txtpnHighlights.setText("");
@@ -478,24 +632,9 @@ public class ReportFrame extends JFrame
 		setHighlights(pr.getHighlights());
 	}
 	
-	public ProductReport getFieldsAsProduct()
+	public ProductReport getSelectedProduct()
 	{
-		ProductReport pr = new ProductReport();
-		
-		pr.setName(getProductName());
-		pr.setReleases(getReleases().split(" "));
-		pr.setTopIssueLabel(getTopIssueLabel());
-		pr.setDashboardLink(getDashboardLink());
-		pr.setSpreadsheetLink(getSpreadsheetLink());
-		pr.setAddChart(addChart());
-		pr.setChartBuild(getChartBuilds());
-		pr.setChartIssues(getChartIssues());
-		pr.setAddHighlight(addHighlights());
-		pr.setHighlights(getHighlights());
-		
-		JComboBox<ProductReport> getCom;
-		
-		return pr;
+		return (ProductReport) comboBox.getSelectedItem();
 	}
 	
 	public void setupComboBox(ArrayList<ProductReport> products)
@@ -504,14 +643,19 @@ public class ReportFrame extends JFrame
 		
 		for (ProductReport pr : products)
 		{
-			comboBox.addItem(pr.getName());
+			comboBox.addItem(pr);
 		}
 		
-		if(comboBox.getItemCount() > 0)
-			comboBox.setSelectedIndex(0);
+		setComboboxItem(0);
 	}
 	
-	// Getters and Setters
+	public void setComboboxItem(int index)
+	{
+		if (comboBox.getItemCount() > 0 && index >= 0)
+			comboBox.setSelectedIndex(index);
+	}
+	
+	// Getters and Setters ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	public void setController(ReportController rc)
 	{
 		controller = rc;
@@ -614,16 +758,25 @@ public class ReportFrame extends JFrame
 	
 	public String getProductName()
 	{
-		System.out.println(comboBox.getSelectedItem().toString());
 		return comboBox.getSelectedItem().toString();
 	}
 	
-	public JComboBox<String> getComboBox()
+	public String getUser()
+	{
+		return txtUser.getText();
+	}
+	
+	public String getPass()
+	{
+		return String.copyValueOf(pwdPass.getPassword());
+	}
+	
+	public JComboBox<ProductReport> getComboBox()
 	{
 		return comboBox;
 	}
 	
-	public void setComboBox(JComboBox<String> comboBox)
+	public void setComboBox(JComboBox<ProductReport> comboBox)
 	{
 		this.comboBox = comboBox;
 	}

@@ -367,25 +367,45 @@ public class XmlMngr
 				if (item.getChildText("name").equals(pr.getName()))
 				{
 					item.getChild("name").setText(pr.getName());
-					item.getChild("add_chart").setText(pr.getAddChart() + "");
-					item.getChild("highligths").setAttribute("add", pr.getAddHighlight() + "");
-					item.getChild("highligths").setText(pr.getHighlights());
-					item.getChild("dashboard_link").setText(pr.getDashboardLink());
 					item.getChild("product_ids").setText(pr.getProductID());
+					item.getChild("releases").setText(pr.getReleasesString());
+					item.getChild("til").setText(pr.getTopIssueLabel());
+					item.getChild("dashboard_link").setText(pr.getDashboardLink());
 					item.getChild("spreadsheet_link").setText(pr.getSpreadsheetLink());
+					item.getChild("add_chart").setText(pr.getAddChart() + "");
+					item.getChild("chart_build").setText(pr.getChartBuild());
+					item.getChild("issues").setText(pr.getChartIssues());
+					item.getChild("add_highligths").setText(pr.getAddHighlight() + "");
+					item.getChild("highligths").setText(pr.getHighlights());
 					
 					return true;
 				}
 			}
 			
-			Element newItem = new Element("product_" + (requestedElement.getContentSize() + 1));
+			Element newItem = new Element("product");
+			newItem.addContent(new Element("name"));
+			newItem.addContent(new Element("product_ids"));
+			newItem.addContent(new Element("releases"));
+			newItem.addContent(new Element("til"));
+			newItem.addContent(new Element("dashboard_link"));
+			newItem.addContent(new Element("spreadsheet_link"));
+			newItem.addContent(new Element("add_chart"));
+			newItem.addContent(new Element("chart_build"));
+			newItem.addContent(new Element("issues"));
+			newItem.addContent(new Element("add_highligths"));
+			newItem.addContent(new Element("highligths"));
+			
 			newItem.getChild("name").setText(pr.getName());
-			newItem.getChild("add_chart").setText(pr.getAddChart() + "");
-			newItem.getChild("highligths").setAttribute("add", pr.getAddHighlight() + "");
-			newItem.getChild("highligths").setText(pr.getHighlights());
-			newItem.getChild("dashboard_link").setText(pr.getDashboardLink());
 			newItem.getChild("product_ids").setText(pr.getProductID());
+			newItem.getChild("releases").setText(pr.getReleasesString());
+			newItem.getChild("til").setText(pr.getTopIssueLabel());
+			newItem.getChild("dashboard_link").setText(pr.getDashboardLink());
 			newItem.getChild("spreadsheet_link").setText(pr.getSpreadsheetLink());
+			newItem.getChild("add_chart").setText(pr.getAddChart() + "");
+			newItem.getChild("chart_build").setText(pr.getChartBuild());
+			newItem.getChild("issues").setText(pr.getChartIssues());
+			newItem.getChild("add_highligths").setText(pr.getAddHighlight() + "");
+			newItem.getChild("highligths").setText(pr.getHighlights());
 			requestedElement.addContent(newItem);
 			
 			return true;
@@ -417,7 +437,7 @@ public class XmlMngr
 			pr.setChartBuild(item.getChildText("chart_build"));
 			pr.setChartIssues(item.getChildText("issues"));
 			pr.setAddChart(Boolean.parseBoolean(item.getChildText("add_chart")));
-			pr.setAddHighlight(Boolean.parseBoolean(item.getChild("highligths").getAttributeValue("add")));
+			pr.setAddHighlight(Boolean.parseBoolean(item.getChildText("add_highligths")));
 			pr.setHighlights(item.getChildText("highligths"));
 			
 			elements.add(pr);
@@ -432,11 +452,12 @@ public class XmlMngr
 		requestedElement.removeContent();
 	}
 	
-	public static void addAllProductsReport(ArrayList<ProductReport> products)
+	public static void setAllProductsReport(ArrayList<ProductReport> products)
 	{
-		Element requestedElement = uidsDocument.getRootElement();
-		requestedElement = requestedElement.getChild("Known");
-		requestedElement.removeContent();
+		for (ProductReport pr : products)
+		{
+			setProductReportValueOf(pr);
+		}
 	}
 	
 	// End
@@ -966,6 +987,7 @@ public class XmlMngr
 			xmlOutputter.output(messageDocument, new FileOutputStream(SharedObjs.messageCfgFile));
 			xmlOutputter.output(filtersDocument, new FileOutputStream(SharedObjs.filtersFile));
 			xmlOutputter.output(uidsDocument, new FileOutputStream(SharedObjs.uidsFile));
+			xmlOutputter.output(reportDocument, new FileOutputStream(SharedObjs.reportFile));
 		}
 		catch (FileNotFoundException e)
 		{

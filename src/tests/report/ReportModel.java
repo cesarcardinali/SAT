@@ -28,9 +28,11 @@ public class ReportModel
 	private ReportController         controller;
 	private String                   reportOutput;
 	private File                     reportFile;
+	private String                   user;
+	private String                   pass;
 	
-	private final String      htmlTemplatesFolder   = "Data/complements/report/templates/";
-	private final String      chartsOutputFolder    = "Data/complements/report/charts/";
+	private final String             htmlTemplatesFolder = "Data/complements/report/templates/";
+	private final String             chartsOutputFolder  = "Data/complements/report/charts/";
 	
 	public ReportModel()
 	{
@@ -57,7 +59,7 @@ public class ReportModel
 			
 			for (ProductReport pr : productList)
 			{
-				productsReport += pr.generateProductReport();
+				productsReport += pr.generateProductReport(user, pass);
 				
 				if (pr.getAddHighlight())
 				{
@@ -80,7 +82,7 @@ public class ReportModel
 			bw.write(htmlOutput);
 			bw.close();
 			
-//			Desktop.getDesktop().browse(reportFile.toURI());
+			// Desktop.getDesktop().browse(reportFile.toURI());
 			
 			reportOutput = htmlOutput;
 			
@@ -208,13 +210,61 @@ public class ReportModel
 		this.productList = productList;
 	}
 	
+	public void addNewProduct(ProductReport pr)
+	{
+		productList.add(pr);
+	}
+	
+	public ProductReport removeProduct(int index)
+	{
+		return productList.remove(index);
+	}
+	
+	public ProductReport removeProduct(ProductReport pr)
+	{
+		int index = -1;
+		
+		for (ProductReport aux : productList)
+		{
+			if (pr.getName().equals(aux.getName()))
+			{
+				index = productList.indexOf(aux);
+			}
+		}
+		
+		if (index > -1)
+			return productList.remove(index);
+		
+		return null;
+	}
+	
 	public String getReportOutput()
 	{
 		return reportOutput;
 	}
 	
-	public void setReportOutput(String reportOutput)
+	public void saveProductsToXML()
 	{
-		this.reportOutput = reportOutput;
+		XmlMngr.setAllProductsReport(productList);
+	}
+	
+	public String getUser()
+	{
+		return user;
+	}
+	
+	public void setUser(String user)
+	{
+		this.user = user;
+	}
+	
+	public String getPass()
+	{
+		return pass;
+	}
+	
+	public void setPass(String pass)
+	{
+		this.pass = pass;
 	}
 }

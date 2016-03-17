@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Products>
-	<product_3>
-		<name>Affinity</name>
-		<product_ids>Athene - 13MP;Athene - 16MP</product_ids>
-		<releases>MPJ24.124 MPJ24.125</releases>
-		<til>athene_cd_top</til>
-		<dashboard_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=43268</dashboard_link>
-		<spreadsheet_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=43268</spreadsheet_link>
-		<add_chart>true</add_chart>
-		<chart_build>MPJ24.124</chart_build>
-		<issues>IKSWM-20961
+  <product>
+    <name>Affinity</name>
+    <product_ids>Athene - 13MP;Athene - 16MP</product_ids>
+    <releases>MPJ24.124 MPJ24.125</releases>
+    <til>athene_cd_top</til>
+    <dashboard_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=43268</dashboard_link>
+    <spreadsheet_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=43268</spreadsheet_link>
+    <add_chart>true</add_chart>
+    <chart_build>MPJ24.124</chart_build>
+    <issues>IKSWM-20961
 IKSWM-18123
 IKSWM-18456
 IKSWM-18232
@@ -22,6 +22,22 @@ IKSWM-24853
 IKSWM-12683
 IKSWM-25206
 IKSWM-23133</issues>
-		<highligths add="false"></highligths>
-	</product_3>
+    <add_highligths>false</add_highligths>
+    <highligths />
+  </product>
+  <product>
+    <name>test</name>
+    <product_ids>Athene - 13MP;Athene - 16MP</product_ids>
+    <releases>MPJ24.124 MPJ24.125 fgdfsg</releases>
+    <til>athene_cd_top gfds</til>
+    <dashboard_link>gsfdg</dashboard_link>
+    <spreadsheet_link />
+    <add_chart>true</add_chart>
+    <chart_build>gsfdg</chart_build>
+    <issues>fdsgfdsg
+fdg
+fsdg</issues>
+    <add_highligths>true</add_highligths>
+    <highligths>gfsdgfdsgfdsg</highligths>
+  </product>
 </Products>

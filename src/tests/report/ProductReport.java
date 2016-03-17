@@ -36,6 +36,9 @@ public class ProductReport
 	private int               analyzedCRs;
 	private String            htmlOutput;
 	private DefaultPieDataset issueDupsCount;
+	private String            user;
+	private String            pass;
+	private JiraSatApi        jira;
 	
 	// Final variables
 	// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -90,7 +93,6 @@ public class ProductReport
 	// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	private int getAnalyzedCRsFromJira()
 	{
-		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, JiraUser.getUser(), JiraUser.getPass());
 		String queryReleases;
 		
 		if (releases.length > 1)
@@ -117,8 +119,6 @@ public class ProductReport
 	private String getTopIssuesFromJira()
 	{
 		topIssues = "";
-		
-		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, JiraUser.getUser(), JiraUser.getPass());
 		
 		String productIDsArray[] = productID.split(";");
 		String queryProducts;
@@ -202,7 +202,6 @@ public class ProductReport
 	public boolean generateChart()
 	{
 		ListPane lp = new ListPane();
-		JiraSatApi jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, JiraUser.getUser(), JiraUser.getPass());
 		CrItem crAux;
 		long queryResultcount = -1;
 		// long totalDupsCount = 0;
@@ -267,8 +266,8 @@ public class ProductReport
 		
 		lp.showWindow();
 		
-//		ChartGenerator cg = new ChartGenerator(name, issueDupsCount, chartsOutputFolder + name.replace(" ", "_"));
-//		cg.buildAndShow();
+		// ChartGenerator cg = new ChartGenerator(name, issueDupsCount, chartsOutputFolder + name.replace(" ", "_"));
+		// cg.buildAndShow();
 		
 		PieChartBuilder cb = new PieChartBuilder(name, issueDupsCount, chartsOutputFolder + name.replace(" ", "_") + ".png");
 		cb.buildAndShow();
@@ -276,8 +275,9 @@ public class ProductReport
 		return false;
 	}
 	
-	public String generateProductReport()
+	public String generateProductReport(String user, String pass)
 	{
+		jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, JiraUser.getUser(), JiraUser.getPass());
 		getAnalyzedCRsFromJira();
 		getTopIssuesFromJira();
 		generateChart();
@@ -395,13 +395,18 @@ public class ProductReport
 	
 	public String getReleasesString()
 	{
-		String sReleases = "";
-		for (String r : releases)
+		if (releases != null)
 		{
-			sReleases += r + " ";
+			String sReleases = "";
+			for (String r : releases)
+			{
+				sReleases += r + " ";
+			}
+			
+			return sReleases.trim();
 		}
 		
-		return sReleases.trim();
+		return "";
 	}
 	
 	public void setAnalyzedCRs(int analyzedCRs)
@@ -433,4 +438,25 @@ public class ProductReport
 	{
 		return name;
 	}
+	
+	public String getUser()
+	{
+		return user;
+	}
+	
+	public void setUser(String user)
+	{
+		this.user = user;
+	}
+	
+	public String getPass()
+	{
+		return pass;
+	}
+	
+	public void setPass(String pass)
+	{
+		this.pass = pass;
+	}
+	
 }
