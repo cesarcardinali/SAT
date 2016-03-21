@@ -8,9 +8,11 @@ import javax.swing.JOptionPane;
 
 public class ReportController
 {
+	// Local variables -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	private ReportFrame view;
 	private ReportModel model;
 	
+	// Class Constructor
 	public ReportController()
 	{
 		view = null;
@@ -23,32 +25,51 @@ public class ReportController
 		view.clearFields();
 	}
 	
-	public void updateFieldsForSelectedProduct(int productId)
+	public void updateViewFieldsForSelectedProduct(int productId)
 	{
 		int id = productId;
-		if(id != -1)
+		if (id != -1)
 		{
 			ProductReport pr = model.getProductList().get(id);
-			view.setupFields(pr);
+			setupViewFields(pr);
 		}
 	}
 	
-	public void setupCombobox()
+	public void setupViewCombobox()
 	{
 		ArrayList<ProductReport> productList = model.getProductList();
 		view.setupComboBox(productList);
 		
-		if(productList.size() > 0)
-			view.setupFields(productList.get(0));
+		if (productList.size() > 0)
+			setupViewFields(productList.get(0));
 		else
-			view.setupFields(new ProductReport());
+			setupViewFields(new ProductReport());
+	}
+	
+	public void setupViewFields(ProductReport pr)
+	{
+		view.setReleases(pr.getReleasesString());
+		view.setTopIssuesLabel(pr.getTopIssueLabel());
+		view.setDashboardLink(pr.getDashboardLink());
+		view.setSpreadsheetLink(pr.getSpreadsheetLink());
+		view.setAddChart(pr.getAddChart());
+		view.setChartBuild(pr.getChartBuild());
+		view.setSeparatedCharts(pr.isSeparateCharts());
+		view.setUserIssuesFieldVisible(pr.isSeparateCharts());
+		view.setChartUserdebugIssues(pr.getChartIssues());
+		view.setChartUserIssues(pr.getChartUserIssues());
+		view.setAddHighlights(pr.getAddHighlight());
+		view.setHighlights(pr.getHighlights());
 	}
 	
 	// Model manipulation methods ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	// Controller connection methods ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// Model<->View tunnel methods
 	public void loadProducts()
 	{
 		model.loadProducts();
-		setupCombobox();
+		setupViewCombobox();
 	}
 	
 	public void addNewProduct()
@@ -56,7 +77,7 @@ public class ReportController
 		ProductReport pr = new ProductReport();
 		pr.setName(JOptionPane.showInputDialog(view, "Product name:"));
 		model.addNewProduct(pr);
-		setupCombobox();
+		setupViewCombobox();
 		view.setComboboxItem(model.getProductList().size() - 1);
 	}
 	
@@ -64,20 +85,20 @@ public class ReportController
 	{
 		pr.setName(newName);
 		
-		setupCombobox();
+		setupViewCombobox();
 		
 		view.setComboboxItem(model.getProductList().indexOf(pr));
 	}
 	
 	public void removeProduct(int index)
 	{
-		if(index >= 0)
+		if (index >= 0)
 		{
 			model.removeProduct(index);
 			
-			setupCombobox();
+			setupViewCombobox();
 			
-			if(index > 0)
+			if (index > 0)
 				view.setComboboxItem(index - 1);
 		}
 	}
@@ -85,39 +106,44 @@ public class ReportController
 	public void updateProductFields(ProductReport pr)
 	{
 		pr.setName(view.getProductName());
-		pr.setReleases(view.getReleases().split(" "));
+		pr.setProductID(view.getProductIDs());
+		pr.setReleases(view.getReleases());
 		pr.setTopIssueLabel(view.getTopIssueLabel());
 		pr.setDashboardLink(view.getDashboardLink());
 		pr.setSpreadsheetLink(view.getSpreadsheetLink());
 		pr.setAddChart(view.addChart());
+		pr.setSeparateCharts(view.getSeparatedCharts());
 		pr.setChartBuild(view.getChartBuilds());
-		pr.setChartIssues(view.getChartIssues());
+		pr.setChartUserdebugIssues(view.getChartUserdebugIssues());
+		pr.setChartUserIssues(view.getChartUserIssues());
 		pr.setAddHighlight(view.addHighlights());
 		pr.setHighlights(view.getHighlights());
 	}
 	
-	// Controller connection methods ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	public void generateProductReport()
+	// Report building methods
+	public void generateProductReport(boolean separatedCharts)
 	{
-		model.generateReport();
 		model.setUser(view.getUser());
 		model.setPass(view.getPass());
+		model.generateReport(separatedCharts);
 	}
 	
 	public void sendReportMail()
 	{
-		if(model.getReportOutput() != null && !model.getReportOutput().equals(""))
+		if (model.getReportOutput() != null && !model.getReportOutput().equals(""))
 			model.sendReportEmail();
 		else
 			JOptionPane.showMessageDialog(null, "There is no report to be sent");
 	}
 	
+	// Saving report generator settings
 	public void saveProductsToXML()
 	{
 		model.saveProductsToXML();
 	}
 	
 	// Getters and Setters -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// View setup
 	public ReportFrame getFrame()
 	{
 		return view;
@@ -128,6 +154,9 @@ public class ReportController
 		this.view = frame;
 	}
 	
+	// ----------------
+	
+	// Model setup
 	public ReportModel getModel()
 	{
 		return model;
@@ -137,4 +166,5 @@ public class ReportController
 	{
 		this.model = model;
 	}
+	// ----------------
 }

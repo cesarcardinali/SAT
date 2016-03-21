@@ -20,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
@@ -30,7 +31,6 @@ import javax.swing.border.EmptyBorder;
 
 import core.Icons;
 import core.XmlMngr;
-import javax.swing.JPasswordField;
 
 
 public class ReportFrame extends JFrame
@@ -63,16 +63,22 @@ public class ReportFrame extends JFrame
 	private ReportController         controller;
 	private JPanel                   panel;
 	private JScrollPane              scrollPane_1;
-	private JTextPane                txtpnIssuesId;
-	private ReportFrame              view;
+	private JTextPane                txtpnIssuesIdUserdebug;
 	private int                      lastComboBoxIndex;
 	private JPanel                   panel_1;
 	private JButton                  btnGenerateReport;
 	private JButton                  btnSendGeneratedReport;
 	private JButton                  btnGenerateAndSend;
-	private JLabel lblUserpass;
-	private JTextField txtUser;
-	private JPasswordField pwdPass;
+	private JLabel                   lblUserpass;
+	private JTextField               txtUser;
+	private JPasswordField           pwdPass;
+	private JCheckBox                chckbxSeparateUserUserdebug;
+	private JScrollPane              scrollPane_2;
+	private JTextPane                txtpnIssuesIdUser;
+	
+	private ReportFrame              view;
+	private ReportModel              pr;
+	private ReportController         reportController;
 	
 	public static void main(String[] args)
 	{
@@ -83,18 +89,18 @@ public class ReportFrame extends JFrame
 				try
 				{
 					ReportModel pr = new ReportModel();
-					ReportFrame frame = new ReportFrame();
+					ReportFrame view = new ReportFrame();
 					ReportController reportController = new ReportController();
 					
-					reportController.setFrame(frame);
+					reportController.setFrame(view);
 					reportController.setModel(pr);
 					
-					frame.setController(reportController);
+					view.setController(reportController);
 					
 					XmlMngr.initClass();
-					frame.init();
 					
-					frame.setVisible(true);
+					view.init();
+					view.setVisible(true);
 				}
 				catch (Exception e)
 				{
@@ -116,11 +122,9 @@ public class ReportFrame extends JFrame
 			e.printStackTrace();
 		}
 		
-		view = this;
-		
 		setTitle("Reports Management");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 888, 407);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 888, 438);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -195,6 +199,7 @@ public class ReportFrame extends JFrame
 		dataPane.setLayout(gbl_dataPane);
 		
 		lblReleasesUnderAnalysis = new JLabel("Releases Under Analysis:");
+		lblReleasesUnderAnalysis.setToolTipText("Separate the releases using a blank space \" \"");
 		lblReleasesUnderAnalysis.setPreferredSize(new Dimension(121, 23));
 		GridBagConstraints gbc_lblReleasesUnderAnalysis = new GridBagConstraints();
 		gbc_lblReleasesUnderAnalysis.anchor = GridBagConstraints.EAST;
@@ -204,7 +209,7 @@ public class ReportFrame extends JFrame
 		dataPane.add(lblReleasesUnderAnalysis, gbc_lblReleasesUnderAnalysis);
 		
 		txtReleases = new JTextField();
-		txtReleases.setToolTipText("Separate the releases using \" \"");
+		txtReleases.setToolTipText("Separate the releases using a blank space \" \"");
 		txtReleases.setText("Releases");
 		GridBagConstraints gbc_txtReleases = new GridBagConstraints();
 		gbc_txtReleases.insets = new Insets(0, 0, 5, 0);
@@ -215,6 +220,7 @@ public class ReportFrame extends JFrame
 		txtReleases.setColumns(10);
 		
 		lblTopIssues = new JLabel("Top Issues Label:");
+		lblTopIssues.setToolTipText("Separate the releases using a blank space \" \"");
 		lblTopIssues.setPreferredSize(new Dimension(84, 23));
 		GridBagConstraints gbc_chckbxTopIssues = new GridBagConstraints();
 		gbc_chckbxTopIssues.anchor = GridBagConstraints.WEST;
@@ -224,6 +230,7 @@ public class ReportFrame extends JFrame
 		dataPane.add(lblTopIssues, gbc_chckbxTopIssues);
 		
 		txtTopIssuesLabel = new JTextField();
+		txtTopIssuesLabel.setToolTipText("Separate the releases using a blank space \" \"");
 		txtTopIssuesLabel.setText("Top Issues Label");
 		GridBagConstraints gbc_txtTopIssuesLabel = new GridBagConstraints();
 		gbc_txtTopIssuesLabel.insets = new Insets(0, 0, 5, 0);
@@ -298,10 +305,10 @@ public class ReportFrame extends JFrame
 		gbc_panel.gridy = 5;
 		dataPane.add(panel, gbc_panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] {170, 0, 0};
-		gbl_panel.rowHeights = new int[] {0, 0};
-		gbl_panel.columnWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[] {1.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[] {170, 0, 0, 0};
+		gbl_panel.rowHeights = new int[] {0, 0, 0};
+		gbl_panel.columnWeights = new double[] {0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[] {0.0, 3.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
 		txtChartBuild = new JTextField();
@@ -310,11 +317,11 @@ public class ReportFrame extends JFrame
 		GridBagConstraints gbc_txtChartBuild = new GridBagConstraints();
 		gbc_txtChartBuild.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtChartBuild.anchor = GridBagConstraints.NORTH;
-		gbc_txtChartBuild.insets = new Insets(0, 0, 0, 5);
+		gbc_txtChartBuild.insets = new Insets(0, 0, 5, 5);
 		gbc_txtChartBuild.gridx = 0;
 		gbc_txtChartBuild.gridy = 0;
 		panel.add(txtChartBuild, gbc_txtChartBuild);
-		txtChartBuild.setToolTipText("Separate the IDs using \";\"");
+		txtChartBuild.setToolTipText("Separate the releases using a blank space \" \"");
 		txtChartBuild.setText("ChartBuild");
 		txtChartBuild.setColumns(10);
 		
@@ -323,18 +330,49 @@ public class ReportFrame extends JFrame
 		scrollPane_1.setPreferredSize(new Dimension(170, 50));
 		scrollPane_1.setMinimumSize(new Dimension(170, 23));
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
+		gbc_scrollPane_1.gridheight = 2;
+		gbc_scrollPane_1.insets = new Insets(0, 0, 0, 5);
 		gbc_scrollPane_1.anchor = GridBagConstraints.NORTHWEST;
-		gbc_scrollPane_1.fill = GridBagConstraints.VERTICAL;
+		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_1.gridx = 1;
 		gbc_scrollPane_1.gridy = 0;
 		panel.add(scrollPane_1, gbc_scrollPane_1);
 		
-		txtpnIssuesId = new JTextPane();
-		txtpnIssuesId.setBorder(null);
-		txtpnIssuesId.setText("Issues ID");
-		scrollPane_1.setViewportView(txtpnIssuesId);
+		txtpnIssuesIdUserdebug = new JTextPane();
+		txtpnIssuesIdUserdebug.setToolTipText("Put the top issues for userdebug builds");
+		txtpnIssuesIdUserdebug.setBorder(null);
+		txtpnIssuesIdUserdebug.setText("Issues ID Userdebug/All");
+		scrollPane_1.setViewportView(txtpnIssuesIdUserdebug);
+		
+		scrollPane_2 = new JScrollPane();
+		scrollPane_2.setPreferredSize(new Dimension(170, 50));
+		scrollPane_2.setMinimumSize(new Dimension(170, 23));
+		scrollPane_2.setBorder(UIManager.getBorder("TextField.border"));
+		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
+		gbc_scrollPane_2.anchor = GridBagConstraints.NORTHWEST;
+		gbc_scrollPane_2.gridheight = 2;
+		gbc_scrollPane_2.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_2.gridx = 2;
+		gbc_scrollPane_2.gridy = 0;
+		panel.add(scrollPane_2, gbc_scrollPane_2);
+		
+		txtpnIssuesIdUser = new JTextPane();
+		txtpnIssuesIdUser.setToolTipText("Put the top issues for user builds");
+		txtpnIssuesIdUser.setText("Issues ID User");
+		txtpnIssuesIdUser.setBorder(null);
+		scrollPane_2.setViewportView(txtpnIssuesIdUser);
+		
+		chckbxSeparateUserUserdebug = new JCheckBox("Separate userdebug/user charts?");
+		chckbxSeparateUserUserdebug.setMargin(new Insets(2, 0, 2, 2));
+		GridBagConstraints gbc_chckbxSeparateUserUserdebug = new GridBagConstraints();
+		gbc_chckbxSeparateUserUserdebug.anchor = GridBagConstraints.NORTHWEST;
+		gbc_chckbxSeparateUserUserdebug.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxSeparateUserUserdebug.gridx = 0;
+		gbc_chckbxSeparateUserUserdebug.gridy = 1;
+		panel.add(chckbxSeparateUserUserdebug, gbc_chckbxSeparateUserUserdebug);
 		
 		chckbxAddToHighlights = new JCheckBox("Add to Highlights:");
+		chckbxAddToHighlights.setToolTipText("Add these highlights to the mail highlights?");
 		chckbxAddToHighlights.setMargin(new Insets(2, 0, 2, 2));
 		GridBagConstraints gbc_chckbxAddToHighlights = new GridBagConstraints();
 		gbc_chckbxAddToHighlights.anchor = GridBagConstraints.NORTHWEST;
@@ -351,6 +389,7 @@ public class ReportFrame extends JFrame
 		dataPane.add(scrollPane, gbc_scrollPane);
 		
 		txtpnHighlights = new JTextPane();
+		txtpnHighlights.setToolTipText("Put here the highlights related to this product");
 		scrollPane.setViewportView(txtpnHighlights);
 		txtpnHighlights.setText("Highlights");
 		txtpnHighlights.setBorder(null);
@@ -455,12 +494,14 @@ public class ReportFrame extends JFrame
 		gbc_btnGenerateAndSend.gridx = 3;
 		gbc_btnGenerateAndSend.gridy = 1;
 		panel_1.add(btnGenerateAndSend, gbc_btnGenerateAndSend);
+		
+		view = this;
 	}
 	
 	public void init()
 	{
 		loadProducts();
-		setupBtnsAction();
+		setupActions();
 		setupCloseAction();
 	}
 	
@@ -477,7 +518,7 @@ public class ReportFrame extends JFrame
 		});
 	}
 	
-	private void setupBtnsAction()
+	private void setupActions()
 	{
 		btnAdd.addActionListener(new ActionListener()
 		{
@@ -507,7 +548,7 @@ public class ReportFrame extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				setupFields((ProductReport) comboBox.getSelectedItem());
+				controller.setupViewFields((ProductReport) comboBox.getSelectedItem());
 			}
 		});
 		
@@ -530,20 +571,11 @@ public class ReportFrame extends JFrame
 			}
 		});
 		
-		btnGenerateAndSend.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				controller.generateProductReport();
-				controller.sendReportMail();
-			}
-		});
-		
 		btnGenerateReport.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				controller.generateProductReport();
+				controller.generateProductReport(separateChartBuilds());
 			}
 		});
 		
@@ -551,6 +583,16 @@ public class ReportFrame extends JFrame
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
+				controller.sendReportMail();
+			}
+		});
+		
+		btnGenerateAndSend.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				controller.updateProductFields((ProductReport) comboBox.getSelectedItem());
+				controller.generateProductReport(separateChartBuilds());
 				controller.sendReportMail();
 			}
 		});
@@ -568,6 +610,7 @@ public class ReportFrame extends JFrame
 			{
 				controller.updateProductFields((ProductReport) comboBox.getSelectedItem());
 				lastComboBoxIndex = comboBox.getSelectedIndex();
+				System.out.println("Products updated/saved");
 			}
 			
 			@Override
@@ -596,8 +639,24 @@ public class ReportFrame extends JFrame
 			{
 				if (lastComboBoxIndex != comboBox.getSelectedIndex())
 				{
-					controller.updateFieldsForSelectedProduct(comboBox.getSelectedIndex());
+					controller.updateViewFieldsForSelectedProduct(comboBox.getSelectedIndex());
 					lastComboBoxIndex = comboBox.getSelectedIndex();
+				}
+			}
+		});
+		
+		chckbxSeparateUserUserdebug.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (chckbxSeparateUserUserdebug.isSelected())
+				{
+					setUserIssuesFieldVisible(true);
+				}
+				else
+				{
+					setUserIssuesFieldVisible(false);
 				}
 			}
 		});
@@ -617,19 +676,6 @@ public class ReportFrame extends JFrame
 	public void loadProducts()
 	{
 		controller.loadProducts();
-	}
-	
-	public void setupFields(ProductReport pr)
-	{
-		setReleases(pr.getReleasesString());
-		setTopIssuesLabel(pr.getTopIssueLabel());
-		setDashboardLink(pr.getDashboardLink());
-		setSpreadsheetLink(pr.getSpreadsheetLink());
-		setAddChart(pr.getAddChart());
-		setChartBuild(pr.getChartBuild());
-		setChartIssues(pr.getChartIssues());
-		setAddHighlights(pr.getAddHighlight());
-		setHighlights(pr.getHighlights());
 	}
 	
 	public ProductReport getSelectedProduct()
@@ -666,9 +712,14 @@ public class ReportFrame extends JFrame
 		txtChartBuild.setText(text);
 	}
 	
-	public void setChartIssues(String text)
+	public void setChartUserdebugIssues(String text)
 	{
-		txtpnIssuesId.setText(text);
+		txtpnIssuesIdUserdebug.setText(text);
+	}
+	
+	public void setChartUserIssues(String text)
+	{
+		txtpnIssuesIdUser.setText(text);
 	}
 	
 	public void setReleases(String text)
@@ -716,14 +767,24 @@ public class ReportFrame extends JFrame
 		return txtChartBuild.getText();
 	}
 	
-	public String getChartIssues()
+	public String getChartUserdebugIssues()
 	{
-		return txtpnIssuesId.getText();
+		return txtpnIssuesIdUserdebug.getText();
+	}
+	
+	public String getChartUserIssues()
+	{
+		return txtpnIssuesIdUser.getText();
 	}
 	
 	public boolean addHighlights()
 	{
 		return chckbxAddToHighlights.isSelected();
+	}
+	
+	public boolean separateChartBuilds()
+	{
+		return chckbxSeparateUserUserdebug.isSelected();
 	}
 	
 	public String getHighlights()
@@ -779,5 +840,22 @@ public class ReportFrame extends JFrame
 	public void setComboBox(JComboBox<ProductReport> comboBox)
 	{
 		this.comboBox = comboBox;
+	}
+	
+	public void setSeparatedCharts(boolean bool)
+	{
+		chckbxSeparateUserUserdebug.setSelected(bool);
+	}
+	
+	public void setUserIssuesFieldVisible(Boolean bool)
+	{
+		scrollPane_2.setVisible(bool);
+		revalidate();
+		repaint();
+	}
+	
+	public boolean getSeparatedCharts()
+	{
+		return chckbxSeparateUserUserdebug.isSelected();
 	}
 }

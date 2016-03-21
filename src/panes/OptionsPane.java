@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -38,12 +39,13 @@ import javax.swing.border.LineBorder;
 import org.jdom2.JDOMException;
 
 import panes.secondarypanes.TextDialog;
+import supportive.Encryptation;
+import tests.report.ReportController;
+import tests.report.ReportFrame;
+import tests.report.ReportModel;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
-import supportive.Encryptation;
-
-import javax.swing.ImageIcon;
 
 
 public class OptionsPane extends JPanel
@@ -1099,6 +1101,26 @@ public class OptionsPane extends JPanel
 		btnMoreOptions.setToolTipText("Click to see advanced options");
 		btnMoreOptions.setPreferredSize(new Dimension(103, 23));
 		panel_5.add(btnMoreOptions);
+		
+		JButton btnAutoReportalpha = new JButton("Auto Report (alpha test)");
+		btnAutoReportalpha.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ReportModel pr = new ReportModel();
+				ReportFrame view = new ReportFrame();
+				ReportController reportController = new ReportController();
+				
+				reportController.setFrame(view);
+				reportController.setModel(pr);
+				
+				view.setController(reportController);
+				
+				XmlMngr.initClass();
+				view.init();
+				
+				view.setVisible(true);
+			}
+		});
+		panel_5.add(btnAutoReportalpha);
 		chkTextWrap.addItemListener(new ItemListener()
 		{
 			@Override

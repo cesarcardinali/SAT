@@ -342,12 +342,19 @@ public class XmlMngr
 			{
 				ProductReport pr = new ProductReport();
 				pr.setName(item.getChildText("name"));
+				pr.setProductID(item.getChildText("product_ids"));
+				pr.setReleases(item.getChildText("releases"));
+				pr.setTopIssueLabel(item.getChildText("til"));
+				pr.setDashboardLink(item.getChildText("dashboard_link"));
+				pr.setSpreadsheetLink(item.getChildText("spreadsheet_link"));
 				pr.setAddChart(Boolean.parseBoolean(item.getChildText("add_chart")));
+				pr.setSeparateCharts(Boolean.parseBoolean(item.getChildText("separated_charts")));
+				pr.setChartBuild(item.getChildText("chart_build"));
+				pr.setChartUserdebugIssues(item.getChildText("issues"));
+				pr.setChartUserIssues(item.getChildText("issues_user"));
 				pr.setAddHighlight(Boolean.parseBoolean(item.getChild("highligths").getAttributeValue("add")));
 				pr.setHighlights(item.getChildText("highligths"));
-				pr.setDashboardLink(item.getChildText("dashboard_link"));
-				pr.setProductID(item.getChildText("product_ids"));
-				pr.setSpreadsheetLink(item.getChildText("spreadsheet_link"));
+				
 				
 				return pr;
 			}
@@ -373,8 +380,10 @@ public class XmlMngr
 					item.getChild("dashboard_link").setText(pr.getDashboardLink());
 					item.getChild("spreadsheet_link").setText(pr.getSpreadsheetLink());
 					item.getChild("add_chart").setText(pr.getAddChart() + "");
+					item.getChild("separated_charts").setText(pr.isSeparateCharts() + "");
 					item.getChild("chart_build").setText(pr.getChartBuild());
 					item.getChild("issues").setText(pr.getChartIssues());
+					item.getChild("issues_user").setText(pr.getChartUserIssues());
 					item.getChild("add_highligths").setText(pr.getAddHighlight() + "");
 					item.getChild("highligths").setText(pr.getHighlights());
 					
@@ -390,8 +399,10 @@ public class XmlMngr
 			newItem.addContent(new Element("dashboard_link"));
 			newItem.addContent(new Element("spreadsheet_link"));
 			newItem.addContent(new Element("add_chart"));
+			newItem.addContent(new Element("separated_charts"));
 			newItem.addContent(new Element("chart_build"));
 			newItem.addContent(new Element("issues"));
+			newItem.addContent(new Element("issues_user"));
 			newItem.addContent(new Element("add_highligths"));
 			newItem.addContent(new Element("highligths"));
 			
@@ -402,8 +413,10 @@ public class XmlMngr
 			newItem.getChild("dashboard_link").setText(pr.getDashboardLink());
 			newItem.getChild("spreadsheet_link").setText(pr.getSpreadsheetLink());
 			newItem.getChild("add_chart").setText(pr.getAddChart() + "");
+			newItem.getChild("separated_charts").setText(pr.isSeparateCharts() + "");
 			newItem.getChild("chart_build").setText(pr.getChartBuild());
 			newItem.getChild("issues").setText(pr.getChartIssues());
+			newItem.getChild("issues_user").setText(pr.getChartUserIssues());
 			newItem.getChild("add_highligths").setText(pr.getAddHighlight() + "");
 			newItem.getChild("highligths").setText(pr.getHighlights());
 			requestedElement.addContent(newItem);
@@ -429,15 +442,16 @@ public class XmlMngr
 			pr = new ProductReport();
 			pr.setName(item.getChildText("name"));
 			pr.setProductID(item.getChildText("product_ids"));
-			pr.setReleases(item.getChildText("releases").split(" "));
+			pr.setReleases(item.getChildText("releases"));
 			pr.setTopIssueLabel(item.getChildText("til"));
 			pr.setDashboardLink(item.getChildText("dashboard_link"));
 			pr.setSpreadsheetLink(item.getChildText("spreadsheet_link"));
 			pr.setAddChart(Boolean.parseBoolean(item.getChildText("add_chart")));
+			pr.setSeparateCharts(Boolean.parseBoolean(item.getChildText("separated_charts")));
 			pr.setChartBuild(item.getChildText("chart_build"));
-			pr.setChartIssues(item.getChildText("issues"));
-			pr.setAddChart(Boolean.parseBoolean(item.getChildText("add_chart")));
-			pr.setAddHighlight(Boolean.parseBoolean(item.getChildText("add_highligths")));
+			pr.setChartUserdebugIssues(item.getChildText("issues"));
+			pr.setChartUserIssues(item.getChildText("issues_user"));
+			pr.setAddHighlight(Boolean.parseBoolean(item.getChild("highligths").getAttributeValue("add")));
 			pr.setHighlights(item.getChildText("highligths"));
 			
 			elements.add(pr);

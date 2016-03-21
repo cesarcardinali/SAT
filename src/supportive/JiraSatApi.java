@@ -87,9 +87,13 @@ public class JiraSatApi
 		
 		Logger.log(TAG, "Add comment: Output from Server:\n" + output);
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -140,9 +144,13 @@ public class JiraSatApi
 			
 			Logger.log(TAG, "Edit last comment: Output from Server:\n" + output);
 			
-			if (output.contains("error") && output.contains("403"))
+			if(output.contains("{\"errorMessages\":"))
 			{
-				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+				Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+				if (output.contains("403"))
+				{
+					JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+				}
 			}
 		}
 		
@@ -163,9 +171,13 @@ public class JiraSatApi
 		
 		Logger.log(TAG, "Get comments: Output from Server:\n" + output);
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -197,9 +209,13 @@ public class JiraSatApi
 		
 		Logger.log(TAG, "Add label: Output from Server:\n" + output);
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -239,9 +255,13 @@ public class JiraSatApi
 			output += response.toString();
 		}
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		Logger.log(TAG, "Add many labels: Output from Server:\n" + output);
@@ -275,9 +295,13 @@ public class JiraSatApi
 		
 		Logger.log(TAG, "Remove label: Output from Server:\n" + output);
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -323,9 +347,13 @@ public class JiraSatApi
 			output += response.toString();
 		}
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		Logger.log(TAG, "Remove many labels: Output from Server:\n" + output);
@@ -360,9 +388,13 @@ public class JiraSatApi
 		
 		Logger.log(TAG, "Assign issue: Output from Server:\n" + output);
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -394,9 +426,13 @@ public class JiraSatApi
 		
 		Logger.log(TAG, "Assign issue: Output from Server:\n" + output);
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -428,9 +464,13 @@ public class JiraSatApi
 		
 		Logger.log(TAG, "Unassign issue: Output from Server:\n" + output);
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -463,9 +503,13 @@ public class JiraSatApi
 		Logger.log(TAG, "HTTP Request input: " + input);
 		Logger.log(TAG, "Edit summary: Output from Server:\n" + output);
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -500,9 +544,13 @@ public class JiraSatApi
 		Logger.log(TAG, "HTTP Request input: " + input);
 		Logger.log(TAG, "Duplicate issue: Output from Server:\n" + output);
 		
-		if (output.contains("error") && output.contains("403"))
+		if(output.contains("{\"errorMessages\":"))
 		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -532,15 +580,14 @@ public class JiraSatApi
 		else
 		{
 			output = response.toString();
+			if (output.contains("error") && output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		Logger.log(TAG, "HTTP Request input:\n" + input);
 		Logger.log(TAG, "Close issue: Output from Server:\n" + output);
-		
-		if (output.contains("error") && output.contains("403"))
-		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
-		}
 		
 		return output;
 	}
@@ -565,15 +612,14 @@ public class JiraSatApi
 		else
 		{
 			output = response.toString();
+			if (output.contains("error") && output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		Logger.log(TAG, "HTTP Request input: " + input);
 		Logger.log(TAG, "Reopen issue: Output from Server:\n" + output);
-		
-		if (output.contains("error") && output.contains("403"))
-		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
-		}
 		
 		return output;
 	}
@@ -607,10 +653,10 @@ public class JiraSatApi
 		if(output.contains("{\"errorMessages\":"))
 		{
 			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
-		}
-		if (output.contains("error") && output.contains("403"))
-		{
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		return output;
@@ -708,12 +754,13 @@ public class JiraSatApi
 			                                                         + "Check if captcha is not needed, logoff and login manually to Jira website to solve it.");
 			return null;
 		}
-		else if (output.contains("{\"errorMessages\":"))
+		else if(output.contains("{\"errorMessages\":"))
 		{
-			Logger.log(TAG, "Jira action failed: " + output);
-			JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
-			
-			return null;
+			Logger.log(TAG, "Query issues: Output from Server:\n" + output);
+			if (output.contains("403"))
+			{
+				JOptionPane.showMessageDialog(null, "Jira login needs a captcha answer.\nPlease, login manually to Jira to solve it.");
+			}
 		}
 		
 		JSONParser jsonParser = new JSONParser();

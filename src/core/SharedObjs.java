@@ -14,13 +14,14 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.commons.io.FileUtils;
-
 import main.SAT;
 import objects.CrItem;
 import objects.CrItemsList;
 import objects.CustomFilterItem;
 import objects.CustomFiltersList;
+
+import org.apache.commons.io.FileUtils;
+
 import panes.CrsManagerPane;
 import panes.CustomFiltersPane;
 import panes.OptionsPane;
@@ -28,6 +29,7 @@ import panes.ParserPane;
 import panes.secondarypanes.AdvancedOptionsPane;
 import panes.secondarypanes.ListPane;
 import supportive.DBAdapter;
+import tests.report.ReportFrame;
 
 
 /**
@@ -44,7 +46,7 @@ public class SharedObjs
 	public static final File          messageCfgFile = new File(contentFolder + "cfgs/message.xml");
 	public static final File          filtersFile    = new File(contentFolder + "cfgs/filters.xml");
 	public static final File          uidsFile       = new File(contentFolder + "cfgs/uids.xml");
-	public static final File          reportFile       = new File(contentFolder + "cfgs/report.xml");
+	public static final File          reportFile     = new File(contentFolder + "complements/report/report_cfg.xml");
 	public static final File          pwdFile        = new File(contentFolder + "cfgs/pass.pwd");
 	private static String             crPath;
 	private static String             rootFolderPath;
@@ -64,6 +66,7 @@ public class SharedObjs
 	public static ParserPane          parserPane;
 	public static CrsManagerPane      crsManagerPane;
 	public static OptionsPane         optionsPane;
+	public static ReportFrame         reportPane;
 	public static AdvancedOptionsPane advOptions;
 	public static SAT                 satFrame;
 	public static DBAdapter           satDB;
@@ -140,6 +143,7 @@ public class SharedObjs
 		parserPane = new ParserPane();
 		crsManagerPane = new CrsManagerPane();
 		optionsPane = new OptionsPane();
+		reportPane = new ReportFrame();
 		advOptions = new AdvancedOptionsPane();
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addChangeListener(new ChangeListener()
@@ -157,6 +161,7 @@ public class SharedObjs
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Parser</body></html>", parserPane);
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Downloader</body></html>", crsManagerPane);
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Options</body></html>", optionsPane);
+//		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Reporter</body></html>", reportPane.getContentPane());
 		
 		// Load filters and update tree
 		loadFilters();
@@ -214,7 +219,7 @@ public class SharedObjs
 			{
 				boolean hasItem = true;
 				
-//				System.out.println("List of XML Filters: \n" + xmlFilters); System.out.println("List of DB Filters: \n" + dbFilters);
+				// System.out.println("List of XML Filters: \n" + xmlFilters); System.out.println("List of DB Filters: \n" + dbFilters);
 				
 				for (CustomFilterItem filter : dbFilters)
 				{

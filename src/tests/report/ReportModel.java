@@ -33,6 +33,7 @@ public class ReportModel
 	
 	private final String             htmlTemplatesFolder = "Data/complements/report/templates/";
 	private final String             chartsOutputFolder  = "Data/complements/report/charts/";
+	private final String             reportOutputPath  = "Data/complements/report/output/report.html";
 	
 	public ReportModel()
 	{
@@ -49,7 +50,7 @@ public class ReportModel
 	}
 	
 	@SuppressWarnings("resource")
-	public String generateReport()
+	public String generateReport(boolean separatedCharts)
 	{
 		try
 		{
@@ -59,7 +60,7 @@ public class ReportModel
 			
 			for (ProductReport pr : productList)
 			{
-				productsReport += pr.generateProductReport(user, pass);
+				productsReport += pr.generateProductReport(user, pass, separatedCharts);
 				
 				if (pr.getAddHighlight())
 				{
@@ -76,7 +77,7 @@ public class ReportModel
 			htmlOutput = htmlOutput.replace("#product details#", productsReport);
 			
 			// Generate report file
-			reportFile = new File("Report/report.html");
+			reportFile = new File(reportOutputPath);
 			
 			BufferedWriter bw = new BufferedWriter(new FileWriter(reportFile));
 			bw.write(htmlOutput);
@@ -151,18 +152,41 @@ public class ReportModel
 			
 			for (ProductReport pr : productList)
 			{
-				cid = pr.getName().replace(" ", "_");
-				MimeBodyPart imagePart = new MimeBodyPart();
-				imagePart.attachFile(chartsOutputFolder + pr.getName().replace(" ", "_") + ".png");
-				imagePart.setContentID("<" + cid + ">");
-				imagePart.setDisposition(MimeBodyPart.INLINE);
-				content.addBodyPart(imagePart);
+				if(pr.isSeparateCharts())
+				{
+					// Add chart user
+					cid = pr.getName().replace(" ", "_") + "_user";
+					MimeBodyPart imagePart = new MimeBodyPart();
+					imagePart.attachFile(chartsOutputFolder + cid + ".png");
+					imagePart.setContentID("<" + cid + ">");
+					imagePart.setDisposition(MimeBodyPart.INLINE);
+					content.addBodyPart(imagePart);
+					
+					// Add chart userdebug
+					cid = pr.getName().replace(" ", "_") + "_userdebug";
+					imagePart = new MimeBodyPart();
+					imagePart.attachFile(chartsOutputFolder + cid + ".png");
+					imagePart.setContentID("<" + cid + ">");
+					imagePart.setDisposition(MimeBodyPart.INLINE);
+					content.addBodyPart(imagePart);
+				}
+				else
+				{
+					// Add single chart
+					cid = pr.getName().replace(" ", "_");
+					MimeBodyPart imagePart = new MimeBodyPart();
+					imagePart.attachFile(chartsOutputFolder + pr.getName().replace(" ", "_") + ".png");
+					imagePart.setContentID("<" + cid + ">");
+					imagePart.setDisposition(MimeBodyPart.INLINE);
+					content.addBodyPart(imagePart);
+				}
 			}
 			message.setContent(content);
 			
 			// Setup "To" mail list
 			String[] to = new String[1];
-			to[0] = "cesarc@motorola.com";
+			to[0] = user + "@motorola.com";
+//			to[1] = "cesarc@motorola.com";
 			InternetAddress[] sendTo = new InternetAddress[1];
 			for (int j = 0; j < 1; j++)
 			{
@@ -215,9 +239,11 @@ public class ReportModel
 		productList.add(pr);
 	}
 	
-	public ProductReport removeProduct(int index)
+	public void removeProduct(int index)
 	{
-		return productList.remove(index);
+		productList.remove(index);
+		XmlMngr.clearProductsReport();
+		XmlMngr.setAllProductsReport(productList);
 	}
 	
 	public ProductReport removeProduct(ProductReport pr)

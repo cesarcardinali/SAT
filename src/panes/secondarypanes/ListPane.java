@@ -27,12 +27,14 @@ public class ListPane extends JFrame
 	private JScrollPane scrollPane_1;
 	private JTextPane   textCrResolution;
 	private JButton     btnOpen;
+	ListPane view;
 	
 	/**
 	 * Create the frame.
 	 */
 	public ListPane()
 	{
+		view = this;
 		setTitle("Automatically closed CRs");
 		setResizable(false);
 		setAlwaysOnTop(false);
@@ -91,6 +93,7 @@ public class ListPane extends JFrame
 		contentPane.add(btnOpen, gbc_btnOpen);
 	}
 	
+	
 	public void addItemList1(String item)
 	{
 		textCrKeyList.setText(textCrKeyList.getText() + item + "\n");
@@ -130,5 +133,10 @@ public class ListPane extends JFrame
 	{
 		setLocationRelativeTo(null);
 		setVisible(true);
+	}
+	
+	public void setListTitle(String title)
+	{
+		view.setTitle(title);
 	}
 }

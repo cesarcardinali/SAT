@@ -13,7 +13,6 @@ import org.json.simple.parser.ParseException;
 import panes.secondarypanes.ListPane;
 import supportive.JiraQueryResult;
 import supportive.JiraSatApi;
-import tests.JiraUser;
 import tests.PieChartBuilder;
 
 
@@ -29,15 +28,18 @@ public class ProductReport
 	private String            spreadsheetLink;
 	private Boolean           addChart;
 	private String            chartBuild;
-	private String            chartIssues;
+	private boolean           separatedCharts;
+	private String            chartUserdebugIssues;
+	private String            chartUserIssues;
 	private Boolean           addHighlight;
 	private String            highlights;
 	private String            topIssues;
 	private int               analyzedCRs;
 	private String            htmlOutput;
-	private DefaultPieDataset issueDupsCount;
 	private String            user;
 	private String            pass;
+	private DefaultPieDataset issueDupsCount;
+	private DefaultPieDataset issueUserDupsCount;
 	private JiraSatApi        jira;
 	
 	// Final variables
@@ -49,44 +51,46 @@ public class ProductReport
 	private final String      chartsOutputFolder    = "Data/complements/report/charts/";
 	private final String      htmlTemplatesFolder   = "Data/complements/report/templates/";
 	
-	// Constructor
-	// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// Constructor ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	public ProductReport()
 	{
 		name = "";
-		productID = null;
+		productID = "";
 		releases = null;
 		dashboardLink = "";
 		spreadsheetLink = "";
 		highlights = "";
 		topIssues = "";
 		addChart = false;
+		separatedCharts = false;
 		chartBuild = "";
-		chartIssues = "";
+		chartUserdebugIssues = "";
+		chartUserIssues = "";
 		addHighlight = false;
 		analyzedCRs = -1;
 		htmlOutput = "";
 	}
 	
-	// Constructor with fields
-	// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	public ProductReport(String name, String[] releases, String dashboardLink, String spreadsheetLink, Boolean addHighlight, String highlights,
-	                     Boolean addChart, String chartBuild, String chartIssues)
+	// Constructor with fields ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	public ProductReport(String name)
 	{
 		super();
 		this.name = name;
-		productID = null;
-		;
-		this.releases = releases;
-		this.dashboardLink = dashboardLink;
-		this.spreadsheetLink = spreadsheetLink;
-		this.highlights = highlights;
-		this.topIssues = "";
-		this.addChart = addChart;
-		this.chartBuild = chartBuild;
-		this.chartIssues = chartIssues;
-		this.addHighlight = addHighlight;
-		this.analyzedCRs = -1;
+		name = "";
+		productID = "";
+		releases = null;
+		dashboardLink = "";
+		spreadsheetLink = "";
+		highlights = "";
+		topIssues = "";
+		addChart = false;
+		separatedCharts = false;
+		chartBuild = "";
+		chartUserdebugIssues = "";
+		chartUserIssues = "";
+		addHighlight = false;
+		analyzedCRs = -1;
+		htmlOutput = "";
 	}
 	
 	// Data manipulation methods
@@ -150,6 +154,221 @@ public class ProductReport
 		return topIssues;
 	}
 	
+	public boolean generateChart()
+	{
+		ListPane lp = new ListPane();
+		CrItem crAux;
+		long queryResultcount = -1;
+		// long totalDupsCount = 0;
+		String chartBuilds[];
+		String queryBuilds;
+		
+		if (separatedCharts)
+		{
+			ListPane lp2 = new ListPane();
+			lp.setListTitle(name + " Userdebug version results");
+			lp2.setListTitle(name + "User version results");
+			chartBuilds = chartBuild.trim().split(" ");
+			queryBuilds = "";
+			issueDupsCount = new DefaultPieDataset();
+			issueUserDupsCount = new DefaultPieDataset();
+			
+			// Build the database for userdebug chart
+			for (String key : chartUserdebugIssues.split("\n"))
+			{
+				queryResultcount = 0;
+				
+				// Check if key is valid
+				if (key.contains("-") && key.length() > 5)
+				{
+					// Check how many builds shall be used to create the chart
+					if (chartBuilds.length > 1)
+					{
+						queryBuilds = chartBuilds[0];
+						for (int i = 1; i < chartBuilds.length; i++)
+						{
+							queryBuilds += " OR description ~ " + chartBuilds[i];
+						}
+					}
+					else
+					{
+						queryBuilds = chartBuild;
+					}
+					
+					try
+					{
+						// Check if the root CR should be included on the count
+						crAux = jira.getCrData(key);
+						for (String b : chartBuilds)
+						{
+							if (!crAux.getDescription().equals("") && crAux.getDescription().contains(b))
+							{
+								queryResultcount++;
+								break;
+							}
+						}
+						
+						// Get dups count
+						queryResultcount += jira.queryCount(chartIssuesCountQuery.replace("#chart build#", queryBuilds).replace("#issue key#", key.trim())
+						                                    + " AND description ~ userdebug");
+						System.out.println("Count result: " + queryResultcount);
+						
+						// totalDupsCount += queryResultcount;
+						if (crAux.getSummary().length() > 100)
+							crAux.setSummary(crAux.getSummary().substring(0, 101));
+						issueDupsCount.setValue(key + " - " + crAux.getSummary(), queryResultcount);
+						
+						lp.addItemList1(key);
+						lp.addItemList2("" + queryResultcount);
+					}
+					catch (ParseException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			// Build the database for userdebug chart
+			for (String key : chartUserIssues.split("\n"))
+			{
+				queryResultcount = 0;
+				
+				// Check if key is valid
+				if (key.contains("-") && key.length() > 5)
+				{
+					// Check how many builds shall be used to create the chart
+					if (chartBuilds.length > 1)
+					{
+						queryBuilds = chartBuilds[0];
+						for (int i = 1; i < chartBuilds.length; i++)
+						{
+							queryBuilds += " OR description ~ " + chartBuilds[i];
+						}
+					}
+					else
+					{
+						queryBuilds = chartBuild;
+					}
+					
+					try
+					{
+						// Check if the root CR should be included on the count
+						crAux = jira.getCrData(key);
+						for (String b : chartBuilds)
+						{
+							if (!crAux.getDescription().equals("") && crAux.getDescription().contains(b))
+							{
+								queryResultcount++;
+								break;
+							}
+						}
+						
+						// Get dups count
+						queryResultcount += jira.queryCount(chartIssuesCountQuery.replace("#chart build#", queryBuilds).replace("#issue key#", key.trim())
+						                                    + " AND description !~ userdebug");
+						
+						if (queryResultcount == 0)
+							queryResultcount++;
+						
+						System.out.println("Count result: " + queryResultcount);
+						
+						// totalDupsCount += queryResultcount;
+						if (crAux.getSummary().length() > 100)
+							crAux.setSummary(crAux.getSummary().substring(0, 101));
+						issueUserDupsCount.setValue(key + " - " + crAux.getSummary(), queryResultcount);
+						
+						lp2.addItemList1(key);
+						lp2.addItemList2("" + queryResultcount);
+					}
+					catch (ParseException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			lp.showWindow();
+			lp2.showWindow();
+			
+			PieChartBuilder cb = new PieChartBuilder(name + " Userdebug", issueDupsCount, chartsOutputFolder + name.replace(" ", "_") + "_userdebug.png");
+			cb.buildAndShow();
+			PieChartBuilder cb2 = new PieChartBuilder(name + " User", issueUserDupsCount, chartsOutputFolder + name.replace(" ", "_") + "_user.png");
+			cb2.buildAndShow();
+			
+			return true;
+		}
+		else
+		{
+			chartBuilds = chartBuild.trim().split(" ");
+			queryBuilds = "";
+			issueDupsCount = new DefaultPieDataset();
+			
+			for (String key : chartUserdebugIssues.split("\n"))
+			{
+				queryResultcount = 0;
+				
+				if (key.contains("-") && key.length() > 5)
+				{
+					if (chartBuilds.length > 1)
+					{
+						queryBuilds = chartBuilds[0];
+						for (int i = 1; i < chartBuilds.length; i++)
+						{
+							queryBuilds += " OR description ~ " + chartBuilds[i];
+						}
+					}
+					else
+					{
+						queryBuilds = chartBuild;
+					}
+					
+					try
+					{
+						crAux = jira.getCrData(key);
+						if (queryBuilds.contains(crAux.getBuild()))
+						{
+							queryResultcount++;
+						}
+						else
+						{
+							for (String b : chartBuilds)
+							{
+								if (crAux.getDescription().contains(b))
+								{
+									queryResultcount++;
+								}
+							}
+						}
+						
+						queryResultcount += jira.queryCount(chartIssuesCountQuery.replace("#chart build#", queryBuilds).replace("#issue key#", key.trim()));
+						System.out.println("Count result: " + queryResultcount);
+						
+						// totalDupsCount += queryResultcount;
+						if (crAux.getSummary().length() > 100)
+							crAux.setSummary(crAux.getSummary().substring(0, 101));
+						issueDupsCount.setValue(key + " - " + crAux.getSummary(), queryResultcount);
+						
+						lp.addItemList1(key);
+						lp.addItemList2("" + queryResultcount);
+					}
+					catch (ParseException e)
+					{
+						e.printStackTrace();
+						return false;
+					}
+				}
+			}
+			
+			lp.showWindow();
+			lp.setListTitle(name + "All versions results");
+			
+			PieChartBuilder cb = new PieChartBuilder(name, issueDupsCount, chartsOutputFolder + name.replace(" ", "_") + ".png");
+			cb.buildAndShow();
+			
+			return true;
+		}
+	}
+	
 	@SuppressWarnings("resource")
 	private String configureProductHTML()
 	{
@@ -175,12 +394,22 @@ public class ProductReport
 				product = product.replace("#top issues#", "None");
 			}
 			product = product.replace("#dashboard link#", dashboardLink);
-			product = product.replace("#spreadsheet link#", spreadsheetLink);
+			product = product.replace("#spreadsheet link#", spreadsheetLink); // nao usado
 			
 			if (addChart)
 			{
 				String chartHTML = new Scanner(new File(htmlTemplatesFolder + "addChart.tmpl")).useDelimiter("\\Z").next();
-				product = product.replace("#Wakelock Chart#", chartHTML.replace("#image cid#", name.replace(" ", "_") + ""));
+				if (separatedCharts)
+				{
+					chartHTML = chartHTML.replace("</li>", "<img src=\"cid:#image cid userdebug#\" alt=\"\" />\n</li>");
+					product = product.replace("#Wakelock Chart#",
+					                          chartHTML.replace("#image cid#", name.replace(" ", "_") + "_user").replace("#image cid userdebug#",
+					                                                                                                     name.replace(" ", "_") + "_userdebug"));
+				}
+				else
+				{
+					product = product.replace("#Wakelock Chart#", chartHTML.replace("#image cid#", name.replace(" ", "_")));
+				}
 			}
 			else
 			{
@@ -199,85 +428,9 @@ public class ProductReport
 		return null;
 	}
 	
-	public boolean generateChart()
+	public String generateProductReport(String user, String pass, boolean separatedCharts)
 	{
-		ListPane lp = new ListPane();
-		CrItem crAux;
-		long queryResultcount = -1;
-		// long totalDupsCount = 0;
-		String chartBuilds[] = chartBuild.trim().split(" ");
-		String queryBuilds = "";
-		issueDupsCount = new DefaultPieDataset();
-		
-		for (String key : chartIssues.split("\n"))
-		{
-			queryResultcount = 0;
-			
-			if (key.contains("-") && key.length() > 5)
-			{
-				if (chartBuilds.length > 1)
-				{
-					queryBuilds = chartBuilds[0];
-					for (int i = 1; i < chartBuilds.length; i++)
-					{
-						queryBuilds += " OR description ~ " + chartBuilds;
-					}
-				}
-				else
-				{
-					queryBuilds = chartBuild;
-				}
-				
-				try
-				{
-					crAux = jira.getCrData(key);
-					if (queryBuilds.contains(crAux.getBuild()))
-					{
-						queryResultcount++;
-					}
-					else
-					{
-						for (String b : chartBuilds)
-						{
-							if (crAux.getDescription().contains(b))
-							{
-								queryResultcount++;
-							}
-						}
-					}
-					
-					queryResultcount += jira.queryCount(chartIssuesCountQuery.replace("#chart build#", queryBuilds).replace("#issue key#", key.trim()));
-					System.out.println("Count result: " + queryResultcount);
-					
-					// totalDupsCount += queryResultcount;
-					if (crAux.getSummary().length() > 100)
-						crAux.setSummary(crAux.getSummary().substring(0, 101));
-					issueDupsCount.setValue(key + " - " + crAux.getSummary(), queryResultcount);
-					
-					lp.addItemList1(key);
-					lp.addItemList2("" + queryResultcount);
-				}
-				catch (ParseException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		lp.showWindow();
-		
-		// ChartGenerator cg = new ChartGenerator(name, issueDupsCount, chartsOutputFolder + name.replace(" ", "_"));
-		// cg.buildAndShow();
-		
-		PieChartBuilder cb = new PieChartBuilder(name, issueDupsCount, chartsOutputFolder + name.replace(" ", "_") + ".png");
-		cb.buildAndShow();
-		
-		return false;
-	}
-	
-	public String generateProductReport(String user, String pass)
-	{
-		jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, JiraUser.getUser(), JiraUser.getPass());
+		jira = new JiraSatApi(JiraSatApi.DEFAULT_JIRA_URL, user, pass);
 		getAnalyzedCRsFromJira();
 		getTopIssuesFromJira();
 		generateChart();
@@ -313,9 +466,9 @@ public class ProductReport
 		return releases;
 	}
 	
-	public void setReleases(String[] releases)
+	public void setReleases(String releases)
 	{
-		this.releases = releases;
+		this.releases = releases.split(" ");
 	}
 	
 	public String getDashboardLink()
@@ -426,12 +579,22 @@ public class ProductReport
 	
 	public String getChartIssues()
 	{
-		return chartIssues;
+		return chartUserdebugIssues;
 	}
 	
-	public void setChartIssues(String chartIssues)
+	public void setChartUserdebugIssues(String chartIssues)
 	{
-		this.chartIssues = chartIssues;
+		this.chartUserdebugIssues = chartIssues;
+	}
+	
+	public String getChartUserIssues()
+	{
+		return chartUserIssues;
+	}
+	
+	public void setChartUserIssues(String chartUserIssues)
+	{
+		this.chartUserIssues = chartUserIssues;
 	}
 	
 	public String toString()
@@ -457,6 +620,16 @@ public class ProductReport
 	public void setPass(String pass)
 	{
 		this.pass = pass;
+	}
+	
+	public boolean isSeparateCharts()
+	{
+		return separatedCharts;
+	}
+	
+	public void setSeparateCharts(boolean separateCharts)
+	{
+		this.separatedCharts = separateCharts;
 	}
 	
 }

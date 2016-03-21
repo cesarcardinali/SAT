@@ -1162,21 +1162,22 @@ public class CrsManagerPane extends JPanel
 		
 		while ((sCurrentLine = br.readLine()) != null)
 		{
-			if (sCurrentLine.toLowerCase().contains("bpversion"))
+			sCurrentLine = sCurrentLine.toLowerCase();
+			if (sCurrentLine.contains("bpversion"))
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "--- Initial line: " + sCurrentLine);
-				Matcher m = Pattern.compile(".*bpVersion\": \".+ (.+)\".*").matcher(sCurrentLine);
+				Matcher m = Pattern.compile(".*bpversion\": \".+ (.+)\".*").matcher(sCurrentLine);
 				if (m.matches())
 				{
-					bpVersion = m.group(1).toLowerCase();
+					bpVersion = m.group(1);
 					Logger.log(Logger.TAG_CRSMANAGER, "bpVersion: " + bpVersion);
 					bpVersion = bpVersion.substring(0, bpVersion.indexOf("_"));
 				}
 			}
-			if (sCurrentLine.toLowerCase().contains("product"))
+			else if (sCurrentLine.contains("product"))
 			{
 				Logger.log(Logger.TAG_CRSMANAGER, "--- Initial line: " + sCurrentLine);
-				sCurrentLine = sCurrentLine.replace("\"PRODUCT\": \"", "").replace(" ", "");
+				sCurrentLine = sCurrentLine.replace("\"product\": \"", "").replace(" ", "");
 				
 				// BATTRIAGE-212
 				if (sCurrentLine.indexOf("_") >= 0)
@@ -1189,7 +1190,7 @@ public class CrsManagerPane extends JPanel
 				}
 				Logger.log(Logger.TAG_CRSMANAGER, sCurrentLine);
 				
-				if (sCurrentLine.equals("griffin"))
+				if (sCurrentLine.equals("griffin") || sCurrentLine.equals("unknown") )
 				{
 					sCurrentLine = bpVersion;
 				}
@@ -1218,7 +1219,6 @@ public class CrsManagerPane extends JPanel
 						String bCap = JOptionPane.showInputDialog("Type the battery capacity");
 						SharedObjs.advOptions.addNewBatCapValue(pName, bCap);
 						content = content.replace("#bat_cap#", bCap);
-						// TODO add to xml too
 					}
 					
 					out = new PrintWriter(folder + "\\build_report.pl");
@@ -1277,7 +1277,7 @@ public class CrsManagerPane extends JPanel
 		}
 		
 		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd \"" + folder + "\" && build_report.pl " + bugreport + " > report-output.txt");
-		Logger.log(Logger.TAG_CRSMANAGER, "Bugreport file: " + bugreport);
+		Logger.log(Logger.TAG_CRSMANAGER, "Report Output file: " + bugreport);
 		
 		for (String c : builder.command())
 		{
