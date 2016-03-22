@@ -73,7 +73,7 @@ public class ChangelogPane extends JFrame
 		
 		try
 		{
-			BufferedReader br = new BufferedReader(new FileReader(new File("Data/changelog.txt")));
+			BufferedReader br = new BufferedReader(new FileReader(new File("Data/update/changelog.txt")));
 			String lineRead = "";
 			
 			while ((lineRead = br.readLine()) != null)

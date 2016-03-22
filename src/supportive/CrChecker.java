@@ -1212,10 +1212,26 @@ public class CrChecker
 					if (wakelocksComment.contains("Bugreport Java wake locks"))
 					{
 						boolean dupped = false;
+						BugRepKernelWL pmsw = null;
+						
+						// Get the kernel PMS.Wakelock data
+						for (int i = 0; i < 3; i++)
+						{
+							if (kernelWkls.get(i).getName().contains("PowerManagerService.WakeLocks"))
+							{
+								pmsw = kernelWkls.get(i);
+							}
+						}
 						
 						for (int i = 0; i < 4; i++)
 						{
-							if (javaWkls.get(i).getDuration() > 60 * 60 * 1000)
+							//BATTRIAGE-243 SAT cant dup correctly when process is "media"
+							if(javaWkls.get(i).getProcessName().equals("media"))
+								continue;
+							// ------
+							
+							if (javaWkls.get(i).getDuration() > 60 * 60 * 1000 && pmsw.getDuration() > 0.5 * bugrepParser.getTimeOnBat()
+							    && javaWkls.get(i).getDuration() > 0.8 * pmsw.getDuration())
 							{
 								BugRepJavaWL wl = javaWkls.get(i);
 								
@@ -1237,9 +1253,35 @@ public class CrChecker
 								
 								Logger.log(Logger.TAG_CR_CHECKER, "Project to dup for: " + project);
 								
-								String jSONOutput = jira.query("project = " + project + " AND summary !~ \\\"CLONE\\\" AND summary ~ \\\"stuck\\\" AND summary ~ \\\""
-								                               + wl.getProcessName() + "\\\" AND summary ~ \\\"" + wl.getTagName().replace("*", "")
-								                               + "\\\" AND (labels = cd_auto OR labels = cd_manual)");
+								String jSONOutput;
+								if (wl.getTimesAcquired() == 0)
+									wl.setTimesAcquired(1);
+								
+								if (wl.getTimesAcquired() < 5 || wl.getDuration() / (1000 * wl.getTimesAcquired()) > 100)
+								{
+									jSONOutput = jira.query("project = " + project
+									                        + " AND summary !~ \\\"CLONE\\\" AND (summary ~ \\\"PMS wkl stuck\\\" OR labels = java_wkl_h) AND"
+									                        + " summary ~ \\\"" + wl.getProcessName() + "\\\" AND summary ~ \\\""
+									                        + wl.getTagName().replace("*", "").replace("[", "").replace("]", "")
+									                        + "\\\" AND (labels = cd_auto OR labels = cd_manual)");
+								}
+								else if (wl.getDuration() / (1000 * wl.getTimesAcquired()) < 4)
+								{
+									jSONOutput = jira.query("project = "
+									                        + project
+									                        + " AND summary !~ \\\"CLONE\\\" AND (summary ~ \\\"PMS wkl acquired/released\\\" OR labels = java_wkl_ar) AND"
+									                        + " summary ~ \\\"" + wl.getProcessName() + "\\\" AND summary ~ \\\""
+									                        + wl.getTagName().replace("*", "").replace("[", "").replace("]", "")
+									                        + "\\\" AND (labels = cd_auto OR labels = cd_manual)");
+								}
+								else
+								{
+									continue;
+								}
+								
+								jSONOutput = jira.query("project = " + project + " AND summary !~ \\\"CLONE\\\" AND summary ~ \\\"stuck\\\" AND summary ~ \\\""
+								                        + wl.getProcessName() + "\\\" AND summary ~ \\\"" + wl.getTagName().replace("*", "")
+								                        + "\\\" AND (labels = cd_auto OR labels = cd_manual)");
 								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 								
 								if (jqr.getResultCount() == 1)
@@ -1308,10 +1350,11 @@ public class CrChecker
 							if (wl.getName().contains("PowerManagerService.WakeLocks"))
 								continue;
 							
-							if (kernelWkls.get(i).getDuration() > 1.5 * 60 * 60 * 1000)
+							if (kernelWkls.get(i).getDuration() > 1.5 * 60 * 60 * 1000 && kernelWkls.get(i).getDuration() > 0.5 * bugrepParser.getTimeOnBat())
 							{
 								wl = kernelWkls.get(i);
 								String project = "IKSW";
+								
 								if (cr.getBuild().equals(""))
 								{
 									project += "M";
@@ -1323,8 +1366,31 @@ public class CrChecker
 								
 								Logger.log(Logger.TAG_CR_CHECKER, "Project to dup for: " + project);
 								
-								String jSONOutput = jira.query("project = " + project + " AND summary ~ \\\"" + wl.getName().replace("[", "").replace("]", "")
-								                               + "\\\" AND summary ~ \\\"Kernel wkl stuck\\\" AND (labels = cd_auto OR labels = cd_manual)");
+								String jSONOutput;
+								if (wl.getTimesAcquired() == 0)
+									wl.setTimesAcquired(1);
+								
+								if (wl.getTimesAcquired() < 5  || wl.getDuration() / (1000 * wl.getTimesAcquired()) > 200)
+								{
+									jSONOutput = jira.query("project = "
+									                        + project
+									                        + " AND summary ~ \\\""
+									                        + wl.getName().replace("[", "").replace("]", "")
+									                        + "\\\" AND (summary ~ \\\"Kernel wkl stuck\\\" OR labels = krnl_wkl_h) AND (labels = cd_auto OR labels = cd_manual)");
+								}
+								else if (wl.getDuration() / (1000 * wl.getTimesAcquired()) < 5)
+								{
+									jSONOutput = jira.query("project = "
+									                        + project
+									                        + " AND summary ~ \\\""
+									                        + wl.getName().replace("[", "").replace("]", "")
+									                        + "\\\" AND (summary ~ \\\"Kernel wkl acquired/released\\\" OR labels = krnl_wkl_ar) AND (labels = cd_auto OR labels = cd_manual)");
+								}
+								else
+								{
+									continue;
+								}
+								
 								JiraQueryResult jqr = new JiraQueryResult(jSONOutput);
 								
 								if (jqr.getResultCount() == 1)
