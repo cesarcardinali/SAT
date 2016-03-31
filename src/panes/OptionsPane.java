@@ -40,9 +40,6 @@ import org.jdom2.JDOMException;
 
 import panes.secondarypanes.TextDialog;
 import supportive.Encryptation;
-import tests.report.ReportController;
-import tests.report.ReportFrame;
-import tests.report.ReportModel;
 import core.Logger;
 import core.SharedObjs;
 import core.XmlMngr;
@@ -1102,25 +1099,6 @@ public class OptionsPane extends JPanel
 		btnMoreOptions.setPreferredSize(new Dimension(103, 23));
 		panel_5.add(btnMoreOptions);
 		
-		JButton btnAutoReportalpha = new JButton("Auto Report (alpha test)");
-		btnAutoReportalpha.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				ReportModel pr = new ReportModel();
-				ReportFrame view = new ReportFrame();
-				ReportController reportController = new ReportController();
-				
-				reportController.setFrame(view);
-				reportController.setModel(pr);
-				
-				view.setController(reportController);
-				
-				XmlMngr.initClass();
-				view.init();
-				
-				view.setVisible(true);
-			}
-		});
-		panel_5.add(btnAutoReportalpha);
 		chkTextWrap.addItemListener(new ItemListener()
 		{
 			@Override

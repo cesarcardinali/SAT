@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import objects.CustomFilterItem;
@@ -18,8 +17,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-
-import tests.report.ProductReport;
 
 
 /**
@@ -329,153 +326,6 @@ public class XmlMngr
 		
 		return hm;
 	}
-	
-	// Products to generate report methods group
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	public static ProductReport getProductReportValueOf(String productName)
-	{
-		Element requestedElement = reportDocument.getRootElement();
-		
-		for (Element item : requestedElement.getChildren())
-		{
-			if (item.getChildText("name").equals(productName))
-			{
-				ProductReport pr = new ProductReport();
-				pr.setName(item.getChildText("name"));
-				pr.setProductID(item.getChildText("product_ids"));
-				pr.setReleases(item.getChildText("releases"));
-				pr.setTopIssueLabel(item.getChildText("til"));
-				pr.setDashboardLink(item.getChildText("dashboard_link"));
-				pr.setSpreadsheetLink(item.getChildText("spreadsheet_link"));
-				pr.setAddChart(Boolean.parseBoolean(item.getChildText("add_chart")));
-				pr.setSeparateCharts(Boolean.parseBoolean(item.getChildText("separated_charts")));
-				pr.setChartBuild(item.getChildText("chart_build"));
-				pr.setChartUserdebugIssues(item.getChildText("issues"));
-				pr.setChartUserIssues(item.getChildText("issues_user"));
-				pr.setAddHighlight(Boolean.parseBoolean(item.getChild("highligths").getAttributeValue("add")));
-				pr.setHighlights(item.getChildText("highligths"));
-				
-				
-				return pr;
-			}
-		}
-		
-		return null;
-	}
-	
-	public static boolean setProductReportValueOf(ProductReport pr)
-	{
-		Element requestedElement = reportDocument.getRootElement();
-		
-		try
-		{
-			for (Element item : requestedElement.getChildren())
-			{
-				if (item.getChildText("name").equals(pr.getName()))
-				{
-					item.getChild("name").setText(pr.getName());
-					item.getChild("product_ids").setText(pr.getProductID());
-					item.getChild("releases").setText(pr.getReleasesString());
-					item.getChild("til").setText(pr.getTopIssueLabel());
-					item.getChild("dashboard_link").setText(pr.getDashboardLink());
-					item.getChild("spreadsheet_link").setText(pr.getSpreadsheetLink());
-					item.getChild("add_chart").setText(pr.getAddChart() + "");
-					item.getChild("separated_charts").setText(pr.isSeparateCharts() + "");
-					item.getChild("chart_build").setText(pr.getChartBuild());
-					item.getChild("issues").setText(pr.getChartIssues());
-					item.getChild("issues_user").setText(pr.getChartUserIssues());
-					item.getChild("add_highligths").setText(pr.getAddHighlight() + "");
-					item.getChild("highligths").setText(pr.getHighlights());
-					
-					return true;
-				}
-			}
-			
-			Element newItem = new Element("product");
-			newItem.addContent(new Element("name"));
-			newItem.addContent(new Element("product_ids"));
-			newItem.addContent(new Element("releases"));
-			newItem.addContent(new Element("til"));
-			newItem.addContent(new Element("dashboard_link"));
-			newItem.addContent(new Element("spreadsheet_link"));
-			newItem.addContent(new Element("add_chart"));
-			newItem.addContent(new Element("separated_charts"));
-			newItem.addContent(new Element("chart_build"));
-			newItem.addContent(new Element("issues"));
-			newItem.addContent(new Element("issues_user"));
-			newItem.addContent(new Element("add_highligths"));
-			newItem.addContent(new Element("highligths"));
-			
-			newItem.getChild("name").setText(pr.getName());
-			newItem.getChild("product_ids").setText(pr.getProductID());
-			newItem.getChild("releases").setText(pr.getReleasesString());
-			newItem.getChild("til").setText(pr.getTopIssueLabel());
-			newItem.getChild("dashboard_link").setText(pr.getDashboardLink());
-			newItem.getChild("spreadsheet_link").setText(pr.getSpreadsheetLink());
-			newItem.getChild("add_chart").setText(pr.getAddChart() + "");
-			newItem.getChild("separated_charts").setText(pr.isSeparateCharts() + "");
-			newItem.getChild("chart_build").setText(pr.getChartBuild());
-			newItem.getChild("issues").setText(pr.getChartIssues());
-			newItem.getChild("issues_user").setText(pr.getChartUserIssues());
-			newItem.getChild("add_highligths").setText(pr.getAddHighlight() + "");
-			newItem.getChild("highligths").setText(pr.getHighlights());
-			requestedElement.addContent(newItem);
-			
-			return true;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return false;
-		}
-		
-	}
-	
-	public static ArrayList<ProductReport> getAllProductsReport()
-	{
-		Element requestedElement = reportDocument.getRootElement();
-		ArrayList<ProductReport> elements = new ArrayList<ProductReport>();
-		ProductReport pr = new ProductReport();
-		
-		for (Element item : requestedElement.getChildren())
-		{
-			pr = new ProductReport();
-			pr.setName(item.getChildText("name"));
-			pr.setProductID(item.getChildText("product_ids"));
-			pr.setReleases(item.getChildText("releases"));
-			pr.setTopIssueLabel(item.getChildText("til"));
-			pr.setDashboardLink(item.getChildText("dashboard_link"));
-			pr.setSpreadsheetLink(item.getChildText("spreadsheet_link"));
-			pr.setAddChart(Boolean.parseBoolean(item.getChildText("add_chart")));
-			pr.setSeparateCharts(Boolean.parseBoolean(item.getChildText("separated_charts")));
-			pr.setChartBuild(item.getChildText("chart_build"));
-			pr.setChartUserdebugIssues(item.getChildText("issues"));
-			pr.setChartUserIssues(item.getChildText("issues_user"));
-			pr.setAddHighlight(Boolean.parseBoolean(item.getChild("highligths").getAttributeValue("add")));
-			pr.setHighlights(item.getChildText("highligths"));
-			
-			elements.add(pr);
-		}
-		
-		return elements;
-	}
-	
-	public static void clearProductsReport()
-	{
-		Element requestedElement = reportDocument.getRootElement();
-		requestedElement.removeContent();
-	}
-	
-	public static void setAllProductsReport(ArrayList<ProductReport> products)
-	{
-		for (ProductReport pr : products)
-		{
-			setProductReportValueOf(pr);
-		}
-	}
-	
-	// End
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/**
 	 * Get user filter item

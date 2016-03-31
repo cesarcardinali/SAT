@@ -29,7 +29,6 @@ import panes.ParserPane;
 import panes.secondarypanes.AdvancedOptionsPane;
 import panes.secondarypanes.ListPane;
 import supportive.DBAdapter;
-import tests.report.ReportFrame;
 
 
 /**
@@ -66,7 +65,6 @@ public class SharedObjs
 	public static ParserPane          parserPane;
 	public static CrsManagerPane      crsManagerPane;
 	public static OptionsPane         optionsPane;
-	public static ReportFrame         reportPane;
 	public static AdvancedOptionsPane advOptions;
 	public static SAT                 satFrame;
 	public static DBAdapter           satDB;
@@ -143,7 +141,6 @@ public class SharedObjs
 		parserPane = new ParserPane();
 		crsManagerPane = new CrsManagerPane();
 		optionsPane = new OptionsPane();
-		reportPane = new ReportFrame();
 		advOptions = new AdvancedOptionsPane();
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addChangeListener(new ChangeListener()
@@ -161,7 +158,6 @@ public class SharedObjs
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Parser</body></html>", parserPane);
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Downloader</body></html>", crsManagerPane);
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Options</body></html>", optionsPane);
-//		tabbedPane.addTab("<html><body leftmargin=15 topmargin=3 marginwidth=15 marginheight=5>Reporter</body></html>", reportPane.getContentPane());
 		
 		// Load filters and update tree
 		loadFilters();
@@ -175,7 +171,7 @@ public class SharedObjs
 		openedList.setLocation(900, 250);
 		closedList.setLocation(600, 250);
 	}
-	
+
 	/**
 	 * Check if all folders exists. If any of them does not exist, create it.
 	 */
