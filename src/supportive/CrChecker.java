@@ -581,8 +581,8 @@ public class CrChecker
 		{
 			hci = Consume.getHCList().get(i);
 			
-			if ((hci.getScOffConsume() >= 10 || hci.getConsumeAvg() >= 23) && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.3) // High
-			                                                                                                                                    // consumption
+			// High comsumption detection
+			if ((hci.getScOffConsume() >= 10 || hci.getConsumeAvg() >= 23) && hci.getOccurencesOff() >= system_server.getOccurencesOff() * 0.3)
 			{
 				String project = "IKSW";
 				if (cr.getBuild().equals(""))
@@ -1225,8 +1225,13 @@ public class CrChecker
 						
 						for (int i = 0; i < 4; i++)
 						{
-							//BATTRIAGE-243 SAT cant dup correctly when process is "media"
-							if(javaWkls.get(i).getProcessName().equals("media"))
+							// BATTRIAGE-243 SAT cant dup correctly when process is "media"
+							if (javaWkls.get(i).getProcessName().equals("media"))
+								continue;
+							// ------
+							
+							// BATTRIAGE-249
+							if (javaWkls.get(i).getTagName().length() > 110 || javaWkls.get(i).getTagName().split(" ").length >= 2)
 								continue;
 							// ------
 							
@@ -1236,13 +1241,15 @@ public class CrChecker
 								BugRepJavaWL wl = javaWkls.get(i);
 								
 								if (wl.getTagName().contains("*sync*/gmail-ls/com.google")
-								    || wl.getTagName().contains("*sync*/com.motorola.email.exchange.push/com.android.exchange/"))
+								    || wl.getTagName().contains("*sync*/com.motorola.email.exchange.push/com.android.exchange/")
+								    || wl.getTagName().contains("*sync*/com.yahoo.mobile.client.android.mail"))
 								{
 									wl.setTagName(wl.getTagName().substring(0, wl.getTagName().lastIndexOf("/")));
 								}
 								
 								String project = "IKSW";
-								if (cr.getBuild().equals(""))
+								System.out.println("------------ BUILD ----------------\n" + cr.getBuild() + "\n--------------------------------------");
+								if (cr.getBuild().equals("") || cr.getBuild().toLowerCase().contains("analysed"))
 								{
 									project += "M";
 								}
@@ -1370,7 +1377,7 @@ public class CrChecker
 								if (wl.getTimesAcquired() == 0)
 									wl.setTimesAcquired(1);
 								
-								if (wl.getTimesAcquired() < 5  || wl.getDuration() / (1000 * wl.getTimesAcquired()) > 200)
+								if (wl.getTimesAcquired() < 5 || wl.getDuration() / (1000 * wl.getTimesAcquired()) > 200)
 								{
 									jSONOutput = jira.query("project = "
 									                        + project
