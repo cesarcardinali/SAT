@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,9 +31,19 @@ public class Alarm
 	private static String         result;
 	private static BufferedReader reader;
 	private static boolean        enabled = true;
+	private static Semaphore        se      = new Semaphore(1);
 	
 	public static String makelog(String path)
 	{
+		try
+        {
+	        se.acquire();
+        }
+        catch (InterruptedException e1)
+        {
+	        e1.printStackTrace();
+        }
+		
 		result = SharedObjs.optionsPane.getTextAlarms() + "\n"; // Cumulative result
 		reader = null; // File reader
 		alarmList = new Alarms_List(); // List of Apps with high consume
@@ -53,6 +64,7 @@ public class Alarm
 		if (!ff.getFound())
 		{
 			result = file;
+			se.release();
 			return result;
 		}
 		
@@ -65,6 +77,7 @@ public class Alarm
 		{
 			e.printStackTrace();
 			result = "FileNotFoundException\n" + Throwables.getStackTraceAsString(e);
+			se.release();
 			return result;
 		}
 		
@@ -135,6 +148,7 @@ public class Alarm
 		{
 			e.printStackTrace();
 			result = "IOException\n" + Throwables.getStackTraceAsString(e);
+			se.release();
 			return result;
 		}
 		
@@ -170,6 +184,7 @@ public class Alarm
 		{
 			result = "- No detailed alarm issue evidences were found in text logs";
 		}
+		se.release();
 		return result;
 	}
 	
