@@ -3,69 +3,84 @@
 <Products>
   <product>
     <name>Bounce M</name>
-    <product_ids>MPK24.107-54 MCK24.159 MCK24.165</product_ids>
-    <releases>MPK24.107-54 MCK24.159 MCK24.165</releases>
-    <til>nao_tem</til>
+    <product_ids>MCK24.175</product_ids>
+    <releases>MCK24.175</releases>
+    <til>cd_top_bounce</til>
     <dashboard_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=43374</dashboard_link>
-    <spreadsheet_link>nao usa</spreadsheet_link>
+    <spreadsheet_link />
     <add_chart>true</add_chart>
     <separated_charts>true</separated_charts>
-    <chart_build>MPK24.107-54 MCK24.159 MCK24.165</chart_build>
-    <issues>IKSWM-13084
-IKSWM-12951
-IKSWM-15775
-IKSWM-23105
-IKSWM-24304
+    <chart_build>MCK24.175</chart_build>
+    <issues>IKSWM-28059
 IKSWM-4987
+IKSWM-29475
+IKSWM-24510
+IKSWM-25330</issues>
+    <issues_user>IKSWM-24510
 IKSWM-18123
-IKSWM-16563
-IKSWM-24510
-IKSWM-25330
-IKSWM-24510</issues>
-    <issues_user>IKSWM-22444
-IKSWM-21314
-IKSWM-18117
-IKSWM-11903
-IKSWM-4987
-IKSWM-16761
-IKSWM-25368
-IKSWM-16563
-IKSWM-13084
-IKSWM-25773
-IKSWM-4730
-IKSWM-24510
-IKSWM-24510</issues_user>
+IKSWM-25330</issues_user>
     <add_highligths>false</add_highligths>
     <highligths />
+    <active>false</active>
   </product>
   <product>
-    <name>Athene</name>
-    <product_ids>MPJ24.124</product_ids>
-    <releases>MPJ24.124</releases>
-    <til>cd_top_athene</til>
+    <name>M Upgrade</name>
+    <product_ids />
+    <releases>MCD24.107-51.4 MPG24.107-66 MCK24.178</releases>
+    <til>cd_top_m</til>
+    <dashboard_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=42477</dashboard_link>
+    <spreadsheet_link />
+    <add_chart>false</add_chart>
+    <separated_charts>false</separated_charts>
+    <chart_build>MCK24.178</chart_build>
+    <issues />
+    <issues_user />
+    <add_highligths>true</add_highligths>
+    <highligths>M Upgrade - No issues today.</highligths>
+    <active>false</active>
+  </product>
+  <product>
+    <name>Vector</name>
+    <product_ids />
+    <releases>MCL24.138</releases>
+    <til>cd_top_vector</til>
+    <dashboard_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=43756</dashboard_link>
+    <spreadsheet_link />
+    <add_chart>true</add_chart>
+    <separated_charts>true</separated_charts>
+    <chart_build>MCL24.138</chart_build>
+    <issues>IKSWM-29598
+IKSWM-28143
+IKSWM-26014
+IKSWM-29582
+IKFPS-731</issues>
+    <issues_user>IKSWM-29598
+IKSWM-28143</issues_user>
+    <add_highligths>false</add_highligths>
+    <highligths />
+    <active>false</active>
+  </product>
+  <product>
+    <name>Affinity</name>
+    <product_ids />
+    <releases>MPJ24.139-3</releases>
+    <til>cd_top_affinity</til>
     <dashboard_link>http://idart.mot.com/secure/Dashboard.jspa?selectPageId=43268</dashboard_link>
     <spreadsheet_link />
     <add_chart>true</add_chart>
-    <separated_charts>false</separated_charts>
-    <chart_build>MPJ24.124</chart_build>
-    <issues>IKSWM-20961
-IKSWM-18123
-IKSWM-18456
-IKSWM-18232
-IKSWM-18232
-IKSWM-21996
-IKSWM-18456
-IKSWM-20961
-IKSWM-25822
-IKSWM-24078
-IKSWM-24853
-IKSWM-12683
-IKSWM-25206
+    <separated_charts>true</separated_charts>
+    <chart_build>MPJ24.139-3</chart_build>
+    <issues>IKSWM-28264
+IKSWM-28769
+IKFPS-776
+IKSWM-29515
 IKSWM-23133</issues>
-    <issues_user />
+    <issues_user>IKSWM-28041
+IKSWM-28264
+IKSWM-18123</issues_user>
     <add_highligths>true</add_highligths>
-    <highligths>IKSWM-18456 - Kernel wakelock: IPA_WS
- IKSWM-20961 - Kernel wakelock: msm_otg
- IKSWM-18232 - DIAG_WS wake up source</highligths>
+    <highligths>Affinity - IKSWM-28769 - Kernel wakelock: IPA_WS new occurrence
+Affinity - IKSWM-18123 - Kernel wakelock: DIAG_WS - 01 occurrence on User Build.</highligths>
+    <active>true</active>
   </product>
 </Products>

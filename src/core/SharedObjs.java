@@ -72,9 +72,6 @@ public class SharedObjs
 	private static ListPane           closedList;
 	private static ListPane           openedList;
 	
-	/*
-	 * Fixed parameters:
-	 */
 	// Thresholds for issue detectors:
 	public static long                threshold;
 	public static boolean             isUidsDBModified;
@@ -171,7 +168,7 @@ public class SharedObjs
 		openedList.setLocation(900, 250);
 		closedList.setLocation(600, 250);
 	}
-
+	
 	/**
 	 * Check if all folders exists. If any of them does not exist, create it.
 	 */

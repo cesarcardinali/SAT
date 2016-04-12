@@ -11,7 +11,7 @@
     <labels>cd_auto</labels>
     <download>true</download>
     <unzip>true</unzip>
-    <analyze>false</analyze>
+    <analyze>true</analyze>
     <close>false</close>
     <ignore>false</ignore>
     <unassign>false</unassign>
